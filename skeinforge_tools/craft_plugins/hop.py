@@ -29,7 +29,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the hop dialog.
 
 
->>> hop.writeOutput()
+>>> hop.writeOutput( 'Screw Holder Bottom.stl' )
 The hop tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -71,7 +71,7 @@ def getCraftedTextFromText( gcodeText, hopRepository = None ):
 		return gcodeText
 	return HopSkein().getCraftedGcode( gcodeText, hopRepository )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return HopRepository()
 
@@ -86,19 +86,16 @@ class HopRepository:
 	"A class to handle the hop preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Hopped', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.hop.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Hopped', self, '' )
 		self.activateHop = preferences.BooleanPreference().getFromValue( 'Activate Hop', self, False )
-		self.hopOverLayerThickness = preferences.FloatPreference().getFromValue( 'Hop Over Layer Thickness (ratio):', self, 1.0 )
-		self.minimumHopAngle = preferences.FloatPreference().getFromValue( 'Minimum Hop Angle (degrees):', self, 30.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.hopOverLayerThickness = preferences.FloatSpin().getFromValue( 0.5, 'Hop Over Layer Thickness (ratio):', self, 1.5, 1.0 )
+		self.minimumHopAngle = preferences.FloatSpin().getFromValue( 20.0, 'Minimum Hop Angle (degrees):', self, 60.0, 30.0 )
 		self.executeTitle = 'Hop'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.hop.html' )
 
 	def execute( self ):
 		"Hop button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -108,7 +105,7 @@ class HopSkein:
 	def __init__( self ):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
-		self.feedRateString = ''
+		self.feedRateMinute = 961.0
 		self.hopHeight = 0.4
 		self.hopDistance = self.hopHeight
 		self.justDeactivated = False
@@ -128,48 +125,40 @@ class HopSkein:
 
 	def getHopLine( self, line ):
 		"Get hopped gcode line."
-		splitLine = line.split( ' ' )
-		indexOfF = gcodec.indexOfStartingWithSecond( "F", splitLine )
-		if indexOfF > 0:
-			self.feedRateString = splitLine[ indexOfF ]
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		if self.extruderActive:
 			return line
 		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		highestZ = location.z
 		if self.oldLocation != None:
 			highestZ = max( highestZ, self.oldLocation.z )
+		highestZHop = highestZ + self.hopHeight
 		locationComplex = location.dropAxis( 2 )
 		if self.justDeactivated:
 			oldLocationComplex = self.oldLocation.dropAxis( 2 )
 			distance = abs( locationComplex - oldLocationComplex )
 			if distance < self.minimumDistance:
 				if self.isNextTravel():
-					return self.getMovementLineWithHop( locationComplex, highestZ )
+					return self.distanceFeedRate.getLineWithZ( line, splitLine, highestZHop )
 			alongRatio = min( 0.41666666, self.hopDistance / distance )
 			oneMinusAlong = 1.0 - alongRatio
 			closeLocation = oldLocationComplex * oneMinusAlong + locationComplex * alongRatio
-			self.distanceFeedRate.addLine( self.getMovementLineWithHop( locationComplex, highestZ ) )
+			self.distanceFeedRate.addLine( self.distanceFeedRate.getLineWithZ( line, splitLine, highestZHop ) )
 			if self.isNextTravel():
-				return self.getMovementLineWithHop( locationComplex, highestZ )
+				return self.distanceFeedRate.getLineWithZ( line, splitLine, highestZHop )
 			farLocation = oldLocationComplex * alongRatio + locationComplex * oneMinusAlong
-			self.distanceFeedRate.addLine( self.getMovementLineWithHop( farLocation, highestZ ) )
+			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.feedRateMinute, farLocation, highestZHop )
 			return line
 		if self.isNextTravel():
-			return self.getMovementLineWithHop( locationComplex, highestZ )
+			return self.distanceFeedRate.getLineWithZ( line, splitLine, highestZHop )
 		return line
-
-	def getMovementLineWithHop( self, location, z ):
-		"Get linear movement line for a location."
-		movementLine = self.distanceFeedRate.getLinearGcodeMovement( location, z + self.hopHeight )
-		if self.feedRateString != '':
-			movementLine += ' ' + self.feedRateString
-		return movementLine
 
 	def isNextTravel( self ):
 		"Determine if there is another linear travel before the thread ends."
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split( ' ' )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = "";
 			if len( splitLine ) > 0:
 				firstWord = splitLine[ 0 ]
@@ -183,7 +172,7 @@ class HopSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(<layerThickness>':
@@ -198,7 +187,7 @@ class HopSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -219,7 +208,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

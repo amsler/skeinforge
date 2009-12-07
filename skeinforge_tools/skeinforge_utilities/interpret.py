@@ -14,7 +14,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> interpret.getGNUTranslatorGcodeFileTypeTuples()
 [('GTS files', '*.gts'), ('Gcode text files', '*.gcode'), ('STL files', '*.stl'), ('SVG files', '*.svg')]
 
->>> interpret.getImportPluginFilenames()
+>>> interpret.getImportPluginFileNames()
 ['gts', 'stl', 'svg']
 
 """
@@ -51,19 +51,19 @@ def getGNUTranslatorGcodeFileTypeTuples():
 
 def getGNUTranslatorFilesUnmodified():
 	"Get the file types from the translators in the import plugins folder."
-	return gcodec.getFilesWithFileTypesWithoutWords( getImportPluginFilenames() ) + [ gcodec.getUnmodifiedGCodeFiles() ]
+	return gcodec.getFilesWithFileTypesWithoutWords( getImportPluginFileNames() ) + [ gcodec.getUnmodifiedGCodeFiles() ]
 
-def getImportPluginFilenames():
+def getImportPluginFileNames():
 	"Get analyze plugin fileNames."
-	return gcodec.getPluginFilenamesFromDirectoryPath( gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'import_plugins' ) )
+	return gcodec.getPluginFileNamesFromDirectoryPath( gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'import_plugins' ) )
 
 def getTranslatorFileTypeTuples():
 	"Get the file types from the translators in the import plugins folder."
-	importPluginFilenames = getImportPluginFilenames()
+	importPluginFileNames = getImportPluginFileNames()
 	fileTypeTuples = []
-	for importPluginFilename in importPluginFilenames:
-		fileTypeTitle = importPluginFilename.upper() + ' files'
-		fileType = ( fileTypeTitle, '*.' + importPluginFilename )
+	for importPluginFileName in importPluginFileNames:
+		fileTypeTitle = importPluginFileName.upper() + ' files'
+		fileType = ( fileTypeTitle, '*.' + importPluginFileName )
 		fileTypeTuples.append( fileType )
 	fileTypeTuples.sort()
 	return fileTypeTuples

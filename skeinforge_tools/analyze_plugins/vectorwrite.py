@@ -55,56 +55,53 @@ __license__ = "GPL 3.0"
 
 
 #add open webbrowser first time file is created choice
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
-	return VectorwritePreferences()
+	return VectorwriteRepository()
 
-def writeGivenPreferences( fileName, gcodeText, vectorwritePreferences ):
+def writeGivenRepository( fileName, gcodeText, vectorwriteRepository ):
 	"Write scalable vector graphics for a gcode file given the preferences."
 	if gcodeText == '':
 		return ''
 	startTime = time.time()
-	vectorwriteGcode = VectorwriteSkein().getSVG( fileName, gcodeText, vectorwritePreferences )
+	vectorwriteGcode = VectorwriteSkein().getSVG( fileName, gcodeText, vectorwriteRepository )
 	if vectorwriteGcode == '':
 		return
-	suffixFilename = fileName[ : fileName.rfind( '.' ) ] + '_vectorwrite.svg'
-	suffixDirectoryName = os.path.dirname( suffixFilename )
-	suffixReplacedBaseName = os.path.basename( suffixFilename ).replace( ' ', '_' )
-	suffixFilename = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
-	gcodec.writeFileText( suffixFilename, vectorwriteGcode )
-	print( 'The vectorwrite file is saved as ' + gcodec.getSummarizedFilename( suffixFilename ) )
+	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_vectorwrite.svg'
+	suffixDirectoryName = os.path.dirname( suffixFileName )
+	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
+	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
+	gcodec.writeFileText( suffixFileName, vectorwriteGcode )
+	print( 'The vectorwrite file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to vectorwrite the file.' )
-	preferences.openWebPage( suffixFilename )
+	preferences.openWebPage( suffixFileName )
 
 def writeOutput( fileName, gcodeText = '' ):
 	"Write scalable vector graphics for a skeinforge gcode file, if activate vectorwrite is selected."
-	vectorwritePreferences = preferences.getReadRepository( VectorwritePreferences() )
-	if not vectorwritePreferences.activateVectorwrite.value:
+	vectorwriteRepository = preferences.getReadRepository( VectorwriteRepository() )
+	if not vectorwriteRepository.activateVectorwrite.value:
 		return
 	gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
-	writeGivenPreferences( fileName, gcodeText, vectorwritePreferences )
+	writeGivenRepository( fileName, gcodeText, vectorwriteRepository )
 
 def writeRegardless( fileName ):
 	"Write scalable vector graphics for a gcode file."
-	vectorwritePreferences = preferences.getReadRepository( VectorwritePreferences() )
+	vectorwriteRepository = preferences.getReadRepository( VectorwriteRepository() )
 	gcodeText = gcodec.getFileText( fileName )
-	writeGivenPreferences( fileName, gcodeText, vectorwritePreferences )
+	writeGivenRepository( fileName, gcodeText, vectorwriteRepository )
 
 
-class VectorwritePreferences:
+class VectorwriteRepository:
 	"A class to handle the vectorwrite preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
+		preferences.addListsToRepository( 'skeinforge_tools.analyze_plugins.vectorwrite.html', '', self )
 		self.activateVectorwrite = preferences.BooleanPreference().getFromValue( 'Activate Vectorwrite', self, False )
-		self.fileNameInput = preferences.Filename().getFromFilename( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Write Vector Graphics for', self, '' )
-		self.layersFrom = preferences.IntPreference().getFromValue( 'Layers From (index):', self, 0 )
-		self.layersTo = preferences.IntPreference().getFromValue( 'Layers To (index):', self, 999999999 )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Write Vector Graphics for', self, '' )
+		self.layersFrom = preferences.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
+		self.layersTo = preferences.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
 		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
 		self.executeTitle = 'Vectorwrite'
-		self.saveCloseTitle = 'Save and Close'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.analyze_plugins.vectorwrite.html' )
 
 	def execute( self ):
 		"Write button has been clicked."
@@ -123,7 +120,7 @@ class VectorwriteSkein( svg_codec.SVGCodecSkein ):
 
 	def addRotatedLoopLayersToOutput( self, rotatedBoundaryLayers ):
 		"Add rotated boundary layers to the output."
-		truncatedRotatedBoundaryLayers = rotatedBoundaryLayers[ self.vectorwritePreferences.layersFrom.value : self.vectorwritePreferences.layersTo.value ]
+		truncatedRotatedBoundaryLayers = rotatedBoundaryLayers[ self.vectorwriteRepository.layersFrom.value : self.vectorwriteRepository.layersTo.value ]
 		for truncatedRotatedBoundaryLayerIndex in xrange( len( truncatedRotatedBoundaryLayers ) ):
 			truncatedRotatedBoundaryLayer = truncatedRotatedBoundaryLayers[ truncatedRotatedBoundaryLayerIndex ]
 			self.addRotatedLoopLayerToOutput( truncatedRotatedBoundaryLayerIndex, truncatedRotatedBoundaryLayer )
@@ -144,7 +141,7 @@ class VectorwriteSkein( svg_codec.SVGCodecSkein ):
 			self.addLine( pathStart + pathString[ : - 1 ] + '" fill="none" stroke="#F00"/>' )
 		self.addLine( '\t\t</g>' )
 
-	def getSVG( self, fileName, gcodeText, vectorwritePreferences ):
+	def getSVG( self, fileName, gcodeText, vectorwriteRepository ):
 		"Parse gnu triangulated surface text and store the vectorwrite gcode."
 		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, - 999999999.0 )
 		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, 999999999.0 )
@@ -154,10 +151,10 @@ class VectorwriteSkein( svg_codec.SVGCodecSkein ):
 		self.oldLocation = None
 		self.thread = []
 		self.rotatedBoundaryLayers = []
-		self.vectorwritePreferences = vectorwritePreferences
+		self.vectorwriteRepository = vectorwriteRepository
 		self.parseInitialization()
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			self.parseLine( lineIndex )
+		for line in self.lines[ self.lineIndex : ]:
+			self.parseLine( line )
 		self.extent = self.cornerMaximum - self.cornerMinimum
 		self.svgTemplateLines = self.getReplacedSVGTemplateLines( fileName, self.rotatedBoundaryLayers )
 		self.addInitializationToOutputSVG( 'vectorwrite' )
@@ -177,7 +174,7 @@ class VectorwriteSkein( svg_codec.SVGCodecSkein ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == '(<decimalPlacesCarried>':
 				self.decimalPlacesCarried = int( splitLine[ 1 ] )
@@ -188,10 +185,9 @@ class VectorwriteSkein( svg_codec.SVGCodecSkein ):
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float( splitLine[ 1 ] )
 
-	def parseLine( self, lineIndex ):
+	def parseLine( self, line ):
 		"Parse a gcode line and add it to the outset skein."
-		line = self.lines[ lineIndex ]
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -218,7 +214,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeRegardless( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

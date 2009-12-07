@@ -9,20 +9,15 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_tools.html"><font color="#ffffff">skeinforge_tools</font></a>.help</strong></big></big> ($Date: 2008/21/04 $)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/help.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/help.py</a></font></td></tr></table>
-    <p><tt>Help is a script to access the plugins which help a gcode file.<br>
+    <p><tt>Help has buttons and menu items to open help, blog and forum pages in your primary browser.<br>
  <br>
-The plugin buttons which are commonly used are bolded and the ones which are rarely used have normal font weight.<br>
+The Fabmetheus Blog is the skeinforge announcements blog and the place to post questions, bugs and skeinforge requests.<br>
  <br>
-                self.<strong>helpMenu</strong>.add_cascade( label = "Forums", menu = self.<strong>forumsMenu</strong> )<br>
-                self.<strong>forumsMenu</strong>.add_command( label = 'Bits from Bytes Printing', command = HelpPage().getOpenFromAfterWWW( 'bitsfrombytes.com/fora/user/index.php?board=5.0' ) )<br>
-                self.<strong>forumsMenu</strong>.add_command( label = 'Bits from Bytes Software', command = HelpPage().getOpenFromAfterWWW( 'bitsfrombytes.com/fora/user/index.php?board=4.0' ) )<br>
-                self.<strong>forumsMenu</strong>.add_separator()<br>
-                self.<strong>forumsMenu</strong>.add_command( label = 'Skeinforge Contributions', command = HelpPage().getOpenFromAfterHTTP( 'dev.forums.reprap.org/read.php?12,27562' ) )<br>
-                self.<strong>forumsMenu</strong>.add_command( label = 'Skeinforge Powwow', command = HelpPage().getOpenFromAfterHTTP( 'dev.forums.reprap.org/read.php?12,20013' ) )<br>
-                self.<strong>forumsMenu</strong>.add_command( label = 'Skeinforge Settings', command = HelpPage().getOpenFromAfterHTTP( 'dev.forums.reprap.org/read.php?12,27434' ) )<br>
-                self.<strong>helpMenu</strong>.add_command( label = 'Index', command = HelpPage().getOpenFromDocumentationSubName( '' ) )<br>
-                self.<strong>helpMenu</strong>.add_command( label = 'Manual', command = HelpPage().getOpenFromAfterWWW( 'bitsfrombytes.com/wiki/index.php?title=Skeinforge' ) )<br>
-                self.<strong>helpMenu</strong>.add_command( label = 'Overview', command = HelpPage().getOpenFromDocumentationSubName( 'skeinforge.html' ) )</tt></p>
+The 'Index of Local Documentation' is a list of the pages in the documentation folder.  The Wiki Manual is the skeinforge wiki with pictures and charts.  It is the best and most readable source of skeinforge information and you are welcome to contribute.  The 'Overview of Skeinforge' is also the help page of the skeinforge tool.  It is a general description of skeinforge, has answers to frequently asked questions and has many links to skeinforge, fabrication and python pages.<br>
+ <br>
+In the forum section, the 'Bits from Bytes Printing Board' is about printing questions, problems and solutions.  Most of the people on that forum use the rapman, but many of the solutions apply to any reprap.  The 'Bits from Bytes Software Board' is about software, and has some skeinforge threads.  The 'Skeinforge Contributions Thread' is a thread about how to contribute to skeinforge development.  The 'Skeinforge Settings Thread' is a thread for people to post, download and discuss skeinforge settings.<br>
+ <br>
+The help menu has an item for each button on the help page.  Also, at the very top, it has a link to the local documentation and if there is a separate page for that tool in the wiki manual, a link to that page on the manual.  If the 'Wiki Manual Primary' checkbutton is selected and there is a separate wiki manual page, the wiki page will be the primary document page, otherwise the local page will be primary.  The help button (? symbol button) on the tool page will open the primary page, as will pressing &lt;F1&gt;.  For example, if you click the the help button from the chamber tool, which has a separate page in the wiki, and 'Wiki Manual Primary' is selected, the wiki manual chamber page will be opened.  Clicking F1 will also open the wiki manual chamber page.</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -56,6 +51,8 @@ The plugin buttons which are commonly used are bolded and the ones which are rar
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="HelpRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;preferences,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;preferences&nbsp;fileName.</tt></dd></dl>
 
+<dl><dt><a name="HelpRepository-save"><strong>save</strong></a>(self)</dt><dd><tt>Write&nbsp;the&nbsp;entities.</tt></dd></dl>
+
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#eeaa77">
@@ -63,8 +60,8 @@ The plugin buttons which are commonly used are bolded and the ones which are rar
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-addToMenu"><strong>addToMenu</strong></a>(menu, repository)</dt><dd><tt>Add&nbsp;a&nbsp;tool&nbsp;plugin&nbsp;menu.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-addToMenu"><strong>addToMenu</strong></a>(master, menu, repository, window)</dt><dd><tt>Add&nbsp;a&nbsp;tool&nbsp;plugin&nbsp;menu.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;help&nbsp;dialog.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

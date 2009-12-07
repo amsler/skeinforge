@@ -31,7 +31,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the fillet dialog.
 
 
->>> fillet.writeOutput()
+>>> fillet.writeOutput( 'Screw Holder Bottom.stl' )
 The fillet tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -82,7 +82,7 @@ def getCraftedTextFromText( gcodeText, filletRepository = None ):
 		return BevelSkein().getCraftedGcode( filletRepository, gcodeText )
 	return gcodeText
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return FilletRepository()
 
@@ -159,7 +159,7 @@ class BevelSkein:
 		"Get the next linear move.  Return none is none is found."
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split( ' ' )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			if gcodec.getFirstWord( splitLine ) == 'G1':
 				nextLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 				return nextLocation
@@ -180,7 +180,7 @@ class BevelSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -197,7 +197,7 @@ class BevelSkein:
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
 		self.shouldAddLine = True
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -335,9 +335,8 @@ class FilletRepository:
 	"A class to handle the fillet preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '' )
+		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.fillet.html', '', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '' )
 		self.activateFillet = preferences.BooleanPreference().getFromValue( 'Activate Fillet', self, True )
 		self.filletProcedureChoiceLabel = preferences.LabelDisplay().getFromName( 'Fillet Procedure Choice: ', self )
 		filletRadio = []
@@ -345,17 +344,15 @@ class FilletRepository:
 		self.arcRadius = preferences.Radio().getFromRadio( 'Arc Radius', filletRadio, self, False )
 		self.arcSegment = preferences.Radio().getFromRadio( 'Arc Segment', filletRadio, self, False )
 		self.bevel = preferences.Radio().getFromRadio( 'Bevel', filletRadio, self, True )
-		self.cornerFeedRateOverOperatingFeedRate = preferences.FloatPreference().getFromValue( 'Corner FeedRate over Operating Feed Rate (ratio):', self, 1.0 )
-		self.filletRadiusOverPerimeterWidth = preferences.FloatPreference().getFromValue( 'Fillet Radius over Perimeter Width (ratio):', self, 0.35 )
-		self.reversalSlowdownDistanceOverPerimeterWidth = preferences.FloatPreference().getFromValue( 'Reversal Slowdown Distance over Perimeter Width (ratio):', self, 0.5 )
+		self.cornerFeedRateOverOperatingFeedRate = preferences.FloatSpin().getFromValue( 0.8, 'Corner FeedRate over Operating Feed Rate (ratio):', self, 1.2, 1.0 )
+		self.filletRadiusOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.25, 'Fillet Radius over Perimeter Width (ratio):', self, 0.65, 0.35 )
+		self.reversalSlowdownDistanceOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.3, 'Reversal Slowdown Distance over Perimeter Width (ratio):', self, 0.7, 0.5 )
 		self.useIntermediateFeedRateInCorners = preferences.BooleanPreference().getFromValue( 'Use Intermediate FeedRate in Corners', self, True )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
 		self.executeTitle = 'Fillet'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.fillet.html' )
 
 	def execute( self ):
 		"Fillet button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -365,7 +362,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

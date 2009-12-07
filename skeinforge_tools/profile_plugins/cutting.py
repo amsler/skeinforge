@@ -34,10 +34,10 @@ __license__ = "GPL 3.0"
 
 
 def getCraftSequence():
-	"Get the sequence chop,preface,outset,multiply,whittle,lift,flow,feed,wipe,home,lash,fillet,unpause,export."
-	return 'chop,preface,outset,multiply,whittle,lift,flow,feed,wipe,home,lash,fillet,unpause,export'.split( ',' )
+	"Get the sequence chop,preface,outset,multiply,whittle,drill,lift,flow,feed,wipe,home,lash,fillet,unpause,export."
+	return 'chop,preface,outset,multiply,whittle,drill,lift,flow,feed,wipe,home,lash,fillet,unpause,export'.split( ',' )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return CuttingRepository()
 
@@ -46,7 +46,7 @@ class CuttingRepository:
 	"A class to handle the cutting preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		preferences.setCraftProfileArchive( getCraftSequence(), 'end_mill', self, 'skeinforge_tools.profile_plugins.cutting.html' )
+		preferences.addListsSetCraftProfileArchive( 'end_mill', self, 'skeinforge_tools.profile_plugins.cutting.html' )
 
 
 def main():
@@ -54,7 +54,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

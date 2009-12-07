@@ -11,18 +11,15 @@
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/inset.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/inset.py</a></font></td></tr></table>
     <p><tt>Inset is a script to inset a gcode file.<br>
  <br>
-Inset insets the outlines of a gcode file.  The outside outlines will be inset by the extrusion width, and the inside outlines will be outset by the extrusion width.<br>
+Inset will inset the outside outlines by half the perimeter width, and the inside outlines will be outset by half the perimeter width.<br>
  <br>
 If "Add Custom Code for Temperature Reading" is selected, the M105 custom code for temperature reading will be added at the beginning of the file, the default is on.  If the "Turn Extruder Heater Off at Shut Down" preference is selected, the M104 S0 gcode line will be added to the end of the file to turn the extruder heater off by setting the extruder heater temperature to 0, this is the default choice.<br>
  <br>
-The 'Extrusion Width over Thickness' is the ratio of the extrusion width over the layer thickness, the default is 1.5.  Infill bridge width over thickness ratio is the ratio of the extrusion width over the layer thickness on a bridge layer.<br>
+The 'Bridge Width Multiplier' is the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers, the default is 1.0.<br>
  <br>
-The 'Infill Perimeter Overlap' ratio is the amount the infill overlaps the perimeter over the extrusion width.  The higher the value the more the infill will overlap the perimeter, and the thicker join between the infill and the perimeter.  If the value is too high, the join will be so thick that the nozzle will run plow through the join below making a mess, also when it is above 0.7 fill will not be able to create infill correctly, the default is 0.15.  There are two choices for the infill perimeter overlap method of calculation.  If the 'Calculate Overlap from Perimeter and Infill' option is chosen, the overlap will be calculated from the average of the perimeter width and the infill width, this is the default choice.  If the 'Calculate Overlap from Perimeter Only' option is chosen, the overlap will be calculated from the perimeter width only.<br>
- <br>
-If "Remove Extrusion Overlap" is selected, any extrusion that intersects itself will be removed, the default is on.<br>
+The 'Overlap Removal Width over Perimeter Width' is the ratio of the overlap removal width over the perimeter width, the default is 0.6.  Any part of the extrusion that comes within the overlap removal width of another is removed.  This is to prevent the extruder from depositing two extrusions right beside each other.  If the 'Overlap Removal Width over Perimeter Width' is less than 0.2, the overlap will not be removed.<br>
  <br>
 The following examples inset the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and inset.py.<br>
- <br>
  <br>
 &gt; python inset.py<br>
 This brings up the inset dialog.<br>
@@ -45,7 +42,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the inset dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; inset.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; inset.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The inset tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -124,7 +121,7 @@ The inset tool has created the file:<br>
 
 <dl><dt><a name="InsetSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
-<dl><dt><a name="InsetSkein-parseLine"><strong>parseLine</strong></a>(self, lineIndex)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;inset&nbsp;skein.</tt></dd></dl>
+<dl><dt><a name="InsetSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;inset&nbsp;skein.</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -137,7 +134,7 @@ The inset tool has created the file:<br>
  <dl><dt><a name="-addSegmentOutline"><strong>addSegmentOutline</strong></a>(isThick, outlines, pointBegin, pointEnd, width)</dt><dd><tt>Add&nbsp;a&nbsp;diamond&nbsp;or&nbsp;hexagonal&nbsp;outline&nbsp;for&nbsp;a&nbsp;line&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, insetRepository<font color="#909090">=None</font>)</dt><dd><tt>Inset&nbsp;the&nbsp;preface&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, insetRepository<font color="#909090">=None</font>)</dt><dd><tt>Inset&nbsp;the&nbsp;preface&nbsp;gcode&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getSegmentsFromPoints"><strong>getSegmentsFromPoints</strong></a>(aroundLists, loopLists, pointBegin, pointEnd)</dt><dd><tt>Get&nbsp;endpoint&nbsp;segments&nbsp;from&nbsp;the&nbsp;beginning&nbsp;and&nbsp;end&nbsp;of&nbsp;a&nbsp;line&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-isCloseToLast"><strong>isCloseToLast</strong></a>(paths, point, radius)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;point&nbsp;is&nbsp;close&nbsp;to&nbsp;the&nbsp;last&nbsp;point&nbsp;of&nbsp;the&nbsp;last&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-isIntersectingItself"><strong>isIntersectingItself</strong></a>(loop, width)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;loop&nbsp;is&nbsp;intersecting&nbsp;itself.</tt></dd></dl>

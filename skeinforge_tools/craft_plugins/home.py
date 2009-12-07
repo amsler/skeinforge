@@ -29,7 +29,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the home dialog.
 
 
->>> home.writeOutput()
+>>> home.writeOutput( 'Screw Holder Bottom.stl' )
 The home tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -73,7 +73,7 @@ def getCraftedTextFromText( gcodeText, homeRepository = None ):
 		return gcodeText
 	return HomeSkein().getCraftedGcode( gcodeText, homeRepository )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return HomeRepository()
 
@@ -88,18 +88,15 @@ class HomeRepository:
 	"A class to handle the home preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Homed', self, '' )
+		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.home.html', '', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Homed', self, '' )
 		self.activateHome = preferences.BooleanPreference().getFromValue( 'Activate Home', self, True )
 		self.nameOfHomingFile = preferences.StringPreference().getFromValue( 'Name of Homing File:', self, 'homing.gcode' )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
 		self.executeTitle = 'Home'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.home.html' )
 
 	def execute( self ):
 		"Home button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -164,7 +161,7 @@ class HomeSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -178,7 +175,7 @@ class HomeSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -200,7 +197,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

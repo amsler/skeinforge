@@ -39,7 +39,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the outset dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; outset.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; outset.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The outset tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -99,7 +99,7 @@ The outset tool has created the file:<br>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="OutsetSkein-__init__"><strong>__init__</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="OutsetSkein-addGcodeFromRemainingLoop"><strong>addGcodeFromRemainingLoop</strong></a>(self, loop, radius, z)</dt><dd><tt>Add&nbsp;the&nbsp;remainder&nbsp;of&nbsp;the&nbsp;loop&nbsp;which&nbsp;does&nbsp;not&nbsp;overlap&nbsp;the&nbsp;alreadyFilledArounds&nbsp;loops.</tt></dd></dl>
+<dl><dt><a name="OutsetSkein-addGcodeFromRemainingLoop"><strong>addGcodeFromRemainingLoop</strong></a>(self, loop, radius, z)</dt><dd><tt>Add&nbsp;the&nbsp;remainder&nbsp;of&nbsp;the&nbsp;loop.</tt></dd></dl>
 
 <dl><dt><a name="OutsetSkein-addOutset"><strong>addOutset</strong></a>(self, rotatedBoundaryLayer)</dt><dd><tt>Add&nbsp;outset&nbsp;to&nbsp;the&nbsp;layer.</tt></dd></dl>
 
@@ -123,7 +123,7 @@ The outset tool has created the file:<br>
 <td width="100%"><dl><dt><a name="-compareAreaAscending"><strong>compareAreaAscending</strong></a>(loopArea, otherLoopArea)</dt><dd><tt>Get&nbsp;comparison&nbsp;in&nbsp;order&nbsp;to&nbsp;sort&nbsp;loop&nbsp;areas&nbsp;in&nbsp;ascending&nbsp;order&nbsp;of&nbsp;area.</tt></dd></dl>
  <dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, outsetRepository<font color="#909090">=None</font>)</dt><dd><tt>Outset&nbsp;the&nbsp;preface&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, outsetRepository<font color="#909090">=None</font>)</dt><dd><tt>Outset&nbsp;the&nbsp;preface&nbsp;gcode&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;outset&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Outset&nbsp;the&nbsp;carving&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.&nbsp;&nbsp;If&nbsp;no&nbsp;fileName&nbsp;is&nbsp;specified,&nbsp;outset&nbsp;the&nbsp;first&nbsp;unmodified&nbsp;gcode&nbsp;file&nbsp;in&nbsp;this&nbsp;folder.</tt></dd></dl>
 </td></tr></table><p>

@@ -11,7 +11,7 @@
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/fill.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/fill.py</a></font></td></tr></table>
     <p><tt>Fill is a script to fill the perimeters of a gcode file.<br>
  <br>
-Allan Ecker aka The Masked Retriever's has written the "Skeinforge Quicktip: Fill" at:<br>
+Allan Ecker aka The Masked Retriever has written the "Skeinforge Quicktip: Fill" at:<br>
 <a href="http://blog.thingiverse.com/2009/07/21/mysteries-of-skeinforge-fill/">http://blog.thingiverse.com/2009/07/21/mysteries-of-skeinforge-fill/</a><br>
  <br>
 The diaphragm is a solid group of layers, at regular intervals.  It can be used with a sparse infill to give the object watertight, horizontal compartments and/or a higher shear strength.  The "Diaphragm Period" is the number of layers between diaphrams.  The "Diaphragm Thickness" is the number of layers the diaphram is composed of.  The default diaphragm is zero, because the diaphragm feature is rarely used.<br>
@@ -22,10 +22,14 @@ The "Infill Pattern" can be set to "Grid Hexagonal", "Grid Rectangular" or "Line
  <br>
 The "Infill Begin Rotation" preference is the amount the infill direction of the base and every second layer thereafter is rotated.  The default value of forty five degrees gives a diagonal infill.  The "Infill Odd Layer Extra Rotation" preference is the extra amount the infill direction of the odd layers is rotated compared to the base layer.  With the default value of ninety degrees the odd layer infill will be perpendicular to the base layer.  The "Infill Begin Rotation Repeat" preference is the number of layers that the infill begin rotation will repeat.  With the default of one, the object will have alternating cross hatching.  With a value higher than one, the infill will go in one direction more often, giving the object more strength in one direction and less in the other, this is useful for beams and cantilevers.<br>
  <br>
+The 'Infill Perimeter Overlap' ratio is the amount the infill overlaps the perimeter over the average of the perimeter and infill width.  The higher the value the more the infill will overlap the perimeter, and the thicker join between the infill and the perimeter.  If the value is too high, the join will be so thick that the nozzle will run plow through the join below making a mess, also when it is above 0.7 fill may not be able to create infill correctly, the default is 0.15.  If you want to stretch the infill a lot, set 'Path Stretch over Perimeter Width' in stretch to a high value.<br>
+ <br>
 The most important preference in fill is the "Infill Solidity".  A value of one means the infill lines will be right beside each other, resulting in a solid, strong, heavy shape which takes a long time to extrude.  A low value means the infill will be sparse, the interior will be mosty empty space, the object will be weak, light and quick to build.  The default is 0.2.<br>
  <br>
 The "Interior Infill Density over Exterior Density" preference is the ratio of the infill density of the interior over the infill density of the exterior surfaces, the default is 0.9.  The exterior should have a high infill density, so that the surface will be strong and watertight.  With the interior infill density a bit lower than the exterior, the plastic will not fill up higher than the extruder nozzle.  If the interior density is too high that could happen, as Nophead described in the Hydraraptor "Bearing Fruit" post at:<br>
 <a href="http://hydraraptor.blogspot.com/2008/08/bearing-fruit.html">http://hydraraptor.blogspot.com/2008/08/bearing-fruit.html</a><br>
+ <br>
+The 'Infill Width over Thickness' is the ratio of the infill width over the layer thickness.  The higher the value the wider apart the infill will be, the default is 1.5.<br>
  <br>
 The "Solid Surface Thickness" preference is the number of solid layers that are at the bottom, top, plateaus and overhang.  With a value of zero, the entire object will be composed of a sparse infill, and water could flow right through it.  With a value of one, water will leak slowly through the surface and with a value of three, the object could be watertight.  The higher the solid surface thickness, the stronger and heavier the object will be.  The default is three.<br>
  <br>
@@ -63,7 +67,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the fill dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; fill.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; fill.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The fill tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -205,8 +209,9 @@ The fill tool has created the file:<br>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-addAroundGridPoint"><strong>addAroundGridPoint</strong></a>(arounds, gridPoint, gridPointInsetX, gridPointInsetY, gridPoints, gridSearchRadius, isBothOrNone, isDoubleJunction, isJunctionWide, paths, pixelTable, width)</dt><dd><tt>Add&nbsp;the&nbsp;path&nbsp;around&nbsp;the&nbsp;grid&nbsp;point.</tt></dd></dl>
- <dl><dt><a name="-addPath"><strong>addPath</strong></a>(extrusionWidth, infillPaths, path, rotationPlaneAngle)</dt><dd><tt>Add&nbsp;simplified&nbsp;path&nbsp;to&nbsp;fill.</tt></dd></dl>
+ <dl><dt><a name="-addPath"><strong>addPath</strong></a>(infillWidth, infillPaths, path, rotationPlaneAngle)</dt><dd><tt>Add&nbsp;simplified&nbsp;path&nbsp;to&nbsp;fill.</tt></dd></dl>
  <dl><dt><a name="-addPointOnPath"><strong>addPointOnPath</strong></a>(path, pixelTable, point, pointIndex, width)</dt><dd><tt>Add&nbsp;a&nbsp;point&nbsp;to&nbsp;a&nbsp;path&nbsp;and&nbsp;the&nbsp;pixel&nbsp;table.</tt></dd></dl>
+ <dl><dt><a name="-addPointOnPathIfFree"><strong>addPointOnPathIfFree</strong></a>(path, pixelTable, point, pointIndex, width)</dt><dd><tt>Add&nbsp;the&nbsp;closest&nbsp;point&nbsp;to&nbsp;a&nbsp;path,&nbsp;if&nbsp;the&nbsp;point&nbsp;added&nbsp;to&nbsp;a&nbsp;path&nbsp;is&nbsp;free.</tt></dd></dl>
  <dl><dt><a name="-addShortenedLineSegment"><strong>addShortenedLineSegment</strong></a>(lineSegment, shortenDistance, shortenedSegments)</dt><dd><tt>Add&nbsp;shortened&nbsp;line&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-addSparseEndpoints"><strong>addSparseEndpoints</strong></a>(doubleExtrusionWidth, endpoints, fillLine, horizontalSegmentLists, infillSolidity, removedEndpoints, solidSurfaceThickness, surroundingXIntersections)</dt><dd><tt>Add&nbsp;sparse&nbsp;endpoints.</tt></dd></dl>
  <dl><dt><a name="-addSparseEndpointsFromSegment"><strong>addSparseEndpointsFromSegment</strong></a>(doubleExtrusionWidth, endpoints, fillLine, horizontalSegmentLists, infillSolidity, removedEndpoints, segment, solidSurfaceThickness, surroundingXIntersections)</dt><dd><tt>Add&nbsp;sparse&nbsp;endpoints&nbsp;from&nbsp;a&nbsp;segment.</tt></dd></dl>
@@ -221,9 +226,9 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, fillRepository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;text.self.</tt></dd></dl>
  <dl><dt><a name="-getExtraFillLoops"><strong>getExtraFillLoops</strong></a>(insideLoops, outsideLoop, radius)</dt><dd><tt>Get&nbsp;extra&nbsp;loops&nbsp;between&nbsp;inside&nbsp;and&nbsp;outside&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getIntersectionOfXIntersectionIndexes"><strong>getIntersectionOfXIntersectionIndexes</strong></a>(totalSolidSurfaceThickness, xIntersectionIndexList)</dt><dd><tt>Get&nbsp;x&nbsp;intersections&nbsp;from&nbsp;surrounding&nbsp;layers.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getNonIntersectingGridPointLine"><strong>getNonIntersectingGridPointLine</strong></a>(gridPointInsetX, isJunctionWide, paths, pixelTable, yIntersectionPath, width)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;around&nbsp;the&nbsp;grid&nbsp;point&nbsp;that&nbsp;is&nbsp;junction&nbsp;wide&nbsp;that&nbsp;do&nbsp;not&nbsp;intersect.</tt></dd></dl>
  <dl><dt><a name="-getPlusMinusSign"><strong>getPlusMinusSign</strong></a>(number)</dt><dd><tt>Get&nbsp;one&nbsp;if&nbsp;the&nbsp;number&nbsp;is&nbsp;zero&nbsp;or&nbsp;positive&nbsp;else&nbsp;negative&nbsp;one.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getWithLeastLength"><strong>getWithLeastLength</strong></a>(path, point)</dt><dd><tt>Insert&nbsp;a&nbsp;point&nbsp;into&nbsp;a&nbsp;path,&nbsp;at&nbsp;the&nbsp;index&nbsp;at&nbsp;which&nbsp;the&nbsp;path&nbsp;would&nbsp;be&nbsp;shortest.</tt></dd></dl>
  <dl><dt><a name="-getYIntersection"><strong>getYIntersection</strong></a>(firstPoint, secondPoint, x)</dt><dd><tt>Get&nbsp;where&nbsp;the&nbsp;line&nbsp;crosses&nbsp;x.</tt></dd></dl>
  <dl><dt><a name="-getYIntersectionIfExists"><strong>getYIntersectionIfExists</strong></a>(complexFirst, complexSecond, x)</dt><dd><tt>Get&nbsp;the&nbsp;y&nbsp;intersection&nbsp;if&nbsp;it&nbsp;exists.</tt></dd></dl>
@@ -231,7 +236,8 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-insertGridPointPair"><strong>insertGridPointPair</strong></a>(gridPoint, gridPointInsetX, gridPoints, isJunctionWide, paths, pixelTable, yIntersectionPath, width)</dt><dd><tt>Insert&nbsp;a&nbsp;pair&nbsp;of&nbsp;points&nbsp;around&nbsp;the&nbsp;grid&nbsp;point&nbsp;is&nbsp;is&nbsp;junction&nbsp;wide,&nbsp;otherwise&nbsp;inset&nbsp;one&nbsp;point.</tt></dd></dl>
  <dl><dt><a name="-insertGridPointPairWithLinePath"><strong>insertGridPointPairWithLinePath</strong></a>(gridPoint, gridPointInsetX, gridPoints, isJunctionWide, linePath, paths, pixelTable, yIntersectionPath, width)</dt><dd><tt>Insert&nbsp;a&nbsp;pair&nbsp;of&nbsp;points&nbsp;around&nbsp;the&nbsp;grid&nbsp;point&nbsp;is&nbsp;is&nbsp;junction&nbsp;wide,&nbsp;otherwise&nbsp;inset&nbsp;one&nbsp;point.</tt></dd></dl>
  <dl><dt><a name="-insertGridPointPairs"><strong>insertGridPointPairs</strong></a>(gridPoint, gridPointInsetX, gridPoints, intersectionPathFirst, intersectionPathSecond, isBothOrNone, isJunctionWide, paths, pixelTable, width)</dt><dd><tt>Insert&nbsp;a&nbsp;pair&nbsp;of&nbsp;points&nbsp;around&nbsp;a&nbsp;pair&nbsp;of&nbsp;grid&nbsp;points.</tt></dd></dl>
- <dl><dt><a name="-isAddedPointOnPathFree"><strong>isAddedPointOnPathFree</strong></a>(path, pixelTable, point, pointIndex, width)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;point&nbsp;added&nbsp;to&nbsp;a&nbsp;path&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;pixel&nbsp;table.</tt></dd></dl>
+ <dl><dt><a name="-isAddedPointOnPathFree"><strong>isAddedPointOnPathFree</strong></a>(path, pixelTable, point, pointIndex, width)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;point&nbsp;added&nbsp;to&nbsp;a&nbsp;path&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;pixel&nbsp;table&nbsp;or&nbsp;the&nbsp;path.</tt></dd></dl>
+ <dl><dt><a name="-isAddedPointOnPathIntersectingPath"><strong>isAddedPointOnPathIntersectingPath</strong></a>(begin, path, point, pointIndex)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;point&nbsp;added&nbsp;to&nbsp;a&nbsp;path&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;path&nbsp;by&nbsp;checking&nbsp;line&nbsp;intersection.</tt></dd></dl>
  <dl><dt><a name="-isIntersectingLoopsPaths"><strong>isIntersectingLoopsPaths</strong></a>(loops, paths, pointBegin, pointEnd)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;segment&nbsp;between&nbsp;the&nbsp;first&nbsp;and&nbsp;second&nbsp;point&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;loop&nbsp;list.</tt></dd></dl>
  <dl><dt><a name="-isPathAlwaysInsideLoop"><strong>isPathAlwaysInsideLoop</strong></a>(loop, path)</dt><dd><tt>Determine&nbsp;if&nbsp;all&nbsp;points&nbsp;of&nbsp;a&nbsp;path&nbsp;are&nbsp;inside&nbsp;another&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-isPathAlwaysOutsideLoops"><strong>isPathAlwaysOutsideLoops</strong></a>(loops, path)</dt><dd><tt>Determine&nbsp;if&nbsp;all&nbsp;points&nbsp;in&nbsp;a&nbsp;path&nbsp;are&nbsp;outside&nbsp;another&nbsp;loop&nbsp;in&nbsp;a&nbsp;list.</tt></dd></dl>

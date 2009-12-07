@@ -5,7 +5,7 @@ The default 'Activate Comb' checkbox is on.  When it is on, the functions descri
 
 Comb bends the extruder travel paths around holes in the slices, to avoid stringers.  It moves the extruder to the inside of perimeters before turning the extruder on so any start up ooze will be inside the shape.  The 'Minimum Departure Distance over Perimeter Width' is the ratio of the minimum distance that the extruder will travel and loop before leaving a perimeter.  A high value means the extruder will loop many times before leaving, so that the ooze will finish within the perimeter, a low value means the extruder will not loop and the stringers will be thicker.  Since it sometimes loops when there's no need, the default is zero.
 
-The 'Running Jump Space over Perimeter Width' ratio times the perimeter width is the running jump space that is added before going from one island to another, the default is five.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer across the islands will be thinner.  If the extruder does not have acceleration code, the speed will not be greater so there would be no benefit and 'Running Jump Space over Perimeter Width' should be set to zero.
+The 'Running Jump Space over Perimeter Width' ratio times the perimeter width is the running jump space that is added before going from one island to another.  The default is zero because sometimes an unnecessary running jump space is added, if you want to use it a reasonable value is five.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer across the islands will be thinner.  If the extruder does not have acceleration code, the speed will not be greater so there would be no benefit and 'Running Jump Space over Perimeter Width' should be left at zero.
 
 The following examples comb the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and comb.py.
 
@@ -31,7 +31,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the comb dialog.
 
 
->>> comb.writeOutput()
+>>> comb.writeOutput( 'Screw Holder Bottom.stl' )
 The comb tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -73,7 +73,7 @@ def getCraftedTextFromText( gcodeText, combRepository = None ):
 		return gcodeText
 	return CombSkein().getCraftedGcode( combRepository, gcodeText )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return CombRepository()
 
@@ -88,19 +88,16 @@ class CombRepository:
 	"A class to handle the comb preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Combed', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.comb.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Combed', self, '' )
 		self.activateComb = preferences.BooleanPreference().getFromValue( 'Activate Comb', self, True )
-		self.minimumDepartureDistanceOverPerimeterWidth = preferences.FloatPreference().getFromValue( 'Minimum Departure Distance over Perimeter Width (ratio):', self, 0.0 )
-		self.runningJumpSpaceOverPerimeterWidth = preferences.FloatPreference().getFromValue( 'Running Jump Space over Perimeter Width (ratio):', self, 5.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.minimumDepartureDistanceOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.0, 'Minimum Departure Distance over Perimeter Width (ratio):', self, 50.0, 0.0 )
+		self.runningJumpSpaceOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.0, 'Running Jump Space over Perimeter Width (ratio):', self, 10.0, 0.0 )
 		self.executeTitle = 'Comb'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.comb.html' )
 
 	def execute( self ):
 		"Comb button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -333,7 +330,7 @@ class CombSkein:
 
 	def parseBoundariesLayers( self, combRepository, line ):
 		"Parse a gcode line."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -351,7 +348,7 @@ class CombSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -370,7 +367,7 @@ class CombSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the comb skein."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -393,7 +390,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

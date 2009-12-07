@@ -34,10 +34,10 @@ __license__ = "GPL 3.0"
 
 
 def getCraftSequence():
-	"Get the sequence carve,preface,inset,fill,multiply,speed,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,home,lash,fillet,unpause,export."
-	return 'carve,preface,inset,fill,multiply,speed,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,home,lash,fillet,unpause,export'.split( ',' )
+	"Get the sequence carve,preface,inset,fill,multiply,speed,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,splodge,home,lash,fillet,unpause,export."
+	return 'carve,preface,inset,fill,multiply,speed,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,splodge,home,lash,fillet,unpause,export'.split( ',' )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return ExtrusionRepository()
 
@@ -46,7 +46,7 @@ class ExtrusionRepository:
 	"A class to handle the export preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		preferences.setCraftProfileArchive( getCraftSequence(), 'ABS', self, 'skeinforge_tools.profile_plugins.extrusion.html' )
+		preferences.addListsSetCraftProfileArchive( 'ABS', self, 'skeinforge_tools.profile_plugins.extrusion.html' )
 
 
 def main():
@@ -54,7 +54,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

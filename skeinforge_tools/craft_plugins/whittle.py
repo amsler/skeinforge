@@ -31,7 +31,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the whittle dialog.
 
 
->>> whittle.writeOutput()
+>>> whittle.writeOutput( 'Screw Holder Bottom.stl' )
 The whittle tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -78,7 +78,7 @@ def getCraftedTextFromText( gcodeText, whittleRepository = None ):
 		return gcodeText
 	return WhittleSkein().getCraftedGcode( whittleRepository, gcodeText )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return WhittleRepository()
 
@@ -94,19 +94,15 @@ class WhittleRepository:
 	"A class to handle the whittle preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Whittled', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.whittle.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Whittled', self, '' )
 		self.activateWhittle = preferences.BooleanPreference().getFromValue( 'Activate Whittle:', self, False )
-		self.maximumVerticalStep = preferences.FloatPreference().getFromValue( 'Maximum Vertical Step (mm):', self, 0.1 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.maximumVerticalStep = preferences.FloatSpin().getFromValue( 0.02, 'Maximum Vertical Step (mm):', self, 0.42, 0.1 )
 		self.executeTitle = 'Whittle'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.whittle.html' )
 
 	def execute( self ):
 		"Whittle button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -141,7 +137,7 @@ class WhittleSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ].lstrip()
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -154,7 +150,7 @@ class WhittleSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the whittle skein."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -191,7 +187,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

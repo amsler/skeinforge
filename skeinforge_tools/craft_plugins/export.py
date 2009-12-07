@@ -37,7 +37,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the export dialog.
 
 
->>> export.writeOutput()
+>>> export.writeOutput( 'Screw Holder Bottom.stl' )
 The export tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -84,7 +84,7 @@ def getDistanceGcode( exportText ):
 	lines = gcodec.getTextLines( exportText )
 	oldLocation = None
 	for line in lines:
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		firstWord = None
 		if len( splitLine ) > 0:
 			firstWord = splitLine[ 0 ]
@@ -96,7 +96,7 @@ def getDistanceGcode( exportText ):
 			oldLocation = location
 	return exportText
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return ExportRepository()
 
@@ -129,14 +129,14 @@ def writeOutput( fileName = '' ):
 	exportRepository = ExportRepository()
 	preferences.getReadRepository( exportRepository )
 	startTime = time.time()
-	print( 'File ' + gcodec.getSummarizedFilename( fileName ) + ' is being chain exported.' )
-	suffixFilename = fileName[ : fileName.rfind( '.' ) ] + '_export.' + exportRepository.fileExtension.value
+	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being chain exported.' )
+	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_export.' + exportRepository.fileExtension.value
 	gcodeText = gcodec.getGcodeFileText( fileName, '' )
 	procedures = consecution.getProcedures( 'export', gcodeText )
 	gcodeText = consecution.getChainTextFromProcedures( fileName, procedures[ : - 1 ], gcodeText )
 	if gcodeText == '':
 		return
-	analyze.writeOutput( suffixFilename, gcodeText )
+	analyze.writeOutput( suffixFileName, gcodeText )
 	exportChainGcode = getCraftedTextFromText( gcodeText, exportRepository )
 	replacableExportChainGcode = None
 	selectedPluginModule = getSelectedPluginModule( exportRepository.exportPlugins )
@@ -146,11 +146,11 @@ def writeOutput( fileName = '' ):
 		if selectedPluginModule.isReplacable():
 			replacableExportChainGcode = selectedPluginModule.getOutput( exportChainGcode )
 		else:
-			selectedPluginModule.writeOutput( suffixFilename, exportChainGcode )
+			selectedPluginModule.writeOutput( suffixFileName, exportChainGcode )
 	if replacableExportChainGcode != None:
 		replacableExportChainGcode = getReplaced( replacableExportChainGcode )
-		gcodec.writeFileText( suffixFilename, replacableExportChainGcode )
-		print( 'The exported file is saved as ' + gcodec.getSummarizedFilename( suffixFilename ) )
+		gcodec.writeFileText( suffixFileName, replacableExportChainGcode )
+		print( 'The exported file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	if exportRepository.alsoSendOutputTo.value != '':
 		if replacableExportChainGcode == None:
 			replacableExportChainGcode = selectedPluginModule.getOutput( exportChainGcode )
@@ -162,40 +162,37 @@ class ExportRepository:
 	"A class to handle the export preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Exported', self, '' )
+		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.export.html', '', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Exported', self, '' )
 		self.activateExport = preferences.BooleanPreference().getFromValue( 'Activate Export', self, True )
 		self.alsoSendOutputTo = preferences.StringPreference().getFromValue( 'Also Send Output To:', self, '' )
 		self.deleteComments = preferences.BooleanPreference().getFromValue( 'Delete Comments', self, True )
 		exportPluginsFolderPath = gcodec.getAbsoluteFolderPath( __file__, 'export_plugins' )
 		exportStaticDirectoryPath = os.path.join( exportPluginsFolderPath, 'static_plugins' )
-		exportPluginFilenames = gcodec.getPluginFilenamesFromDirectoryPath( exportPluginsFolderPath )
-		exportStaticPluginFilenames = gcodec.getPluginFilenamesFromDirectoryPath( exportStaticDirectoryPath )
+		exportPluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( exportPluginsFolderPath )
+		exportStaticPluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( exportStaticDirectoryPath )
 		self.exportLabel = preferences.LabelDisplay().getFromName( 'Export Operations: ', self )
 		self.exportPlugins = []
 		exportRadio = []
 		self.doNotChangeOutput = preferences.RadioCapitalized().getFromRadio( 'Do Not Change Output', exportRadio, self, True )
 		self.doNotChangeOutput.directoryPath = None
-		allExportPluginFilenames = exportPluginFilenames + exportStaticPluginFilenames
-		for exportPluginFilename in allExportPluginFilenames:
+		allExportPluginFileNames = exportPluginFileNames + exportStaticPluginFileNames
+		for exportPluginFileName in allExportPluginFileNames:
 			exportPlugin = None
-			if exportPluginFilename in exportPluginFilenames:
-				path = os.path.join( exportPluginsFolderPath, exportPluginFilename )
-				exportPlugin = preferences.RadioCapitalizedButton().getFromPath( exportPluginFilename, path, exportRadio, self, False )
+			if exportPluginFileName in exportPluginFileNames:
+				path = os.path.join( exportPluginsFolderPath, exportPluginFileName )
+				exportPlugin = preferences.RadioCapitalizedButton().getFromPath( exportPluginFileName, path, exportRadio, self, False )
 				exportPlugin.directoryPath = exportPluginsFolderPath
 			else:
-				exportPlugin = preferences.RadioCapitalized().getFromRadio( exportPluginFilename, exportRadio, self, False )
+				exportPlugin = preferences.RadioCapitalized().getFromRadio( exportPluginFileName, exportRadio, self, False )
 				exportPlugin.directoryPath = exportStaticDirectoryPath
 			self.exportPlugins.append( exportPlugin )
 		self.fileExtension = preferences.StringPreference().getFromValue( 'File Extension:', self, 'gcode' )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
 		self.executeTitle = 'Export'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.export.html' )
 
 	def execute( self ):
 		"Export button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -235,7 +232,7 @@ class ExportSkein:
 
 	def parseLine( self, exportRepository, line ):
 		"Parse a gcode line."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -262,7 +259,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

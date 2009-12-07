@@ -33,7 +33,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the multiply dialog.
 
 
->>> multiply.writeOutput()
+>>> multiply.writeOutput( 'Screw Holder Bottom.stl' )
 The multiply tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -78,7 +78,7 @@ def getCraftedTextFromText( gcodeText, multiplyRepository = None ):
 		return gcodeText
 	return MultiplySkein().getCraftedGcode( gcodeText, multiplyRepository )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return MultiplyRepository()
 
@@ -93,22 +93,19 @@ class MultiplyRepository:
 	"A class to handle the multiply preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Multiplied', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.multiply.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Multiply', self, '' )
 		self.activateMultiply = preferences.BooleanPreference().getFromValue( 'Activate Multiply:', self, False )
-		self.centerX = preferences.FloatPreference().getFromValue( 'Center X (mm):', self, 0.0 )
-		self.centerY = preferences.FloatPreference().getFromValue( 'Center Y (mm):', self, 0.0 )
-		self.numberOfColumns = preferences.IntPreference().getFromValue( 'Number of Columns (integer):', self, 1 )
-		self.numberOfRows = preferences.IntPreference().getFromValue( 'Number of Rows (integer):', self, 1 )
-		self.separationOverExtrusionWidth = preferences.FloatPreference().getFromValue( 'Separation over Extrusion Width (ratio):', self, 15.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.centerX = preferences.FloatSpin().getFromValue( - 100.0, 'Center X (mm):', self, 100.0, 0.0 )
+		self.centerY = preferences.FloatSpin().getFromValue( -100.0, 'Center Y (mm):', self, 100.0, 0.0 )
+		self.numberOfColumns = preferences.IntSpin().getFromValue( 1, 'Number of Columns (integer):', self, 10, 1 )
+		self.numberOfRows = preferences.IntSpin().getFromValue( 1, 'Number of Rows (integer):', self, 10, 1 )
+		self.separationOverExtrusionWidth = preferences.FloatSpin().getFromValue( 5.0, 'Separation over Extrusion Width (ratio):', self, 25.0, 15.0 )
 		self.executeTitle = 'Multiply'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.multiply.html' )
 
 	def execute( self ):
 		"Multiply button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -128,7 +125,7 @@ class MultiplySkein:
 	def addElement( self, offset ):
 		"Add moved element to the output."
 		for line in self.layerLines:
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				movedLocation = self.getMovedLocationSetOldLocation( offset, splitLine )
@@ -161,7 +158,7 @@ class MultiplySkein:
 		"Parse gcode initialization and store the parameters."
 		for layerLineIndex in xrange( len( self.layerLines ) ):
 			line = self.layerLines[ layerLineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.addLine( line )
 			if firstWord == '(<layer>':
@@ -191,7 +188,7 @@ class MultiplySkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -205,7 +202,7 @@ class MultiplySkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the multiply skein."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -224,7 +221,7 @@ class MultiplySkein:
 		"Set maximum and minimum corners and z."
 		locationComplexes = []
 		for line in self.lines[ self.lineIndex : ]:
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
@@ -247,7 +244,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

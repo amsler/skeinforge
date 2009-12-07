@@ -15,7 +15,7 @@ The default 'Activate Comb' checkbox is on.  When it is on, the functions descri
  <br>
 Comb bends the extruder travel paths around holes in the slices, to avoid stringers.  It moves the extruder to the inside of perimeters before turning the extruder on so any start up ooze will be inside the shape.  The 'Minimum Departure Distance over Perimeter Width' is the ratio of the minimum distance that the extruder will travel and loop before leaving a perimeter.  A high value means the extruder will loop many times before leaving, so that the ooze will finish within the perimeter, a low value means the extruder will not loop and the stringers will be thicker.  Since it sometimes loops when there's no need, the default is zero.<br>
  <br>
-The 'Running Jump Space over Perimeter Width' ratio times the perimeter width is the running jump space that is added before going from one island to another, the default is five.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer across the islands will be thinner.  If the extruder does not have acceleration code, the speed will not be greater so there would be no benefit and 'Running Jump Space over Perimeter Width' should be set to zero.<br>
+The 'Running Jump Space over Perimeter Width' ratio times the perimeter width is the running jump space that is added before going from one island to another.  The default is zero because sometimes an unnecessary running jump space is added, if you want to use it a reasonable value is five.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer across the islands will be thinner.  If the extruder does not have acceleration code, the speed will not be greater so there would be no benefit and 'Running Jump Space over Perimeter Width' should be left at zero.<br>
  <br>
 The following examples comb the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and comb.py.<br>
  <br>
@@ -41,7 +41,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the comb dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; comb.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; comb.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The comb tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -143,7 +143,7 @@ The comb tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, combRepository<font color="#909090">=None</font>)</dt><dd><tt>Comb&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, combRepository<font color="#909090">=None</font>)</dt><dd><tt>Comb&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;comb&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Comb&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>

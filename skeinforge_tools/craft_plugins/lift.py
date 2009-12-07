@@ -33,7 +33,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the lift dialog.
 
 
->>> lift.writeOutput()
+>>> lift.writeOutput( 'Screw Holder Bottom.stl' )
 The lift tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -78,7 +78,7 @@ def getCraftedTextFromText( gcodeText, liftRepository = None ):
 		return gcodeText
 	return LiftSkein().getCraftedGcode( liftRepository, gcodeText )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return LiftRepository()
 
@@ -93,19 +93,16 @@ class LiftRepository:
 	"A class to handle the lift preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lifted', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.lift.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lifted', self, '' )
 		self.activateLift = preferences.BooleanPreference().getFromValue( 'Activate Lift:', self, True )
-		self.cuttingLiftOverLayerStep = preferences.FloatPreference().getFromValue( 'Cutting Lift over Layer Step (ratio):', self, - 0.5 )
-		self.clearanceAboveTop = preferences.FloatPreference().getFromValue( 'Clearance above Top (mm):', self, 5.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.cuttingLiftOverLayerStep = preferences.FloatSpin().getFromValue( - 1.0, 'Cutting Lift over Layer Step (ratio):', self, 1.0, - 0.5 )
+		self.clearanceAboveTop = preferences.FloatSpin().getFromValue( 0.0, 'Clearance above Top (mm):', self, 10.0, 5.0 )
 		self.executeTitle = 'Lift'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.lift.html' )
 
 	def execute( self ):
 		"Lift button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -160,7 +157,7 @@ class LiftSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ].lstrip()
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -174,7 +171,7 @@ class LiftSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the lift skein."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -196,7 +193,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

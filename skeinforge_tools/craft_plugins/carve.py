@@ -35,7 +35,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the carve dialog.
 
 
->>> carve.writeOutput()
+>>> carve.writeOutput( 'Screw Holder Bottom.stl' )
 The carve tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -88,50 +88,47 @@ def getCraftedTextFromFileName( fileName, carveRepository = None ):
 		preferences.getReadRepository( carveRepository )
 	return CarveSkein().getCarvedSVG( carveRepository, carving, fileName )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return CarveRepository()
 
 def writeOutput( fileName = '' ):
 	"Carve a GNU Triangulated Surface file."
 	startTime = time.time()
-	print( 'File ' + gcodec.getSummarizedFilename( fileName ) + ' is being carved.' )
+	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being carved.' )
 	carveGcode = getCraftedText( fileName )
 	if carveGcode == '':
 		return
-	suffixFilename = gcodec.getFilePathWithUnderscoredBasename( fileName, '_carve.svg' )
-	gcodec.writeFileText( suffixFilename, carveGcode )
-	print( 'The carved file is saved as ' + gcodec.getSummarizedFilename( suffixFilename ) )
+	suffixFileName = gcodec.getFilePathWithUnderscoredBasename( fileName, '_carve.svg' )
+	gcodec.writeFileText( suffixFileName, carveGcode )
+	print( 'The carved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to carve the file.' )
-	preferences.openWebPage( suffixFilename )
+	preferences.openWebPage( suffixFileName )
 
 
 class CarveRepository:
 	"A class to handle the carve preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getTranslatorFileTypeTuples(), 'Open File to be Carved', self, '' )
-		self.extraDecimalPlaces = preferences.IntPreference().getFromValue( 'Extra Decimal Places (integer):', self, 1 )
-		self.importCoarseness = preferences.FloatPreference().getFromValue( 'Import Coarseness (ratio):', self, 1.0 )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.carve.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File to be Carved', self, '' )
+		self.bridgeThicknessMultiplier = preferences.FloatSpin().getFromValue( 0.8, 'Bridge Thickness Multiplier (ratio):', self, 1.2, 1.0 )
+		self.extraDecimalPlaces = preferences.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
+		self.importCoarseness = preferences.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
+		self.infillDirectionBridge = preferences.BooleanPreference().getFromValue( 'Infill in Direction of Bridges', self, True )
+		self.layerThickness = preferences.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
+		self.layersFrom = preferences.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
+		self.layersTo = preferences.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
 		self.meshTypeLabel = preferences.LabelDisplay().getFromName( 'Mesh Type: ', self )
 		importRadio = []
 		self.correctMesh = preferences.Radio().getFromRadio( 'Correct Mesh', importRadio, self, True )
 		self.unprovenMesh = preferences.Radio().getFromRadio( 'Unproven Mesh', importRadio, self, False )
-		self.infillBridgeThicknessOverLayerThickness = preferences.FloatPreference().getFromValue( 'Infill Bridge Thickness over Layer Thickness (ratio):', self, 1.0 )
-		self.infillDirectionBridge = preferences.BooleanPreference().getFromValue( 'Infill in Direction of Bridges', self, True )
-		self.layerThickness = preferences.FloatPreference().getFromValue( 'Layer Thickness (mm):', self, 0.4 )
-		self.layersFrom = preferences.IntPreference().getFromValue( 'Layers From (index):', self, 0 )
-		self.layersTo = preferences.IntPreference().getFromValue( 'Layers To (index):', self, 999999999 )
-		self.perimeterWidthOverThickness = preferences.FloatPreference().getFromValue( 'Perimeter Width over Thickness (ratio):', self, 1.8 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.perimeterWidthOverThickness = preferences.FloatSpin().getFromValue( 1.4, 'Perimeter Width over Thickness (ratio):', self, 2.2, 1.8 )
 		self.executeTitle = 'Carve'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.carve.html' )
 
 	def execute( self ):
 		"Carve button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -190,7 +187,7 @@ class CarveSkein( svg_codec.SVGCodecSkein ):
 
 	def setExtrusionDiameterWidth( self, carveRepository ):
 		"Set the extrusion diameter & width and the bridge thickness & width."
-		self.bridgeLayerThickness = self.layerThickness * carveRepository.infillBridgeThicknessOverLayerThickness.value
+		self.bridgeLayerThickness = self.layerThickness * carveRepository.bridgeThicknessMultiplier.value
 		self.perimeterWidth = carveRepository.perimeterWidthOverThickness.value * self.layerThickness
 
 
@@ -199,7 +196,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

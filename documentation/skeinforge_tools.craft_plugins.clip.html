@@ -13,7 +13,7 @@
  <br>
 The default 'Activate Clip' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-Clip clips the ends of loops to prevent bumps from forming.  The "Clip Over Extrusion Width (ratio)" is the ratio of the amount each end of the loop is clipped over the extrusion width.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.<br>
+Clip clips the ends of loops to prevent bumps from forming.  The "Clip Over Extrusion Width (ratio)" is the ratio of the amount each end of the loop is clipped over the extrusion width, the default is 0.2.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.<br>
  <br>
 The following examples clip the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and clip.py.<br>
  <br>
@@ -39,7 +39,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the clip dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; clip.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; clip.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The clip tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -122,7 +122,7 @@ The clip tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, clipRepository<font color="#909090">=None</font>)</dt><dd><tt>Clip&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, clipRepository<font color="#909090">=None</font>)</dt><dd><tt>Clip&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;clip&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Clip&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.&nbsp;&nbsp;Chain&nbsp;clip&nbsp;the&nbsp;gcode&nbsp;if&nbsp;it&nbsp;is&nbsp;not&nbsp;already&nbsp;clipped.&nbsp;&nbsp;If&nbsp;no&nbsp;fileName&nbsp;is&nbsp;specified,&nbsp;clip&nbsp;the&nbsp;first&nbsp;unmodified&nbsp;gcode&nbsp;file&nbsp;in&nbsp;this&nbsp;folder.</tt></dd></dl>
 </td></tr></table><p>

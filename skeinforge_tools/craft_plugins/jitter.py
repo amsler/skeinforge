@@ -3,7 +3,7 @@ Jitter is a script to jitter the ends of the loops of a gcode file.
 
 The default 'Activate Jitter' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-Jitter jitters the loop end position to a different place on each layer to prevent the a ridge from forming.  The "Jitter Over Extrusion Width (ratio)" is the amount the loop ends will be jittered over the extrusion width.  A high value means the loops will start all over the place and a low value means loops will start at roughly the same place on each layer.
+Jitter jitters the loop end position to a different place on each layer to prevent the a ridge from forming.  The "Jitter Over Perimeter Width (ratio)" is the amount the loop ends will be jittered over the extrusion width.  A high value means the loops will start all over the place and a low value means loops will start at roughly the same place on each layer.
 
 The following examples jitter the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and jitter.py.
 
@@ -29,7 +29,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the jitter dialog.
 
 
->>> jitter.writeOutput()
+>>> jitter.writeOutput( 'Screw Holder Bottom.stl' )
 The jitter tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -71,7 +71,7 @@ def getCraftedTextFromText( gcodeText, jitterRepository = None ):
 		return gcodeText
 	return JitterSkein().getCraftedGcode( jitterRepository, gcodeText )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return JitterRepository()
 
@@ -92,18 +92,15 @@ class JitterRepository:
 	"A class to handle the jitter preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Jitter', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.jitter.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Jitter', self, '' )
 		self.activateJitter = preferences.BooleanPreference().getFromValue( 'Activate Jitter', self, True )
-		self.jitterOverExtrusionWidth = preferences.FloatPreference().getFromValue( 'Jitter Over Extrusion Width (ratio):', self, 2.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.jitterOverPerimeterWidth = preferences.FloatSpin().getFromValue( 1.0, 'Jitter Over Perimeter Width (ratio):', self, 3.0, 2.0 )
 		self.executeTitle = 'Jitter'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.jitter.html' )
 
 	def execute( self ):
 		"Jitter button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -209,10 +206,10 @@ class JitterSkein:
 	def isNextExtruderOn( self ):
 		"Determine if there is an extruder on command before a move command."
 		line = self.lines[ self.lineIndex ]
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1' or firstWord == 'M103':
 				return False
@@ -222,7 +219,7 @@ class JitterSkein:
 
 	def parseAddJitter( self, line ):
 		"Parse a gcode line, jitter it and add it to the jitter skein."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -246,7 +243,7 @@ class JitterSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -256,7 +253,7 @@ class JitterSkein:
 				self.operatingFeedRatePerMinute = 60.0 * float( splitLine[ 1 ] )
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float( splitLine[ 1 ] )
-				self.jitter = jitterRepository.jitterOverExtrusionWidth.value * self.perimeterWidth
+				self.jitter = jitterRepository.jitterOverPerimeterWidth.value * self.perimeterWidth
 			elif firstWord == '(<travelFeedRatePerSecond>':
 				self.travelFeedRatePerMinute = 60.0 * float( splitLine[ 1 ] )
 			self.distanceFeedRate.addLine( line )
@@ -267,7 +264,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

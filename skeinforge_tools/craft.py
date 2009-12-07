@@ -24,15 +24,15 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def addSubmenus( menu, pluginFilename, pluginFolderPath, pluginPath ):
+def addSubmenus( menu, pluginFileName, pluginFolderPath, pluginPath ):
 	"Add a tool plugin menu."
 	submenu = preferences.Tkinter.Menu( menu, tearoff = 0 )
-	menu.add_cascade( label = pluginFilename.capitalize(), menu = submenu )
+	menu.add_cascade( label = pluginFileName.capitalize(), menu = submenu )
 	preferences.ToolDialog().addPluginToMenu( submenu, pluginPath )
 	submenu.add_separator()
-	submenuFilenames = gcodec.getPluginFilenamesFromDirectoryPath( pluginFolderPath )
-	for submenuFilename in submenuFilenames:
-		preferences.ToolDialog().addPluginToMenu( submenu, os.path.join( pluginFolderPath, submenuFilename ) )
+	submenuFileNames = gcodec.getPluginFileNamesFromDirectoryPath( pluginFolderPath )
+	for submenuFileName in submenuFileNames:
+		preferences.ToolDialog().addPluginToMenu( submenu, os.path.join( pluginFolderPath, submenuFileName ) )
 
 def addToCraftMenu( menu ):
 	"Add a craft plugin menu."
@@ -40,12 +40,12 @@ def addToCraftMenu( menu ):
 	menu.add_separator()
 	directoryPath = getPluginsDirectoryPath()
 	directoryFolders = preferences.getFolders( directoryPath )
-	pluginFilenames = getPluginFilenames()
-	for pluginFilename in pluginFilenames:
-		pluginFolderName = pluginFilename + '_plugins'
-		pluginPath = os.path.join( directoryPath, pluginFilename )
+	pluginFileNames = getPluginFileNames()
+	for pluginFileName in pluginFileNames:
+		pluginFolderName = pluginFileName + '_plugins'
+		pluginPath = os.path.join( directoryPath, pluginFileName )
 		if pluginFolderName in directoryFolders:
-			addSubmenus( menu, pluginFilename, os.path.join( directoryPath, pluginFolderName ), pluginPath )
+			addSubmenus( menu, pluginFileName, os.path.join( directoryPath, pluginFolderName ), pluginPath )
 		else:
 			preferences.ToolDialog().addPluginToMenu( menu, pluginPath )
 
@@ -57,13 +57,13 @@ def getPluginsDirectoryPath():
 	"Get the plugins directory path."
 	return gcodec.getAbsoluteFolderPath( __file__, 'craft_plugins' )
 
-def getPluginFilenames():
+def getPluginFileNames():
 	"Get craft plugin fileNames."
 	craftSequence = consecution.getReadCraftSequence()
 	craftSequence.sort()
 	return craftSequence
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return CraftRepository()
 
@@ -78,15 +78,12 @@ class CraftRepository:
 	"A class to handle the craft preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Crafted', self, '' )
+		preferences.addListsToRepository( 'skeinforge_tools.craft.html', '', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Crafted', self, '' )
 		self.craftLabel = preferences.LabelDisplay().getFromName( 'Open Preferences: ', self )
-		importantFilenames = [ 'carve', 'chop', 'feed', 'flow', 'lift', 'raft', 'speed' ]
-		preferences.getDisplayToolButtonsRepository( getPluginsDirectoryPath(), importantFilenames, getPluginFilenames(), self )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		importantFileNames = [ 'carve', 'chop', 'feed', 'flow', 'lift', 'raft', 'speed' ]
+		preferences.getDisplayToolButtonsRepository( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		self.executeTitle = 'Craft'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft.html' )
 
 	def execute( self ):
 		"Craft button has been clicked."
@@ -114,7 +111,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

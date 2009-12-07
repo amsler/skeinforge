@@ -57,7 +57,7 @@ def getOutput( gcodeText, gcodeStepRepository = None ):
 		preferences.getReadRepository( gcodeStepRepository )
 	return GcodeStepSkein().getCraftedGcode( gcodeStepRepository, gcodeText )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return GcodeStepRepository()
 
@@ -68,7 +68,7 @@ def getStringFromCharacterSplitLine( character, splitLine ):
 		return None
 	return splitLine[ indexOfCharacter ][ 1 : ]
 
-def getSummarizedFilename( fileName ):
+def getSummarizedFileName( fileName ):
 	"Get the fileName basename if the file is in the current working directory, otherwise return the original full name."
 	if os.getcwd() == os.path.dirname( fileName ):
 		return os.path.basename( fileName )
@@ -91,28 +91,37 @@ def isReplacable():
 	"Return whether or not the output from this plugin is replacable.  This should be true if the output is text and false if it is binary."
 	return True
 
+def writeOutput( fileName, gcodeText = '' ):
+	"Write the exported version of a gcode file."
+	gcodeText = gcodec.getGcodeFileText( fileName, gcodeText )
+	repository = GcodeStepRepository()
+	preferences.getReadRepository( repository )
+	output = getOutput( gcodeText, repository )
+	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_gcode_step.gcode'
+	gcodec.writeFileText( suffixFileName, output )
+	print( 'The converted file is saved as ' + getSummarizedFileName( suffixFileName ) )
+
 
 class GcodeStepRepository:
 	"A class to handle the export preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
 		#Set the default preferences.
-		preferences.addListsToRepository( self )
+		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.export_plugins.gcode_step.html', '', self )
 		self.addFeedRateEvenWhenUnchanging = preferences.BooleanPreference().getFromValue( 'Add FeedRate Even When Unchanging', self, True )
 		self.addSpaceBetweenWords = preferences.BooleanPreference().getFromValue( 'Add Space Between Words', self, True )
 		self.addZEvenWhenUnchanging = preferences.BooleanPreference().getFromValue( 'Add Z Even When Unchanging', self, True )
-		self.fileNameInput = preferences.Filename().getFromFilename( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Gcode Step', self, '' )
-		self.feedRateStepLength = preferences.FloatPreference().getFromValue( 'FeedRate Step Length (millimeters/second)', self, 0.1 )
-		self.radiusStepLength = preferences.FloatPreference().getFromValue( 'Radius Step Length (millimeters)', self, 0.1 )
-		self.xStepLength = preferences.FloatPreference().getFromValue( 'X Step Length (millimeters)', self, 0.1 )
-		self.yStepLength = preferences.FloatPreference().getFromValue( 'Y Step Length (millimeters)', self, 0.1 )
-		self.zStepLength = preferences.FloatPreference().getFromValue( 'Z Step Length (millimeters)', self, 0.01 )
-		self.xOffset = preferences.FloatPreference().getFromValue( 'X Offset (millimeters)', self, 0.0 )
-		self.yOffset = preferences.FloatPreference().getFromValue( 'Y Offset (millimeters)', self, 0.0 )
-		self.zOffset = preferences.FloatPreference().getFromValue( 'Z Offset (millimeters)', self, 0.0 )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Gcode Step', self, '' )
+		self.feedRateStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Feed Rate Step Length (millimeters/second)', self, 1.0, 0.1 )
+		self.radiusStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Radius Step Length (millimeters)', self, 1.0, 0.1 )
+		self.xStepLength = preferences.FloatSpin().getFromValue( 0.0, 'X Step Length (millimeters)', self, 1.0, 0.1 )
+		self.yStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Y Step Length (millimeters)', self, 1.0, 0.1 )
+		self.zStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Z Step Length (millimeters)', self, 0.2, 0.01 )
+		self.xOffset = preferences.FloatSpin().getFromValue( - 100.0, 'X Offset (millimeters)', self, 100.0, 0.0 )
+		self.yOffset = preferences.FloatSpin().getFromValue( -100.0, 'Y Offset (millimeters)', self, 100.0, 0.0 )
+		self.zOffset = preferences.FloatSpin().getFromValue( - 10.0, 'Z Offset (millimeters)', self, 10.0, 0.0 )
 		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
 		self.executeTitle = 'Convert to Gcode Step'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.export_plugins.gcode_step.html' )
 
 	def execute( self ):
 		"Convert to gcode step button has been clicked."
@@ -155,7 +164,7 @@ class GcodeStepSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -192,7 +201,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

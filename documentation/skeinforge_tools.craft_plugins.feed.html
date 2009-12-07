@@ -13,9 +13,9 @@
  <br>
 The default 'Activate Feed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The feed script sets the maximum feed rate, operating feed rate &amp; travel feed rate.<br>
  <br>
-The feed rate for the shape will be set to the 'Feed Rate" preference.  The 'Travel Feed Rate' is the feed rate when the cutter is off.  The default is 16 mm / s and it could be set as high as the cutter can be moved, it does not have to be limited by the maximum cutter rate.<br>
+The feed rate for the shape will be set to the 'Feed Rate" preference.  The 'Travel Feed Rate' is the feed rate when the cutter is off.  The default is 16 mm/s and it could be set as high as the cutter can be moved, it does not have to be limited by the maximum cutter rate.<br>
  <br>
-The 'Maximum Z Feed Rate' is the maximum feed that the tool head will move in the z direction.  If your firmware limits the z feed rate, you do not need to set this preference.  The default of 8 millimeters per second is the maximum z feed of Nophead's direct drive z stage, the belt driven z stages have a lower maximum feed rate.<br>
+The 'Maximum Z Drill Feed Rate' is the maximum feed that the tool head will move in the z direction while the tool is on, the default is 0.1 mm/s.  The 'Maximum Z Feed Rate' is the maximum feed that the tool head will move in the z direction while the tool is off.  The default of 8 millimeters per second is the maximum z feed of Nophead's direct drive z stage, the belt driven z stages have a lower maximum feed rate.  If your firmware limits the z feed rate, you do not need to set these settings.<br>
  <br>
 The following examples feed the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and feed.py.<br>
  <br>
@@ -41,7 +41,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the feed dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; feed.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; feed.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The feed tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -119,7 +119,7 @@ The feed tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, feedRepository<font color="#909090">=None</font>)</dt><dd><tt>Feed&nbsp;the&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, feedRepository<font color="#909090">=None</font>)</dt><dd><tt>Feed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;feed&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Feed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>

@@ -1,5 +1,9 @@
 """
-If "Draw Arrows" is selected, arrows will be drawn at the end of each line segment, the default is on.
+Viewpoint rotate is a mouse tool to rotate the viewpoint around the origin.
+
+When the mouse is clicked, dragged and released on the canvas, viewpoint rotate will rotate the longitude by the amount the mouse is dragged around the origin.  If the mouse is moved towards the origin, the latitude will be increased, so the viewpoint will be closer to the top.  If the mouse is moved away from the origin, the latitude will be decreased.  If the shift key is also pressed, only the latitude or longitude will be changed, whichever is being changed the most.
+
+When the viewpoint rotate tool is chosen and the canvas has the focus, viewpoint rotate will listen to the arrow keys.  Clicking in the canvas gives the canvas the focus, and when the canvas has the focus a thick black border is drawn around the canvas.  When the right arrow key is pressed, viewpoint rotate will increase the preview longitude by one degree.  When the left arrow key is pressed, the preview longitude will be decreased.  The up arrow key increase the preview latitude by one degree and the down arow decreases the preview latitude.  Pressing the <Return> key implements the preview.
 
 """
 
@@ -7,7 +11,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.analyze_plugins.analyze_utilities import tableau
+from skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base import MouseToolBase
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import preferences
@@ -63,7 +67,7 @@ class ViewVectors:
 		self.viewYVector3.normalize()
 
 
-class ViewpointRotate( tableau.MouseToolBase ):
+class ViewpointRotate( MouseToolBase ):
 	"Display the line when it is clicked."
 	def button1( self, event, shift = False ):
 		"Print line text and connection line."
@@ -79,45 +83,77 @@ class ViewpointRotate( tableau.MouseToolBase ):
 		x = self.canvas.canvasx( event.x )
 		y = self.canvas.canvasy( event.y )
 		buttonOneReleasedCanvasCoordinate = complex( x, y )
-		if abs( self.buttonOnePressedCanvasCoordinate - buttonOneReleasedCanvasCoordinate ) < 3:
-			self.buttonOnePressedCanvasCoordinate = None
-			self.canvas.delete( 'motion' )
-			return
-		latitudeLongitude = LatitudeLongitude( self.buttonOnePressedCanvasCoordinate, buttonOneReleasedCanvasCoordinate, self.window, shift )
-		self.repository.viewpointLatitude.value = latitudeLongitude.latitude
-		self.repository.viewpointLatitude.setStateToValue()
-		self.repository.viewpointLongitude.value = latitudeLongitude.longitude
-		self.repository.viewpointLongitude.setStateToValue()
-		self.buttonOnePressedCanvasCoordinate = None
-		preferences.writePreferences( self.repository )
-		self.window.update()
-		self.destroyEverything()
+		self.moveViewpointGivenCoordinates( buttonOneReleasedCanvasCoordinate, shift, self.buttonOnePressedCanvasCoordinate )
 
 	def destroyEverything( self ):
 		"Destroy items."
 		self.buttonOnePressedCanvasCoordinate = None
-		self.destroyItems()
+		self.keyStartCanvasCoordinate = None
+		self.relativeLatitude = 0.0
+		self.relativeLongitude = 0.5 * math.pi
+		self.canvas.delete( 'view_rotate_item' )
 
-	def getReset( self, window ):
-		"Reset the mouse tool to default."
-		self.setCanvasItems( window.canvas )
-		self.buttonOnePressedCanvasCoordinate = None
-		self.repository = window.repository
-		self.window = window
-		return self
+	def getMoveCoordinate( self ):
+		"Get the movement coordinate from the class relative latitude and longitude."
+		motionRadius = ( 0.75 + self.relativeLatitude ) * self.window.getCanvasRadius()
+		return self.window.getScreenComplex( motionRadius * euclidean.getUnitPolar( self.relativeLongitude ) )
+
+	def keyPressDown( self, event ):
+		"The down arrow was pressed."
+		self.keyPressStart()
+		self.relativeLatitude -= math.radians( 1.0 )
+		self.keyPressMotion()
+
+	def keyPressLeft( self, event ):
+		"The left arrow was pressed."
+		self.keyPressStart()
+		self.relativeLongitude += math.radians( 1.0 )
+		self.keyPressMotion()
+
+	def keyPressMotion( self ):
+		"Move the motion viewpoint for the class key press coordinates."
+		self.motionGivenCoordinates( self.getMoveCoordinate(), False, self.keyStartCanvasCoordinate )
+
+	def keyPressReturn( self, event ):
+		"The return key was pressed."
+		if self.keyStartCanvasCoordinate == None:
+			return
+		self.moveViewpointGivenCoordinates( self.getMoveCoordinate(), False, self.keyStartCanvasCoordinate )
+
+	def keyPressRight( self, event ):
+		"The right arrow was pressed."
+		self.keyPressStart()
+		self.relativeLongitude -= math.radians( 1.0 )
+		self.keyPressMotion()
+
+	def keyPressStart( self ):
+		"If necessary, destroy everything and calculate the keyStartCanvasCoordinate."
+		if self.keyStartCanvasCoordinate == None:
+			self.destroyEverything()
+			self.keyStartCanvasCoordinate = self.window.getScreenComplex( complex( 0.0, 0.75 * self.window.getCanvasRadius() ) )
+
+	def keyPressUp( self, event ):
+		"The up arrow was pressed."
+		self.keyPressStart()
+		self.relativeLatitude += math.radians( 1.0 )
+		self.keyPressMotion()
 
 	def motion( self, event, shift = False ):
-		"Move the viewpoint if the mouse was moved."
+		"Move the motion viewpoint if the mouse was moved."
 		if self.buttonOnePressedCanvasCoordinate == None:
 			return
 		x = self.canvas.canvasx( event.x )
 		y = self.canvas.canvasy( event.y )
 		motionCoordinate = complex( x, y )
-		latitudeLongitude = LatitudeLongitude( self.buttonOnePressedCanvasCoordinate, motionCoordinate, self.window, shift )
+		self.motionGivenCoordinates( motionCoordinate, shift, self.buttonOnePressedCanvasCoordinate )
+
+	def motionGivenCoordinates( self, motionCoordinate, shift, startCoordinate ):
+		"Move the motion viewpoint given the motion coordinates."
+		latitudeLongitude = LatitudeLongitude( startCoordinate, motionCoordinate, self.window, shift )
 		viewVectors = ViewVectors( latitudeLongitude.latitude, latitudeLongitude.longitude )
 		motionCentered = self.window.getCentered( motionCoordinate )
 		motionCenteredNormalized = motionCentered / abs( motionCentered )
-		buttonOnePressedCentered = self.window.getCentered( self.buttonOnePressedCanvasCoordinate )
+		buttonOnePressedCentered = self.window.getCentered( startCoordinate )
 		buttonOnePressedAngle = math.degrees( math.atan2( buttonOnePressedCentered.imag, buttonOnePressedCentered.real ) )
 		buttonOnePressedLength = abs( buttonOnePressedCentered )
 		buttonOnePressedCorner = complex( buttonOnePressedLength, buttonOnePressedLength )
@@ -127,7 +163,7 @@ class ViewpointRotate( tableau.MouseToolBase ):
 		motionPressedScreen = self.window.getScreenComplex( motionPressedStart )
 		motionColorName = '#4B0082'
 		motionWidth = 9
-		self.canvas.delete( 'motion' )
+		self.canvas.delete( 'view_rotate_item' )
 		if abs( latitudeLongitude.deltaLongitude ) > 0.0:
 			self.canvas.create_arc(
 				buttonOnePressedCornerBottomLeft.real,
@@ -139,23 +175,40 @@ class ViewpointRotate( tableau.MouseToolBase ):
 				outline = motionColorName,
 				outlinestipple = self.window.motionStippleName,
 				style = preferences.Tkinter.ARC,
-				tags = 'motion',
+				tags = 'view_rotate_item',
 				width = motionWidth )
 		if abs( latitudeLongitude.deltaLatitude ) > 0.0:
 			self.canvas.create_line(
 				motionPressedScreen.real,
 				motionPressedScreen.imag,
-				x,
-				y,
+				motionCoordinate.real,
+				motionCoordinate.imag,
 				fill = motionColorName,
 				arrow = 'last',
 				arrowshape = self.window.arrowshape,
 				stipple = self.window.motionStippleName,
-				tags = 'motion',
+				tags = 'view_rotate_item',
 				width = motionWidth )
+		self.window.getDrawnLineText( motionCoordinate, 'view_rotate_item', 'Latitude: %s, Longitude: %s' % ( round( latitudeLongitude.latitude ), round( latitudeLongitude.longitude ) ) )
 		if self.repository.widthOfXAxis.value > 0:
-			self.window.drawColoredLineMotion( self.window.xAxisLine, viewVectors, self.repository.widthOfXAxis.value )
+			self.window.getDrawnColoredLineMotion( self.window.xAxisLine, viewVectors, self.repository.widthOfXAxis.value )
 		if self.repository.widthOfYAxis.value > 0:
-			self.window.drawColoredLineMotion( self.window.yAxisLine, viewVectors, self.repository.widthOfYAxis.value )
+			self.window.getDrawnColoredLineMotion( self.window.yAxisLine, viewVectors, self.repository.widthOfYAxis.value )
 		if self.repository.widthOfZAxis.value > 0:
-			self.window.drawColoredLineMotion( self.window.zAxisLine, viewVectors, self.repository.widthOfZAxis.value )
+			self.window.getDrawnColoredLineMotion( self.window.zAxisLine, viewVectors, self.repository.widthOfZAxis.value )
+
+	def moveViewpointGivenCoordinates( self, moveCoordinate, shift, startCoordinate ):
+		"Move the viewpoint given the move coordinates."
+		if abs( startCoordinate - moveCoordinate ) < 3:
+			startCoordinate = None
+			self.canvas.delete( 'view_rotate_item' )
+			return
+		latitudeLongitude = LatitudeLongitude( startCoordinate, moveCoordinate, self.window, shift )
+		self.repository.viewpointLatitude.value = latitudeLongitude.latitude
+		self.repository.viewpointLatitude.setStateToValue()
+		self.repository.viewpointLongitude.value = latitudeLongitude.longitude
+		self.repository.viewpointLongitude.setStateToValue()
+		startCoordinate = None
+		preferences.writePreferences( self.repository )
+		self.window.update()
+		self.destroyEverything()

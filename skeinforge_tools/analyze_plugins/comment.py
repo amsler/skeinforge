@@ -59,9 +59,9 @@ def getCommentGcode( gcodeText ):
 	skein.parseGcode( gcodeText )
 	return skein.output.getvalue()
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
-	return CommentPreferences()
+	return CommentRepository()
 
 def writeCommentFileGivenText( fileName, gcodeText ):
 	"Write a commented gcode file for a gcode file."
@@ -69,12 +69,29 @@ def writeCommentFileGivenText( fileName, gcodeText ):
 
 def writeOutput( fileName, gcodeText = '' ):
 	"Write a commented gcode file for a skeinforge gcode file, if 'Write Commented File for Skeinforge Chain' is selected."
-	commentPreferences = CommentPreferences()
-	preferences.getReadRepository( commentPreferences )
+	commentRepository = CommentRepository()
+	preferences.getReadRepository( commentRepository )
 	if gcodeText == '':
 		gcodeText = gcodec.getFileText( fileName )
-	if commentPreferences.activateComment.value:
+	if commentRepository.activateComment.value:
 		writeCommentFileGivenText( fileName, gcodeText )
+
+
+class CommentRepository:
+	"A class to handle the comment preferences."
+	def __init__( self ):
+		"Set the default preferences, execute title & preferences fileName."
+		preferences.addListsToRepository( 'skeinforge_tools.analyze_plugins.comment.html', '', self )
+		self.activateComment = preferences.BooleanPreference().getFromValue( 'Activate Comment', self, False )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Write Comments for', self, '' )
+		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.executeTitle = 'Write Comments'
+
+	def execute( self ):
+		"Write button has been clicked."
+		fileNames = polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
+		for fileName in fileNames:
+			commentFile( fileName )
 
 
 class CommentSkein:
@@ -101,7 +118,7 @@ class CommentSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the commented gcode."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -147,32 +164,12 @@ class CommentSkein:
 		self.oldLocation = location
 
 
-class CommentPreferences:
-	"A class to handle the comment preferences."
-	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.activateComment = preferences.BooleanPreference().getFromValue( 'Activate Comment', self, False )
-		self.fileNameInput = preferences.Filename().getFromFilename( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Write Comments for', self, '' )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
-		self.executeTitle = 'Write Comments'
-		self.saveCloseTitle = 'Save and Close'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.analyze_plugins.comment.html' )
-
-	def execute( self ):
-		"Write button has been clicked."
-		fileNames = polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
-		for fileName in fileNames:
-			commentFile( fileName )
-
-
 def main():
 	"Display the comment dialog."
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

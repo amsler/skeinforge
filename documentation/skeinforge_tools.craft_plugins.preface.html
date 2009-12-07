@@ -23,6 +23,8 @@ and in Erik de Bruijn's conversion script page at:<br>
  <br>
 The extrusion distance format is either "Do Not Add Extrusion Distance", which gives standard XYZ &amp; Feed Rate gcode, this is the default choice.  If "Extrusion Distance Absolute" is chosen, the extrusion distance output will be the total extrusion distance to that gcode line.  If "Extrusion Distance Relative" is chosen, the extrusion distance output will be the extrusion distance from the last gcode line.<br>
  <br>
+The 'Meta' field is to add meta tags or a note to all your files.  Whatever is in that field will be added in a meta tagged line to the output.<br>
+ <br>
 When preface is generating the code, if there is a file with the name of the "Name of Start File" setting, the default being start.gcode, it will be added that to the very beginning of the gcode.  If there is a file with the name of the "Name of End File" setting, the default being end.gcode, it will be added to the very end.  Preface does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  Preface looks for those files in the alterations folder in the .skeinforge folder in the home directory. If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder.  If it doesn't find anything there it looks in the craft_plugins folder.<br>
  <br>
 The following examples preface the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and preface.py.<br>
@@ -49,7 +51,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the preface dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; preface.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; preface.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The preface tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -111,7 +113,7 @@ The preface tool has created the file:<br>
 
 <dl><dt><a name="PrefaceSkein-addFromUpperLowerFile"><strong>addFromUpperLowerFile</strong></a>(self, fileName)</dt><dd><tt>Add&nbsp;lines&nbsp;of&nbsp;text&nbsp;from&nbsp;the&nbsp;fileName&nbsp;or&nbsp;the&nbsp;lowercase&nbsp;fileName,&nbsp;if&nbsp;there&nbsp;is&nbsp;no&nbsp;file&nbsp;by&nbsp;the&nbsp;original&nbsp;fileName&nbsp;in&nbsp;the&nbsp;directory.</tt></dd></dl>
 
-<dl><dt><a name="PrefaceSkein-addGcodeFromLoop"><strong>addGcodeFromLoop</strong></a>(self, loop, z)</dt><dd><tt>Add&nbsp;the&nbsp;remainder&nbsp;of&nbsp;the&nbsp;loop&nbsp;which&nbsp;does&nbsp;not&nbsp;overlap&nbsp;the&nbsp;alreadyFilledArounds&nbsp;loops.</tt></dd></dl>
+<dl><dt><a name="PrefaceSkein-addGcodeFromLoop"><strong>addGcodeFromLoop</strong></a>(self, loop, z)</dt><dd><tt>Add&nbsp;the&nbsp;gcode&nbsp;loop.</tt></dd></dl>
 
 <dl><dt><a name="PrefaceSkein-addInitializationToOutput"><strong>addInitializationToOutput</strong></a>(self)</dt><dd><tt>Add&nbsp;initialization&nbsp;gcode&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
 
@@ -140,7 +142,7 @@ The preface tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, prefaceRepository<font color="#909090">=None</font>)</dt><dd><tt>Preface&nbsp;and&nbsp;convert&nbsp;an&nbsp;svg&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(text, prefaceRepository<font color="#909090">=None</font>)</dt><dd><tt>Preface&nbsp;and&nbsp;convert&nbsp;an&nbsp;svg&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;preface&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Preface&nbsp;the&nbsp;carving&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.&nbsp;&nbsp;If&nbsp;no&nbsp;fileName&nbsp;is&nbsp;specified,&nbsp;preface&nbsp;the&nbsp;first&nbsp;unmodified&nbsp;gcode&nbsp;file&nbsp;in&nbsp;this&nbsp;folder.</tt></dd></dl>
 </td></tr></table><p>

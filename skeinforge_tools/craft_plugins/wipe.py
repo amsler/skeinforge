@@ -33,7 +33,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the wipe dialog.
 
 
->>> wipe.writeOutput()
+>>> wipe.writeOutput( 'Screw Holder Bottom.stl' )
 The wipe tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -76,7 +76,7 @@ def getCraftedTextFromText( gcodeText, wipeRepository = None ):
 		return gcodeText
 	return WipeSkein().getCraftedGcode( gcodeText, wipeRepository )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return WipeRepository()
 
@@ -91,27 +91,24 @@ class WipeRepository:
 	"A class to handle the wipe preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Wiped', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.wipe.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Wipe', self, '' )
 		self.activateWipe = preferences.BooleanPreference().getFromValue( 'Activate Wipe', self, False )
-		self.locationArrivalX = preferences.FloatPreference().getFromValue( 'Location Arrival X (mm):', self, - 70.0 )
-		self.locationArrivalY = preferences.FloatPreference().getFromValue( 'Location Arrival Y (mm):', self, - 50.0 )
-		self.locationArrivalZ = preferences.FloatPreference().getFromValue( 'Location Arrival Z (mm):', self, 50.0 )
-		self.locationDepartureX = preferences.FloatPreference().getFromValue( 'Location Departure X (mm):', self, - 70.0 )
-		self.locationDepartureY = preferences.FloatPreference().getFromValue( 'Location Departure Y (mm):', self, - 40.0 )
-		self.locationDepartureZ = preferences.FloatPreference().getFromValue( 'Location Departure Z (mm):', self, 50.0 )
-		self.locationWipeX = preferences.FloatPreference().getFromValue( 'Location Wipe X (mm):', self, - 70.0 )
-		self.locationWipeY = preferences.FloatPreference().getFromValue( 'Location Wipe Y (mm):', self, - 70.0 )
-		self.locationWipeZ = preferences.FloatPreference().getFromValue( 'Location Wipe Z (mm):', self, 50.0 )
-		self.wipePeriod = preferences.IntPreference().getFromValue( 'Wipe Period (layers):', self, 3 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.locationArrivalX = preferences.FloatSpin().getFromValue( - 100.0, 'Location Arrival X (mm):', self, 100.0, - 70.0 )
+		self.locationArrivalY = preferences.FloatSpin().getFromValue( - 100.0, 'Location Arrival Y (mm):', self, 100.0, - 50.0 )
+		self.locationArrivalZ = preferences.FloatSpin().getFromValue( - 100.0, 'Location Arrival Z (mm):', self, 100.0, 50.0 )
+		self.locationDepartureX = preferences.FloatSpin().getFromValue( - 100.0, 'Location Departure X (mm):', self, 100.0, - 70.0 )
+		self.locationDepartureY = preferences.FloatSpin().getFromValue( - 100.0, 'Location Departure Y (mm):', self, 100.0, - 40.0 )
+		self.locationDepartureZ = preferences.FloatSpin().getFromValue( - 100.0, 'Location Departure Z (mm):', self, 100.0, 50.0 )
+		self.locationWipeX = preferences.FloatSpin().getFromValue( - 100.0, 'Location Wipe X (mm):', self, 100.0, - 70.0 )
+		self.locationWipeY = preferences.FloatSpin().getFromValue( - 100.0, 'Location Wipe Y (mm):', self, 100.0, - 70.0 )
+		self.locationWipeZ = preferences.FloatSpin().getFromValue( - 100.0, 'Location Wipe Z (mm):', self, 100.0, 50.0 )
+		self.wipePeriod = preferences.IntSpin().getFromValue( 1, 'Wipe Period (layers):', self, 5, 3 )
 		self.executeTitle = 'Wipe'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.wipe.html' )
 
 	def execute( self ):
 		"Wipe button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -181,7 +178,7 @@ class WipeSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -195,7 +192,7 @@ class WipeSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -218,7 +215,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

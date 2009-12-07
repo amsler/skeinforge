@@ -1,19 +1,28 @@
 """
 Skeinview is a script to display each layer of a gcode file.
 
-Skeinview is derived from Nophead's preview script.  The extruded lines are in the resistor colors red, orange, yellow, green, blue, purple & brown.  When the extruder is off, the travel line is grey.  Skeinview is useful for a detailed view of the extrusion, behold is better to see the orientation of the shape.  To get an initial overview of the skein, when the skeinview display window appears, click the Soar button.
+Skeinview is derived from Nophead's preview script.  The extruded lines are in the resistor colors red, orange, yellow, green, blue, purple & brown.  When the extruder is off, the travel line is grey.  Skeinview is useful for a detailed view of the extrusion, behold is better to see the orientation of the shape.  To get an initial overview of the skein, when the skeinview display window appears, click the Soar button (double right arrow button beside the layer field).
 
 The default 'Activate Skeinview' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeinview' checkbox is on, when skeinview is run directly.  Skeinview has trouble separating the layers when it reads gcode without comments.
 
-If "Draw Arrows" is selected, arrows will be drawn at the end of each line segment, the default is on.  If "Go Around Extruder Off Travel" is selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.  The "Pixels over Extrusion Width" preference is the scale of the image, the higher the number, the greater the size of the display.  The "Screen Horizontal Inset" determines how much the display will be inset in the horizontal direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be, the default is one hundred.  The "Screen Vertical Inset" determines how much the display will be inset in the vertical direction from the edge of screen, the default is fifty.  The "Slide Show Rate" determines how fast the layer index changes when soar or dive is operating.
+If 'Draw Arrows' is selected, arrows will be drawn at the end of each line segment, the default is on.  If 'Go Around Extruder Off Travel' is selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.
 
-When the export menu item in the file menu is clicked, the canvas will be saved as a postscript file.  If the 'Export Postscript Program' is set to a program name, the postscript file will be sent to that program to be opened.  The default is gimp, the Gnu Image Manipulation Program (Gimp), which is open source, can open postscript and save in a variety of formats.  It is available at:
-http://www.gimp.org/
+The scale setting is the scale of the image in pixels per millimeter, the higher the number, the greater the size of the display.  The "Screen Horizontal Inset" determines how much the display will be inset in the horizontal direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be, the default is one hundred.  The "Screen Vertical Inset" determines how much the display will be inset in the vertical direction from the edge of screen, the default is fifty.
 
-If the 'Export File Extension' is set to a file extension, the postscript file will be sent to the program, along with the file extension for the converted output.  The default is blank because some systems do not have an image conversion program; if you have or will install an image conversion program, a common 'Export File Extension' is png.  A good open source conversion program is Image Magick, which is available at:
-http://www.imagemagick.org/script/index.php
+When the submenu in the export menu item in the file menu is clicked, an export canvas dialog will be displayed, which can export the canvas to a file.
 
-On the skeinview display window, the Up button increases the layer index shown by one, and the Down button decreases the layer index by one.  When the index displayed in the index field is changed then "<return>" is hit, the layer index shown will be set to the index field, to a mimimum of zero and to a maximum of the highest index layer.  The Soar button increases the layer index at the "Slide Show Rate", and the Dive button decreases the layer index at the slide show rate.  When the mouse is clicked, the line closest to the mouse pointer will be printed in the console.  If 'Display Line Text when Mouse Moves' is selected, then the line closest to the mouse pointer will be displayed above the mouse pointer.
+The mouse tool can be changed from the 'Mouse Mode' menu button or picture button.  The 'Display Line' tool will display the line index of the line clicked, counting from one, and the line itself.  The 'View Move' tool will move the viewpoint in the xy plane when the mouse is clicked and dragged on the canvas.  The mouse tools listen to the arrow keys when the canvas has the focus.  Clicking in the canvas gives the canvas the focus, and when the canvas has the focus a thick black border is drawn around the canvas.
+
+On the display window, the layer spin box up button increases the 'Layer' by one, and the down button decreases the layer index by one.  When the layer displayed in the layer field is changed then <Return> is hit, the layer shown will be set to the layer field, to a mimimum of zero and to a maximum of the highest index layer.  The layer can also be changed from the skeinview dialog.  The Soar button increases the layer at the 'Animation Slide Show Rate', and the Dive (double left arrow button beside the layer field) button decreases the layer at the slide show rate.
+
+Also on the display window, there is the line spin box, which is the index of the selected line on the layer.  The line spin box up button increases the 'Line' by one.  If the line index of the layer goes over the index of the last line, the layer index will be increased by one and the new line index will be zero.  The down button decreases the line index by one.  If the line index goes below the index of the first line, the layer index will be decreased by one and the new line index will be at the last line.  When the line displayed in the line field is changed then <Return> is hit, the line shown will be set to the line field, to a mimimum of zero and to a maximum of the highest index line.  The line can also be changed from the skeinview dialog.  The Soar button increases the line at the speed at which the extruder would move, times the 'Animation Line Quickening' ratio, and the Dive (double left arrow button beside the line field) button decreases the line at the line quickening ratio.
+
+The "Width of Extrusion Thread" sets the width of the extrusion thread, the default is two.  The "Width of Selection Thread" sets the width of the selected line, the default is six.  The "Width of Travel Thread" sets the width of the grey extruder off travel threads, the default is one.
+
+The zoom in mouse tool will zoom in the display at the point where the mouse was clicked, increasing the scale by a factor of two.  The zoom out tool will zoom out the display at the point where the mouse was clicked, decreasing the scale by a factor of two.
+
+The dive, soar and zoom icons are from Mark James' soarSilk icon set 1.3 at:
+http://www.famfamfam.com/lab/icons/silk/
 
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
@@ -55,7 +64,7 @@ import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities import display_line
 from skeinforge_tools.analyze_plugins.analyze_utilities import tableau
-from skeinforge_tools.analyze_plugins.analyze_utilities import viewpoint_move
+from skeinforge_tools.analyze_plugins.analyze_utilities import view_move
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
@@ -75,106 +84,73 @@ def displayFile( fileName ):
 	gcodeText = gcodec.getFileText( fileName )
 	displayFileGivenText( fileName, gcodeText )
 
-def displayFileGivenText( fileName, gcodeText, skeinviewPreferences = None ):
+def displayFileGivenText( fileName, gcodeText, skeinviewRepository = None ):
 	"Display a gcode file in a skeinview window given the text."
 	if gcodeText == '':
 		return
-	if skeinviewPreferences == None:
-		skeinviewPreferences = SkeinviewPreferences()
-		preferences.getReadRepository( skeinviewPreferences )
-	skeinWindow = getWindowGivenTextPreferences( fileName, gcodeText, skeinviewPreferences )
+	if skeinviewRepository == None:
+		skeinviewRepository = SkeinviewRepository()
+		preferences.getReadRepository( skeinviewRepository )
+	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, skeinviewRepository )
 	skeinWindow.updateDeiconify()
 
 def getGeometricDifference( first, second ):
 	"Get the geometric difference of the two numbers."
 	return max( first, second ) / min( first, second )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
-	return SkeinviewPreferences()
+	return SkeinviewRepository()
 
 def getRankIndex( rulingSeparationWidthMillimeters, screenOrdinate ):
 	"Get rank index."
 	return int( round( screenOrdinate / rulingSeparationWidthMillimeters ) )
 
-def getRulingSeparationWidthMillimeters( rank ):
-	"Get the separation width in millimeters."
-	rankZone = int( math.floor( rank / 3 ) )
-	rankModulo = rank % 3
-	powerOfTen = pow( 10, rankZone )
-	moduloMultipliers = ( 1, 2, 5 )
-	separationWidthMillimeters = float( powerOfTen * moduloMultipliers[ rankModulo ] )
-	return separationWidthMillimeters
-
-def getWindowGivenTextPreferences( fileName, gcodeText, skeinviewPreferences ):
+def getWindowGivenTextRepository( fileName, gcodeText, skeinviewRepository ):
 	"Display a gcode file in a skeinview window given the text and preferences."
 	skein = SkeinviewSkein()
-	skein.parseGcode( fileName, gcodeText, skeinviewPreferences )
-	return SkeinWindow( skeinviewPreferences, skein )
+	skein.parseGcode( fileName, gcodeText, skeinviewRepository )
+	return SkeinWindow( skeinviewRepository, skein )
 
 def writeOutput( fileName, gcodeText = '' ):
 	"Display a skeinviewed gcode file for a skeinforge gcode file, if 'Activate Skeinview' is selected."
-	skeinviewPreferences = SkeinviewPreferences()
-	preferences.getReadRepository( skeinviewPreferences )
-	if skeinviewPreferences.activateSkeinview.value:
+	skeinviewRepository = SkeinviewRepository()
+	preferences.getReadRepository( skeinviewRepository )
+	if skeinviewRepository.activateSkeinview.value:
 		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
-		displayFileGivenText( fileName, gcodeText, skeinviewPreferences )
+		displayFileGivenText( fileName, gcodeText, skeinviewRepository )
 
 
-class ColoredIndexLine:
-	"A colored index line."
-	def __init__( self, colorName, complexBegin, complexEnd, line, lineIndex, width ):
-		"Set the color name and corners."
-		self.colorName = colorName
-		self.complexBegin = complexBegin
-		self.complexEnd = complexEnd
-		self.line = line
-		self.lineIndex = lineIndex
-		self.width = width
-	
-	def __repr__( self ):
-		"Get the string representation of this colored index line."
-		return '%s, %s, %s, %s' % ( self.colorName, self.complexBegin, self.complexEnd, self.line, self.lineIndex, self.width )
-
-
-class SkeinviewPreferences( tableau.TableauRepository ):
+class SkeinviewRepository( tableau.TableauRepository ):
 	"A class to handle the skeinview preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.phoenixUpdateFunction = None
-		self.updateFunction = None
-		self.fileNameInput = preferences.Filename().getFromFilename( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Skeinview', self, '' )
+		preferences.addListsToRepository( 'skeinforge_tools.analyze_plugins.skeinview.html', '', self )
+		self.initializeUpdateFunctionsToNone()
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Skeinview', self, '' )
 		self.activateSkeinview = preferences.BooleanPreference().getFromValue( 'Activate Skeinview', self, True )
+		self.addAnimation()
 		self.drawArrows = preferences.BooleanPreference().getFromValue( 'Draw Arrows', self, True )
 		self.drawArrows.setUpdateFunction( self.setToDisplaySaveUpdate )
-		self.exportFileExtension = preferences.StringPreference().getFromValue( 'Export File Extension:', self, '' )
-		self.exportFileExtension.setUpdateFunction( self.setToDisplaySaveUpdate )
-		self.exportPostscriptProgram = preferences.StringPreference().getFromValue( 'Export Postscript Program:', self, 'gimp' )
-		self.exportPostscriptProgram.setUpdateFunction( self.setToDisplaySaveUpdate )
-		self.layerIndex = preferences.IntPreference().getFromValue( 'Layer Index (integer):', self, 1 )
-		self.layerIndex.setUpdateFunction( self.setToDisplaySaveUpdate )
 		self.goAroundExtruderOffTravel = preferences.BooleanPreference().getFromValue( 'Go Around Extruder Off Travel', self, False )
 		self.goAroundExtruderOffTravel.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
+		self.layer = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
+		self.layer.setUpdateFunction( self.setToDisplaySaveUpdate )
+		self.line = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
+		self.line.setUpdateFunction( self.setToDisplaySaveUpdate )
 		self.mouseMode = preferences.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )
 		self.displayLine = preferences.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
-		self.displayLine.constructorFunction = display_line.getNewMouseTool
-		self.displayLine.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
-		self.viewpointMove = preferences.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Viewpoint Move', self, False )
-		self.viewpointMove.constructorFunction = viewpoint_move.getNewMouseTool
-		self.viewpointMove.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
-		self.scale = preferences.FloatPreference().getFromValue( 'Scale (pixels per millimeter):', self, 10.0 )
-		self.scale.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
-		self.screenHorizontalInset = preferences.IntPreference().getFromValue( 'Screen Horizontal Inset (pixels):', self, 50 )
-		self.screenHorizontalInset.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
-		self.screenVerticalInset = preferences.IntPreference().getFromValue( 'Screen Vertical Inset (pixels):', self, 200 )
-		self.screenVerticalInset.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
-		self.slideShowRate = preferences.FloatPreference().getFromValue( 'Slide Show Rate (layers/second):', self, 1.0 )
-		self.slideShowRate.setUpdateFunction( self.setToDisplaySaveUpdate )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.setNewMouseToolUpdate( display_line.getNewMouseTool, self.displayLine )
+		self.viewMove = preferences.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Move', self, False )
+		self.setNewMouseToolUpdate( view_move.getNewMouseTool, self.viewMove )
+		self.addScaleScreenSlide()
+		self.widthOfExtrusionThread = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Extrusion Thread (pixels):', self, 5, 2 )
+		self.widthOfExtrusionThread.setUpdateFunction( self.setToDisplaySaveUpdate )
+		self.widthOfSelectionThread = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Selection Thread (pixels):', self, 10, 6 )
+		self.widthOfSelectionThread.setUpdateFunction( self.setToDisplaySaveUpdate )
+		self.widthOfTravelThread = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Travel Thread (pixels):', self, 5, 1 )
+		self.widthOfTravelThread.setUpdateFunction( self.setToDisplaySaveUpdate )
 		self.executeTitle = 'Skeinview'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.analyze_plugins.skeinview.html' )
 
 	def execute( self ):
 		"Write button has been clicked."
@@ -187,6 +163,7 @@ class SkeinviewSkein:
 	"A class to write a get a scalable vector graphics text for a gcode skein."
 	def __init__( self ):
 		self.extrusionNumber = 0
+		self.feedRateMinute = 960.1
 		self.isThereALayerStartWord = False
 		self.oldZ = - 999999999999.0
 		self.skeinPane = None
@@ -196,15 +173,18 @@ class SkeinviewSkein:
 		"Add a point to travel and maybe extrusion."
 		if self.oldLocation == None:
 			return
-		oldLocationComplex = self.oldLocation.dropAxis( 2 )
-		locationComplex = location.dropAxis( 2 )
 		colorName = 'gray'
-		width = 1
+		locationComplex = location.dropAxis( 2 )
+		oldLocationComplex = self.oldLocation.dropAxis( 2 )
+		begin = self.getScreenCoordinates( oldLocationComplex )
+		end = self.getScreenCoordinates( locationComplex )
 		if self.extruderActive:
 			colorName = self.colorNames[ self.extrusionNumber % len( self.colorNames ) ]
-			width = 2
-		coloredIndexLine = ColoredIndexLine( colorName, self.getScreenCoordinates( oldLocationComplex ), self.getScreenCoordinates( locationComplex ), line, self.lineIndex, width )
-		self.skeinPane.append( coloredIndexLine )
+		displayString = '%s %s' % ( self.lineIndex + 1, line )
+		tagString = 'colored_line_index: %s %s' % ( len( self.skeinPane ), len( self.skeinPanes ) - 1 )
+		coloredLine = tableau.ColoredLine( begin, colorName, displayString, end, tagString )
+		coloredLine.isExtrusionThread = self.extruderActive
+		self.skeinPane.append( coloredLine )
 
 	def getScreenCoordinates( self, pointComplex ):
 		"Get the screen coordinates.self.cornerImaginaryTotal - self.marginCornerLow"
@@ -236,17 +216,15 @@ class SkeinviewSkein:
 			self.cornerLow = euclidean.getPointMinimum( self.cornerLow, location )
 		self.oldLocation = location
 
-	def linearMove( self, line, splitLine ):
+	def linearMove( self, line, location ):
 		"Get statistics for a linear move."
 		if self.skeinPane == None:
 			return
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		self.addToPath( line, location )
-		self.oldLocation = location
 
 	def parseCorner( self, line ):
 		"Parse a gcode line and use the location to update the bounding corners."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -257,21 +235,22 @@ class SkeinviewSkein:
 		elif firstWord == 'M103':
 			self.extruderActive = False
 
-	def parseGcode( self, fileName, gcodeText, skeinviewPreferences ):
+	def parseGcode( self, fileName, gcodeText, skeinviewRepository ):
 		"Parse gcode text and store the vector output."
 		self.fileName = fileName
 		self.gcodeText = gcodeText
 		self.initializeActiveLocation()
 		self.cornerHigh = Vector3( - 999999999.0, - 999999999.0, - 999999999.0 )
 		self.cornerLow = Vector3( 999999999.0, 999999999.0, 999999999.0 )
-		self.goAroundExtruderOffTravel = skeinviewPreferences.goAroundExtruderOffTravel.value
+		self.goAroundExtruderOffTravel = skeinviewRepository.goAroundExtruderOffTravel.value
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.isThereALayerStartWord = gcodec.isThereAFirstWord( '(<layer>', self.lines, 1 )
-		for line in self.lines:
+		self.parseInitialization()
+		for line in self.lines[ self.lineIndex : ]:
 			self.parseCorner( line )
 		self.cornerHighComplex = self.cornerHigh.dropAxis( 2 )
 		self.cornerLowComplex = self.cornerLow.dropAxis( 2 )
-		self.scale = skeinviewPreferences.scale.value
+		self.scale = skeinviewRepository.scale.value
 		self.scaleCornerHigh = self.scale * self.cornerHighComplex
 		self.scaleCornerLow = self.scale * self.cornerLowComplex
 		self.cornerImaginaryTotal = self.cornerHigh.y + self.cornerLow.y
@@ -281,13 +260,24 @@ class SkeinviewSkein:
 		self.screenSize = self.marginCornerHigh - self.marginCornerLow
 		self.initializeActiveLocation()
 		self.colorNames = [ 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'purple' ]
-		for self.lineIndex in xrange( len( self.lines ) ):
+		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			self.parseLine( line )
 
+	def parseInitialization( self ):
+		"Parse gcode initialization and store the parameters."
+		for self.lineIndex in xrange( len( self.lines ) ):
+			line = self.lines[ self.lineIndex ]
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			firstWord = gcodec.getFirstWord( splitLine )
+			if firstWord == '(</extruderInitialization>)':
+				return
+			elif firstWord == '(<operatingFeedRatePerSecond>':
+				self.feedRateMinute = 60.0 * float( splitLine[ 1 ] )
+
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the vector output."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -296,69 +286,37 @@ class SkeinviewSkein:
 			self.skeinPane = []
 			self.skeinPanes.append( self.skeinPane )
 		if firstWord == 'G1':
-			self.linearMove( line, splitLine )
+			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			self.linearMove( line, location )
+			self.oldLocation = location
 		elif firstWord == 'M101':
 			self.extruderActive = True
 			self.extrusionNumber += 1
 		elif firstWord == 'M103':
 			self.extruderActive = False
+		if firstWord == 'G2' or firstWord == 'G3':
+			relativeLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			relativeLocation.z = 0.0
+			location = self.oldLocation + relativeLocation
+			self.linearMove( line, location )
+			self.oldLocation = location
 
 
 class SkeinWindow( tableau.TableauWindow ):
 	def __init__( self, repository, skein ):
-		title = 'Skeinview Viewer from Hydraraptor'
+		"Initialize the skein window."
 		self.rulingExtent = 24
 		self.rulingTargetSeparation = 150.0
-		self.screenSize = skein.screenSize
-		self.setMenuPanesPreferencesRootSkein( repository, skein, '_skeinview.ps' )
-		self.column = 0
-		self.imagesDirectoryPath = os.path.join( preferences.getSkeinforgeDirectoryPath(), 'images' )
-		self.photoImages = {}
-		self.row = 99
-		self.root.title( title )
-		repository.slideShowRate.value = max( repository.slideShowRate.value, 0.01 )
-		repository.slideShowRate.value = min( repository.slideShowRate.value, 85.0 )
-		self.timerID = None
-		self.fileHelpMenuBar.completeMenu( self.close, repository, self )
-		frame = preferences.Tkinter.Frame( self.root )
-		self.xScrollbar = preferences.Tkinter.Scrollbar( self.root, orient = preferences.Tkinter.HORIZONTAL )
-		self.yScrollbar = preferences.Tkinter.Scrollbar( self.root )
-		self.canvasHeight = min( int( skein.screenSize.imag ), self.root.winfo_screenheight() - repository.screenVerticalInset.value )
-		self.canvasWidth = min( int( skein.screenSize.real ), self.root.winfo_screenwidth() - repository.screenHorizontalInset.value )
-		self.oneMinusCanvasHeightOverScreenHeight = 1.0 - float( self.canvasHeight ) / float( self.screenSize.imag )
-		self.oneMinusCanvasWidthOverScreenWidth = 1.0 - float( self.canvasWidth ) / float( self.screenSize.real )
-		scrollRegionBoundingBox = ( 0, 0, int( skein.screenSize.real ), int( skein.screenSize.imag ) )
-		self.xScrollbar.grid( row = 98, column = 1, columnspan = 97, sticky = preferences.Tkinter.E + preferences.Tkinter.W )
-		self.xScrollbar.config( command = self.relayXview )
-		self.yScrollbar.grid( row = 1, rowspan = 97, column = 99, sticky = preferences.Tkinter.N + preferences.Tkinter.S )
-		self.yScrollbar.config( command = self.relayYview )
-		self.canvas = preferences.Tkinter.Canvas( self.root, width = self.canvasWidth, height = self.canvasHeight, scrollregion = scrollRegionBoundingBox )
-		self.canvas.grid( row = 1, rowspan = 97, column = 1, columnspan = 97, sticky = preferences.Tkinter.W )
-		self.canvas[ 'xscrollcommand' ] = self.xScrollbar.set
-		self.canvas[ 'yscrollcommand' ] = self.yScrollbar.set
-		preferences.CloseListener( self, self.destroyAllDialogWindows ).listenToWidget( self.canvas )
+		self.addCanvasMenuRootScrollSkein( repository, skein, '_skeinview', 'Skeinview Viewer from Hydraraptor' )
 		horizontalRulerBoundingBox = ( 0, 0, int( skein.screenSize.real ), self.rulingExtent )
 		self.horizontalRulerCanvas = preferences.Tkinter.Canvas( self.root, width = self.canvasWidth, height = self.rulingExtent, scrollregion = horizontalRulerBoundingBox )
-		self.horizontalRulerCanvas.grid( row = 0, column = 1, columnspan = 97, sticky = preferences.Tkinter.E + preferences.Tkinter.W )
+		self.horizontalRulerCanvas.grid( row = 0, column = 2, columnspan = 96, sticky = preferences.Tkinter.E + preferences.Tkinter.W )
 		self.horizontalRulerCanvas[ 'xscrollcommand' ] = self.xScrollbar.set
-		self.photoImages[ 'stop' ] = preferences.Tkinter.PhotoImage( file = os.path.join( self.imagesDirectoryPath, 'stop.ppm' ), master = self.root )
-		self.diveButton = self.getPhotoButtonGridIncrement( self.dive, 'dive.ppm' )
-		self.downButton = self.getPhotoButtonGridIncrement( self.down, 'down.ppm' )
-		self.indexEntry = preferences.Tkinter.Entry( self.root )
-		self.indexEntry.bind( '<Return>', self.indexEntryReturnPressed )
-		self.indexEntry.grid( row = self.row, column = self.column, sticky = preferences.Tkinter.W )
-		self.column += 1
-		self.upButton = self.getPhotoButtonGridIncrement( self.up, 'up.ppm' )
-		self.soarButton = self.getPhotoButtonGridIncrement( self.soar, 'soar.ppm' )
-#		self.zoomInImage = preferences.Tkinter.PhotoImage( master = self.root, file = os.path.join( imagesDirectoryPath, 'zoom_in.ppm' ) )
-#		self.zoomInButton = preferences.Tkinter.Button( self.root, activebackground = 'black', command = self.zoomIn, image = self.zoomInImage )
-#		self.zoomInButton.grid( row = 99, column = 17, sticky = preferences.Tkinter.W )
-		self.resetPeriodicButtonsText()
 		verticalRulerBoundingBox = ( 0, 0, self.rulingExtent, int( skein.screenSize.imag ) )
 		self.verticalRulerCanvas = preferences.Tkinter.Canvas( self.root, width = self.rulingExtent, height = self.canvasHeight, scrollregion = verticalRulerBoundingBox )
-		self.verticalRulerCanvas.grid( row = 1, rowspan = 97, column = 0, sticky = preferences.Tkinter.N + preferences.Tkinter.S )
+		self.verticalRulerCanvas.grid( row = 1, rowspan = 97, column = 1, sticky = preferences.Tkinter.N + preferences.Tkinter.S )
 		self.verticalRulerCanvas[ 'yscrollcommand' ] = self.yScrollbar.set
-		self.setMouseToolBindButtonMotion()
+		self.addMouseToolsBind()
 		self.createRulers()
 
 	def addHorizontalRulerRuling( self, xMillimeters ):
@@ -386,23 +344,11 @@ class SkeinWindow( tableau.TableauWindow ):
 			self.verticalRulerCanvas.create_text( 0, yPixel, anchor = preferences.Tkinter.NW, text = character )
 			yPixel += fontHeight
 
-	def cancelTimer( self ):
-		"Cancel the timer and set it to none."
-		if self.timerID != None:
-			self.canvas.after_cancel ( self.timerID )
-			self.timerID = None
-
-	def cancelTimerResetButtons( self ):
-		"Cancel the timer and set it to none."
-		self.cancelTimer()
-		self.resetPeriodicButtonsText()
-
 	def createRulers( self ):
 		"Create the rulers.."
 		rankZeroSeperation = self.getRulingSeparationWidthPixels( 0 )
 		zoom = self.rulingTargetSeparation / rankZeroSeperation
-		floatRank = 3.0 * math.log10( zoom )
-		rank = int( math.floor( floatRank ) )
+		rank = euclidean.getRank( zoom )
 		rankTop = rank + 1
 		seperationBottom = self.getRulingSeparationWidthPixels( rank )
 		seperationTop = self.getRulingSeparationWidthPixels( rankTop )
@@ -410,7 +356,7 @@ class SkeinWindow( tableau.TableauWindow ):
 		topDifference = getGeometricDifference( self.rulingTargetSeparation, seperationTop )
 		if topDifference < bottomDifference:
 			rank = rankTop
-		self.rulingSeparationWidthMillimeters = getRulingSeparationWidthMillimeters( rank )
+		self.rulingSeparationWidthMillimeters = euclidean.getIncrementFromRank( rank )
 		rulingSeparationWidthPixels = self.getRulingSeparationWidthPixels( rank )
 		marginOverScale = self.skein.margin / self.skein.scale
 		cornerHighMargin = self.skein.cornerHighComplex + marginOverScale
@@ -424,41 +370,34 @@ class SkeinWindow( tableau.TableauWindow ):
 		for yRankIndex in xrange( yRankIndexLow - 2, yRankIndexHigh + 2 ): # 1 is enough, 2 is to be on the safe side
 			self.addVerticalRulerRuling( yRankIndex * self.rulingSeparationWidthMillimeters )
 
-	def dive( self ):
-		"Dive, go up periodically."
-		oldDiveButtonText = self.diveButton[ 'text' ]
-		self.cancelTimerResetButtons()
-		if oldDiveButtonText == 'stop':
-			return
-		self.diveCycle()
+	def getColoredLines( self ):
+		"Get the colored lines from the skein pane."
+		return self.skeinPanes[ self.repository.layer.value ]
 
-	def diveCycle( self ):
-		"Start the dive cycle."
-		self.cancelTimer()
-		self.repository.layerIndex.value -= 1
-		self.saveUpdate()
-		if self.repository.layerIndex.value < 1:
-			self.resetPeriodicButtonsText()
-			return
-		self.diveButton[ 'image' ] = self.photoImages[ 'stop' ]
-		self.diveButton[ 'text' ] = 'stop'
-		self.timerID = self.canvas.after( self.getSlideShowDelay(), self.diveCycle )
+	def getCopy( self ):
+		"Get a copy of this window."
+		return SkeinWindow( self.repository, self.skein )
 
-	def down( self ):
-		"Go down a layer."
-		self.cancelTimerResetButtons()
-		self.repository.layerIndex.value -= 1
-		self.saveUpdate()
+	def getCopyWithNewSkein( self ):
+		"Get a copy of this window with a new skein."
+		return getWindowGivenTextRepository( self.skein.fileName, self.skein.gcodeText, self.repository )
 
-	def getPhotoButtonGridIncrement( self, commandFunction, fileName ):
-		"Get a PhotoImage button, grid the button and increment the grid position."
-		photoImage = preferences.Tkinter.PhotoImage( file = os.path.join( self.imagesDirectoryPath, fileName ), master = self.root )
-		untilDotFileName = gcodec.getUntilDot( fileName )
-		self.photoImages[ untilDotFileName ] = photoImage
-		photoButton = preferences.Tkinter.Button( self.root, activebackground = 'black', command = commandFunction, image = photoImage, text = untilDotFileName )
-		photoButton.grid( row = self.row, column = self.column, sticky = preferences.Tkinter.W )
-		self.column += 1
-		return photoButton
+	def getDrawnColoredLine( self, coloredLine, width ):
+		"Get the drawn colored line."
+		return self.canvas.create_line(
+			coloredLine.begin.real,
+			coloredLine.begin.imag,
+			coloredLine.end.real,
+			coloredLine.end.imag,
+			fill = coloredLine.colorName,
+			arrow = self.arrowType,
+			tags = coloredLine.tagString,
+			width = width )
+
+	def getDrawnColoredLineIfThick( self, coloredLine, width ):
+		"Get the drawn colored line if it has a positive thickness."
+		if width > 0:
+			return self.getDrawnColoredLine( coloredLine, width )
 
 	def getRoundedRulingText( self, number ):
 		"Get the rounded ruling text."
@@ -471,31 +410,14 @@ class SkeinWindow( tableau.TableauWindow ):
 
 	def getRulingSeparationWidthPixels( self, rank ):
 		"Get the separation width in pixels."
-		return getRulingSeparationWidthMillimeters( rank ) * self.skein.scale
+		return euclidean.getIncrementFromRank( rank ) * self.skein.scale
 
-	def getSlideShowDelay( self ):
-		"Get the slide show delay in milliseconds."
-		slideShowDelay = int( round( 1000.0 / self.repository.slideShowRate.value ) )
-		return max( slideShowDelay, 1 )
-
-	def indexEntryReturnPressed( self, event ):
-		"The index entry return was pressed."
-		self.cancelTimerResetButtons()
-		self.repository.layerIndex.value = int( self.indexEntry.get() )
-		self.limitIndex()
-		self.saveUpdate()
-
-	def limitIndex( self ):
-		"Limit the index so it is not below zero or above the top."
-		self.repository.layerIndex.value = max( 0, self.repository.layerIndex.value )
-		self.repository.layerIndex.value = min( len( self.skeinPanes ) - 1, self.repository.layerIndex.value )
-
-	def phoenixUpdate( self ):
-		"Update, and deiconify a new window and destroy the old."
-		skeinWindow = getWindowGivenTextPreferences( self.skein.fileName, self.skein.gcodeText, self.repository )
-		skeinWindow.index = self.repository.layerIndex.value
-		skeinWindow.updateDeiconify( self.getScrollPaneCenter() )
-		self.root.destroy()
+	def getSelectedDrawnColoredLines( self, coloredLines ):
+		"Get the selected drawn colored lines."
+		selectedDrawnColoredLines = []
+		for coloredLine in coloredLines:
+			selectedDrawnColoredLines.append( self.getDrawnColoredLine( coloredLine, self.repository.widthOfSelectionThread.value ) )
+		return selectedDrawnColoredLines
 
 	def relayXview( self, *args ):
 		"Relay xview changes."
@@ -507,80 +429,18 @@ class SkeinWindow( tableau.TableauWindow ):
 		self.canvas.yview( *args )
 		self.verticalRulerCanvas.yview( *args )
 
-	def resetPeriodicButtonsText( self ):
-		"Reset the text of the periodic buttons."
-		self.diveButton[ 'image' ] = self.photoImages[ 'dive' ]
-		self.diveButton[ 'text' ] = 'dive'
-		self.soarButton[ 'image' ] = self.photoImages[ 'soar' ]
-		self.soarButton[ 'text' ] = 'soar'
-
-	def soar( self ):
-		"Soar, go up periodically."
-		oldSoarButtonText = self.soarButton[ 'text' ]
-		self.cancelTimerResetButtons()
-		if oldSoarButtonText == 'stop':
-			return
-		self.soarCycle()
-
-	def soarCycle( self ):
-		"Start the soar cycle."
-		self.cancelTimer()
-		self.repository.layerIndex.value += 1
-		self.saveUpdate()
-		if self.repository.layerIndex.value > len( self.skeinPanes ) - 2:
-			self.resetPeriodicButtonsText()
-			return
-		self.soarButton[ 'image' ] = self.photoImages[ 'stop' ]
-		self.soarButton[ 'text' ] = 'stop'
-		self.timerID = self.canvas.after( self.getSlideShowDelay(), self.soarCycle )
-
-	def up( self ):
-		"Go up a layer."
-		self.cancelTimerResetButtons()
-		self.repository.layerIndex.value += 1
-		self.saveUpdate()
-
-	def zoomIn( self ):
-		"Zoom in."
-		print('zzz')
-		self.zoomInButton[ 'relief' ] = preferences.Tkinter.SUNKEN
-
 	def update( self ):
 		"Update the window."
 		if len( self.skeinPanes ) < 1:
 			return
-		self.limitIndex()
-		self.arrowType = None
-		if self.repository.drawArrows.value:
-			self.arrowType = 'last'
-		skeinPane = self.skeinPanes[ self.repository.layerIndex.value ]
-		self.canvas.delete( preferences.Tkinter.ALL )
-		for coloredIndexLine in skeinPane:
-			complexBegin = coloredIndexLine.complexBegin
-			complexEnd = coloredIndexLine.complexEnd
-			self.canvas.create_line(
-				complexBegin.real,
-				complexBegin.imag,
-				complexEnd.real,
-				complexEnd.imag,
-				fill = coloredIndexLine.colorName,
-				arrow = self.arrowType,
-				tags = '%s %s' % ( coloredIndexLine.lineIndex + 1, coloredIndexLine.line ),
-				width = coloredIndexLine.width )
-		if self.repository.layerIndex.value < len( self.skeinPanes ) - 1:
-			self.soarButton.config( state = preferences.Tkinter.NORMAL )
-			self.upButton.config( state = preferences.Tkinter.NORMAL )
-		else:
-			self.soarButton.config( state = preferences.Tkinter.DISABLED )
-			self.upButton.config( state = preferences.Tkinter.DISABLED )
-		if self.repository.layerIndex.value > 0:
-			self.downButton.config( state = preferences.Tkinter.NORMAL )
-			self.diveButton.config( state = preferences.Tkinter.NORMAL )
-		else:
-			self.downButton.config( state = preferences.Tkinter.DISABLED )
-			self.diveButton.config( state = preferences.Tkinter.DISABLED )
-		self.indexEntry.delete( 0, preferences.Tkinter.END )
-		self.indexEntry.insert( 0, str( self.repository.layerIndex.value ) )
+		self.limitIndexSetArrowMouseDeleteCanvas()
+		skeinPane = self.skeinPanes[ self.repository.layer.value ]
+		for coloredLine in skeinPane:
+			if coloredLine.isExtrusionThread:
+				self.getDrawnColoredLineIfThick( coloredLine, self.repository.widthOfExtrusionThread.value )
+			else:
+				self.getDrawnColoredLineIfThick( coloredLine, self.repository.widthOfTravelThread.value )
+		self.setDisplayLayerIndex()
 
 
 def main():
@@ -588,7 +448,7 @@ def main():
 	if len( sys.argv ) > 1:
 		displayFile( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

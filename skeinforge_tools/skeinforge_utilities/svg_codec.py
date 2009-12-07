@@ -24,12 +24,12 @@ __license__ = "GPL 3.0"
 
 def getCarving( fileName ):
 	"Get a carving for the file using an import plugin."
-	importPluginFilenames = interpret.getImportPluginFilenames()
-	for importPluginFilename in importPluginFilenames:
-		fileTypeDot = '.' + importPluginFilename
+	importPluginFileNames = interpret.getImportPluginFileNames()
+	for importPluginFileName in importPluginFileNames:
+		fileTypeDot = '.' + importPluginFileName
 		if fileName[ - len( fileTypeDot ) : ].lower() == fileTypeDot:
 			importPluginsDirectoryPath = gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'import_plugins' )
-			pluginModule = gcodec.getModuleWithDirectoryPath( importPluginsDirectoryPath, importPluginFilename )
+			pluginModule = gcodec.getModuleWithDirectoryPath( importPluginsDirectoryPath, importPluginFileName )
 			if pluginModule != None:
 				return pluginModule.getCarving( fileName )
 	print( 'Could not find plugin to handle ' + fileName )
@@ -156,8 +156,8 @@ class SVGCodecSkein:
 		svgTemplateText = getReplacedWordAndInQuotes( 'maxZ', self.getRounded( self.cornerMaximum.z ), svgTemplateText )
 		svgTemplateText = getReplacedWordAndInQuotes( 'minZ', self.getRounded( self.cornerMinimum.z ), svgTemplateText )
 		svgTemplateText = getReplacedWordAndInQuotes( 'dimZ', self.getRounded( self.extent.z ), svgTemplateText )
-		summarizedFilename = gcodec.getSummarizedFilename( fileName ) + ' SVG Slice File'
-		svgTemplateText = getReplacedWordAndInQuotes( 'Title', summarizedFilename, svgTemplateText )
+		summarizedFileName = gcodec.getSummarizedFileName( fileName ) + ' SVG Slice File'
+		svgTemplateText = getReplacedWordAndInQuotes( 'Title', summarizedFileName, svgTemplateText )
 		noJavascriptControlsTagString = '<g id="noJavascriptControls" fill="#000" transform="translate(%s, %s)">' % ( self.getRounded( self.margin ), self.getRounded( controlTop ) )
 		svgTemplateText = getReplacedTagString( noJavascriptControlsTagString, 'noJavascriptControls', svgTemplateText )
 #	<g id="noJavascriptControls" fill="#000" transform="translate(20, 1400)">

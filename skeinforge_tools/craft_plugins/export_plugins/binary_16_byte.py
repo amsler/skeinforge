@@ -91,7 +91,7 @@ def getOutput( gcodeText, binary16ByteRepository = None ):
 		preferences.getReadRepository( binary16ByteRepository )
 	return Binary16ByteSkein().getCraftedGcode( gcodeText, binary16ByteRepository )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return Binary16ByteRepository()
 
@@ -102,7 +102,7 @@ def getStringFromCharacterSplitLine( character, splitLine ):
 		return None
 	return splitLine[ indexOfCharacter ][ 1 : ]
 
-def getSummarizedFilename( fileName ):
+def getSummarizedFileName( fileName ):
 	"Get the fileName basename if the file is in the current working directory, otherwise return the original full name."
 	if os.getcwd() == os.path.dirname( fileName ):
 		return os.path.basename( fileName )
@@ -140,9 +140,9 @@ def writeOutput( fileName, gcodeText = '' ):
 	preferences.getReadRepository( binary16ByteRepository )
 	gcodeText = gcodec.getGcodeFileText( fileName, gcodeText )
 	skeinOutput = getOutput( gcodeText, binary16ByteRepository )
-	suffixFilename = fileName[ : fileName.rfind( '.' ) ] + '.' + binary16ByteRepository.fileExtension.value
-	writeFileText( suffixFilename, skeinOutput )
-	print( 'The converted file is saved as ' + getSummarizedFilename( suffixFilename ) )
+	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '.' + binary16ByteRepository.fileExtension.value
+	writeFileText( suffixFileName, skeinOutput )
+	print( 'The converted file is saved as ' + getSummarizedFileName( suffixFileName ) )
 
 
 class Binary16ByteRepository:
@@ -150,19 +150,18 @@ class Binary16ByteRepository:
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
 		#Set the default preferences.
-		preferences.addListsToRepository( self )
+		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.export_plugins.binary_16_byte.html', '', self )
 		self.fileExtension = preferences.StringPreference().getFromValue( 'File Extension:', self, 'bin' )
-		self.fileNameInput = preferences.Filename().getFromFilename( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Binary 16 Byte', self, '' )
-		self.feedRateStepLength = preferences.FloatPreference().getFromValue( 'FeedRate Step Length (millimeters/second)', self, 0.1 )
-		self.xStepLength = preferences.FloatPreference().getFromValue( 'X Step Length (millimeters)', self, 0.1 )
-		self.yStepLength = preferences.FloatPreference().getFromValue( 'Y Step Length (millimeters)', self, 0.1 )
-		self.zStepLength = preferences.FloatPreference().getFromValue( 'Z Step Length (millimeters)', self, 0.01 )
-		self.xOffset = preferences.FloatPreference().getFromValue( 'X Offset (millimeters)', self, 0.0 )
-		self.yOffset = preferences.FloatPreference().getFromValue( 'Y Offset (millimeters)', self, 0.0 )
-		self.zOffset = preferences.FloatPreference().getFromValue( 'Z Offset (millimeters)', self, 0.0 )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Binary 16 Byte', self, '' )
+		self.feedRateStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Feed Rate Step Length (millimeters/second)', self, 1.0, 0.1 )
+		self.xStepLength = preferences.FloatSpin().getFromValue( 0.0, 'X Step Length (millimeters)', self, 1.0, 0.1 )
+		self.yStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Y Step Length (millimeters)', self, 1.0, 0.1 )
+		self.zStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Z Step Length (millimeters)', self, 0.2, 0.01 )
+		self.xOffset = preferences.FloatSpin().getFromValue( - 100.0, 'X Offset (millimeters)', self, 100.0, 0.0 )
+		self.yOffset = preferences.FloatSpin().getFromValue( -100.0, 'Y Offset (millimeters)', self, 100.0, 0.0 )
+		self.zOffset = preferences.FloatSpin().getFromValue( - 10.0, 'Z Offset (millimeters)', self, 10.0, 0.0 )
 		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
 		self.executeTitle = 'Convert to Binary 16 Byte'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.export_plugins.binary_16_byte.html' )
 
 	def execute( self ):
 		"Convert to binary 16 byte button has been clicked."
@@ -187,7 +186,7 @@ class Binary16ByteSkein:
 	def parseLine( self, line ):
 		"Parse a gcode line."
 		binary16ByteRepository = self.binary16ByteRepository
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -220,7 +219,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

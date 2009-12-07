@@ -24,8 +24,7 @@ The analyze tool calls plugins in the analyze_plugins folder, which will analyze
 
 The interpret tool accesses and displays the import plugins.
 
-The default preferences are similar to those on Nophead's machine.  A preference which is often different is the
-'Extrusion Diameter' in carve.
+The default preferences are similar to those on Nophead's machine.  A preference which is often different is the 'Extrusion Diameter' in carve.
 
 
 Alternative
@@ -74,16 +73,10 @@ Or you can turn files into gcode by adding the file name, for example:
 
 Documentation
 
-The documentation is in the documentation folder, in the doc strings for each module and it can be called from the '?' button in each preference dialog.
-
-To modify the documentation for this program, modify the first comment in the desired module.  Then open a shell in
-the skeinforge.py directory, then type:
-> pydoc -w ./'
-
-Then move all the generated html files to the documentation folder.
-
 There is a manual at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge
+
+There is also documentation is in the documentation folder, in the doc strings for each module and it can be called from the '?' button or the menu or by clicking F1 in each preference dialog.
 
 A list of other tutorials is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge#Tutorials
@@ -119,8 +112,11 @@ http://reprap.soup.io/
 There is a board about printing issues at:
 http://www.bitsfrombytes.com/fora/user/index.php?board=5.0
 
-You can buy fabricators at:
+You can buy the Rapman (an improved Darwin) from Bits from Bytes at:
 http://www.bitsfrombytes.com/
+
+You can buy the Makerbot from Makerbot Industries at:
+http://www.makerbot.com/
 
 
 
@@ -157,8 +153,8 @@ Getting Skeinforge
 The latest version is at:
 http://members.axion.net/~enrique/reprap_python_beanshell.zip
 
-a sometimes out of date version is in the last reprap_python_beanshell.zip attachment in the "Skeinforge Powwow" thread at:
-http://forums.reprap.org/read.php?12,20013
+a sometimes out of date version is in the last reprap_python_beanshell.zip attachment in the last post of the Fabmetheus blog at:
+http://fabmetheus.blogspot.com/
 
 another sometimes out of date version is at:
 https://reprap.svn.sourceforge.net/svnroot/reprap/trunk/reprap/miscellaneous/python-beanshell-scripts/
@@ -178,13 +174,13 @@ If there's a bug, try downloading the very latest version because sometimes I up
 Then you can ask for skeinforge help by sending a private message through the forum software by going to my page at:
 http://forums.reprap.org/profile.php?12,488
 
-or posting in the "Skeinforge Powwow" thread at:
-http://forums.reprap.org/read.php?12,20013
+or posting in the last post of the Fabmetheus blog at:
+http://fabmetheus.blogspot.com/
 
 or you can email me at:
 perez_enrique@yahoo.com
 
-When asking for help please include your object and your zipped skeinforge preferences.  The skeinforge preferences are in the .skeinforge folder in your home directory.  If you include your object and zipped preferences, I will give your bug a high priority, if you do not I will give it a low priority since without the object and zipped preferences I often can not reproduce the bug.
+When asking for help please include your object and your zipped skeinforge preferences.  The skeinforge preferences are in the .skeinforge folder in your home directory.  If you include your object and zipped preferences, I will give your bug a high priority.  If you do not I will give it a low priority since without the object and zipped preferences I often can not reproduce the bug.
 
 If the dialog window is too big for the screen, on most Linux window managers you can move a window by holding down the Alt key and then drag the window with the left mouse button to get to the off screen widgets.
 
@@ -211,7 +207,7 @@ Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
 [GCC 4.2.1 (SUSE Linux)] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import skeinforge
->>> skeinforge.writeOutput()
+>>> skeinforge.writeOutput( 'Screw Holder.stl' )
 The exported file is saved as Screw Holder_export.gcode
 
 
@@ -258,24 +254,24 @@ __license__ = "GPL 3.0"
 
 def addToProfileMenu( profileSelection, profileType, repository ):
 	"Add a profile menu."
-	pluginFilenames = preferences.getPluginFilenames()
+	pluginFileNames = preferences.getPluginFileNames()
 	craftTypeName = preferences.getCraftTypeName()
 	pluginModule = preferences.getCraftTypePluginModule()
-	profilePluginPreferences = preferences.getReadRepository( pluginModule.getRepositoryConstructor() )
+	profilePluginPreferences = preferences.getReadRepository( pluginModule.getNewRepository() )
 	for profileName in profilePluginPreferences.profileList.value:
 		preferences.ProfileSelectionMenuRadio().getFromMenuButtonDisplay( profileSelection, profileName, repository, profileName == profilePluginPreferences.profileListbox.value )
-	for pluginFilename in pluginFilenames:
-		preferences.ProfileTypeMenuRadio().getFromMenuButtonDisplay( profileType, pluginFilename, repository, craftTypeName == pluginFilename )
+	for pluginFileName in pluginFileNames:
+		preferences.ProfileTypeMenuRadio().getFromMenuButtonDisplay( profileType, pluginFileName, repository, craftTypeName == pluginFileName )
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
 	return gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_tools' )
 
-def getPluginFilenames():
+def getPluginFileNames():
 	"Get analyze plugin fileNames."
-	return gcodec.getPluginFilenamesFromDirectoryPath( getPluginsDirectoryPath() )
+	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return SkeinforgeRepository()
 
@@ -288,9 +284,8 @@ class SkeinforgeRepository:
 	"A class to handle the skeinforge preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '' )
+		preferences.addListsToRepository( 'skeinforge.html', '', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '' )
 		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
 		self.createdOnLabel = preferences.LabelDisplay().getFromName( 'Created On: ' + versionText, self )
 		self.profileSelection = preferences.MenuButtonDisplay().getFromName( 'Profile Selection: ', self )
@@ -298,15 +293,13 @@ class SkeinforgeRepository:
 		addToProfileMenu( self.profileSelection, self.profileType, self )
 		preferences.LabelDisplay().getFromName( '', self )
 		self.skeinforgeLabel = preferences.LabelDisplay().getFromName( 'Open Preferences: ', self )
-		importantFilenames = [ 'craft', 'profile' ]
-		preferences.getDisplayToolButtonsRepository( gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_tools' ), importantFilenames, getPluginFilenames(), self )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		importantFileNames = [ 'craft', 'profile' ]
+		preferences.getDisplayToolButtonsRepository( gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_tools' ), importantFileNames, getPluginFileNames(), self )
 		self.executeTitle = 'Skeinforge'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge.html' )
 
 	def execute( self ):
 		"Skeinforge button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -324,7 +317,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

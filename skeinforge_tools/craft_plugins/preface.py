@@ -14,6 +14,8 @@ http://objects.reprap.org/wiki/3D-to-5D-Gcode.php
 
 The extrusion distance format is either "Do Not Add Extrusion Distance", which gives standard XYZ & Feed Rate gcode, this is the default choice.  If "Extrusion Distance Absolute" is chosen, the extrusion distance output will be the total extrusion distance to that gcode line.  If "Extrusion Distance Relative" is chosen, the extrusion distance output will be the extrusion distance from the last gcode line.
 
+The 'Meta' field is to add meta tags or a note to all your files.  Whatever is in that field will be added in a meta tagged line to the output.
+
 When preface is generating the code, if there is a file with the name of the "Name of Start File" setting, the default being start.gcode, it will be added that to the very beginning of the gcode.  If there is a file with the name of the "Name of End File" setting, the default being end.gcode, it will be added to the very end.  Preface does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  Preface looks for those files in the alterations folder in the .skeinforge folder in the home directory. If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder.  If it doesn't find anything there it looks in the craft_plugins folder.
 
 The following examples preface the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and preface.py.
@@ -40,7 +42,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the preface dialog.
 
 
->>> preface.writeOutput()
+>>> preface.writeOutput( 'Screw Holder Bottom.stl' )
 The preface tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -88,7 +90,7 @@ def getCraftedTextFromText( text, prefaceRepository = None ):
 		prefaceRepository = preferences.getReadRepository( PrefaceRepository() )
 	return PrefaceSkein().getCraftedGcode( prefaceRepository, text )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return PrefaceRepository()
 
@@ -104,15 +106,14 @@ class PrefaceRepository:
 	"A class to handle the preface preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Prefaced', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.preface.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Prefaced', self, '' )
 		extrusionDistanceFormatRadio = []
 		self.extrusionDistanceFormatChoiceLabel = preferences.LabelDisplay().getFromName( 'Extrusion Distance Format Choice: ', self )
 		self.extrusionDistanceDoNotAddPreference = preferences.Radio().getFromRadio( 'Do Not Add Extrusion Distance', extrusionDistanceFormatRadio, self, True )
 		self.extrusionDistanceAbsolutePreference = preferences.Radio().getFromRadio( 'Extrusion Distance Absolute', extrusionDistanceFormatRadio, self, False )
 		self.extrusionDistanceRelativePreference = preferences.Radio().getFromRadio( 'Extrusion Distance Relative', extrusionDistanceFormatRadio, self, False )
+		self.meta = preferences.StringPreference().getFromValue( 'Meta:', self, '' )
 		self.nameOfEndFile = preferences.StringPreference().getFromValue( 'Name of End File:', self, 'end.gcode' )
 		self.nameOfStartFile = preferences.StringPreference().getFromValue( 'Name of Start File:', self, 'start.gcode' )
 		self.setPositioningToAbsolute = preferences.BooleanPreference().getFromValue( 'Set Positioning to Absolute', self, True )
@@ -120,13 +121,11 @@ class PrefaceRepository:
 		self.startAtHome = preferences.BooleanPreference().getFromValue( 'Start at Home', self, False )
 		self.turnExtruderOffAtShutDown = preferences.BooleanPreference().getFromValue( 'Turn Extruder Off at Shut Down', self, True )
 		self.turnExtruderOffAtStartUp = preferences.BooleanPreference().getFromValue( 'Turn Extruder Off at Start Up', self, True )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
 		self.executeTitle = 'Preface'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.preface.html' )
 
 	def execute( self ):
 		"Preface button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -147,9 +146,10 @@ class PrefaceSkein:
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode( fileLines )
 
 	def addGcodeFromLoop( self, loop, z ):
-		"Add the remainder of the loop which does not overlap the alreadyFilledArounds loops."
+		"Add the gcode loop."
 		euclidean.addSurroundingLoopBeginning( loop, self, z )
 		self.distanceFeedRate.addPerimeterBlock( loop, z )
+		self.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )
 		self.distanceFeedRate.addLine( '(</surroundingLoop>)' )
 
 	def addInitializationToOutput( self ):
@@ -170,6 +170,8 @@ class PrefaceSkein:
 			self.distanceFeedRate.addLine( 'G28' ) # Start at home.
 		if self.prefaceRepository.turnExtruderOffAtStartUp.value:
 			self.distanceFeedRate.addLine( 'M103' ) # Turn extruder off.
+		craftTypeName = preferences.getCraftTypeName()
+		self.distanceFeedRate.addTagBracketedLine( 'craftTypeName', craftTypeName )
 		self.distanceFeedRate.addTagBracketedLine( 'decimalPlacesCarried', self.distanceFeedRate.decimalPlacesCarried )
 		if self.prefaceRepository.extrusionDistanceAbsolutePreference.value:
 			self.distanceFeedRate.extrusionDistanceFormat = 'absolute'
@@ -178,7 +180,10 @@ class PrefaceSkein:
 		if self.distanceFeedRate.extrusionDistanceFormat != '':
 			self.distanceFeedRate.addTagBracketedLine( 'extrusionDistanceFormat', self.distanceFeedRate.extrusionDistanceFormat )
 		self.distanceFeedRate.addTagBracketedLine( 'layerThickness', self.distanceFeedRate.getRounded( self.layerThickness ) )
+		if self.prefaceRepository.meta.value:
+			self.distanceFeedRate.addTagBracketedLine( 'meta', self.prefaceRepository.meta.value )
 		self.distanceFeedRate.addTagBracketedLine( 'perimeterWidth', self.distanceFeedRate.getRounded( self.perimeterWidth ) )
+		self.distanceFeedRate.addTagBracketedLine( 'profileName', preferences.getProfileName( craftTypeName ) )
 		self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'carve' )
 		self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'preface' )
 		self.distanceFeedRate.addLine( '(</extruderInitialization>)' ) # Initialization is finished, extrusion is starting.
@@ -297,7 +302,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

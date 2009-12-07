@@ -3,8 +3,6 @@ Speed is a script to set the feed rate, and flow rate.
 
 The default 'Activate Speed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The speed script sets the feed rate, and flow rate.
 
-The 'Extrusion Diameter over Thickness is the ratio of the extrusion diameter over the layer thickness, the default is 1.25.  The extrusion fill density ratio that is printed to the console, ( it is derived quantity not a parameter ) is the area of the extrusion diameter over the extrusion width over the layer thickness.  Assuming the extrusion diameter is correct, a high value means the filament will be packed tightly, and the object will be almost as dense as the filament.  If the value is too high, there could be too little room for the filament, and the extruder will end up plowing through the extra filament.  A low value means the filaments will be far away from each other, the object will be leaky and light.  The value with the default extrusion preferences is around 0.82.
-
 The feed rate for the shape will be set to the 'Feed Rate" preference.  The 'Bridge Feed Rate Multiplier' is the ratio of the feed rate on the bridge layers over the feed rate of the typical non bridge layers, the default is 1.0.  The speed of the orbit compared to the operating extruder speed will be set to the "Orbital Feed Rate over Operating Feed Rate" preference.  If you want the orbit to be very short, set the "Orbital Feed Rate over Operating Feed Rate" preference to a low value like 0.1.  The 'Travel Feed Rate' is the feed rate when the extruder is off.  The default is 16 mm / s and it could be set as high as the extruder can be moved, it does not have to be limited by the maximum extrusion rate.
 
 The default 'Add Flow Rate' checkbox is on.  When it is on, the flow rate will be added to the gcode.  The 'Bridge Flow Rate Multiplier' is the ratio of the flow rate on the bridge layers over the flow rate of the typical non bridge layers, the default is 1.0.  The 'Flow Rate Setting' sets the operating flow rate, the default is 210.
@@ -38,7 +36,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the speed dialog.
 
 
->>> speed.writeOutput()
+>>> speed.writeOutput( 'Screw Holder Bottom.stl' )
 The speed tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -82,7 +80,7 @@ def getCraftedTextFromText( gcodeText, speedRepository = None ):
 		return gcodeText
 	return SpeedSkein().getCraftedGcode( gcodeText, speedRepository )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return SpeedRepository()
 
@@ -97,28 +95,24 @@ class SpeedRepository:
 	"A class to handle the speed preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Speed', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.speed.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Speed', self, '' )
 		self.activateSpeed = preferences.BooleanPreference().getFromValue( 'Activate Speed:', self, True )
 		self.addFlowRate = preferences.BooleanPreference().getFromValue( 'Add Flow Rate:', self, True )
-		self.bridgeFeedRateMultiplier = preferences.FloatPreference().getFromValue( 'Bridge Feed Rate Multiplier (ratio):', self, 1.0 )
-		self.bridgeFlowRateMultiplier = preferences.FloatPreference().getFromValue( 'Bridge Flow Rate Multiplier (ratio):', self, 1.0 )
-		self.extrusionDiameterOverThickness = preferences.FloatPreference().getFromValue( 'Extrusion Diameter over Thickness (ratio):', self, 1.25 )
-		self.feedRatePerSecond = preferences.FloatPreference().getFromValue( 'Feed Rate (mm/s):', self, 16.0 )
-		self.flowRateSetting = preferences.FloatPreference().getFromValue( 'Flow Rate Setting (float):', self, 210.0 )
-		self.maximumZFeedRatePerSecond = preferences.FloatPreference().getFromValue( 'Maximum Z Feed Rate (mm/s):', self, 8.0 )
-		self.orbitalFeedRateOverOperatingFeedRate = preferences.FloatPreference().getFromValue( 'Orbital Feed Rate over Operating Feed Rate (ratio):', self, 0.5 )
-		self.perimeterFeedRateOverOperatingFeedRate = preferences.FloatPreference().getFromValue( 'Perimeter Feed Rate over Operating Feed Rate (ratio):', self, 1.0 )
-		self.perimeterFlowRateOverOperatingFlowRate = preferences.FloatPreference().getFromValue( 'Perimeter Flow Rate over Operating Flow Rate (ratio):', self, 1.0 )
-		self.travelFeedRatePerSecond = preferences.FloatPreference().getFromValue( 'Travel Feed Rate (mm/s):', self, 16.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.bridgeFeedRateMultiplier = preferences.FloatSpin().getFromValue( 0.8, 'Bridge Feed Rate Multiplier (ratio):', self, 1.2, 1.0 )
+		self.bridgeFlowRateMultiplier = preferences.FloatSpin().getFromValue( 0.8, 'Bridge Flow Rate Multiplier (ratio):', self, 1.2, 1.0 )
+		self.feedRatePerSecond = preferences.FloatSpin().getFromValue( 2.0, 'Feed Rate (mm/s):', self, 50.0, 16.0 )
+		self.flowRateSetting = preferences.FloatSpin().getFromValue( 50.0, 'Flow Rate Setting (float):', self, 250.0, 210.0 )
+		self.maximumZFeedRatePerSecond = preferences.FloatSpin().getFromValue( 0.5, 'Maximum Z Feed Rate (mm/s):', self, 10.0, 8.0 )
+		self.orbitalFeedRateOverOperatingFeedRate = preferences.FloatSpin().getFromValue( 0.1, 'Orbital Feed Rate over Operating Feed Rate (ratio):', self, 0.9, 0.5 )
+		self.perimeterFeedRateOverOperatingFeedRate = preferences.FloatSpin().getFromValue( 0.5, 'Perimeter Feed Rate over Operating Feed Rate (ratio):', self, 1.0, 1.0 )
+		self.perimeterFlowRateOverOperatingFlowRate = preferences.FloatSpin().getFromValue( 0.5, 'Perimeter Flow Rate over Operating Flow Rate (ratio):', self, 1.0, 1.0 )
+		self.travelFeedRatePerSecond = preferences.FloatSpin().getFromValue( 2.0, 'Travel Feed Rate (mm/s):', self, 50.0, 16.0 )
 		self.executeTitle = 'Speed'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.speed.html' )
 
 	def execute( self ):
 		"Speed button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -145,6 +139,8 @@ class SpeedSkein:
 
 	def getCraftedGcode( self, gcodeText, speedRepository ):
 		"Parse gcode text and store the speed gcode."
+		self.distanceFeedRate.maximumZDrillFeedRatePerSecond = speedRepository.maximumZFeedRatePerSecond.value
+		self.distanceFeedRate.maximumZTravelFeedRatePerSecond = speedRepository.maximumZFeedRatePerSecond.value
 		self.speedRepository = speedRepository
 		self.feedRatePerSecond = speedRepository.feedRatePerSecond.value
 		self.travelFeedRatePerMinute = 60.0 * self.speedRepository.travelFeedRatePerSecond.value
@@ -183,23 +179,22 @@ class SpeedSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(<layerThickness>':
 				self.layerThickness = float( splitLine[ 1 ] )
-				self.extrusionDiameter = self.speedRepository.extrusionDiameterOverThickness.value * self.layerThickness
-				self.distanceFeedRate.addTagBracketedLine( 'extrusionDiameter', self.distanceFeedRate.getRounded( self.extrusionDiameter ) )
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine( '(<procedureDone> speed </procedureDone>)' )
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.absolutePerimeterWidth = abs( float( splitLine[ 1 ] ) )
-				self.distanceFeedRate.addLine( '(<maximumZFeedRatePerSecond> %s </maximumZFeedRatePerSecond>)' % self.speedRepository.maximumZFeedRatePerSecond.value )
-				self.distanceFeedRate.addLine( '(<operatingFeedRatePerSecond> %s </operatingFeedRatePerSecond>)' % self.feedRatePerSecond )
+				self.distanceFeedRate.addTagBracketedLine( 'maximumZDrillFeedRatePerSecond', self.distanceFeedRate.maximumZDrillFeedRatePerSecond )
+				self.distanceFeedRate.addTagBracketedLine( 'maximumZTravelFeedRatePerSecond', self.distanceFeedRate.maximumZTravelFeedRatePerSecond )
+				self.distanceFeedRate.addTagBracketedLine( 'operatingFeedRatePerSecond', self.feedRatePerSecond )
 				orbitalFeedRatePerSecond = self.feedRatePerSecond * self.speedRepository.orbitalFeedRateOverOperatingFeedRate.value
-				self.distanceFeedRate.addLine( '(<orbitalFeedRatePerSecond> %s </orbitalFeedRatePerSecond>)' % orbitalFeedRatePerSecond )
-				self.distanceFeedRate.addLine( '(<travelFeedRatePerSecond> %s </travelFeedRatePerSecond>)' % self.speedRepository.travelFeedRatePerSecond.value )
+				self.distanceFeedRate.addTagBracketedLine( 'orbitalFeedRatePerSecond', orbitalFeedRatePerSecond )
+				self.distanceFeedRate.addTagBracketedLine( 'travelFeedRatePerSecond', self.speedRepository.travelFeedRatePerSecond.value )
 			self.distanceFeedRate.addLine( line )
 
 	def parseLine( self, line ):
@@ -207,7 +202,7 @@ class SpeedSkein:
 		if not self.distanceFeedRate.absoluteDistanceMode:
 			self.distanceFeedRate.addLine( line )
 			return
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -218,7 +213,7 @@ class SpeedSkein:
 		elif firstWord == 'M103':
 			self.isSurroundingLoopBeginning = False
 			self.isExtruderActive = False
-		elif firstWord == '(<bridgeRotation>)':
+		elif firstWord == '(<bridgeRotation>':
 			self.isBridgeLayer = True
 		elif firstWord == '(<layer>':
 			self.isBridgeLayer = False
@@ -233,7 +228,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

@@ -31,7 +31,7 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return DescriptionRepository()
 
@@ -40,19 +40,14 @@ class DescriptionRepository:
 	"A class to handle the description preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.description.html', self )
 		description = 'Write your description of the profile here.\n\nSuggested format is a description, followed by a link to the profile post or web page.'
 		self.descriptionText = preferences.TextPreference().getFromValue( 'Description Text:', self, description )
-		#Create the archive, title of the dialog & preferences fileName.
-		self.executeTitle = None
-		self.saveCloseTitle = 'Save and Close'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.description.html' )
 
 
 def main():
 	"Display the file or directory dialog."
-	preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+	preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

@@ -83,14 +83,14 @@ def writeChainTextWithNounMessage( fileName, procedure ):
 	print( os.path.basename( fileName ) )
 	print( '' )
 	startTime = time.time()
-	suffixFilename = fileName[ : fileName.rfind( '.' ) ] + '_' + procedure + '.gcode'
+	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_' + procedure + '.gcode'
 	craftText = getChainText( fileName, procedure )
 	if craftText == '':
 		return
-	gcodec.writeFileText( suffixFilename, craftText )
+	gcodec.writeFileText( suffixFileName, craftText )
 	print( '' )
 	print( 'The %s tool has created the file:' % procedure )
-	print( suffixFilename )
+	print( suffixFileName )
 	print( '' )
 	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to craft the file.' )
-	analyze.writeOutput( suffixFilename, craftText )
+	analyze.writeOutput( suffixFileName, craftText )

@@ -17,7 +17,7 @@ The carved file is saved as Screw Holder Bottom_carve.gcode
 It took 3 seconds to carve the file.
 
 
->>> carve.writeOutput()
+>>> carve.writeOutput( 'Screw Holder Bottom.stl' )
 File Screw Holder Bottom.gcode is being carved.
 The carved file is saved as Screw Holder Bottom_carve.gcode
 It took 3 seconds to carve the file.
@@ -149,8 +149,7 @@ def getBridgeLoops( layerThickness, loop ):
 	slightlyGreaterThanHalfWidth = 1.1 * halfWidth
 	muchGreaterThanHalfWIdth = 2.5 * halfWidth
 	extrudateLoops = []
-	circleNodes = intercircle.getCircleNodesFromLoop( loop, slightlyGreaterThanHalfWidth )
-	centers = intercircle.getCentersFromCircleNodes( circleNodes )
+	centers = intercircle.getCentersFromLoop( loop, slightlyGreaterThanHalfWidth )
 	for center in centers:
 		extrudateLoop = intercircle.getSimplifiedInsetFromClockwiseLoop( center, halfWidth )
 		if intercircle.isLargeSameDirection( extrudateLoop, center, muchGreaterThanHalfWIdth ):
@@ -203,8 +202,7 @@ def getDoubledRoundZ( overhangingSegment, segmentRoundZ ):
 
 def getInclusiveLoops( allPoints, corners, importRadius, isInteriorWanted = True ):
 	"Get loops which include most of the points."
-	circleNodes = intercircle.getCircleNodesFromPoints( allPoints, importRadius )
-	centers = intercircle.getCentersFromCircleNodes( circleNodes )
+	centers = intercircle.getCentersFromPoints( allPoints, importRadius )
 	clockwiseLoops = []
 	inclusiveLoops = []
 	tinyRadius = 0.03 * importRadius
@@ -222,9 +220,9 @@ def getInclusiveLoops( allPoints, corners, importRadius, isInteriorWanted = True
 		return getLoopsWithCorners( corners, importRadius, inclusiveLoops, pointTable )
 	clockwiseLoops = getLoopsInOrderOfArea( compareAreaDescending, clockwiseLoops )
 	for clockwiseLoop in clockwiseLoops:
-			if getOverlapRatio( clockwiseLoop, pointTable ) < 0.1:
-				inclusiveLoops.append( clockwiseLoop )
-				addLoopToPointTable( clockwiseLoop, pointTable )
+		if getOverlapRatio( clockwiseLoop, pointTable ) < 0.1:
+			inclusiveLoops.append( clockwiseLoop )
+			addLoopToPointTable( clockwiseLoop, pointTable )
 	return getLoopsWithCorners( corners, importRadius, inclusiveLoops, pointTable )
 
 def getInsetPoint( loop, tinyRadius ):
@@ -650,10 +648,7 @@ class TriangleMesh:
 			originalLoops = getLoopsFromCorrectMesh( self.edges, self.faces, self.vertices, z )
 		if len( originalLoops ) < 1:
 			originalLoops = getLoopsFromUnprovenMesh( self.edges, self.faces, self.importRadius, self.vertices, z )
-		simplifiedLoops = []
-		for originalLoop in originalLoops:
-			simplifiedLoops.append( euclidean.getSimplifiedLoop( originalLoop, self.importRadius ) )
-		loops = getLoopsInOrderOfArea( compareAreaDescending, simplifiedLoops )
+		loops = getLoopsInOrderOfArea( compareAreaDescending, euclidean.getSimplifiedLoops( originalLoops, self.importRadius ) )
 		for loopIndex in xrange( len( loops ) ):
 			loop = loops[ loopIndex ]
 			leftPoint = euclidean.getLeftPoint( loop )

@@ -60,7 +60,7 @@ def getFileOrDirectoryTypesUnmodifiedGcode( fileName, fileTypes, wasCancelled ):
 		return gcodec.getFilesWithFileTypesWithoutWords( fileTypes, [], fileName ) + gcodec.getUnmodifiedGCodeFiles( fileName )
 	return [ fileName ]
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return PolyfileRepository()
 
@@ -77,21 +77,16 @@ class PolyfileRepository:
 	"A class to handle the polyfile preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
+		preferences.addListsToRepository( 'skeinforge_tools.meta_plugins.polyfile.html', '', self )
 		self.directoryOrFileChoiceLabel = preferences.LabelDisplay().getFromName( 'Directory or File Choice: ', self )
 		directoryRadio = []
 		self.directoryPreference = preferences.Radio().getFromRadio( 'Execute All Unmodified Files in a Directory', directoryRadio, self, False )
 		self.filePreference = preferences.Radio().getFromRadio( 'Execute File', directoryRadio, self, True )
-		#Create the archive, title of the dialog & preferences fileName.
-		self.executeTitle = None
-		self.saveCloseTitle = 'Save and Close'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.polyfile.html' )
 
 
 def main():
 	"Display the file or directory dialog."
-	preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+	preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

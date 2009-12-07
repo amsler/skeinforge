@@ -23,7 +23,7 @@ The altitude that the bottom of the raft will be set to the "Bottom Altitude" pr
 
 The raft fills a rectangle whose base size is the rectangle around the bottom layer of the shape expanded on each side by the 'Raft Margin' plus the 'Raft Additional Margin over Length (%)' percentage times the length of the side.  The default 'Raft Margin' is 3 millimeters and the default 'Raft Additional Margin over Length (%)' is 1 percent.  The rectangle size is then reduced by the 'Infill Overhang' ratio times the width of the extrusion of the raft.
 
-In the "Support Material Choice" radio button group, if "No Support Material" is selected then raft will not add support material, this is the default because the raft takes time to generate.  If "Support Material Everywhere" is selected, support material will be added wherever there are overhangs, even inside the object; because support material inside objects is hard or impossible to remove, this option should only be chosen if the shape has a cavity that needs support and there is some way to extract the support material.  If "Support Material on Exterior Only" is selected, support material will be added only the exterior of the object; this is the best option for most objects which require support material.  The "Support Minimum Angle" preference is the minimum angle that a surface overhangs before support material is added, the default is sixty degrees. The "Support Flowrate over Operating Flowrate" is the ratio of the flow rate when the support is extruded over the operating flow rate.  With a number less than one, the support flow rate will be smaller so the support will be thinner and easier to remove, the default is 0.9.  The "Support Gap over Perimeter Extrusion Width" is the gap between the support material and the object over the perimeter extrusion width, the default is 0.5.
+In the "Support Material Choice" radio button group, if "No Support Material" is selected then raft will not add support material, this is the default because the raft takes time to generate.  If "Support Material Everywhere" is selected, support material will be added wherever there are overhangs, even inside the object; because support material inside objects is hard or impossible to remove, this option should only be chosen if the shape has a cavity that needs support and there is some way to extract the support material.  If "Support Material on Exterior Only" is selected, support material will be added only the exterior of the object; this is the best option for most objects which require support material.  The "Support Minimum Angle" preference is the minimum angle that a surface overhangs before support material is added, the default is sixty degrees. The "Support Flow Rate over Operating Flow Rate" is the ratio of the flow rate when the support is extruded over the operating flow rate.  With a number less than one, the support flow rate will be smaller so the support will be thinner and easier to remove, the default is 0.9.  The "Support Gap over Perimeter Extrusion Width" is the gap between the support material and the object over the perimeter extrusion width, the default is 0.5.
 
 If support material is generated, then if there is a file support_start.gcode, it will add that to the start of the support gcode. After it has added the support gcode, it will add the file support_end.gcode if it exists.  Raft does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  Raft looks for those files in the alterations folder in the .skeinforge folder in the home directory. If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the skeinforge_tools folder.
 
@@ -90,16 +90,6 @@ __license__ = "GPL 3.0"
 
 
 #maybe later wide support
-def addXIntersectionsFromSegment( index, segment, xIntersectionIndexList ):
-	"Add the x intersections from the segment."
-	for endpoint in segment:
-		xIntersectionIndexList.append( euclidean.XIntersectionIndex( index, endpoint.point.real ) )
-
-def addXIntersectionsFromSegments( index, segments, xIntersectionIndexList ):
-	"Add the x intersections from the segments."
-	for segment in segments:
-		addXIntersectionsFromSegment( index, segment, xIntersectionIndexList )
-
 #raft outline temperature http://hydraraptor.blogspot.com/2008/09/screw-top-pot.html
 def getCraftedText( fileName, text = '', raftRepository = None ):
 	"Raft the file or text."
@@ -155,69 +145,14 @@ def getExtendedLineSegment( extensionDistance, lineSegment, loopXIntersections )
 		setExtendedPoint( lineSegment[ 1 ], pointEnd, loopXIntersection )
 	return lineSegment
 
-def getJoinOfXIntersectionIndexes( xIntersectionIndexList ):
-	"Get x intersections from surrounding layers."
-	xIntersectionList = []
-	solidTable = {}
-	solid = False
-	xIntersectionIndexList.sort()
-	for xIntersectionIndex in xIntersectionIndexList:
-		euclidean.toggleHashtable( solidTable, xIntersectionIndex.index, "" )
-		oldSolid = solid
-		solid = len( solidTable ) > 0
-		if oldSolid != solid:
-			xIntersectionList.append( xIntersectionIndex.x )
-	return xIntersectionList
-
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return RaftRepository()
-
-def joinSegmentTables( fromTable, intoTable ):
-	"Join both segment tables and put the join into the intoTable."
-	intoTableKeys = intoTable.keys()
-	fromTableKeys = fromTable.keys()
-	joinedKeyTable = {}
-	concatenatedSegmentTableKeys = intoTableKeys + fromTableKeys
-	for concatenatedSegmentTableKey in concatenatedSegmentTableKeys:
-		joinedKeyTable[ concatenatedSegmentTableKey ] = None
-	joinedKeys = joinedKeyTable.keys()
-	joinedKeys.sort()
-	joinedSegmentTable = {}
-	for joinedKey in joinedKeys:
-		xIntersectionIndexList = []
-		if joinedKey in intoTable:
-			addXIntersectionsFromSegments( 0, intoTable[ joinedKey ], xIntersectionIndexList )
-		if joinedKey in fromTable:
-			addXIntersectionsFromSegments( 1, fromTable[ joinedKey ], xIntersectionIndexList )
-		xIntersections = getJoinOfXIntersectionIndexes( xIntersectionIndexList )
-		lineSegments = euclidean.getSegmentsFromXIntersections( xIntersections, joinedKey )
-		if len( lineSegments ) > 0:
-			intoTable[ joinedKey ] = lineSegments
-		else:
-			print( "This should never happen, there are no line segments in joinSegments in raft." )
 
 def setExtendedPoint( lineSegmentEnd, pointOriginal, x ):
 	"Set the point in the extended line segment."
 	if x > min( lineSegmentEnd.point.real, pointOriginal.real ) and x < max( lineSegmentEnd.point.real, pointOriginal.real ):
 		lineSegmentEnd.point = complex( x, pointOriginal.imag)
-
-def subtractFill( fillXIntersectionIndexTable, supportSegmentLayerTable ):
-	"Subtract fill from the support layer table."
-	supportSegmentLayerTableKeys = supportSegmentLayerTable.keys()
-	supportSegmentLayerTableKeys.sort()
-	if len( supportSegmentLayerTableKeys ) < 1:
-		return
-	for supportSegmentLayerTableKey in supportSegmentLayerTableKeys:
-		xIntersectionIndexList = []
-		addXIntersectionsFromSegments( - 1, supportSegmentLayerTable[ supportSegmentLayerTableKey ], xIntersectionIndexList )
-		if supportSegmentLayerTableKey in fillXIntersectionIndexTable:
-			addXIntersectionsFromSegments( 0, fillXIntersectionIndexTable[ supportSegmentLayerTableKey ], xIntersectionIndexList )
-		lineSegments = euclidean.getSegmentsFromXIntersectionIndexes( xIntersectionIndexList, supportSegmentLayerTableKey )
-		if len( lineSegments ) > 0:
-			supportSegmentLayerTable[ supportSegmentLayerTableKey ] = lineSegments
-		else:
-			del supportSegmentLayerTable[ supportSegmentLayerTableKey ]
 
 def writeOutput( fileName = '' ):
 	"Raft a gcode linear move file."
@@ -231,50 +166,47 @@ class RaftRepository:
 	"A class to handle the raft preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Rafted', self, '' )
-		self.activateRaft = preferences.BooleanPreference().getFromValue( 'Activate Raft:', self, True )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.raft.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Rafted', self, '' )
+		self.activateRaft = preferences.BooleanPreference().getFromValue( 'Activate Raft', self, True )
 		self.addRaftElevateNozzleOrbitSetAltitude = preferences.BooleanPreference().getFromValue( 'Add Raft, Elevate Nozzle, Orbit and Set Altitude:', self, True )
-		self.baseInfillDensity = preferences.FloatPreference().getFromValue( 'Base Infill Density (ratio):', self, 0.5 )
-		self.baseLayerThicknessOverLayerThickness = preferences.FloatPreference().getFromValue( 'Base Layer Thickness over Layer Thickness:', self, 2.0 )
-		self.baseLayers = preferences.IntPreference().getFromValue( 'Base Layers (integer):', self, 1 )
-		self.baseNozzleLiftOverBaseLayerThickness = preferences.FloatPreference().getFromValue( 'Base Nozzle Lift over Base Layer Thickness (ratio):', self, 0.375 )
-		self.bottomAltitude = preferences.FloatPreference().getFromValue( 'Bottom Altitude:', self, 0.0 )
-		self.infillOverhang = preferences.FloatPreference().getFromValue( 'Infill Overhang (ratio):', self, 0.1 )
-		self.interfaceInfillDensity = preferences.FloatPreference().getFromValue( 'Interface Infill Density (ratio):', self, 0.5 )
-		self.interfaceLayerThicknessOverLayerThickness = preferences.FloatPreference().getFromValue( 'Interface Layer Thickness over Layer Thickness:', self, 1.0 )
-		self.interfaceLayers = preferences.IntPreference().getFromValue( 'Interface Layers (integer):', self, 2 )
-		self.interfaceNozzleLiftOverInterfaceLayerThickness = preferences.FloatPreference().getFromValue( 'Interface Nozzle Lift over Interface Layer Thickness (ratio):', self, 0.45 )
-		self.operatingNozzleLiftOverLayerThickness = preferences.FloatPreference().getFromValue( 'Operating Nozzle Lift over Layer Thickness (ratio):', self, 0.5 )
-		self.raftAdditionalMarginOverLengthPercent = preferences.FloatPreference().getFromValue( 'Raft Additional Margin over Length (%):', self, 1.0 )
-		self.raftMargin = preferences.FloatPreference().getFromValue( 'Raft Margin (mm):', self, 3.0 )
-		self.supportCrossHatch = preferences.BooleanPreference().getFromValue( 'Support Cross Hatch:', self, True )
-		self.supportFlowrateOverOperatingFlowrate = preferences.FloatPreference().getFromValue( 'Support Flowrate over Operating Flowrate (ratio):', self, 1.0 )
-		self.supportGapOverPerimeterExtrusionWidth = preferences.FloatPreference().getFromValue( 'Support Gap over Perimeter Extrusion Width (ratio):', self, 1.0 )
+		self.baseInfillDensity = preferences.FloatSpin().getFromValue( 0.3, 'Base Infill Density (ratio):', self, 0.9, 0.5 )
+		self.baseLayerThicknessOverLayerThickness = preferences.FloatSpin().getFromValue( 1.0, 'Base Layer Thickness over Layer Thickness:', self, 3.0, 2.0 )
+		self.baseLayers = preferences.IntSpin().getFromValue( 0, 'Base Layers (integer):', self, 3, 1 )
+		self.baseNozzleLiftOverBaseLayerThickness = preferences.FloatSpin().getFromValue( 0.2, 'Base Nozzle Lift over Base Layer Thickness (ratio):', self, 0.8, 0.4 )
+		self.bottomAltitude = preferences.FloatSpin().getFromValue( 0.0, 'Bottom Altitude:', self, 10.0, 0.0 )
+		self.infillOverhang = preferences.FloatSpin().getFromValue( 0.0, 'Infill Overhang (ratio):', self, 0.5, 0.1 )
+		self.interfaceInfillDensity = preferences.FloatSpin().getFromValue( 0.3, 'Interface Infill Density (ratio):', self, 0.9, 0.5 )
+		self.interfaceLayerThicknessOverLayerThickness = preferences.FloatSpin().getFromValue( 1.0, 'Interface Layer Thickness over Layer Thickness:', self, 3.0, 1.0 )
+		self.interfaceLayers = preferences.IntSpin().getFromValue( 0, 'Interface Layers (integer):', self, 3, 2 )
+		self.interfaceNozzleLiftOverInterfaceLayerThickness = preferences.FloatSpin().getFromValue( 0.25, 'Interface Nozzle Lift over Interface Layer Thickness (ratio):', self, 0.85, 0.45 )
+		self.operatingNozzleLiftOverLayerThickness = preferences.FloatSpin().getFromValue( 0.3, 'Operating Nozzle Lift over Layer Thickness (ratio):', self, 0.7, 0.5 )
+		self.raftAdditionalMarginOverLengthPercent = preferences.FloatSpin().getFromValue( 0.5, 'Raft Additional Margin over Length (%):', self, 1.5, 1.0 )
+		self.raftMargin = preferences.FloatSpin().getFromValue( 1.0, 'Raft Margin (mm):', self, 5.0, 3.0 )
+		self.supportCrossHatch = preferences.BooleanPreference().getFromValue( 'Support Cross Hatch', self, False )
+		self.supportFlowRateOverOperatingFlowRate = preferences.FloatSpin().getFromValue( 0.7, 'Support Flow Rate over Operating Flow Rate (ratio):', self, 1.1, 1.0 )
+		self.supportGapOverPerimeterExtrusionWidth = preferences.FloatSpin().getFromValue( 0.5, 'Support Gap over Perimeter Extrusion Width (ratio):', self, 1.5, 1.0 )
 		self.supportMaterialChoice = preferences.MenuButtonDisplay().getFromName( 'Support Material Choice: ', self )
 		self.supportChoiceNoSupportMaterial = preferences.MenuRadio().getFromMenuButtonDisplay( self.supportMaterialChoice, 'No Support', self, True )
 		self.supportChoiceSupportMateriaEverywhere = preferences.MenuRadio().getFromMenuButtonDisplay( self.supportMaterialChoice, 'Support Everywhere', self, False )
 		self.supportChoiceSupportMaterialOnExteriorOnly = preferences.MenuRadio().getFromMenuButtonDisplay( self.supportMaterialChoice, 'Support on Exterior Only', self, False )
-		self.supportMinimumAngle = preferences.FloatPreference().getFromValue( 'Support Minimum Angle (degrees):', self, 60.0 )
-		self.temperatureChangeBeforeTimeRaft = preferences.FloatPreference().getFromValue( 'Temperature Change Time Before Raft (seconds):', self, 150.0 )
-		self.temperatureChangeTimeBeforeFirstLayerOutline = preferences.FloatPreference().getFromValue( 'Temperature Change Time Before First Layer Outline (seconds):', self, 150.0 )
-		self.temperatureChangeTimeBeforeNextThreads = preferences.FloatPreference().getFromValue( 'Temperature Change Time Before Next Threads (seconds):', self, 150.0 )
-		self.temperatureChangeTimeBeforeSupportLayers = preferences.FloatPreference().getFromValue( 'Temperature Change Time Before Support Layers (seconds):', self, 150.0 )
-		self.temperatureChangeTimeBeforeSupportedLayers = preferences.FloatPreference().getFromValue( 'Temperature Change Time Before Supported Layers (seconds):', self, 150.0 )
-		self.temperatureRaft = preferences.FloatPreference().getFromValue( 'Temperature of Raft (Celcius):', self, 200.0 )
-		self.temperatureShapeFirstLayerOutline = preferences.FloatPreference().getFromValue( 'Temperature of Shape First Layer Outline (Celcius):', self, 220.0 )
-		self.temperatureShapeFirstLayerWithin = preferences.FloatPreference().getFromValue( 'Temperature of Shape First Layer Within (Celcius):', self, 195.0 )
-		self.temperatureShapeNextLayers = preferences.FloatPreference().getFromValue( 'Temperature of Shape Next Layers (Celcius):', self, 230.0 )
-		self.temperatureShapeSupportLayers = preferences.FloatPreference().getFromValue( 'Temperature of Support Layers (Celcius):', self, 200.0 )
-		self.temperatureShapeSupportedLayers = preferences.FloatPreference().getFromValue( 'Temperature of Supported Layers (Celcius):', self, 230.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.supportMinimumAngle = preferences.FloatSpin().getFromValue( 40.0, 'Support Minimum Angle (degrees):', self, 80.0, 60.0 )
+		self.temperatureChangeBeforeTimeRaft = preferences.FloatSpin().getFromValue( 0.0, 'Temperature Change Time Before Raft (seconds):', self, 180.0, 150.0 )
+		self.temperatureChangeTimeBeforeFirstLayerOutline = preferences.FloatSpin().getFromValue( 0.0, 'Temperature Change Time Before First Layer Outline (seconds):', self, 60.0, 30.0 )
+		self.temperatureChangeTimeBeforeNextThreads = preferences.FloatSpin().getFromValue( 0.0, 'Temperature Change Time Before Next Threads (seconds):', self, 60.0, 30.0 )
+		self.temperatureChangeTimeBeforeSupportLayers = preferences.FloatSpin().getFromValue( 0.0, 'Temperature Change Time Before Support Layers (seconds):', self, 60.0, 30.0 )
+		self.temperatureChangeTimeBeforeSupportedLayers = preferences.FloatSpin().getFromValue( 0.0, 'Temperature Change Time Before Supported Layers (seconds):', self, 60.0, 30.0 )
+		self.temperatureRaft = preferences.FloatSpin().getFromValue( 140.0, 'Temperature of Raft (Celcius):', self, 260.0, 200.0 )
+		self.temperatureShapeFirstLayerOutline = preferences.FloatSpin().getFromValue( 140.0, 'Temperature of Shape First Layer Outline (Celcius):', self, 260.0, 220.0 )
+		self.temperatureShapeFirstLayerWithin = preferences.FloatSpin().getFromValue( 140.0, 'Temperature of Shape First Layer Within (Celcius):', self, 260.0, 195.0 )
+		self.temperatureShapeNextLayers = preferences.FloatSpin().getFromValue( 140.0, 'Temperature of Shape Next Layers (Celcius):', self, 260.0, 230.0 )
+		self.temperatureShapeSupportLayers = preferences.FloatSpin().getFromValue( 140.0, 'Temperature of Support Layers (Celcius):', self, 260.0, 200.0 )
+		self.temperatureShapeSupportedLayers = preferences.FloatSpin().getFromValue( 140.0, 'Temperature of Supported Layers (Celcius):', self, 260.0, 230.0 )
 		self.executeTitle = 'Raft'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.raft.html' )
 
 	def execute( self ):
 		"Raft button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -298,16 +230,15 @@ class RaftSkein:
 		self.layerThickness = 0.4
 		self.lineIndex = 0
 		self.lines = None
-		self.oldFlowrateString = None
+		self.oldFlowRateString = None
 		self.oldLocation = None
-		self.operatingFlowrateString = None
+		self.operatingFlowRateString = None
 		self.operatingLayerEndLine = '(<operatingLayerEnd> </operatingLayerEnd>)'
 		self.operatingJump = None
 		self.orbitalFeedRatePerSecond = 2.01
 		self.perimeterWidth = 0.6
-		self.supportFlowrateString = None
+		self.supportFlowRateString = None
 		self.supportLayers = []
-		self.supportSegmentTables = []
 		self.travelFeedRatePerMinute = None
 
 	def addBaseLayer( self, baseExtrusionWidth, baseStep, stepBegin, stepEnd ):
@@ -330,13 +261,13 @@ class RaftSkein:
 			return
 		self.addLayerFromSegments( baseLayerThickness, self.baseLayerThicknessOverLayerThickness, segments, z )
 
-	def addFlowrateLineIfNecessary( self, flowRateString ):
+	def addFlowRateLineIfNecessary( self, flowRateString ):
 		"Add a line of flow rate if different."
-		if flowRateString == self.oldFlowrateString:
+		if flowRateString == self.oldFlowRateString:
 			return
 		if flowRateString != None:
 			self.distanceFeedRate.addLine( 'M108 S' + flowRateString )
-		self.oldFlowrateString = flowRateString
+		self.oldFlowRateString = flowRateString
 
 	def addInterfaceLayer( self ):
 		"Add an interface layer."
@@ -372,7 +303,7 @@ class RaftSkein:
 			path.append( nearestPoint )
 		self.addLayerLine( z )
 		if layerThicknessRatioSquared != 1.0:
-			self.distanceFeedRate.addExtrusionDistanceRatio( 1.0 / layerThicknessRatioSquared )
+			self.distanceFeedRate.addExtrusionDistanceRatioLine( 1.0 * layerThicknessRatioSquared )
 		self.distanceFeedRate.addGcodeFromFeedRateThreadZ( feedRateMinute, path, z )
 		self.extrusionTop += layerLayerThickness
 
@@ -447,8 +378,9 @@ class RaftSkein:
 		"Add support segments from the boundary layers."
 		aboveLayer = self.boundaryLayers[ layerIndex + 1 ]
 		aboveLoops = aboveLayer.loops
+		supportLayer = self.supportLayers[ layerIndex ]
 		if len( aboveLoops ) < 1:
-			self.supportSegmentTables.append( {} )
+			supportLayer.xIntersectionsTable = {}
 			return
 		horizontalSegmentTable = {}
 		boundaryLayer = self.boundaryLayers[ layerIndex ]
@@ -467,11 +399,9 @@ class RaftSkein:
 				xIntersections = euclidean.getXIntersectionsFromIntersections( xIntersectionIndexList )
 				for xIntersection in xIntersections:
 					xTotalIntersectionIndexList.append( euclidean.XIntersectionIndex( subStepIndex + untilEdgeSubSteps, xIntersection ) )
-			xTotalIntersections = getJoinOfXIntersectionIndexes( xTotalIntersectionIndexList )
-			lineSegments = euclidean.getSegmentsFromXIntersections( xTotalIntersections, y )
-			if len( lineSegments ) > 0:
-				horizontalSegmentTable[ y ] = lineSegments
-		self.supportSegmentTables.append( horizontalSegmentTable )
+			xTotalIntersections = euclidean.getJoinOfXIntersectionIndexes( xTotalIntersectionIndexList )
+			if len( xTotalIntersections ) > 0:
+				supportLayer.xIntersectionsTable[ int( y / self.interfaceStep ) ] = xTotalIntersections
 
 	def addSupportLayerTemperature( self, endpoints, z ):
 		"Add support layer and temperature before the object layer."
@@ -486,10 +416,10 @@ class RaftSkein:
 		for aroundBoundaryLoop in aroundBoundaryLoops:
 			euclidean.addLoopToPixelTable( aroundBoundaryLoop, aroundPixelTable, aroundWidth )
 		paths = euclidean.getPathsFromEndpoints( endpoints, layerFillInset, aroundPixelTable, aroundWidth )
-		self.addFlowrateLineIfNecessary( self.supportFlowrateString )
+		self.addFlowRateLineIfNecessary( self.supportFlowRateString )
 		for path in paths:
 			self.distanceFeedRate.addGcodeFromFeedRateThreadZ( self.feedRateMinute, path, z )
-		self.addFlowrateLineIfNecessary( self.operatingFlowrateString )
+		self.addFlowRateLineIfNecessary( self.operatingFlowRateString )
 		self.addTemperatureOrbits( endpoints, self.raftRepository.temperatureShapeSupportedLayers, self.raftRepository.temperatureChangeTimeBeforeSupportedLayers, z )
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode( self.supportEndLines )
 
@@ -519,57 +449,37 @@ class RaftSkein:
 		largestLoop = euclidean.getLargestLoop( insetBoundaryLoops )
 		intercircle.addOrbitsIfLarge( self.distanceFeedRate, largestLoop, self.orbitalFeedRatePerSecond, temperatureTimeChangePreference.value, z )
 
-	def addToFillXIntersectionIndexTables( self, fillXIntersectionIndexTables, layerIndex ):
+	def addToFillXIntersectionIndexTables( self, supportLayer ):
 		"Add fill segments from the boundary layers."
-		supportLoops = self.supportLayers[ layerIndex ]
+		supportLoops = supportLayer.supportLoops
+		supportLayer.fillXIntersectionIndexTable = {}
 		if len( supportLoops ) < 1 or len( self.interfaceStepsUntilEnd ) < 1:
-			fillXIntersectionIndexTables.append( {} )
 			return
-		front = self.interfaceStepsUntilEnd[ 0 ]
-		width = 987654321.0
-		if len( self.interfaceStepsUntilEnd ) > 1:
-			width = self.interfaceStepsUntilEnd[ 1 ] - self.interfaceStepsUntilEnd[ 0 ]
-		xIntersectionIndexLists = []
-		yList = []
-		frontOverWidth = euclidean.getFrontOverWidthAddYList( front, len( self.interfaceStepsUntilEnd ), xIntersectionIndexLists, width, yList )
-		euclidean.addXIntersectionIndexesFromLoops( frontOverWidth, supportLoops, 0, xIntersectionIndexLists, width, yList )
-		fillXIntersectionIndexTable = {}
-		for interfaceStepIndex in xrange( len( self.interfaceStepsUntilEnd ) ):
-			y = self.interfaceStepsUntilEnd[ interfaceStepIndex ]
-			xIntersectionIndexes = xIntersectionIndexLists[ interfaceStepIndex ]
-#			xIntersectionIndexes = getFillXIntersectionIndexes( supportLoops, y )
-			if len( xIntersectionIndexes ) > 0:
-				xIntersections = getJoinOfXIntersectionIndexes( xIntersectionIndexes )
-				lineSegments = euclidean.getSegmentsFromXIntersections( xIntersections, y )
-				fillXIntersectionIndexTable[ y ] = lineSegments
-		fillXIntersectionIndexTables.append( fillXIntersectionIndexTable )
+		euclidean.addXIntersectionsFromLoopsForTable( supportLoops, supportLayer.fillXIntersectionIndexTable, self.interfaceStep )
 
-	def extendSegments( self, loops, radius, supportSegmentTableIndex ):
+	def extendXIntersections( self, loops, radius, xIntersectionsTable ):
 		"Extend the support segments."
-		supportSegmentTable = self.supportSegmentTables[ supportSegmentTableIndex ]
-		supportLayerKeys = supportSegmentTable.keys()
-		horizontalSegmentSegmentTable = {}
-		for supportLayerKey in supportLayerKeys:
-			lineSegments = supportSegmentTable[ supportLayerKey ]
+		xIntersectionsTableKeys = xIntersectionsTable.keys()
+		for xIntersectionsTableKey in xIntersectionsTableKeys:
+			lineSegments = euclidean.getSegmentsFromXIntersections( xIntersectionsTable[ xIntersectionsTableKey ], xIntersectionsTableKey )
 			xIntersectionIndexList = []
 			loopXIntersections = []
-			euclidean.addXIntersectionsFromLoops( loops, loopXIntersections, supportLayerKey )
+			euclidean.addXIntersectionsFromLoops( loops, loopXIntersections, xIntersectionsTableKey )
 			for lineSegmentIndex in xrange( len( lineSegments ) ):
 				lineSegment = lineSegments[ lineSegmentIndex ]
 				extendedLineSegment = getExtendedLineSegment( radius, lineSegment, loopXIntersections )
 				if extendedLineSegment != None:
-					addXIntersectionsFromSegment( lineSegmentIndex, extendedLineSegment, xIntersectionIndexList )
-			xIntersections = getJoinOfXIntersectionIndexes( xIntersectionIndexList )
+					euclidean.addXIntersectionIndexesFromSegment( lineSegmentIndex, extendedLineSegment, xIntersectionIndexList )
+			xIntersections = euclidean.getJoinOfXIntersectionIndexes( xIntersectionIndexList )
 			for xIntersectionIndex in xrange( len( xIntersections ) ):
 				xIntersection = xIntersections[ xIntersectionIndex ]
 				xIntersection = max( xIntersection, self.interfaceBeginX )
 				xIntersection = min( xIntersection, self.interfaceEndX )
 				xIntersections[ xIntersectionIndex ] = xIntersection
 			if len( xIntersections ) > 0:
-				extendedLineSegments = euclidean.getSegmentsFromXIntersections( xIntersections, supportLayerKey )
-				supportSegmentTable[ supportLayerKey ] = extendedLineSegments
+				xIntersectionsTable[ xIntersectionsTableKey ] = xIntersections
 			else:
-				del supportSegmentTable[ supportLayerKey ]
+				del xIntersectionsTable[ xIntersectionsTableKey ]
 
 	def getCraftedGcode( self, gcodeText, raftRepository ):
 		"Parse gcode text and store the raft gcode."
@@ -623,16 +533,10 @@ class RaftSkein:
 
 	def getSupportEndpoints( self ):
 		"Get the support layer segments."
-		if len( self.supportSegmentTables ) <= self.layerIndex:
+		if len( self.supportLayers ) <= self.layerIndex:
 			return []
-		supportSegmentTable = self.supportSegmentTables[ self.layerIndex ]
-		endpoints = []
-		segmentTableKeys = supportSegmentTable.keys()
-		segmentTableKeys.sort()
-		for segmentTableKey in segmentTableKeys:
-			for segment in supportSegmentTable[ segmentTableKey ]:
-				for endpoint in segment:
-					endpoints.append( endpoint )
+		supportSegmentTable = self.supportLayers[ self.layerIndex ].supportSegmentTable
+		endpoints = euclidean.getEndpointsFromSegmentTable( supportSegmentTable )
 		if self.layerIndex % 2 == 0 or not self.raftRepository.supportCrossHatch.value:
 			return endpoints
 		crossEndpoints = []
@@ -663,19 +567,11 @@ class RaftSkein:
 			crossEndpoints += getEndpointsFromYIntersections( crossHatchPointLineTableKey, yIntersections )
 		return crossEndpoints
 
-	def joinSegments( self, supportSegmentTableIndex ):
-		"Join the support segments of this layer with those of the layer above."
-		horizontalSegmentTable = self.supportSegmentTables[ supportSegmentTableIndex ]
-		horizontalSegmentTableKeys = horizontalSegmentTable.keys()
-		aboveHorizontalSegmentTable = self.supportSegmentTables[ supportSegmentTableIndex + 1 ]
-		aboveHorizontalSegmentTableKeys = aboveHorizontalSegmentTable.keys()
-		joinSegmentTables( aboveHorizontalSegmentTable, horizontalSegmentTable )
-
 	def parseInitialization( self ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == 'M108':
@@ -699,7 +595,7 @@ class RaftSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the raft skein."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -729,7 +625,7 @@ class RaftSkein:
 			if self.layerStarted and self.addLineLayerStart:
 				self.distanceFeedRate.addLine( '(</layer>)' )
 			self.layerStarted = False
-			if self.layerIndex > len( self.supportSegmentTables ) + 1:
+			if self.layerIndex > len( self.supportLayers ) + 1:
 				self.distanceFeedRate.addLine( self.operatingLayerEndLine )
 				self.operatingLayerEndLine = ''
 			if self.addLineLayerStart:
@@ -754,9 +650,11 @@ class RaftSkein:
 		boundaryLoop = None
 		boundaryLayer = None
 		for line in self.lines[ self.lineIndex : ]:
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
-			if firstWord == '(<boundaryPoint>':
+			if firstWord == '(</boundaryPerimeter>)':
+				boundaryLoop = None
+			elif firstWord == '(<boundaryPoint>':
 				location = gcodec.getLocationFromSplitLine( None, splitLine )
 				if boundaryLoop == None:
 					boundaryLoop = []
@@ -768,8 +666,6 @@ class RaftSkein:
 					z += self.operatingJump
 				boundaryLayer = euclidean.LoopLayer( z )
 				self.boundaryLayers.append( boundaryLayer )
-			elif firstWord == '(</surroundingLoop>)':
-				boundaryLoop = None
 		if self.raftRepository.supportChoiceNoSupportMaterial.value:
 			return
 		if len( self.interfaceStepsUntilEnd ) < 1:
@@ -778,24 +674,33 @@ class RaftSkein:
 			return
 		for boundaryLayer in self.boundaryLayers:
 			supportLoops = intercircle.getInsetSeparateLoopsFromLoops( - self.supportOutset, boundaryLayer.loops )
-			self.supportLayers.append( supportLoops )
-		for layerIndex in xrange( len( self.supportLayers ) - 1 ):
-			self.addSupportSegmentTable( layerIndex )
+			supportLayer = SupportLayer( supportLoops )
+			self.supportLayers.append( supportLayer )
+		for supportLayerIndex in xrange( len( self.supportLayers ) - 1 ):
+			self.addSupportSegmentTable( supportLayerIndex )
 		self.truncateSupportSegmentTables()
-		for supportSegmentTableIndex in xrange( len( self.supportSegmentTables ) ):
-			self.extendSegments( self.boundaryLayers[ supportSegmentTableIndex ].loops, self.supportOutset, supportSegmentTableIndex )
-		fillXIntersectionIndexTables = []
-		for supportSegmentTableIndex in xrange( len( self.supportSegmentTables ) ):
-			self.addToFillXIntersectionIndexTables( fillXIntersectionIndexTables, supportSegmentTableIndex )
+		for supportLayerIndex in xrange( len( self.supportLayers ) - 1 ):
+			self.extendXIntersections( self.boundaryLayers[ supportLayerIndex ].loops, self.supportOutset, self.supportLayers[ supportLayerIndex ].xIntersectionsTable )
+		for supportLayer in self.supportLayers:
+			self.addToFillXIntersectionIndexTables( supportLayer )
 		if self.raftRepository.supportChoiceSupportMaterialOnExteriorOnly.value:
-			for supportSegmentTableIndex in xrange( 1, len( self.supportSegmentTables ) ):
-				self.subtractJoinedFill( fillXIntersectionIndexTables, supportSegmentTableIndex )
-		for supportSegmentTableIndex in xrange( len( self.supportSegmentTables ) - 2, - 1, - 1 ):
-			self.joinSegments( supportSegmentTableIndex )
-		for supportSegmentTableIndex in xrange( len( self.supportSegmentTables ) ):
-			self.extendSegments( self.supportLayers[ supportSegmentTableIndex ], self.raftOutsetRadius, supportSegmentTableIndex )
-		for supportSegmentTableIndex in xrange( len( self.supportSegmentTables ) ):
-			subtractFill( fillXIntersectionIndexTables[ supportSegmentTableIndex ], self.supportSegmentTables[ supportSegmentTableIndex ] )
+			for supportLayerIndex in xrange( 1, len( self.supportLayers ) ):
+				self.subtractJoinedFill( supportLayerIndex )
+		for supportLayerIndex in xrange( len( self.supportLayers ) - 2, - 1, - 1 ):
+			xIntersectionsTable = self.supportLayers[ supportLayerIndex ].xIntersectionsTable
+			aboveXIntersectionsTable = self.supportLayers[ supportLayerIndex + 1 ].xIntersectionsTable
+			euclidean.joinXIntersectionsTables( aboveXIntersectionsTable, xIntersectionsTable )
+		for supportLayerIndex in xrange( len( self.supportLayers ) ):
+			supportLayer = self.supportLayers[ supportLayerIndex ]
+			self.extendXIntersections( supportLayer.supportLoops, self.raftOutsetRadius, supportLayer.xIntersectionsTable )
+		for supportLayer in self.supportLayers:
+			euclidean.subtractXIntersectionsTable( supportLayer.xIntersectionsTable, supportLayer.fillXIntersectionIndexTable )
+		for supportLayer in self.supportLayers:
+			supportLayer.supportSegmentTable = {}
+			xIntersectionsTable = supportLayer.xIntersectionsTable
+			for xIntersectionsTableKey in xIntersectionsTable:
+				y = xIntersectionsTableKey * self.interfaceStep
+				supportLayer.supportSegmentTable[ xIntersectionsTableKey ] = euclidean.getSegmentsFromXIntersections( xIntersectionsTable[ xIntersectionsTableKey ], y )
 
 	def setCornersZ( self ):
 		"Set maximum and minimum corners and z."
@@ -803,7 +708,7 @@ class RaftSkein:
 		self.cornerHighComplex = complex( - 999999999.0, - 999999999.0 )
 		self.cornerLow = Vector3( 999999999.0, 999999999.0, 999999999.0 )
 		for line in self.lines[ self.lineIndex : ]:
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
@@ -826,26 +731,36 @@ class RaftSkein:
 
 	def setOperatingFlowString( self, splitLine ):
 		"Set the operating flow string from the split line."
-		self.operatingFlowrateString = splitLine[ 1 ][ 1 : ]
-		self.supportFlowrateString = self.distanceFeedRate.getRounded( float( self.operatingFlowrateString ) * self.raftRepository.supportFlowrateOverOperatingFlowrate.value )
+		self.operatingFlowRateString = splitLine[ 1 ][ 1 : ]
+		self.supportFlowRateString = self.distanceFeedRate.getRounded( float( self.operatingFlowRateString ) * self.raftRepository.supportFlowRateOverOperatingFlowRate.value )
 
-	def subtractJoinedFill( self, fillXIntersectionIndexTables, supportSegmentTableIndex ):
+	def subtractJoinedFill( self, supportLayerIndex ):
 		"Join the fill then subtract it from the support layer table."
-		supportSegmentTable = self.supportSegmentTables[ supportSegmentTableIndex ]
-		fillXIntersectionIndexTable = fillXIntersectionIndexTables[ supportSegmentTableIndex ]
-		fillXIntersectionIndexTableKeys = fillXIntersectionIndexTable.keys()
-		belowHorizontalSegmentTable = fillXIntersectionIndexTables[ supportSegmentTableIndex - 1 ]
-		belowHorizontalSegmentTableKeys = belowHorizontalSegmentTable.keys()
-		joinSegmentTables( belowHorizontalSegmentTable, fillXIntersectionIndexTable )
-		subtractFill( fillXIntersectionIndexTable, supportSegmentTable )
+		supportLayer = self.supportLayers[ supportLayerIndex ]
+		fillXIntersectionIndexTable = supportLayer.fillXIntersectionIndexTable
+		belowFillXIntersectionIndexTable = self.supportLayers[ supportLayerIndex - 1 ].fillXIntersectionIndexTable
+		euclidean.joinXIntersectionsTables( belowFillXIntersectionIndexTable, supportLayer.fillXIntersectionIndexTable )
+		euclidean.subtractXIntersectionsTable( supportLayer.xIntersectionsTable, supportLayer.fillXIntersectionIndexTable )
 
 	def truncateSupportSegmentTables( self ):
 		"Truncate the support segments after the last support segment which contains elements."
-		for supportSegmentTableIndex in xrange( len( self.supportSegmentTables ) - 1, - 1, - 1 ):
-			if len( self.supportSegmentTables[ supportSegmentTableIndex ] ) > 0:
-				self.supportSegmentTables = self.supportSegmentTables[ : supportSegmentTableIndex + 1 ]
+		for supportLayerIndex in xrange( len( self.supportLayers ) - 1, - 1, - 1 ):
+			if len( self.supportLayers[ supportLayerIndex ].xIntersectionsTable ) > 0:
+				self.supportLayers = self.supportLayers[ : supportLayerIndex + 1 ]
 				return
-		self.supportSegmentTables = []
+		self.supportLayers = []
+
+
+class SupportLayer:
+	"Support loops with segment tables."
+	def __init__( self, supportLoops ):
+		self.supportLoops = supportLoops
+		self.supportSegmentTable = {}
+		self.xIntersectionsTable = {}
+
+	def __repr__( self ):
+		"Get the string representation of this loop layer."
+		return '%s' % ( self.supportLoops )
 
 
 def main():
@@ -853,7 +768,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

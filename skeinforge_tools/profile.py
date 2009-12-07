@@ -35,35 +35,35 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def addSubmenus( craftTypeName, menu, pluginFilename, pluginPath, profileRadioVar ):
+def addSubmenus( craftTypeName, menu, pluginFileName, pluginPath, profileRadioVar ):
 	"Add a tool plugin menu."
 	submenu = preferences.Tkinter.Menu( menu, tearoff = 0 )
-	menu.add_cascade( label = pluginFilename.capitalize(), menu = submenu )
+	menu.add_cascade( label = pluginFileName.capitalize(), menu = submenu )
 	preferences.ToolDialog().addPluginToMenu( submenu, pluginPath )
 	submenu.add_separator()
-	pluginModule = preferences.getCraftTypePluginModule( pluginFilename )
-	profilePluginPreferences = preferences.getReadRepository( pluginModule.getRepositoryConstructor() )
-	isSelected = ( craftTypeName == pluginFilename )
+	pluginModule = preferences.getCraftTypePluginModule( pluginFileName )
+	profilePluginPreferences = preferences.getReadRepository( pluginModule.getNewRepository() )
+	isSelected = ( craftTypeName == pluginFileName )
 	for profileName in profilePluginPreferences.profileList.value:
 		value = isSelected and profileName == profilePluginPreferences.profileListbox.value
-		preferences.ProfileMenuRadio( pluginFilename, submenu, profileName, profileRadioVar, value )
+		preferences.ProfileMenuRadio( pluginFileName, submenu, profileName, profileRadioVar, value )
 
 def addToProfileMenu( menu ):
 	"Add a profile menu."
 	preferences.ToolDialog().addPluginToMenu( menu, __file__[ : __file__.rfind( '.' ) ] )
 	menu.add_separator()
 	directoryPath = preferences.getPluginsDirectoryPath()
-	pluginFilenames = preferences.getPluginFilenames()
+	pluginFileNames = preferences.getPluginFileNames()
 	craftTypeName = preferences.getCraftTypeName()
 	profileRadioVar = preferences.Tkinter.StringVar()
-	for pluginFilename in pluginFilenames:
-		addSubmenus( craftTypeName, menu, pluginFilename, os.path.join( directoryPath, pluginFilename ), profileRadioVar )
+	for pluginFileName in pluginFileNames:
+		addSubmenus( craftTypeName, menu, pluginFileName, os.path.join( directoryPath, pluginFileName ), profileRadioVar )
 
 def addToMenu( master, menu, repository, window ):
 	"Add a tool plugin menu."
 	ProfileMenuSaveListener( menu, window )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return preferences.ProfileRepository()
 
@@ -84,7 +84,7 @@ class ProfileMenuSaveListener:
 
 def main():
 	"Display the profile dialog."
-	preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+	preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

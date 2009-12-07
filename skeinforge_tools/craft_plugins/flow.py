@@ -29,7 +29,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the flow dialog.
 
 
->>> flow.writeOutput()
+>>> flow.writeOutput( 'Screw Holder Bottom.stl' )
 The flow tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -70,7 +70,7 @@ def getCraftedTextFromText( gcodeText, flowRepository = None ):
 		return gcodeText
 	return FlowSkein().getCraftedGcode( gcodeText, flowRepository )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return FlowRepository()
 
@@ -85,18 +85,15 @@ class FlowRepository:
 	"A class to handle the flow preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Flow', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.flow.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Flow', self, '' )
 		self.activateFlow = preferences.BooleanPreference().getFromValue( 'Activate Flow:', self, True )
-		self.flowRate = preferences.FloatPreference().getFromValue( 'Flow Rate (arbitrary units):', self, 210.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.flowRate = preferences.FloatSpin().getFromValue( 50.0, 'Flow Rate (arbitrary units):', self, 250.0, 210.0 )
 		self.executeTitle = 'Flow'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.flow.html' )
 
 	def execute( self ):
 		"Flow button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -130,7 +127,7 @@ class FlowSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -140,7 +137,7 @@ class FlowSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the flow skein."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -154,7 +151,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

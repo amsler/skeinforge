@@ -35,7 +35,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the unpause dialog.
 
 
->>> unpause.writeOutput()
+>>> unpause.writeOutput( 'Screw Holder Bottom.stl' )
 The unpause tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -78,7 +78,7 @@ def getCraftedTextFromText( gcodeText, unpauseRepository = None ):
 		return gcodeText
 	return UnpauseSkein().getCraftedGcode( unpauseRepository, gcodeText )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return UnpauseRepository()
 
@@ -100,19 +100,16 @@ class UnpauseRepository:
 	"A class to handle the unpause preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Unpaused', self, '' )
+		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.unpause.html', '', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '' )
 		self.activateUnpause = preferences.BooleanPreference().getFromValue( 'Activate Unpause', self, False )
-		self.delay = preferences.FloatPreference().getFromValue( 'Delay (milliseconds):', self, 28.0 )
-		self.maximumSpeed = preferences.FloatPreference().getFromValue( 'Maximum Speed (ratio):', self, 1.5 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.delay = preferences.FloatSpin().getFromValue( 2.0, 'Delay (milliseconds):', self, 42.0, 28.0 )
+		self.maximumSpeed = preferences.FloatSpin().getFromValue( 1.1, 'Maximum Speed (ratio):', self, 1.9, 1.5 )
 		self.executeTitle = 'Unpause'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.unpause.html' )
 
 	def execute( self ):
 		"Unpause button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -198,7 +195,7 @@ class UnpauseSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -208,7 +205,7 @@ class UnpauseSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -224,7 +221,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

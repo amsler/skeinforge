@@ -33,7 +33,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the chop dialog.
 
 
->>> chop.writeOutput()
+>>> chop.writeOutput( 'Screw Holder Bottom.stl' )
 The chop tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -86,58 +86,55 @@ def getCraftedTextFromFileName( fileName, chopRepository = None ):
 		preferences.getReadRepository( chopRepository )
 	return ChopSkein().getCarvedSVG( chopRepository, carving, fileName )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return ChopRepository()
 
 def writeOutput( fileName = '' ):
 	"Chop a GNU Triangulated Surface file.  If no fileName is specified, chop the first GNU Triangulated Surface file in this folder."
 	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypesWithoutWords( interpret.getImportPluginFilenames() )
+		unmodified = gcodec.getFilesWithFileTypesWithoutWords( interpret.getImportPluginFileNames() )
 		if len( unmodified ) == 0:
 			print( "There are no carvable files in this folder." )
 			return
 		fileName = unmodified[ 0 ]
 	startTime = time.time()
-	print( 'File ' + gcodec.getSummarizedFilename( fileName ) + ' is being chopped.' )
+	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being chopped.' )
 	chopGcode = getCraftedText( fileName )
 	if chopGcode == '':
 		return
-	suffixFilename = fileName[ : fileName.rfind( '.' ) ] + '_chop.svg'
-	suffixDirectoryName = os.path.dirname( suffixFilename )
-	suffixReplacedBaseName = os.path.basename( suffixFilename ).replace( ' ', '_' )
-	suffixFilename = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
-	gcodec.writeFileText( suffixFilename, chopGcode )
-	print( 'The chopped file is saved as ' + gcodec.getSummarizedFilename( suffixFilename ) )
+	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_chop.svg'
+	suffixDirectoryName = os.path.dirname( suffixFileName )
+	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
+	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
+	gcodec.writeFileText( suffixFileName, chopGcode )
+	print( 'The chopped file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to chop the file.' )
-	preferences.openWebPage( suffixFilename )
+	preferences.openWebPage( suffixFileName )
 
 
 class ChopRepository:
 	"A class to handle the chop preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.chop.html', self )
 		self.addExtraTopLayerIfNecessary = preferences.BooleanPreference().getFromValue( 'Add Extra Top Layer if Necessary', self, True )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '' )
-		self.extraDecimalPlaces = preferences.IntPreference().getFromValue( 'Extra Decimal Places (integer):', self, 1 )
-		self.importCoarseness = preferences.FloatPreference().getFromValue( 'Import Coarseness (ratio):', self, 1.0 )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '' )
+		self.extraDecimalPlaces = preferences.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
+		self.importCoarseness = preferences.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
+		self.layerThickness = preferences.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
+		self.layersFrom = preferences.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
+		self.layersTo = preferences.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
 		self.meshTypeLabel = preferences.LabelDisplay().getFromName( 'Mesh Type: ', self, )
 		importRadio = []
 		self.correctMesh = preferences.Radio().getFromRadio( 'Correct Mesh', importRadio, self, True )
 		self.unprovenMesh = preferences.Radio().getFromRadio( 'Unproven Mesh', importRadio, self, False )
-		self.layerThickness = preferences.FloatPreference().getFromValue( 'Layer Thickness (mm):', self, 0.4 )
-		self.layersFrom = preferences.IntPreference().getFromValue( 'Layers From (index):', self, 0 )
-		self.layersTo = preferences.IntPreference().getFromValue( 'Layers To (index):', self, 999999999 )
-		self.perimeterWidth = preferences.FloatPreference().getFromValue( 'Perimeter Width (mm):', self, 0.6 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.perimeterWidth = preferences.FloatSpin().getFromValue( 0.1, 'Perimeter Width (mm):', self, 2.0, 0.6 )
 		self.executeTitle = 'Chop'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.chop.html' )
 
 	def execute( self ):
 		"Chop button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -210,7 +207,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

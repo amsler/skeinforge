@@ -61,7 +61,7 @@ def addOrbitsIfLarge( distanceFeedRate, loop, orbitalFeedRatePerSecond, temperat
 	if orbitsAreLarge( loop, temperatureChangeTime ):
 		addOrbits( distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChangeTime, z )
 
-def addPointsFromSegment( pointComplexes, radius, pointBeginComplex, pointEndComplex, thresholdRatio = 0.9 ):
+def addPointsFromSegment( points, radius, pointBeginComplex, pointEndComplex, thresholdRatio = 0.9 ):
 	"Add point complexes between the endpoints of a segment."
 	if radius <= 0.0:
 		print( 'This should never happen, radius should never be zero or less in addPointsFromSegment in intercircle.' )
@@ -80,7 +80,7 @@ def addPointsFromSegment( pointComplexes, radius, pointBeginComplex, pointEndCom
 	segmentComplex *= lengthIncrement / segmentComplexLength
 	nextCircleCenterComplex = pointBeginComplex + segmentComplex
 	for circleIndex in xrange( extraCircles ):
-		pointComplexes.append( nextCircleCenterComplex )
+		points.append( nextCircleCenterComplex )
 		nextCircleCenterComplex += segmentComplex
 
 def getAroundsFromLoop( loop, radius ):
@@ -91,55 +91,57 @@ def getAroundsFromLoop( loop, radius ):
 
 def getAroundsFromLoops( loops, radius ):
 	"Get the arounds from the loops."
-	points = []
 	slightlyGreaterThanRadius = 1.01 * abs( radius )
-	for loop in loops:
-		points += getPointsFromLoop( loop, slightlyGreaterThanRadius )
+	points = getPointsFromLoops( loops, slightlyGreaterThanRadius )
 	return getAroundsFromPoints( points, radius )
 
 def getAroundsFromPoints( points, radius ):
 	"Get the arounds from the points."
 	arounds = []
 	muchGreaterThanRadius = 2.5 * abs( radius )
-	circleNodes = getCircleNodesFromPoints( points, abs( radius ) )
-	centers = getCentersFromCircleNodes( circleNodes )
+	centers = getCentersFromPoints( points, abs( radius ) )
 	for center in centers:
 		inset = getSimplifiedInsetFromClockwiseLoop( center, abs( radius ) )
 		if isLargeSameDirection( inset, center, muchGreaterThanRadius ):
 			arounds.append( inset )
 	return arounds
 
-def getCentersFromCircleNodes( circleNodes ):
+def getCentersFromCircleNodes( circleNodes, radius ):
 	"Get the complex centers of the circle intersection loops from circle nodes."
 	if len( circleNodes ) < 2:
 		return []
 	circleIntersections = getCircleIntersectionsFromCircleNodes( circleNodes )
 	circleIntersectionLoopComplexes = getCircleIntersectionLoops( circleIntersections )
-	return getCentersFromIntersectionLoops( circleIntersectionLoopComplexes )
+	return getCentersFromIntersectionLoops( circleIntersectionLoopComplexes, radius )
 
-def getCentersFromIntersectionLoop( circleIntersectionLoopComplex ):
+def getCentersFromIntersectionLoop( circleIntersectionLoopComplex, radius ):
 	"Get the centers from the intersection loop."
 	loop = []
 	for circleIntersectionComplex in circleIntersectionLoopComplex:
-		loop.append( circleIntersectionComplex.circleNodeAhead.circle )
+		loop.append( circleIntersectionComplex.circleNodeAhead.circle * radius )
 	return loop
 
-def getCentersFromIntersectionLoops( circleIntersectionLoopComplexes ):
+def getCentersFromIntersectionLoops( circleIntersectionLoopComplexes, radius ):
 	"Get the centers from the intersection loops."
 	centers = []
 	for circleIntersectionLoopComplex in circleIntersectionLoopComplexes:
-		centers.append( getCentersFromIntersectionLoop( circleIntersectionLoopComplex ) )
+		centers.append( getCentersFromIntersectionLoop( circleIntersectionLoopComplex, radius ) )
 	return centers
 
 def getCentersFromLoop( loop, radius ):
 	"Get the centers of the loop."
 	circleNodes = getCircleNodesFromLoop( loop, radius )
-	return getCentersFromCircleNodes( circleNodes )
+	return getCentersFromCircleNodes( circleNodes, radius )
 
 def getCentersFromLoopDirection( isWiddershins, loop, radius ):
 	"Get the centers of the loop which go around in the given direction."
 	centers = getCentersFromLoop( loop, radius )
 	return getLoopsFromLoopsDirection( isWiddershins, centers )
+
+def getCentersFromPoints( points, radius ):
+	"Get the centers from the points."
+	circleNodes = getCircleNodesFromPoints( points, abs( radius ) )
+	return getCentersFromCircleNodes( circleNodes, abs( radius ) )
 
 def getCircleIntersectionsFromCircleNodes( circleNodes ):
 	"Get all the circle intersections which exist between all the circle nodes."
@@ -148,28 +150,24 @@ def getCircleIntersectionsFromCircleNodes( circleNodes ):
 	circleIntersections = []
 	index = 0
 	pixelTable = {}
-	slightlyGreaterThanRadius = 1.01 * circleNodes[ 0 ].radius
 	for circleNode in circleNodes:
-		circleOverWidth = circleNode.circle / slightlyGreaterThanRadius
-		euclidean.addElementToPixelListFromPoint( circleNode, pixelTable, circleOverWidth )
-	slightlyGreaterThanDiameter = slightlyGreaterThanRadius + slightlyGreaterThanRadius
+		euclidean.addElementToPixelListFromPoint( circleNode, pixelTable, circleNode.circle )
 	accumulatedCircleNodeTable = {}
 	for circleNodeIndex in xrange( len( circleNodes ) ):
 		circleNodeBehind = circleNodes[ circleNodeIndex ]
 		circleNodeIndexMinusOne = circleNodeIndex - 1
 		if circleNodeIndexMinusOne >= 0:
 			circleNodeAdditional = circleNodes[ circleNodeIndexMinusOne ]
-			circleOverSlightlyGreaterThanDiameter = circleNodeAdditional.circle / slightlyGreaterThanDiameter
-			euclidean.addElementToPixelListFromPoint( circleNodeAdditional, accumulatedCircleNodeTable, circleOverSlightlyGreaterThanDiameter )
-		withinNodes = circleNodeBehind.getWithinNodes( accumulatedCircleNodeTable, slightlyGreaterThanDiameter )
+			euclidean.addElementToPixelListFromPoint( circleNodeAdditional, accumulatedCircleNodeTable, 0.5 * circleNodeAdditional.circle )
+		withinNodes = circleNodeBehind.getWithinNodes( accumulatedCircleNodeTable )
 		for circleNodeAhead in withinNodes:
 			circleIntersectionForward = CircleIntersection( circleNodeAhead, index, circleNodeBehind )
-			if not circleIntersectionForward.isWithinCircles( pixelTable, slightlyGreaterThanRadius ):
+			if not circleIntersectionForward.isWithinCircles( pixelTable ):
 				circleIntersections.append( circleIntersectionForward )
 				circleNodeBehind.circleIntersections.append( circleIntersectionForward )
 				index += 1
 			circleIntersectionBackward = CircleIntersection( circleNodeBehind, index, circleNodeAhead )
-			if not circleIntersectionBackward.isWithinCircles( pixelTable, slightlyGreaterThanRadius ):
+			if not circleIntersectionBackward.isWithinCircles( pixelTable ):
 				circleIntersections.append( circleIntersectionBackward )
 				circleNodeAhead.circleIntersections.append( circleIntersectionBackward )
 				index += 1
@@ -188,15 +186,16 @@ def getCircleIntersectionLoops( circleIntersections ):
 def getCircleNodesFromLoop( loop, radius ):
 	"Get the circle nodes from every point on a loop and between points."
 	radius = abs( radius )
-	pointComplexes = getPointsFromLoop( loop, radius )
-	return getCircleNodesFromPoints( pointComplexes, radius )
+	points = getPointsFromLoop( loop, radius )
+	return getCircleNodesFromPoints( points, radius )
 
-def getCircleNodesFromPoints( pointComplexes, radius ):
+def getCircleNodesFromPoints( points, radius ):
 	"Get the circle nodes from a path."
 	circleNodes = []
-	pointComplexes = euclidean.getAwayPoints( pointComplexes, 0.001 * radius )
-	for pointComplex in pointComplexes:
-		circleNodes.append( CircleNode( pointComplex, len( circleNodes ), radius ) )
+	oneOverRadius = 1.0 / radius
+	points = euclidean.getAwayPoints( points, 0.001 * radius )
+	for point in points:
+		circleNodes.append( CircleNode( point * oneOverRadius, len( circleNodes ) ) )
 	return circleNodes
 
 def getInsetFromClockwiseTriple( aheadAbsoluteComplex, behindAbsoluteComplex, centerComplex, radius ):
@@ -219,10 +218,10 @@ def getInsetFromClockwiseTriple( aheadAbsoluteComplex, behindAbsoluteComplex, ce
 def getInsetFromClockwiseLoop( loop, radius ):
 	"Get loop inset from clockwise loop, out from widdershins loop."
 	insetLoopComplex = []
-	for pointComplexIndex in xrange( len( loop ) ):
-		behindAbsoluteComplex = loop[ ( pointComplexIndex + len( loop ) - 1 ) % len( loop ) ]
-		centerComplex = loop[ pointComplexIndex ]
-		aheadAbsoluteComplex = loop[ ( pointComplexIndex + 1 ) % len( loop ) ]
+	for pointIndex in xrange( len( loop ) ):
+		behindAbsoluteComplex = loop[ ( pointIndex + len( loop ) - 1 ) % len( loop ) ]
+		centerComplex = loop[ pointIndex ]
+		aheadAbsoluteComplex = loop[ ( pointIndex + 1 ) % len( loop ) ]
 		insetLoopComplex.append( getInsetFromClockwiseTriple( aheadAbsoluteComplex, behindAbsoluteComplex, centerComplex, radius ) )
 	return insetLoopComplex
 
@@ -298,13 +297,20 @@ def getLoopsFromLoopsDirection( isWiddershins, loops ):
 def getPointsFromLoop( loop, radius ):
 	"Get the points from every point on a loop and between points."
 	radius = abs( radius )
-	pointComplexes = []
-	for pointComplexIndex in xrange( len( loop ) ):
-		pointComplex = loop[ pointComplexIndex ]
-		pointComplexSecond = loop[ ( pointComplexIndex + 1 ) % len( loop ) ]
-		pointComplexes.append( pointComplex )
-		addPointsFromSegment( pointComplexes, radius, pointComplex, pointComplexSecond )
-	return pointComplexes
+	points = []
+	for pointIndex in xrange( len( loop ) ):
+		point = loop[ pointIndex ]
+		pointSecond = loop[ ( pointIndex + 1 ) % len( loop ) ]
+		points.append( point )
+		addPointsFromSegment( points, radius, point, pointSecond )
+	return points
+
+def getPointsFromLoops( loops, radius ):
+	"Get the points from every point on a loop and between points."
+	points = []
+	for loop in loops:
+		points += getPointsFromLoop( loop, radius )
+	return points
 
 def getSimplifiedInsetFromClockwiseLoop( loop, radius ):
 	"Get loop inset from clockwise loop, out from widdershins loop."
@@ -357,19 +363,19 @@ def removeIntersection( loop ):
 	for pointIndex in xrange( len( loop ) ):
 		behindComplex = loop[ ( pointIndex + len( loop ) - 1 ) % len( loop ) ]
 		behindEndComplex = loop[ ( pointIndex + len( loop ) - 2 ) % len( loop ) ]
-		behindMidpointComplex = 0.5 * ( behindComplex + behindEndComplex )
+		behindMidpoint = 0.5 * ( behindComplex + behindEndComplex )
 		aheadComplex = loop[ pointIndex ]
 		aheadEndComplex = loop[ ( pointIndex + 1 ) % len( loop ) ]
-		aheadMidpointComplex = 0.5 * ( aheadComplex + aheadEndComplex )
-		normalizedSegment = behindComplex - behindMidpointComplex
+		aheadMidpoint = 0.5 * ( aheadComplex + aheadEndComplex )
+		normalizedSegment = behindComplex - behindMidpoint
 		normalizedSegmentLength = abs( normalizedSegment )
 		if normalizedSegmentLength > 0.0:
 			normalizedSegment /= normalizedSegmentLength
 			segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
 			behindRotated = segmentYMirror * behindComplex
-			behindMidpointRotated = segmentYMirror * behindMidpointComplex
+			behindMidpointRotated = segmentYMirror * behindMidpoint
 			aheadRotated = segmentYMirror * aheadComplex
-			aheadMidpointRotated = segmentYMirror * aheadMidpointComplex
+			aheadMidpointRotated = segmentYMirror * aheadMidpoint
 			y = behindRotated.imag
 			isYAboveFirst = y > aheadRotated.imag
 			isYAboveSecond = y > aheadMidpointRotated.imag
@@ -391,6 +397,12 @@ class BoundingLoop:
 		if self.area > other.area:
 			return - 1
 		return 0
+
+	def __eq__( self, other ):
+		"Determine whether this vector is identical to other one."
+		if other == None:
+			return False
+		return self.minimum == other.minimum and self.maximum == other.maximum and self.loop == other.loop
 
 	def __repr__( self ):
 		"Get the string representation of this bounding loop."
@@ -497,8 +509,7 @@ class CircleIntersection:
 
 	def getDemichord( self, aheadMinusBehind ):
 		"Get the demichord from the midpoint of the circle nodes."
-		radius = self.circleNodeAhead.radius
-		demichordWidth = math.sqrt( radius * radius - aheadMinusBehind.real * aheadMinusBehind.real - aheadMinusBehind.imag * aheadMinusBehind.imag )
+		demichordWidth = math.sqrt( 1.0 - aheadMinusBehind.real * aheadMinusBehind.real - aheadMinusBehind.imag * aheadMinusBehind.imag )
 		rotatedClockwiseQuarter = complex( aheadMinusBehind.imag, - aheadMinusBehind.real )
 		if abs( rotatedClockwiseQuarter ) == 0:
 			print( 'this should never happen, rotatedClockwiseQuarter in getPositionRelativeToBehind in intercircle is 0' )
@@ -511,13 +522,12 @@ class CircleIntersection:
 		aheadMinusBehind = 0.5 * ( self.circleNodeAhead.circle - self.circleNodeBehind.circle )
 		return aheadMinusBehind + self.getDemichord( aheadMinusBehind )
 
-	def isWithinCircles( self, pixelTable, width ):
+	def isWithinCircles( self, pixelTable ):
 		"Determine if this circle intersection is within the circle node circles."
 		absolutePosition = self.getAbsolutePosition()
-		absolutePositionOverWidth = absolutePosition / width
-		squareValues = euclidean.getSquareValuesFromPoint( pixelTable, absolutePositionOverWidth )
+		squareValues = euclidean.getSquareValuesFromPoint( pixelTable, absolutePosition )
 		for squareValue in squareValues:
-			if abs( squareValue.circle - absolutePosition ) < self.circleNodeAhead.radius:
+			if abs( squareValue.circle - absolutePosition ) < 1.0:
 				if squareValue != self.circleNodeAhead and squareValue != self.circleNodeBehind:
 					return True
 		return False
@@ -525,23 +535,20 @@ class CircleIntersection:
 
 class CircleNode:
 	"A complex node of complex circle intersections."
-	def __init__( self, circle, index, radius ):
+	def __init__( self, circle, index ):
 		self.circle = circle
 		self.circleIntersections = []
-		self.diameter = radius + radius
 		self.index = index
-		self.radius = radius
 
 	def __repr__( self ):
 		"Get the string representation of this CircleNode."
 		return '%s, %s' % ( self.index, self.circle )
 
-	def getWithinNodes( self, pixelTable, width ):
+	def getWithinNodes( self, pixelTable ):
 		"Get the nodes this circle node is within."
-		circleOverWidth = self.circle / width
 		withinNodes = []
-		squareValues = euclidean.getSquareValuesFromPoint( pixelTable, circleOverWidth )
+		squareValues = euclidean.getSquareValuesFromPoint( pixelTable, 0.5 * self.circle )
 		for squareValue in squareValues:
-			if abs( self.circle - squareValue.circle ) < self.diameter:
+			if abs( self.circle - squareValue.circle ) < 2.0:
 				withinNodes.append( squareValue )
 		return withinNodes

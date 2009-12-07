@@ -9,14 +9,54 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_tools.html"><font color="#ffffff">skeinforge_tools</font></a>.<a href="skeinforge_tools.craft_plugins.html"><font color="#ffffff">craft_plugins</font></a>.chamber</strong></big></big> ($Date: 2008/21/04 $)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/chamber.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/chamber.py</a></font></td></tr></table>
-    <p><tt>Chamber is a script to set the chamber and bed temperature.<br>
+    <p><tt>Some filaments warp too much and to prevent this you have to print the object in a temperature regulated chamber or on a temperature regulated bed. The chamber tool allows you to control the bed and chamber temperature.<br>
+ <br>
+The chamber manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber</a><br>
  <br>
 The default 'Activate Chamber' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-The 'Temperature of Bed' preference sets the temperature of the bed by sending an M109 command, the default is 60.0.  The 'Temperature of Chamber' preference sets the temperature of the chamber by sending an M109 command, the default is 30.0.<br>
+The 'Bed Temperature' preference sets the temperature of the bed by sending an M110 command, the default is 60.0.  The 'Chamber Temperature' preference sets the temperature of the chamber by sending an M111 command, the default is 30.0.<br>
  <br>
 Kulitorum has made a heated bed.  It is a 5mm Alu sheet with a pattern laid out in kapton tape.  The wire is a 0.6mm2 Konstantin wire and it's held in place by small pieces of kapton tape.  The description and picture is at:<br>
 <a href="http://gallery.kulitorum.com/main.php?g2_itemId=283">http://gallery.kulitorum.com/main.php?g2_itemId=283</a><br>
+ <br>
+Other heated bed descriptions follow below.<br>
+ <br>
+A heated base by the Metalab folks:<br>
+<a href="http://reprap.soup.io">http://reprap.soup.io</a><br>
+ <br>
+with information at:<br>
+<a href="http://reprap.soup.io/?search=heated%20base">http://reprap.soup.io/?search=heated%20base</a><br>
+ <br>
+A heated build stage by jmil, over at:<br>
+<a href="http://www.hive76.org">http://www.hive76.org</a><br>
+ <br>
+with articles at:<br>
+<a href="http://www.hive76.org/handling-hot-build-surfaces">http://www.hive76.org/handling-hot-build-surfaces</a><br>
+<a href="http://www.hive76.org/heated-build-stage-success">http://www.hive76.org/heated-build-stage-success</a><br>
+ <br>
+A resistor heated aluminum plate by Pumpernickel2:<br>
+<a href="http://dev.forums.reprap.org/profile.php?14,844">http://dev.forums.reprap.org/profile.php?14,844</a><br>
+ <br>
+with a picture at:<br>
+<a href="http://dev.forums.reprap.org/file.php?14,file=1228,filename=heatedplate.jpg">http://dev.forums.reprap.org/file.php?14,file=1228,filename=heatedplate.jpg</a><br>
+ <br>
+A resistor heated aluminum plate by Zaggo at Pleasant Software:<br>
+<a href="http://pleasantsoftware.com/developer/3d/">http://pleasantsoftware.com/developer/3d/</a><br>
+ <br>
+with articles at:<br>
+<a href="http://pleasantsoftware.com/developer/3d/2009/12/05/raftless/">http://pleasantsoftware.com/developer/3d/2009/12/05/raftless/</a><br>
+<a href="http://pleasantsoftware.com/developer/3d/2009/11/12/canned-heat/">http://pleasantsoftware.com/developer/3d/2009/11/12/canned-heat/</a><br>
+ <br>
+A resistive wire heated plexiglass plate by prusajr:<br>
+<a href="http://prusadjs.cz/">http://prusadjs.cz/</a><br>
+ <br>
+with an article at:<br>
+<a href="http://prusadjs.cz/2009/11/look-ma-no-warping-heated-reprap-print-bed/">http://prusadjs.cz/2009/11/look-ma-no-warping-heated-reprap-print-bed/</a><br>
+ <br>
+jmil; <a href="http://www.hive76.org/heated-build-stage-success">http://www.hive76.org/heated-build-stage-success</a> <a href="http://www.hive76.org/handling-hot-build-surfaces">http://www.hive76.org/handling-hot-build-surfaces</a><br>
+ <br>
  <br>
 The following examples chamber the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and chamber.py.<br>
  <br>
@@ -118,7 +158,7 @@ Screw Holder Bottom_chamber.gcode</tt></p>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, chamberRepository<font color="#909090">=None</font>)</dt><dd><tt>Chamber&nbsp;the&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, chamberRepository<font color="#909090">=None</font>)</dt><dd><tt>Chamber&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;chamber&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Chamber&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>

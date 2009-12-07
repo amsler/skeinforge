@@ -13,8 +13,6 @@
  <br>
 The default 'Activate Speed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The speed script sets the feed rate, and flow rate.<br>
  <br>
-The 'Extrusion Diameter over Thickness is the ratio of the extrusion diameter over the layer thickness, the default is 1.25.  The extrusion fill density ratio that is printed to the console, ( it is derived quantity not a parameter ) is the area of the extrusion diameter over the extrusion width over the layer thickness.  Assuming the extrusion diameter is correct, a high value means the filament will be packed tightly, and the object will be almost as dense as the filament.  If the value is too high, there could be too little room for the filament, and the extruder will end up plowing through the extra filament.  A low value means the filaments will be far away from each other, the object will be leaky and light.  The value with the default extrusion preferences is around 0.82.<br>
- <br>
 The feed rate for the shape will be set to the 'Feed Rate" preference.  The 'Bridge Feed Rate Multiplier' is the ratio of the feed rate on the bridge layers over the feed rate of the typical non bridge layers, the default is 1.0.  The speed of the orbit compared to the operating extruder speed will be set to the "Orbital Feed Rate over Operating Feed Rate" preference.  If you want the orbit to be very short, set the "Orbital Feed Rate over Operating Feed Rate" preference to a low value like 0.1.  The 'Travel Feed Rate' is the feed rate when the extruder is off.  The default is 16 mm / s and it could be set as high as the extruder can be moved, it does not have to be limited by the maximum extrusion rate.<br>
  <br>
 The default 'Add Flow Rate' checkbox is on.  When it is on, the flow rate will be added to the gcode.  The 'Bridge Flow Rate Multiplier' is the ratio of the flow rate on the bridge layers over the flow rate of the typical non bridge layers, the default is 1.0.  The 'Flow Rate Setting' sets the operating flow rate, the default is 210.<br>
@@ -48,7 +46,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the speed dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; speed.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; speed.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The speed tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -130,7 +128,7 @@ The speed tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, speedRepository<font color="#909090">=None</font>)</dt><dd><tt>Speed&nbsp;the&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, speedRepository<font color="#909090">=None</font>)</dt><dd><tt>Speed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;speed&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Speed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>

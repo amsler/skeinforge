@@ -16,7 +16,7 @@ Allan Ecker aka The Masked Retriever's has written the "Skeinforge Quicktip: Coo
  <br>
 The default 'Activate Cool' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-The important value for the cool preferences is "Minimum Layer Time (seconds)" which is the minimum amount of time the extruder will spend on a layer.  If it takes less time to extrude the layer than the minimum layer time, cool adds orbits with the extruder off to give the layer time to cool, so that the next layer is not extruded on a molten base.  The orbits will be around the largest island on that layer.  If the area of the largest island is as large as the square of the "Minimum Orbital Radius" then the orbits will be just within the island.  If the island is smaller, then the orbits will be in a square of the "Minimum Orbital Radius" around the center of the island.<br>
+The important value for the cool preferences is 'Minimum Layer Time' which is the minimum amount of time the extruder will spend on a layer.  If it takes less time to extrude the layer than the minimum layer time, then cool will lower the temperature by the 'Maximum Cool' setting times the layer time over the minimum layer time.  Also, if the 'Cool Type' choice is 'Orbit', cool will add orbits with the extruder off to give the layer time to cool, so that the next layer is not extruded on a molten base.  The orbits will be around the largest island on that layer.  If the area of the largest island is as large as the square of the "Minimum Orbital Radius" then the orbits will be just within the island.  If the island is smaller, then the orbits will be in a square of the "Minimum Orbital Radius" around the center of the island.  If instead, the 'Cool Type' choice is 'Slow Down', instead of orbiting cool will slow down the extruder so that it will take the minimum layer time to extrude the layer.<br>
  <br>
 Before the orbits, if there is a file cool_start.gcode, cool will add that to the start of the orbits. After it has added the orbits, it will add the file cool_end.gcode if it exists.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  Cool looks for those files in the alterations folder in the .skeinforge folder in the home directory. If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the skeinforge_tools folder.  The cool start and end text idea is from:<br>
 <a href="http://makerhahn.blogspot.com/2008/10/yay-minimug.html">http://makerhahn.blogspot.com/2008/10/yay-minimug.html</a><br>
@@ -47,7 +47,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the cool dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; cool.<a href="#-writeOutput">writeOutput</a>()<br>
+&gt;&gt;&gt; cool.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
 The cool tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -66,11 +66,10 @@ The cool tool has created the file:<br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.intercircle.html">skeinforge_tools.skeinforge_utilities.intercircle</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
-</td><td width="25%" valign=top><a href="math.html">math</a><br>
-<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.preferences.html">skeinforge_tools.skeinforge_utilities.preferences</a><br>
-<a href="sys.html">sys</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.preferences.html">skeinforge_tools.skeinforge_utilities.preferences</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -110,19 +109,29 @@ The cool tool has created the file:<br>
 
 <dl><dt><a name="CoolSkein-addCoolOrbits"><strong>addCoolOrbits</strong></a>(self, remainingOrbitTime)</dt><dd><tt>Add&nbsp;the&nbsp;minimum&nbsp;radius&nbsp;cool&nbsp;orbits.</tt></dd></dl>
 
+<dl><dt><a name="CoolSkein-addCoolTemperature"><strong>addCoolTemperature</strong></a>(self, remainingOrbitTime)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;cool&nbsp;skein.</tt></dd></dl>
+
+<dl><dt><a name="CoolSkein-addFlowRateLineIfNecessary"><strong>addFlowRateLineIfNecessary</strong></a>(self, flowRateString)</dt><dd><tt>Add&nbsp;a&nbsp;line&nbsp;of&nbsp;flow&nbsp;rate&nbsp;if&nbsp;different.</tt></dd></dl>
+
 <dl><dt><a name="CoolSkein-addGcodeFromFeedRateMovementZ"><strong>addGcodeFromFeedRateMovementZ</strong></a>(self, feedRateMinute, point, z)</dt><dd><tt>Add&nbsp;a&nbsp;movement&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
+
+<dl><dt><a name="CoolSkein-addOrbitsIfNecessary"><strong>addOrbitsIfNecessary</strong></a>(self, remainingOrbitTime)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;cool&nbsp;skein.</tt></dd></dl>
 
 <dl><dt><a name="CoolSkein-addTemperature"><strong>addTemperature</strong></a>(self, temperature)</dt><dd><tt>Add&nbsp;a&nbsp;line&nbsp;of&nbsp;temperature.</tt></dd></dl>
 
+<dl><dt><a name="CoolSkein-getCoolMove"><strong>getCoolMove</strong></a>(self, line, location, splitLine)</dt><dd><tt>Add&nbsp;line&nbsp;to&nbsp;time&nbsp;spent&nbsp;on&nbsp;layer.</tt></dd></dl>
+
 <dl><dt><a name="CoolSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeText, coolRepository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;cool&nbsp;gcode.</tt></dd></dl>
 
-<dl><dt><a name="CoolSkein-linearMove"><strong>linearMove</strong></a>(self, splitLine)</dt><dd><tt>Add&nbsp;line&nbsp;to&nbsp;time&nbsp;spent&nbsp;on&nbsp;layer.</tt></dd></dl>
-
-<dl><dt><a name="CoolSkein-parseCorner"><strong>parseCorner</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;use&nbsp;the&nbsp;location&nbsp;to&nbsp;update&nbsp;the&nbsp;bounding&nbsp;corners.</tt></dd></dl>
+<dl><dt><a name="CoolSkein-getLayerTime"><strong>getLayerTime</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;time&nbsp;the&nbsp;extruder&nbsp;spends&nbsp;on&nbsp;the&nbsp;layer.</tt></dd></dl>
 
 <dl><dt><a name="CoolSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
 <dl><dt><a name="CoolSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;cool&nbsp;skein.</tt></dd></dl>
+
+<dl><dt><a name="CoolSkein-setMultiplier"><strong>setMultiplier</strong></a>(self, layerTime)</dt><dd><tt>Set&nbsp;the&nbsp;feed&nbsp;and&nbsp;flow&nbsp;rate&nbsp;multiplier.</tt></dd></dl>
+
+<dl><dt><a name="CoolSkein-setOperatingFlowString"><strong>setOperatingFlowString</strong></a>(self, splitLine)</dt><dd><tt>Set&nbsp;the&nbsp;operating&nbsp;flow&nbsp;string&nbsp;from&nbsp;the&nbsp;split&nbsp;line.</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -133,7 +142,7 @@ The cool tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, coolRepository<font color="#909090">=None</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, coolRepository<font color="#909090">=None</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getRepositoryConstructor"><strong>getRepositoryConstructor</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;cool&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.&nbsp;&nbsp;Chain&nbsp;cool&nbsp;the&nbsp;gcode&nbsp;if&nbsp;it&nbsp;is&nbsp;not&nbsp;already&nbsp;cooled.&nbsp;If&nbsp;no&nbsp;fileName&nbsp;is&nbsp;specified,&nbsp;cool&nbsp;the&nbsp;first&nbsp;unmodified&nbsp;gcode&nbsp;file&nbsp;in&nbsp;this&nbsp;folder.</tt></dd></dl>
 </td></tr></table><p>

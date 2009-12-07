@@ -23,6 +23,13 @@ def getOutput( gcodeText ):
 	If this plugin writes an output than should not be printed, an empty string should be returned."""
 	return GcodeSmallSkein().getCraftedGcode( gcodeText )
 
+def getSplitLineBeforeBracketSemicolon( line ):
+	"Get the split line before a bracket or semicolon."
+	bracketSemicolonIndex = min( line.find( ';' ), line.find( '(' ) )
+	if bracketSemicolonIndex < 0:
+		return line.split()
+	return line[ : bracketSemicolonIndex ].split()
+
 def getStringFromCharacterSplitLine( character, splitLine ):
 	"Get the string after the first occurence of the character in the split line."
 	indexOfCharacter = indexOfStartingWithSecond( character, splitLine )
@@ -30,7 +37,7 @@ def getStringFromCharacterSplitLine( character, splitLine ):
 		return None
 	return splitLine[ indexOfCharacter ][ 1 : ]
 
-def getSummarizedFilename( fileName ):
+def getSummarizedFileName( fileName ):
 	"Get the fileName basename if the file is in the current working directory, otherwise return the original full name."
 	if os.getcwd() == os.path.dirname( fileName ):
 		return os.path.basename( fileName )
@@ -70,7 +77,7 @@ class GcodeSmallSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line."
-		splitLine = line.split()
+		splitLine = getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -81,6 +88,7 @@ class GcodeSmallSkein:
 		if firstWord != 'G1':
 			self.output.write( line + "\n" )
 			return
+		eString = getStringFromCharacterSplitLine( 'E', splitLine )
 		xString = getStringFromCharacterSplitLine( 'X', splitLine )
 		yString = getStringFromCharacterSplitLine( 'Y', splitLine )
 		zString = getStringFromCharacterSplitLine( 'Z', splitLine )
@@ -94,6 +102,8 @@ class GcodeSmallSkein:
 			self.output.write( ' Z' + zString )
 		if feedRateString != None and feedRateString != self.lastFeedRateString:
 			self.output.write( ' F' + feedRateString )
+		if eString != None:
+			self.output.write( ' E' + eString )
 		self.lastFeedRateString = feedRateString
 		self.lastZString = zString
 		self.output.write( '\n' )

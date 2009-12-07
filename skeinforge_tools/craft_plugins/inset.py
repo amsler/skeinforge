@@ -2,18 +2,15 @@
 """
 Inset is a script to inset a gcode file.
 
-Inset insets the outlines of a gcode file.  The outside outlines will be inset by the extrusion width, and the inside outlines will be outset by the extrusion width.
+Inset will inset the outside outlines by half the perimeter width, and the inside outlines will be outset by half the perimeter width.
 
 If "Add Custom Code for Temperature Reading" is selected, the M105 custom code for temperature reading will be added at the beginning of the file, the default is on.  If the "Turn Extruder Heater Off at Shut Down" preference is selected, the M104 S0 gcode line will be added to the end of the file to turn the extruder heater off by setting the extruder heater temperature to 0, this is the default choice.
 
-The 'Extrusion Width over Thickness' is the ratio of the extrusion width over the layer thickness, the default is 1.5.  Infill bridge width over thickness ratio is the ratio of the extrusion width over the layer thickness on a bridge layer.
+The 'Bridge Width Multiplier' is the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers, the default is 1.0.
 
-The 'Infill Perimeter Overlap' ratio is the amount the infill overlaps the perimeter over the extrusion width.  The higher the value the more the infill will overlap the perimeter, and the thicker join between the infill and the perimeter.  If the value is too high, the join will be so thick that the nozzle will run plow through the join below making a mess, also when it is above 0.7 fill may not be able to create infill correctly, the default is 0.15.  If you want to stretch the infill a lot, set 'Path Stretch over Perimeter Width' in stretch to a high value.  There are two choices for the infill perimeter overlap method of calculation.  The overlap will be calculated from the average of the perimeter width and the infill width.
-
-If "Remove Extrusion Overlap" is selected, any extrusion that intersects itself will be removed, the default is on.
+The 'Overlap Removal Width over Perimeter Width' is the ratio of the overlap removal width over the perimeter width, the default is 0.6.  Any part of the extrusion that comes within the overlap removal width of another is removed.  This is to prevent the extruder from depositing two extrusions right beside each other.  If the 'Overlap Removal Width over Perimeter Width' is less than 0.2, the overlap will not be removed.
 
 The following examples inset the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and inset.py.
-
 
 > python inset.py
 This brings up the inset dialog.
@@ -36,7 +33,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the inset dialog.
 
 
->>> inset.writeOutput()
+>>> inset.writeOutput( 'Screw Holder Bottom.stl' )
 The inset tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -78,8 +75,7 @@ def addAlreadyFilledArounds( alreadyFilledArounds, loop, radius ):
 	alreadyFilledLoop = []
 	slightlyGreaterThanRadius = 1.01 * radius
 	muchGreaterThanRadius = 2.5 * radius
-	circleNodes = intercircle.getCircleNodesFromLoop( loop, slightlyGreaterThanRadius )
-	centers = intercircle.getCentersFromCircleNodes( circleNodes )
+	centers = intercircle.getCentersFromLoop( loop, slightlyGreaterThanRadius )
 	for center in centers:
 		alreadyFilledInset = intercircle.getSimplifiedInsetFromClockwiseLoop( center, radius )
 		if intercircle.isLarge( alreadyFilledInset, muchGreaterThanRadius ) or euclidean.isWiddershins( alreadyFilledInset ):
@@ -151,7 +147,7 @@ def getCraftedTextFromText( gcodeText, insetRepository = None ):
 		insetRepository = preferences.getReadRepository( InsetRepository() )
 	return InsetSkein().getCraftedGcode( insetRepository, gcodeText )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return InsetRepository()
 
@@ -240,23 +236,17 @@ class InsetRepository:
 	"A class to handle the inset preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Insetted', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.inset.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Inset', self, '' )
 		self.addCustomCodeForTemperatureReading = preferences.BooleanPreference().getFromValue( 'Add Custom Code for Temperature Reading', self, True )
-		self.extrusionWidthOverThickness = preferences.FloatPreference().getFromValue( 'Extrusion Width over Thickness (ratio):', self, 1.5 )
-		self.infillBridgeWidthOverExtrusionWidth = preferences.FloatPreference().getFromValue( 'Infill Bridge Width over Extrusion Width (ratio):', self, 1.0 )
-		self.infillPerimeterOverlap = preferences.FloatPreference().getFromValue( 'Infill Perimeter Overlap (ratio):', self, 0.15 )
-		self.removeExtrusionOverlap = preferences.BooleanPreference().getFromValue( 'Remove Extrusion Overlap', self, True )
+		self.bridgeWidthMultiplier = preferences.FloatSpin().getFromValue( 0.8, 'Bridge Width Multiplier (ratio):', self, 1.2, 1.0 )
+		self.overlapRemovalWidthOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.3, 'Overlap Removal Width over Perimeter Width (ratio):', self, 0.9, 0.6 )
 		self.turnExtruderHeaterOffAtShutDown = preferences.BooleanPreference().getFromValue( 'Turn Extruder Heater Off at Shut Down', self, True )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
 		self.executeTitle = 'Inset'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.inset.html' )
 
 	def execute( self ):
 		"Inset button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -288,8 +278,8 @@ class InsetSkein:
 					segments += getSegmentsFromPoints( [], allLoopLists, pointBegin, pointEnd )
 				else:
 					segments += getSegmentsFromPoints( [], loopLists, pointBegin, pointEnd )
-				addSegmentOutline( False, outlines, pointBegin, pointEnd, self.extrusionWidth )
-				addSegmentOutline( True, thickOutlines, pointBegin, pointEnd, self.extrusionWidth )
+				addSegmentOutline( False, outlines, pointBegin, pointEnd, self.overlapRemovalWidth )
+				addSegmentOutline( True, thickOutlines, pointBegin, pointEnd, self.overlapRemovalWidth )
 			else:
 				segments += getSegmentsFromPoints( aroundLists, loopLists, pointBegin, pointEnd )
 		perimeterPaths = []
@@ -316,14 +306,15 @@ class InsetSkein:
 		boundary = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, - radius )
 		euclidean.addSurroundingLoopBeginning( boundary, self, z )
 		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
+		self.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )
 		self.distanceFeedRate.addLine( '(</surroundingLoop>)' )
 
 	def addGcodePerimeterBlockFromRemainingLoop( self, loop, loopLists, radius, z ):
 		"Add the perimter block remainder of the loop which does not overlap the alreadyFilledArounds loops."
-		if not self.insetRepository.removeExtrusionOverlap.value:
+		if self.insetRepository.overlapRemovalWidthOverPerimeterWidth.value < 0.2:
 			self.distanceFeedRate.addPerimeterBlock( loop, z )
 			return
-		isIntersectingSelf = isIntersectingItself( loop, self.extrusionWidth )
+		isIntersectingSelf = isIntersectingItself( loop, self.overlapRemovalWidth )
 		if isIntersectingWithinLists( loop, loopLists ) or isIntersectingSelf:
 			self.addGcodeFromPerimeterPaths( isIntersectingSelf, loop, loopLists, radius, z )
 		else:
@@ -340,12 +331,12 @@ class InsetSkein:
 		halfWidth = self.halfPerimeterWidth
 		self.distanceFeedRate.addLine( '(<layer> %s )' % rotatedBoundaryLayer.z ) # Indicate that a new layer is starting.
 		if rotatedBoundaryLayer.rotation != None:
-			halfWidth *= self.insetRepository.infillBridgeWidthOverExtrusionWidth.value
+			halfWidth *= self.insetRepository.bridgeWidthMultiplier.value
 			self.distanceFeedRate.addTagBracketedLine( 'bridgeRotation', rotatedBoundaryLayer.rotation ) # Indicate the bridge rotation.
 		extrudateLoops = intercircle.getInsetLoopsFromLoops( halfWidth, rotatedBoundaryLayer.loops )
 		for extrudateLoop in extrudateLoops:
 			self.addGcodeFromRemainingLoop( extrudateLoop, alreadyFilledArounds, halfWidth, rotatedBoundaryLayer.z )
-			addAlreadyFilledArounds( alreadyFilledArounds, extrudateLoop, self.fromExtrusionFillInset )
+			addAlreadyFilledArounds( alreadyFilledArounds, extrudateLoop, self.overlapRemovalWidth )
 		self.distanceFeedRate.addLine( '(</layer>)' )
 
 	def addRotatedLoopLayer( self, z ):
@@ -366,8 +357,8 @@ class InsetSkein:
 		self.insetRepository = insetRepository
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.parseInitialization()
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			self.parseLine( lineIndex )
+		for line in self.lines[ self.lineIndex : ]:
+			self.parseLine( line )
 		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
 			self.addInset( rotatedBoundaryLayer )
 		self.addShutdownToOutput()
@@ -376,34 +367,27 @@ class InsetSkein:
 	def parseInitialization( self ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ].lstrip()
-			splitLine = line.split()
+			line = self.lines[ self.lineIndex ]
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(<decimalPlacesCarried>':
 				self.addInitializationToOutput()
+				self.distanceFeedRate.addTagBracketedLine( 'bridgeWidthMultiplier', self.distanceFeedRate.getRounded( self.insetRepository.bridgeWidthMultiplier.value ) )
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'inset' )
+			elif firstWord == '(<extrusion>)':
+				self.distanceFeedRate.addLine( line )
+				return
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float( splitLine[ 1 ] )
 				self.halfPerimeterWidth = 0.5 * self.perimeterWidth
-				self.fromExtrusionFillInset = self.halfPerimeterWidth + 0.5 * self.extrusionWidth - self.extrusionWidth * self.insetRepository.infillPerimeterOverlap.value
-				self.distanceFeedRate.addTagBracketedLine( 'fillInset', self.fromExtrusionFillInset )
-		# Set bridge extrusion width
-			elif firstWord == '(<layer>':
-				self.lineIndex -= 1
-				return
-			elif firstWord == '(<layerThickness>':
-				self.layerThickness = float( splitLine[ 1 ] )
-				self.extrusionWidth = self.insetRepository.extrusionWidthOverThickness.value * self.layerThickness
-				self.distanceFeedRate.addTagBracketedLine( 'extrusionWidth', self.distanceFeedRate.getRounded( self.extrusionWidth ) ) # Set extrusion width.
-				self.distanceFeedRate.addTagBracketedLine( 'infillBridgeWidthOverExtrusionWidth', self.distanceFeedRate.getRounded( self.insetRepository.infillBridgeWidthOverExtrusionWidth.value ) )
+				self.overlapRemovalWidth = self.perimeterWidth * self.insetRepository.overlapRemovalWidthOverPerimeterWidth.value
 			self.distanceFeedRate.addLine( line )
 
-	def parseLine( self, lineIndex ):
+	def parseLine( self, line ):
 		"Parse a gcode line and add it to the inset skein."
-		line = self.lines[ lineIndex ].lstrip()
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -429,7 +413,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

@@ -3,7 +3,7 @@ Clip is a script to clip loop ends.
 
 The default 'Activate Clip' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-Clip clips the ends of loops to prevent bumps from forming.  The "Clip Over Extrusion Width (ratio)" is the ratio of the amount each end of the loop is clipped over the extrusion width.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.
+Clip clips the ends of loops to prevent bumps from forming.  The "Clip Over Extrusion Width (ratio)" is the ratio of the amount each end of the loop is clipped over the extrusion width, the default is 0.2.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.
 
 The following examples clip the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and clip.py.
 
@@ -29,7 +29,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the clip dialog.
 
 
->>> clip.writeOutput()
+>>> clip.writeOutput( 'Screw Holder Bottom.stl' )
 The clip tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -72,7 +72,7 @@ def getCraftedTextFromText( gcodeText, clipRepository = None ):
 		return gcodeText
 	return ClipSkein().getCraftedGcode( clipRepository, gcodeText )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return ClipRepository()
 
@@ -87,18 +87,15 @@ class ClipRepository:
 	"A class to handle the clip preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Clipped', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.clip.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Clipped', self, '' )
 		self.activateClip = preferences.BooleanPreference().getFromValue( 'Activate Clip', self, True )
-		self.clipOverExtrusionWidth = preferences.FloatPreference().getFromValue( 'Clip Over Extrusion Width (ratio):', self, 0.15 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.clipOverExtrusionWidth = preferences.FloatSpin().getFromValue( 0.1, 'Clip Over Extrusion Width (ratio):', self, 0.8, 0.2 )
 		self.executeTitle = 'Clip'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.clip.html' )
 
 	def execute( self ):
 		"Clip button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -147,10 +144,10 @@ class ClipSkein:
 	def isNextExtruderOn( self ):
 		"Determine if there is an extruder on command before a move command."
 		line = self.lines[ self.lineIndex ]
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1' or firstWord == 'M103':
 				return False
@@ -173,7 +170,7 @@ class ClipSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -188,7 +185,7 @@ class ClipSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the clip skein."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -209,7 +206,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

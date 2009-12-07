@@ -39,7 +39,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the oozebane dialog.
 
 
->>> oozebane.writeOutput()
+>>> oozebane.writeOutput( 'Screw Holder Bottom.stl' )
 The oozebane tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -81,7 +81,7 @@ def getCraftedTextFromText( gcodeText, oozebaneRepository = None ):
 		return gcodeText
 	return OozebaneSkein().getCraftedGcode( gcodeText, oozebaneRepository )
 
-def getRepositoryConstructor():
+def getNewRepository():
 	"Get the repository constructor."
 	return OozebaneRepository()
 
@@ -96,25 +96,22 @@ class OozebaneRepository:
 	"A class to handle the oozebane preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( self )
-		self.fileNameInput = preferences.Filename().getFromFilename( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Oozebaned', self, '' )
+		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.oozebane.html', self )
+		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Oozebaned', self, '' )
 		self.activateOozebane = preferences.BooleanPreference().getFromValue( 'Activate Oozebane', self, False )
-		self.afterStartupDistance = preferences.FloatPreference().getFromValue( 'After Startup Distance (millimeters):', self, 1.2 )
-		self.earlyShutdownDistance = preferences.FloatPreference().getFromValue( 'Early Shutdown Distance (millimeters):', self, 1.2 )
-		self.earlyStartupDistanceConstant = preferences.FloatPreference().getFromValue( 'Early Startup Distance Constant (millimeters):', self, 20.0 )
-		self.earlyStartupMaximumDistance = preferences.FloatPreference().getFromValue( 'Early Startup Maximum Distance (millimeters):', self, 1.2 )
-		self.firstEarlyStartupDistance = preferences.FloatPreference().getFromValue( 'First Early Startup Distance (millimeters):', self, 25.0 )
-		self.minimumDistanceForEarlyStartup = preferences.FloatPreference().getFromValue( 'Minimum Distance for Early Startup (millimeters):', self, 0.0 )
-		self.minimumDistanceForEarlyShutdown = preferences.FloatPreference().getFromValue( 'Minimum Distance for Early Shutdown (millimeters):', self, 0.0 )
-		self.slowdownStartupSteps = preferences.IntPreference().getFromValue( 'Slowdown Startup Steps (positive integer):', self, 3 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		self.afterStartupDistance = preferences.FloatSpin().getFromValue( 0.7, 'After Startup Distance (millimeters):', self, 1.7, 1.2 )
+		self.earlyShutdownDistance = preferences.FloatSpin().getFromValue( 0.7, 'Early Shutdown Distance (millimeters):', self, 1.7, 1.2 )
+		self.earlyStartupDistanceConstant = preferences.FloatSpin().getFromValue( 10.0, 'Early Startup Distance Constant (millimeters):', self, 30.0, 20.0 )
+		self.earlyStartupMaximumDistance = preferences.FloatSpin().getFromValue( 0.7, 'Early Startup Maximum Distance (millimeters):', self, 1.7, 1.2 )
+		self.firstEarlyStartupDistance = preferences.FloatSpin().getFromValue( 5.0, 'First Early Startup Distance (millimeters):', self, 45.0, 25.0 )
+		self.minimumDistanceForEarlyStartup = preferences.FloatSpin().getFromValue( 0.0, 'Minimum Distance for Early Startup (millimeters):', self, 10.0, 0.0 )
+		self.minimumDistanceForEarlyShutdown = preferences.FloatSpin().getFromValue( 0.0, 'Minimum Distance for Early Shutdown (millimeters):', self, 10.0, 0.0 )
+		self.slowdownStartupSteps = preferences.IntSpin().getFromValue( 2, 'Slowdown Startup Steps (positive integer):', self, 5, 3 )
 		self.executeTitle = 'Oozebane'
-		preferences.setHelpPreferencesFileNameTitleWindowPosition( self, 'skeinforge_tools.craft_plugins.oozebane.html' )
 
 	def execute( self ):
 		"Oozebane button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFilenames(), self.fileNameInput.wasCancelled )
+		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -162,7 +159,7 @@ class OozebaneSkein:
 		isSearchExtruderActive = self.isExtruderActive
 		for afterIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				if isSearchExtruderActive:
@@ -174,7 +171,7 @@ class OozebaneSkein:
 
 	def getAddAfterStartupLines( self, line ):
 		"Get and / or add after the startup lines."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		while self.isDistanceAfterThreadBeginningGreater():
 			self.addAfterStartupLine( splitLine )
 		if self.startupStepIndex >= len( self.afterStartupDistances ):
@@ -188,7 +185,7 @@ class OozebaneSkein:
 		distanceThreadBeginning = self.getDistanceToThreadBeginning()
 		if distanceThreadBeginning == None:
 			return line
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		self.extruderInactiveLongEnough = False
 		self.isStartupEarly = True
 		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
@@ -213,7 +210,7 @@ class OozebaneSkein:
 		if self.shutdownStepIndex >= len( self.earlyShutdownDistances ):
 			self.shutdownStepIndex = len( self.earlyShutdownDistances ) + 99999999
 			return False
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		distanceThreadEnd = self.getDistanceToExtruderOffCommand( self.earlyShutdownDistances[ self.shutdownStepIndex ] )
 		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		if distanceThreadEnd == None:
@@ -263,13 +260,13 @@ class OozebaneSkein:
 	def getDistanceAfterThreadBeginning( self ):
 		"Get the distance after the beginning of the thread."
 		line = self.lines[ self.lineIndex ]
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		lastThreadLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		totalDistance = 0.0
 		extruderOnReached = False
 		for beforeIndex in xrange( self.lineIndex - 1, 3, - 1 ):
 			line = self.lines[ beforeIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( lastThreadLocation, splitLine )
@@ -284,12 +281,12 @@ class OozebaneSkein:
 	def getDistanceToExtruderOffCommand( self, remainingDistance ):
 		"Get the distance to the word."
 		line = self.lines[ self.lineIndex ]
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		lastThreadLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		totalDistance = 0.0
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( lastThreadLocation, splitLine )
@@ -306,12 +303,12 @@ class OozebaneSkein:
 		if self.earlyStartupDistance == None:
 			return None
 		line = self.lines[ self.lineIndex ]
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		lastThreadLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		totalDistance = 0.0
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( lastThreadLocation, splitLine )
@@ -327,13 +324,13 @@ class OozebaneSkein:
 		"Get the distance to the thread beginning after the end of this thread."
 		extruderOnReached = False
 		line = self.lines[ self.lineIndex ]
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		lastThreadLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		threadEndReached = False
 		totalDistance = 0.0
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( lastThreadLocation, splitLine )
@@ -367,7 +364,7 @@ class OozebaneSkein:
 
 	def getOozebaneLine( self, line ):
 		"Get oozebaned gcode line."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		if self.oldLocation == None:
 			return line
@@ -413,7 +410,7 @@ class OozebaneSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
@@ -428,7 +425,7 @@ class OozebaneSkein:
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		if len( splitLine ) < 1:
 			return
 		firstWord = splitLine[ 0 ]
@@ -499,7 +496,7 @@ class OozebaneSkein:
 			self.distanceFromThreadEndToThreadBeginning = lastThreadLocation.distance( self.oldLocation )
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = line.split()
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( lastThreadLocation, splitLine )
@@ -558,7 +555,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getRepositoryConstructor() )
+		preferences.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()
