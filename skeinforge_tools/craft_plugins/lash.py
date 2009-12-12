@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Lash is a script to partially compensate for the backlash of the tool head.
 
 The lash tool is ported from Erik de Bruijn's 3D-to-5D-Gcode php GPL'd script at:

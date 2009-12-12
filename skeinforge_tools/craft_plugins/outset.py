@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Outset is a script to outset the perimeters of a gcode file.
 
 Outset outsets the perimeters of the slices of a gcode file.  The outside perimeters will be outset by half the perimeter width, and the inside perimeters will be inset by half the perimeter width.  Outset is needed for subtractive machining, like cutting or milling.

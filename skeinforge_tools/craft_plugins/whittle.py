@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Whittle is a script to turn each polygon of a gcode file into a helix.
 
 Whittle will convert each polygon of a gcode file into a helix which has a vertical step down on each rotation.

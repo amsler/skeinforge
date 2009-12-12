@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Polyfile is a script to choose whether the skeinforge toolchain will operate on one file or all the files in a directory.
 
 Polyfile stores and lets the user change the preference of whether to operate on one file or all the files in a directory.  The default 'Polyfile Choice' radio button group choice is 'Execute File'.  With 'Execute File' chosen, the toolchain will operate on only the chosen file.  When the chosen choice is 'Execute All Unmodified Files in a Directory', the toolchain will operate on all the unmodifed files in the directory that the chosen file is in.

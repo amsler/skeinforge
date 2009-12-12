@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Fillet is a script to fillet or bevel the corners on a gcode file.
 
 The default 'Activate Fillet' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -246,7 +247,7 @@ class ArcSegmentSkein( BevelSkein ):
 		absoluteDifferenceAngle = abs( afterCenterDifferenceAngle )
 #		steps = int( math.ceil( absoluteDifferenceAngle * 1.5 ) )
 		steps = int( math.ceil( min( absoluteDifferenceAngle * 1.5, absoluteDifferenceAngle * abs( beforeCenterSegment ) / self.curveSection ) ) )
-		stepPlaneAngle = euclidean.getPolar( afterCenterDifferenceAngle / steps, 1.0 )
+		stepPlaneAngle = euclidean.getUnitPolar( afterCenterDifferenceAngle / steps, 1.0 )
 		for step in xrange( 1, steps ):
 			beforeCenterSegment = euclidean.getRoundZAxisByPlaneAngle( stepPlaneAngle, beforeCenterSegment )
 			arcPoint = center + beforeCenterSegment

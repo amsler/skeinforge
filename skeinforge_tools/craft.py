@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Craft is a script to access the plugins which craft a gcode file.
 
 The plugin buttons which are commonly used are bolded and the ones which are rarely used have normal font weight.

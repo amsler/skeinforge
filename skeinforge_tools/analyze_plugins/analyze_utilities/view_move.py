@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Viewpoint move is a mouse tool to move the viewpoint in the xy plane.
 
 When the mouse is clicked and dragged on the canvas, viewpoint move will drag the scroll pane accordingly.  If the shift key is also pressed, the scroll pane will be moved only in the x or y direction, whichever is largest.

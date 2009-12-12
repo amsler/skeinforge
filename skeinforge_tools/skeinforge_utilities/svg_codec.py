@@ -1,7 +1,7 @@
 """
 Svg_codec is a class and collection of utilities to read from and write to an svg file.
 
-Svg_codec uses the svg_template.tmpl file in the same folder as svg_codec, to output an svg file.
+Svg_codec uses the svg_layer.template file in the same folder as svg_codec, to output an svg file.
 
 """
 
@@ -14,6 +14,7 @@ from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import interpret
 from skeinforge_tools.skeinforge_utilities import triangle_mesh
 import cStringIO
+import math
 import os
 
 
@@ -45,35 +46,21 @@ def getParameterFromJavascript( lines, parameterName, parameterValue ):
 			return float( splitLine[ 2 ] )
 	return parameterValue
 
-def getReplacedInQuotes( original, replacement, text ):
-	"Replace what follows in quotes after the word."
-	wordAndQuote = original + '="'
-	originalIndexStart = text.find( wordAndQuote )
-	if originalIndexStart == - 1:
-		return text
-	originalIndexEnd = text.find( '"', originalIndexStart + len( wordAndQuote ) )
-	if originalIndexEnd == - 1:
-		return text
-	wordAndBothQuotes = text[ originalIndexStart : originalIndexEnd + 1 ]
-	return text.replace( wordAndBothQuotes, wordAndQuote + replacement + '"' )
+def getReplaceWithLine( line, replaceWithTable ):
+	"Parse the line and replace it a table key is in the line."
+	for replaceWithTableKey in replaceWithTable.keys():
+		if line.find( replaceWithTableKey ) > - 1:
+			return line.replace( replaceWithTableKey, replaceWithTable[ replaceWithTableKey ] )
+	return line
 
-def getReplacedTagString( replacementTagString, tagID, text ):
-	"Get text with the tag string replaced."
-	idString = 'id="' + tagID + '"'
-	idStringIndexStart = text.find( idString )
-	if idStringIndexStart == - 1:
-		return text
-	tagBeginIndex = text.rfind( '<', 0, idStringIndexStart )
-	tagEndIndex = text.find( '>', idStringIndexStart )
-	if tagBeginIndex == - 1 or tagEndIndex == - 1:
-		return text
-	originalTagString = text[ tagBeginIndex : tagEndIndex + 1 ]
-	return text.replace( originalTagString, replacementTagString )
-
-def getReplacedWordAndInQuotes( original, replacement, text ):
-	"Replace the word in the text and replace what follows in quotes after the word."
-	text = text.replace( 'replaceWith' + original, replacement )
-	return getReplacedInQuotes( original, replacement, text )
+def parseLineReplaceWithTable( firstWordTable, line, output, replaceWithTable ):
+	"Parse the line and replace it if the first word of the line is in the first word table."
+	firstWord = gcodec.getFirstWordFromLine( line )
+	if firstWord in firstWordTable:
+		line = firstWordTable[ firstWord ]
+	elif line.find( 'replaceWith' ) > - 1:
+		line = getReplaceWithLine( line, replaceWithTable )
+	gcodec.addLineAndNewlineIfNecessary( line, output )
 
 
 class SVGCodecSkein:
@@ -84,19 +71,7 @@ class SVGCodecSkein:
 		self.textHeight = 22.5
 		self.unitScale = 3.7
 
-	def addInitializationToOutputSVG( self, procedureName ):
-		"Add initialization gcode to the output."
-		endOfSVGHeaderIndex = self.svgTemplateLines.index( '//End of svg header' )
-		self.addLines( self.svgTemplateLines[ : endOfSVGHeaderIndex ] )
-		self.addLine( '\tdecimalPlacesCarried = ' + str( self.decimalPlacesCarried ) ) # Set decimal places carried.
-		self.addLine( '\tlayerThickness = ' + self.getRounded( self.layerThickness ) ) # Set layer thickness.
-		self.addLine( '\tperimeterWidth = ' + self.getRounded( self.perimeterWidth ) ) # Set perimeter width.
-		self.addLine( '\tprocedureDone = "%s"' % procedureName ) # The skein has been carved.
-		self.addLine( '\textrusionStart = 1' ) # Initialization is finished, extrusion is starting.
-		beginningOfPathSectionIndex = self.svgTemplateLines.index( '<!--Beginning of path section-->' )
-		self.addLines( self.svgTemplateLines[ endOfSVGHeaderIndex + 1 : beginningOfPathSectionIndex ] )
-
-	def addLayerStart( self, layerIndex, z ):
+	def addLayerBegin( self, layerIndex, z ):
 		"Add the start lines for the layer."
 #		y = (1 * i + 1) * ( margin + sliceDimY * unitScale) + i * txtHeight
 		layerTranslateY = layerIndex * self.textHeight + ( layerIndex + 1 ) * ( self.extent.y * self.unitScale + self.margin )
@@ -118,6 +93,24 @@ class SVGCodecSkein:
 #		scale = (unit scale) (-1 * unitscale)
 #		translate = (-1 * minX) (-1 * minY)
 
+	def addLayerEnd( self, rotatedBoundaryLayer ):
+		"Add the path and end lines for the layer."
+		pathString = '\t\t\t<path transform="scale(%s, %s) translate(%s, %s)" d="' % ( self.unitScale, - self.unitScale, self.getRounded( - self.cornerMinimum.x ), self.getRounded( - self.cornerMinimum.y ) )
+		if len( rotatedBoundaryLayer.loops ) > 0:
+			pathString += self.getSVGLoopString( rotatedBoundaryLayer.loops[ 0 ] )
+		for loop in rotatedBoundaryLayer.loops[ 1 : ]:
+			pathString += ' ' + self.getSVGLoopString( loop )
+		pathString += '"/>'
+		self.addLine( pathString )
+		self.addLine( '\t\t</g>' )
+
+	def addRotatedLoopLayersToOutput( self, rotatedBoundaryLayers ):
+		"Add rotated boundary layers to the output."
+		truncatedRotatedBoundaryLayers = rotatedBoundaryLayers[ self.repository.layersFrom.value : self.repository.layersTo.value ]
+		for truncatedRotatedBoundaryLayerIndex in xrange( len( truncatedRotatedBoundaryLayers ) ):
+			truncatedRotatedBoundaryLayer = truncatedRotatedBoundaryLayers[ truncatedRotatedBoundaryLayerIndex ]
+			self.addRotatedLoopLayerToOutput( truncatedRotatedBoundaryLayerIndex, truncatedRotatedBoundaryLayer )
+
 	def addLine( self, line ):
 		"Add a line of text and a newline to the output."
 		self.output.write( line + "\n" )
@@ -127,41 +120,58 @@ class SVGCodecSkein:
 		for line in lines:
 			self.addLine( line )
 
-	def addShutdownToOutput( self ):
-		"Add shutdown svg to the output."
-		endOfPathSectionIndex = self.svgTemplateLines.index( '<!--End of path section-->' )
-		self.addLines( self.svgTemplateLines[ endOfPathSectionIndex + 1 : ] )
+	def getInitializationForOutputSVG( self, procedureName ):
+		"Get initialization gcode for the output."
+		canvasInitializationOutput = cStringIO.StringIO()
+		canvasInitializationOutput.write( '\tdecimalPlacesCarried = %s\n' % self.decimalPlacesCarried ) # Set decimal places carried.
+		canvasInitializationOutput.write( '\tlayerThickness = %s\n' % self.getRounded( self.layerThickness ) ) # Set layer thickness.
+		canvasInitializationOutput.write( '\tperimeterWidth = %s\n' % self.getRounded( self.perimeterWidth ) ) # Set perimeter width.
+		canvasInitializationOutput.write( '\tprocedureDone = "%s"\n' % procedureName ) # The procedure done one this svg file.
+		canvasInitializationOutput.write( '\textrusionStart = 1\n' ) # Initialization is finished, extrusion is starting.
+		return canvasInitializationOutput.getvalue()
 
-	def getReplacedSVGTemplateLines( self, fileName, rotatedBoundaryLayers ):
-		"Get the lines of text from the svg_template.tmpl file."
+	def getReplacedSVGTemplate( self, fileName, procedureName, rotatedBoundaryLayers ):
+		"Get the lines of text from the svg_layer.template file."
 #( layers.length + 1 ) * (margin + sliceDimY * unitScale + txtHeight) + margin + txtHeight + margin + 110
-		svgTemplateText = gcodec.getFileTextInFileDirectory( __file__, 'svg_template.tmpl' )
-		originalTextLines = gcodec.getTextLines( svgTemplateText )
-		self.margin = getParameterFromJavascript( originalTextLines, 'margin', self.margin )
-		self.textHeight = getParameterFromJavascript( originalTextLines, 'textHeight', self.textHeight )
-		javascriptControlsWidth = getParameterFromJavascript( originalTextLines, 'javascripControlBoxX', 510.0 )
-		noJavascriptControlsHeight = getParameterFromJavascript( originalTextLines, 'noJavascriptControlBoxY', 110.0 )
+		self.layerThickness = self.carving.getCarveLayerThickness()
+		self.setExtrusionDiameterWidth( self.repository )
+		self.decimalPlacesCarried = max( 0, 1 + self.repository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
+		self.extent = self.cornerMaximum - self.cornerMinimum
+		self.addRotatedLoopLayersToOutput( rotatedBoundaryLayers )
+		svgTemplateText = gcodec.getFileTextInFileDirectory( __file__, 'svg_layer.template' )
+		lines = gcodec.getTextLines( svgTemplateText )
+		self.margin = getParameterFromJavascript( lines, 'margin', self.margin )
+		self.textHeight = getParameterFromJavascript( lines, 'textHeight', self.textHeight )
+		javascriptControlsWidth = getParameterFromJavascript( lines, 'javascripControlBoxX', 510.0 )
+		noJavascriptControlsHeight = getParameterFromJavascript( lines, 'noJavascriptControlBoxY', 110.0 )
 		controlTop = len( rotatedBoundaryLayers ) * ( self.margin + self.extent.y * self.unitScale + self.textHeight ) + 2.0 * self.margin + self.textHeight
 #	width = margin + (sliceDimX * unitScale) + margin;
-		svgTemplateText = getReplacedInQuotes( 'height', self.getRounded( controlTop + noJavascriptControlsHeight + self.margin ), svgTemplateText )
 		width = 2.0 * self.margin + max( self.extent.y * self.unitScale, javascriptControlsWidth )
-		svgTemplateText = getReplacedInQuotes( 'width', self.getRounded( width ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'layerThickness', self.getRounded( self.layerThickness ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'maxX', self.getRounded( self.cornerMaximum.x ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'minX', self.getRounded( self.cornerMinimum.x ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'dimX', self.getRounded( self.extent.x ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'maxY', self.getRounded( self.cornerMaximum.y ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'minY', self.getRounded( self.cornerMinimum.y ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'dimY', self.getRounded( self.extent.y ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'maxZ', self.getRounded( self.cornerMaximum.z ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'minZ', self.getRounded( self.cornerMinimum.z ), svgTemplateText )
-		svgTemplateText = getReplacedWordAndInQuotes( 'dimZ', self.getRounded( self.extent.z ), svgTemplateText )
 		summarizedFileName = gcodec.getSummarizedFileName( fileName ) + ' SVG Slice File'
-		svgTemplateText = getReplacedWordAndInQuotes( 'Title', summarizedFileName, svgTemplateText )
-		noJavascriptControlsTagString = '<g id="noJavascriptControls" fill="#000" transform="translate(%s, %s)">' % ( self.getRounded( self.margin ), self.getRounded( controlTop ) )
-		svgTemplateText = getReplacedTagString( noJavascriptControlsTagString, 'noJavascriptControls', svgTemplateText )
-#	<g id="noJavascriptControls" fill="#000" transform="translate(20, 1400)">
-		return gcodec.getTextLines( svgTemplateText )
+		noJavascriptControlsTagString = '	<g id="noJavascriptControls" fill="#000" transform="translate(%s, %s)">' % ( self.getRounded( self.margin ), self.getRounded( controlTop ) )
+		firstWordTable = {}
+		firstWordTable[ 'height="999px"' ] = '	height="%spx"' % self.getRounded( controlTop + noJavascriptControlsHeight + self.margin )
+		firstWordTable[ 'width="999px"' ] = '	width="%spx"' % self.getRounded( width )
+		firstWordTable[ '<!--replaceLineWith_boundaryLayerLines-->' ] = self.output.getvalue()
+		firstWordTable[ '<!--replaceLineWith_emptyString-->' ] = ''
+		firstWordTable[ '<!--replaceLineWith_noJavascriptControls-->' ] = noJavascriptControlsTagString
+		firstWordTable[ '<!--replaceLineWith_sliceVariableLines-->' ] = self.getInitializationForOutputSVG( procedureName )
+		replaceWithTable = {}
+		replaceWithTable[ 'replaceWith_Title' ] = summarizedFileName
+		replaceWithTable[ 'replaceWith_layerThickness' ] = self.getRounded( self.layerThickness )
+		replaceWithTable[ 'replaceWith_maxX' ] = self.getRounded( self.cornerMaximum.x )
+		replaceWithTable[ 'replaceWith_minX' ] = self.getRounded( self.cornerMinimum.x )
+		replaceWithTable[ 'replaceWith_dimX' ] = self.getRounded( self.extent.x )
+		replaceWithTable[ 'replaceWith_maxY' ] = self.getRounded( self.cornerMaximum.y )
+		replaceWithTable[ 'replaceWith_minY' ] = self.getRounded( self.cornerMinimum.y )
+		replaceWithTable[ 'replaceWith_dimY' ] = self.getRounded( self.extent.y )
+		replaceWithTable[ 'replaceWith_maxZ' ] = self.getRounded( self.cornerMaximum.z )
+		replaceWithTable[ 'replaceWith_minZ' ] = self.getRounded( self.cornerMinimum.z )
+		replaceWithTable[ 'replaceWith_dimZ' ] = self.getRounded( self.extent.z )
+		output = cStringIO.StringIO()
+		for line in lines:
+			parseLineReplaceWithTable( firstWordTable, line, output, replaceWithTable )
+		return output.getvalue()
 
 	def getRounded( self, number ):
 		"Get number rounded to the number of carried decimal places as a string."

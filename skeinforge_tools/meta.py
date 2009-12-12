@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Meta is a script to access the plugins which handle meta information.
 
 """

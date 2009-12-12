@@ -862,10 +862,6 @@ def getPointPlusSegmentWithLength( length, point, segment ):
 	"Get point plus a segment scaled to a given length."
 	return segment * length / abs( segment ) + point
 
-def getPolar( angle, radius = 1.0 ):
-	"Get polar complex from counterclockwise angle from 1, 0 and radius."
-	return complex( radius * math.cos( angle ), radius * math.sin( angle ) )
-
 def getPolygonArea( polygonComplex ):
 	"Get the area of a complex polygon."
 	polygonComplexArea = 0.0

@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Carve shape is a script to carve a list of slice layers.
 
 Carve carves a list of slices into svg slice layers.  The 'Layer Thickness' is the thickness the extrusion layer at default extruder speed, this is the most important carve preference.  The 'Perimeter Width over Thickness' is the ratio of the extrusion perimeter width to the layer thickness.  The higher the value the more the perimeter will be inset, the default is 1.8.  A ratio of one means the extrusion is a circle, a typical ratio of 1.8 means the extrusion is a wide oval.  These values should be measured from a test extrusion line.
@@ -60,7 +61,6 @@ from skeinforge_tools.skeinforge_utilities import preferences
 from skeinforge_tools.skeinforge_utilities import svg_codec
 from skeinforge_tools.skeinforge_utilities import triangle_mesh
 from skeinforge_tools.meta_plugins import polyfile
-import math
 import os
 import sys
 import time
@@ -71,22 +71,22 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def getCraftedText( fileName, text = '', carveRepository = None ):
+def getCraftedText( fileName, text = '', repository = None ):
 	"Get carved text."
 	if gcodec.getHasSuffix( fileName, '.svg' ):
 		text = gcodec.getTextIfEmpty( fileName, text )
 		return text
-	return getCraftedTextFromFileName( fileName, carveRepository = None )
+	return getCraftedTextFromFileName( fileName, repository = None )
 
-def getCraftedTextFromFileName( fileName, carveRepository = None ):
+def getCraftedTextFromFileName( fileName, repository = None ):
 	"Carve a shape file."
 	carving = svg_codec.getCarving( fileName )
 	if carving == None:
 		return ''
-	if carveRepository == None:
-		carveRepository = CarveRepository()
-		preferences.getReadRepository( carveRepository )
-	return CarveSkein().getCarvedSVG( carveRepository, carving, fileName )
+	if repository == None:
+		repository = CarveRepository()
+		preferences.getReadRepository( repository )
+	return CarveSkein().getCarvedSVG( carving, fileName, repository )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -135,60 +135,36 @@ class CarveRepository:
 
 class CarveSkein( svg_codec.SVGCodecSkein ):
 	"A class to carve a carving."
-	def addRotatedLoopLayersToOutput( self, rotatedBoundaryLayers ):
-		"Add rotated boundary layers to the output."
-		truncatedRotatedBoundaryLayers = rotatedBoundaryLayers[ self.carveRepository.layersFrom.value : self.carveRepository.layersTo.value ]
-		for truncatedRotatedBoundaryLayerIndex in xrange( len( truncatedRotatedBoundaryLayers ) ):
-			truncatedRotatedBoundaryLayer = truncatedRotatedBoundaryLayers[ truncatedRotatedBoundaryLayerIndex ]
-			self.addRotatedLoopLayerToOutput( truncatedRotatedBoundaryLayerIndex, truncatedRotatedBoundaryLayer )
-
 	def addRotatedLoopLayerToOutput( self, layerIndex, rotatedBoundaryLayer ):
 		"Add rotated boundary layer to the output."
-		self.addLayerStart( layerIndex, rotatedBoundaryLayer.z )
+		self.addLayerBegin( layerIndex, rotatedBoundaryLayer.z )
 		if rotatedBoundaryLayer.rotation != None:
 			self.addLine('\t\t\t<!--bridgeRotation--> %s' % rotatedBoundaryLayer.rotation ) # Indicate the bridge rotation.
-#			<path transform="scale(3.7, -3.7) translate(0, 5)" d="M 0 -5 L 50 0 L60 50 L 5 50 z M 5 3 L5 15 L15 15 L15 5 z"/>
-#		transform = 'scale(' + unitScale + ' ' + (unitScale * -1) + ') translate(' + (sliceMinX * -1) + ' ' + (sliceMinY * -1) + ')'
-		pathString = '\t\t\t<path transform="scale(%s, %s) translate(%s, %s)" d="' % ( self.unitScale, - self.unitScale, self.getRounded( - self.cornerMinimum.x ), self.getRounded( - self.cornerMinimum.y ) )
-		if len( rotatedBoundaryLayer.loops ) > 0:
-			pathString += self.getSVGLoopString( rotatedBoundaryLayer.loops[ 0 ] )
-		for loop in rotatedBoundaryLayer.loops[ 1 : ]:
-			pathString += ' ' + self.getSVGLoopString( loop )
-		pathString += '"/>'
-		self.addLine( pathString )
-		self.addLine( '\t\t</g>' )
+		self.addLayerEnd( rotatedBoundaryLayer )
 
-	def getCarvedSVG( self, carveRepository, carving, fileName ):
+	def getCarvedSVG( self, carving, fileName, repository ):
 		"Parse gnu triangulated surface text and store the carved gcode."
-		self.carveRepository = carveRepository
-		self.layerThickness = carveRepository.layerThickness.value
-		self.setExtrusionDiameterWidth( carveRepository )
-		if carveRepository.infillDirectionBridge.value:
+		self.carving = carving
+		self.repository = repository
+		self.layerThickness = repository.layerThickness.value
+		self.setExtrusionDiameterWidth( repository )
+		if repository.infillDirectionBridge.value:
 			carving.setCarveBridgeLayerThickness( self.bridgeLayerThickness )
 		carving.setCarveLayerThickness( self.layerThickness )
-		importRadius = 0.5 * carveRepository.importCoarseness.value * abs( self.perimeterWidth )
+		importRadius = 0.5 * repository.importCoarseness.value * abs( self.perimeterWidth )
 		carving.setCarveImportRadius( max( importRadius, 0.01 * self.layerThickness ) )
-		carving.setCarveIsCorrectMesh( carveRepository.correctMesh.value )
+		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
 		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
 		if len( rotatedBoundaryLayers ) < 1:
 			return ''
 		self.cornerMaximum = carving.getCarveCornerMaximum()
 		self.cornerMinimum = carving.getCarveCornerMinimum()
-		#reset from slicable
-		self.layerThickness = carving.getCarveLayerThickness()
-		self.setExtrusionDiameterWidth( carveRepository )
-		self.decimalPlacesCarried = max( 0, 1 + carveRepository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
-		self.extent = self.cornerMaximum - self.cornerMinimum
-		self.svgTemplateLines = self.getReplacedSVGTemplateLines( fileName, rotatedBoundaryLayers )
-		self.addInitializationToOutputSVG( 'carve' )
-		self.addRotatedLoopLayersToOutput( rotatedBoundaryLayers )
-		self.addShutdownToOutput()
-		return self.output.getvalue()
+		return self.getReplacedSVGTemplate( fileName, 'carve', rotatedBoundaryLayers )
 
-	def setExtrusionDiameterWidth( self, carveRepository ):
+	def setExtrusionDiameterWidth( self, repository ):
 		"Set the extrusion diameter & width and the bridge thickness & width."
-		self.bridgeLayerThickness = self.layerThickness * carveRepository.bridgeThicknessMultiplier.value
-		self.perimeterWidth = carveRepository.perimeterWidthOverThickness.value * self.layerThickness
+		self.bridgeLayerThickness = self.layerThickness * repository.bridgeThicknessMultiplier.value
+		self.perimeterWidth = repository.perimeterWidthOverThickness.value * self.layerThickness
 
 
 def main():

@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Skeinview is a script to display each layer of a gcode file.
 
 Skeinview is derived from Nophead's preview script.  The extruded lines are in the resistor colors red, orange, yellow, green, blue, purple & brown.  When the extruder is off, the travel line is grey.  Skeinview is useful for a detailed view of the extrusion, behold is better to see the orientation of the shape.  To get an initial overview of the skein, when the skeinview display window appears, click the Soar button (double right arrow button beside the layer field).
@@ -134,10 +135,8 @@ class SkeinviewRepository( tableau.TableauRepository ):
 		self.drawArrows.setUpdateFunction( self.setToDisplaySaveUpdate )
 		self.goAroundExtruderOffTravel = preferences.BooleanPreference().getFromValue( 'Go Around Extruder Off Travel', self, False )
 		self.goAroundExtruderOffTravel.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
-		self.layer = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
-		self.layer.setUpdateFunction( self.setToDisplaySaveUpdate )
-		self.line = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
-		self.line.setUpdateFunction( self.setToDisplaySaveUpdate )
+		self.layer = preferences.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
+		self.line = preferences.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
 		self.mouseMode = preferences.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )
 		self.displayLine = preferences.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
 		self.setNewMouseToolUpdate( display_line.getNewMouseTool, self.displayLine )
@@ -382,7 +381,7 @@ class SkeinWindow( tableau.TableauWindow ):
 		"Get a copy of this window with a new skein."
 		return getWindowGivenTextRepository( self.skein.fileName, self.skein.gcodeText, self.repository )
 
-	def getDrawnColoredLine( self, coloredLine, width ):
+	def getDrawnColoredLine( self, coloredLine, tags, width ):
 		"Get the drawn colored line."
 		return self.canvas.create_line(
 			coloredLine.begin.real,
@@ -391,13 +390,17 @@ class SkeinWindow( tableau.TableauWindow ):
 			coloredLine.end.imag,
 			fill = coloredLine.colorName,
 			arrow = self.arrowType,
-			tags = coloredLine.tagString,
+			tags = tags,
 			width = width )
 
 	def getDrawnColoredLineIfThick( self, coloredLine, width ):
 		"Get the drawn colored line if it has a positive thickness."
 		if width > 0:
-			return self.getDrawnColoredLine( coloredLine, width )
+			return self.getDrawnColoredLine( coloredLine, coloredLine.tagString, width )
+
+	def getDrawnSelectedColoredLine( self, coloredLine ):
+		"Get the drawn selected colored line."
+		return self.getDrawnColoredLine( coloredLine, 'mouse_item', self.repository.widthOfSelectionThread.value )
 
 	def getRoundedRulingText( self, number ):
 		"Get the rounded ruling text."
@@ -411,13 +414,6 @@ class SkeinWindow( tableau.TableauWindow ):
 	def getRulingSeparationWidthPixels( self, rank ):
 		"Get the separation width in pixels."
 		return euclidean.getIncrementFromRank( rank ) * self.skein.scale
-
-	def getSelectedDrawnColoredLines( self, coloredLines ):
-		"Get the selected drawn colored lines."
-		selectedDrawnColoredLines = []
-		for coloredLine in coloredLines:
-			selectedDrawnColoredLines.append( self.getDrawnColoredLine( coloredLine, self.repository.widthOfSelectionThread.value ) )
-		return selectedDrawnColoredLines
 
 	def relayXview( self, *args ):
 		"Relay xview changes."

@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 """
+This page is in the table of contents.
 Inset is a script to inset a gcode file.
 
 Inset will inset the outside outlines by half the perimeter width, and the inside outlines will be outset by half the perimeter width.

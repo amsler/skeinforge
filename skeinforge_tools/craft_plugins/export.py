@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Export is a script to pick an export plugin and optionally print the output to a file.
 
 The default 'Activate Export' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -137,6 +138,10 @@ def writeOutput( fileName = '' ):
 	if gcodeText == '':
 		return
 	analyze.writeOutput( suffixFileName, gcodeText )
+	if exportRepository.savePenultimateGcode.value:
+		penultimateFileName = fileName[ : fileName.rfind( '.' ) ] + '_penultimate.gcode'
+		gcodec.writeFileText( penultimateFileName, gcodeText )
+		print( 'The penultimate file is saved as ' + gcodec.getSummarizedFileName( penultimateFileName ) )
 	exportChainGcode = getCraftedTextFromText( gcodeText, exportRepository )
 	replacableExportChainGcode = None
 	selectedPluginModule = getSelectedPluginModule( exportRepository.exportPlugins )
@@ -188,6 +193,7 @@ class ExportRepository:
 				exportPlugin.directoryPath = exportStaticDirectoryPath
 			self.exportPlugins.append( exportPlugin )
 		self.fileExtension = preferences.StringPreference().getFromValue( 'File Extension:', self, 'gcode' )
+		self.savePenultimateGcode = preferences.BooleanPreference().getFromValue( 'Save Penultimate Gcode', self, False )
 		self.executeTitle = 'Export'
 
 	def execute( self ):

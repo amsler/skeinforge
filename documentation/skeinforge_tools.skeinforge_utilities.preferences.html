@@ -92,7 +92,8 @@
 <dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpin">FloatSpin</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpinUpdate">FloatSpinUpdate</a>
+<dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpinNotOnMenu">FloatSpinNotOnMenu</a>
+</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpinUpdate">FloatSpinUpdate</a>
 </font></dt></dl>
 </dd>
 <dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntPreference">IntPreference</a>
@@ -101,7 +102,8 @@
 <dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntSpin">IntSpin</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntSpinUpdate">IntSpinUpdate</a>
+<dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntSpinNotOnMenu">IntSpinNotOnMenu</a>
+</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntSpinUpdate">IntSpinUpdate</a>
 </font></dt></dl>
 </dd>
 </dl>
@@ -437,6 +439,65 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preference
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FloatSpinNotOnMenu">class <strong>FloatSpinNotOnMenu</strong></a>(<a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpin">FloatSpin</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;display,&nbsp;read&nbsp;&amp;&nbsp;write&nbsp;an&nbsp;float&nbsp;in&nbsp;a&nbsp;spin&nbsp;box,&nbsp;which&nbsp;is&nbsp;not&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;a&nbsp;menu.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpinNotOnMenu">FloatSpinNotOnMenu</a></dd>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpin">FloatSpin</a></dd>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatPreference">FloatPreference</a></dd>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#StringPreference">StringPreference</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FloatSpinNotOnMenu-getFromValueOnlyAddToRepository"><strong>getFromValueOnlyAddToRepository</strong></a>(self, name, repository, value)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpin">FloatSpin</a>:<br>
+<dl><dt><a name="FloatSpinNotOnMenu-bindEntry"><strong>bindEntry</strong></a>(self)</dt><dd><tt>Bind&nbsp;the&nbsp;entry&nbsp;to&nbsp;the&nbsp;update&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-createEntry"><strong>createEntry</strong></a>(self, root)</dt><dd><tt>Create&nbsp;the&nbsp;entry.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-entryUpdated"><strong>entryUpdated</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Create&nbsp;the&nbsp;entry.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-getFromValue"><strong>getFromValue</strong></a>(self, from_, name, repository, to, value)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-setColor"><strong>setColor</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;color&nbsp;to&nbsp;the&nbsp;value,&nbsp;yellow&nbsp;if&nbsp;it&nbsp;is&nbsp;lower&nbsp;than&nbsp;the&nbsp;default&nbsp;and&nbsp;blue&nbsp;if&nbsp;it&nbsp;is&nbsp;higher.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-setColorToDisplay"><strong>setColorToDisplay</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;color&nbsp;to&nbsp;the&nbsp;value,&nbsp;yellow&nbsp;if&nbsp;it&nbsp;is&nbsp;lower&nbsp;than&nbsp;the&nbsp;default&nbsp;and&nbsp;blue&nbsp;if&nbsp;it&nbsp;is&nbsp;higher.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatPreference">FloatPreference</a>:<br>
+<dl><dt><a name="FloatSpinNotOnMenu-setValueToString"><strong>setValueToString</strong></a>(self, valueString)</dt><dd><tt>Set&nbsp;the&nbsp;float&nbsp;to&nbsp;the&nbsp;string.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preferences.html#StringPreference">StringPreference</a>:<br>
+<dl><dt><a name="FloatSpinNotOnMenu-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;update&nbsp;function&nbsp;to&nbsp;none.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-addToDialog"><strong>addToDialog</strong></a>(self, repositoryDialog)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-addToMenu"><strong>addToMenu</strong></a>(self, repositoryMenu)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;repository&nbsp;menu.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-getFromValueOnly"><strong>getFromValueOnly</strong></a>(self, name, repository, value)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-openEntityDialog"><strong>openEntityDialog</strong></a>(self)</dt><dd><tt>Open&nbsp;the&nbsp;preference&nbsp;dialog.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-setStateToValue"><strong>setStateToValue</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;entry&nbsp;to&nbsp;the&nbsp;value.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-setToDisplay"><strong>setToDisplay</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;string&nbsp;to&nbsp;the&nbsp;entry&nbsp;field.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-setUpdateFunction"><strong>setUpdateFunction</strong></a>(self, updateFunction)</dt><dd><tt>Set&nbsp;the&nbsp;update&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-setValueToSplitLine"><strong>setValueToSplitLine</strong></a>(self, lineIndex, lines, splitLine)</dt><dd><tt>Set&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;second&nbsp;word&nbsp;of&nbsp;a&nbsp;split&nbsp;line.</tt></dd></dl>
+
+<dl><dt><a name="FloatSpinNotOnMenu-writeToArchiveWriter"><strong>writeToArchiveWriter</strong></a>(self, archiveWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;archive&nbsp;writer.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="FloatSpinUpdate">class <strong>FloatSpinUpdate</strong></a>(<a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatSpin">FloatSpin</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
@@ -658,6 +719,68 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preference
 <dl><dt><a name="IntSpin-setValueToSplitLine"><strong>setValueToSplitLine</strong></a>(self, lineIndex, lines, splitLine)</dt><dd><tt>Set&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;second&nbsp;word&nbsp;of&nbsp;a&nbsp;split&nbsp;line.</tt></dd></dl>
 
 <dl><dt><a name="IntSpin-writeToArchiveWriter"><strong>writeToArchiveWriter</strong></a>(self, archiveWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;archive&nbsp;writer.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="IntSpinNotOnMenu">class <strong>IntSpinNotOnMenu</strong></a>(<a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntSpin">IntSpin</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;display,&nbsp;read&nbsp;&amp;&nbsp;write&nbsp;an&nbsp;integer&nbsp;in&nbsp;a&nbsp;spin&nbsp;box,&nbsp;which&nbsp;is&nbsp;not&nbsp;to&nbsp;be&nbsp;added&nbsp;to&nbsp;a&nbsp;menu.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntSpinNotOnMenu">IntSpinNotOnMenu</a></dd>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntSpin">IntSpin</a></dd>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntPreference">IntPreference</a></dd>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#FloatPreference">FloatPreference</a></dd>
+<dd><a href="skeinforge_tools.skeinforge_utilities.preferences.html#StringPreference">StringPreference</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="IntSpinNotOnMenu-getFromValueOnlyAddToRepository"><strong>getFromValueOnlyAddToRepository</strong></a>(self, name, repository, value)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntSpin">IntSpin</a>:<br>
+<dl><dt><a name="IntSpinNotOnMenu-bindEntry"><strong>bindEntry</strong></a>(self)</dt><dd><tt>Bind&nbsp;the&nbsp;entry&nbsp;to&nbsp;the&nbsp;update&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-createEntry"><strong>createEntry</strong></a>(self, root)</dt><dd><tt>Create&nbsp;the&nbsp;entry.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-entryUpdated"><strong>entryUpdated</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Create&nbsp;the&nbsp;entry.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-getFromValue"><strong>getFromValue</strong></a>(self, from_, name, repository, to, value)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-getSingleIncrementFromValue"><strong>getSingleIncrementFromValue</strong></a>(self, from_, name, repository, to, value)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-setColor"><strong>setColor</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;color&nbsp;to&nbsp;the&nbsp;value,&nbsp;yellow&nbsp;if&nbsp;it&nbsp;is&nbsp;lower&nbsp;than&nbsp;the&nbsp;default&nbsp;and&nbsp;blue&nbsp;if&nbsp;it&nbsp;is&nbsp;higher.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-setColorToDisplay"><strong>setColorToDisplay</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;color&nbsp;to&nbsp;the&nbsp;value,&nbsp;yellow&nbsp;if&nbsp;it&nbsp;is&nbsp;lower&nbsp;than&nbsp;the&nbsp;default&nbsp;and&nbsp;blue&nbsp;if&nbsp;it&nbsp;is&nbsp;higher.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preferences.html#IntPreference">IntPreference</a>:<br>
+<dl><dt><a name="IntSpinNotOnMenu-setValueToString"><strong>setValueToString</strong></a>(self, valueString)</dt><dd><tt>Set&nbsp;the&nbsp;integer&nbsp;to&nbsp;the&nbsp;string.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preferences.html#StringPreference">StringPreference</a>:<br>
+<dl><dt><a name="IntSpinNotOnMenu-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;update&nbsp;function&nbsp;to&nbsp;none.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-addToDialog"><strong>addToDialog</strong></a>(self, repositoryDialog)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-addToMenu"><strong>addToMenu</strong></a>(self, repositoryMenu)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;repository&nbsp;menu.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-getFromValueOnly"><strong>getFromValueOnly</strong></a>(self, name, repository, value)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-openEntityDialog"><strong>openEntityDialog</strong></a>(self)</dt><dd><tt>Open&nbsp;the&nbsp;preference&nbsp;dialog.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-setStateToValue"><strong>setStateToValue</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;entry&nbsp;to&nbsp;the&nbsp;value.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-setToDisplay"><strong>setToDisplay</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;string&nbsp;to&nbsp;the&nbsp;entry&nbsp;field.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-setUpdateFunction"><strong>setUpdateFunction</strong></a>(self, updateFunction)</dt><dd><tt>Set&nbsp;the&nbsp;update&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-setValueToSplitLine"><strong>setValueToSplitLine</strong></a>(self, lineIndex, lines, splitLine)</dt><dd><tt>Set&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;second&nbsp;word&nbsp;of&nbsp;a&nbsp;split&nbsp;line.</tt></dd></dl>
+
+<dl><dt><a name="IntSpinNotOnMenu-writeToArchiveWriter"><strong>writeToArchiveWriter</strong></a>(self, archiveWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;archive&nbsp;writer.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -1478,7 +1601,7 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.preference
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-addAcceleratorCommand"><strong>addAcceleratorCommand</strong></a>(acceleratorBinding, commandFunction, master, menu, text)</dt><dd><tt>Add&nbsp;accelerator&nbsp;command.</tt></dd></dl>
  <dl><dt><a name="-addElementToListTableIfNotThere"><strong>addElementToListTableIfNotThere</strong></a>(element, key, listTable)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;lists.</tt></dd></dl>
- <dl><dt><a name="-addListsSetCraftProfileArchive"><strong>addListsSetCraftProfileArchive</strong></a>(defaultProfile, repository, fileNameHelp)</dt><dd><tt>Set&nbsp;the&nbsp;craft&nbsp;profile&nbsp;archive.</tt></dd></dl>
+ <dl><dt><a name="-addListsSetCraftProfileArchive"><strong>addListsSetCraftProfileArchive</strong></a>(craftSequence, defaultProfile, repository, fileNameHelp)</dt><dd><tt>Set&nbsp;the&nbsp;craft&nbsp;profile&nbsp;archive.</tt></dd></dl>
  <dl><dt><a name="-addListsToCraftTypeRepository"><strong>addListsToCraftTypeRepository</strong></a>(fileNameHelp, repository)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;lists.</tt></dd></dl>
  <dl><dt><a name="-addListsToRepository"><strong>addListsToRepository</strong></a>(fileNameHelp, profileDirectory, repository)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;lists.</tt></dd></dl>
  <dl><dt><a name="-addMenuEntitiesToMenu"><strong>addMenuEntitiesToMenu</strong></a>(menu, menuEntities)</dt><dd><tt>Add&nbsp;the&nbsp;menu&nbsp;entities&nbsp;to&nbsp;the&nbsp;menu.</tt></dd></dl>

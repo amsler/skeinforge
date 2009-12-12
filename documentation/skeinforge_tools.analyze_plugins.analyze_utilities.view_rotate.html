@@ -9,11 +9,22 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_tools.html"><font color="#ffffff">skeinforge_tools</font></a>.<a href="skeinforge_tools.analyze_plugins.html"><font color="#ffffff">analyze_plugins</font></a>.<a href="skeinforge_tools.analyze_plugins.analyze_utilities.html"><font color="#ffffff">analyze_utilities</font></a>.view_rotate</strong></big></big> ($Date: 2008/21/04 $)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/analyze_plugins/analyze_utilities/view_rotate.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/analyze_plugins/analyze_utilities/view_rotate.py</a></font></td></tr></table>
-    <p><tt>Viewpoint rotate is a mouse tool to rotate the viewpoint around the origin.<br>
+    <p>
+<a href="skeinforge_tools.analyze_plugins.analyze_utilities.view_move.html">Previous</a> / <a href="skeinforge_tools.analyze_plugins.analyze_utilities.zoom_in.html">Next</a> / <a href="contents.html">Contents</a>
+</p>
+<p><tt><br>
+Viewpoint rotate is a mouse tool to rotate the viewpoint around the origin.<br>
  <br>
 When the mouse is clicked, dragged and released on the canvas, viewpoint rotate will rotate the longitude by the amount the mouse is dragged around the origin.  If the mouse is moved towards the origin, the latitude will be increased, so the viewpoint will be closer to the top.  If the mouse is moved away from the origin, the latitude will be decreased.  If the shift key is also pressed, only the latitude or longitude will be changed, whichever is being changed the most.<br>
  <br>
-When the viewpoint rotate tool is chosen and the canvas has the focus, viewpoint rotate will listen to the arrow keys.  Clicking in the canvas gives the canvas the focus, and when the canvas has the focus a thick black border is drawn around the canvas.  When the right arrow key is pressed, viewpoint rotate will increase the preview longitude by one degree.  When the left arrow key is pressed, the preview longitude will be decreased.  The up arrow key increase the preview latitude by one degree and the down arow decreases the preview latitude.  Pressing the &lt;Return&gt; key implements the preview.</tt></p>
+When the viewpoint rotate tool is chosen and the canvas has the focus, viewpoint rotate will listen to the arrow keys.  Clicking in the canvas gives the canvas the focus, and when the canvas has the focus a thick black border is drawn around the canvas.  When the right arrow key is pressed, viewpoint rotate will increase the preview longitude by one degree.  When the left arrow key is pressed, the preview longitude will be decreased.  The up arrow key increase the preview latitude by one degree and the down arow decreases the preview latitude.  Pressing the &lt;Return&gt; key implements the preview.</tt>
+<br />
+<br />
+<p>
+<a href="skeinforge_tools.analyze_plugins.analyze_utilities.view_move.html">Previous</a> / <a href="skeinforge_tools.analyze_plugins.analyze_utilities.zoom_in.html">Next</a> / <a href="contents.html">Contents</a>
+</p>
+<hr>
+</p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -104,11 +115,7 @@ When the viewpoint rotate tool is chosen and the canvas has the focus, viewpoint
 
 <hr>
 Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base.html#MouseToolBase">skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base.MouseToolBase</a>:<br>
-<dl><dt><a name="ViewpointRotate-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize.</tt></dd></dl>
-
 <dl><dt><a name="ViewpointRotate-destroyEverythingGetFocus"><strong>destroyEverythingGetFocus</strong></a>(self)</dt><dd><tt>Destroy&nbsp;items&nbsp;and&nbsp;get&nbsp;the&nbsp;focus&nbsp;for&nbsp;the&nbsp;canvas.</tt></dd></dl>
-
-<dl><dt><a name="ViewpointRotate-destroyItems"><strong>destroyItems</strong></a>(self)</dt><dd><tt>Destroy&nbsp;items.</tt></dd></dl>
 
 <dl><dt><a name="ViewpointRotate-getReset"><strong>getReset</strong></a>(self, window)</dt><dd><tt>Reset&nbsp;the&nbsp;mouse&nbsp;tool&nbsp;to&nbsp;default.</tt></dd></dl>
 

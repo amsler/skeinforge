@@ -1,13 +1,55 @@
 """
+This page is in the table of contents.
 Behold is an analysis script to display a gcode file in an isometric view.
 
+==Operation==
 The default 'Activate Behold' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Behold' checkbox is on, when behold is run directly.  Behold can not separate the layers when it reads gcode without comments.
 
 The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.  The layers will be displayed starting at the "Layer From" index up until the "Layer To" index.  All of the preferences can be set in the initial "Behold Preferences" window and some can be changed after the viewer is running in the "Behold Dynamic Preferences" window.  In the viewer, dragging the mouse will change the viewpoint.
 
-The "Band Height" is height of the band in layers, with the default of five, a pair of bands is ten layers high.  The "Bottom Band Brightness" is the ratio of the brightness of the bottom band over the brightness of the top band, the default is 0.7.  The "Bottom Layer Brightness" is the ratio of the brightness of the bottom layer over the brightness of the top layer, the default is 1.0.  With a low bottom layer brightness ratio the bottom of the model will be darker than the top of the model, as if it was being illuminated by a light just above the top.  The "Bright Band Start" button group determines where the bright band starts from.  If the "From the Bottom" choice is selected, the bright bands will start from the bottom.  If the default "From the Top" choice is selected, the bright bands will start from the top.
+==Settings==
 
-If "Draw Arrows" is selected, arrows will be drawn at the end of each line segment, the default is on.  If "Go Around Extruder Off Travel" is selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.
+===Banding===
+
+====Band Height====
+Default five layers.
+
+Defines the height of the band in layers, a pair of bands is twice that height.
+
+====Bottom Band Brightness====
+Default 0.7.
+
+Defines the ratio of the brightness of the bottom band over the brightness of the top band.  The higher it is the brighter the bottom band will be.
+
+====Bottom Layer Brightness====
+Default is one.
+
+Defines the ratio of the brightness of the bottom layer over the brightness of the top layer.  With a low bottom layer brightness ratio the bottom of the model will be darker than the top of the model, as if it was being illuminated by a light just above the top.
+
+====Bright Band Start====
+Default choice is 'From the Top'.
+
+The button group that determines where the bright band starts from.
+
+=====From the Bottom=====
+
+When selected, the bright bands will start from the bottom.
+
+=====From the Top=====
+
+When selected, the bright bands will start from the top.
+
+===Draw Arrows===
+Default is on.
+
+When selected, arrows will be drawn at the end of each line segment.
+
+===Go Around Extruder Off Travel===
+Default is off.
+
+When selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.
+
+===Export Menu===
 
 When the submenu in the export menu item in the file menu is clicked, an export canvas dialog will be displayed, which can export the canvas to a file.
 
@@ -62,7 +104,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the behold dialog.
 
 
->>> behold.beholdFile()
+>>> behold.beholdFile( 'Screw Holder.gcode' )
 This brings up the behold window to view the gcode file.
 
 """
@@ -89,9 +131,8 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-#bring up the preferences window, maybe make dragging more intuitive
-def beholdFile( fileName = '' ):
-	"Behold a gcode file.  If no fileName is specified, behold the first gcode file in this folder that is not modified."
+def beholdFile( fileName ):
+	"Behold a gcode file."
 	gcodeText = gcodec.getFileText( fileName )
 	displayFileGivenText( fileName, gcodeText )
 
@@ -151,28 +192,26 @@ class BeholdRepository( tableau.TableauRepository ):
 		self.activateBehold = preferences.BooleanPreference().getFromValue( 'Activate Behold', self, True )
 		self.addAnimation()
 		self.bandHeight = preferences.IntSpinUpdate().getFromValue( 0, 'Band Height (layers):', self, 10, 5 )
-		self.bandHeight.setUpdateFunction( self.setToDisplaySaveResizeUpdate )
+		self.bandHeight.setUpdateFunction( self.setToDisplaySaveRedisplayWindowUpdate )
 		self.bottomBandBrightness = preferences.FloatSpinUpdate().getFromValue( 0.0, 'Bottom Band Brightness (ratio):', self, 1.0, 0.7 )
-		self.bottomBandBrightness.setUpdateFunction( self.setToDisplaySaveResizeUpdate )
+		self.bottomBandBrightness.setUpdateFunction( self.setToDisplaySaveRedisplayWindowUpdate )
 		self.bottomLayerBrightness = preferences.FloatSpinUpdate().getFromValue( 0.0, 'Bottom Layer Brightness (ratio):', self, 1.0, 1.0 )
-		self.bottomLayerBrightness.setUpdateFunction( self.setToDisplaySaveResizeUpdate )
+		self.bottomLayerBrightness.setUpdateFunction( self.setToDisplaySaveRedisplayWindowUpdate )
 		self.brightBandStart = preferences.MenuButtonDisplay().getFromName( 'Bright Band Start:', self )
 		self.fromTheBottom = preferences.MenuRadio().getFromMenuButtonDisplay( self.brightBandStart, 'From the Bottom', self, False )
-		self.fromTheBottom.setUpdateFunction( self.setToDisplaySaveResizeUpdate )
+		self.fromTheBottom.setUpdateFunction( self.setToDisplaySaveRedisplayWindowUpdate )
 		self.fromTheTop = preferences.MenuRadio().getFromMenuButtonDisplay( self.brightBandStart, 'From the Top', self, True )
-		self.fromTheTop.setUpdateFunction( self.setToDisplaySaveResizeUpdate )
+		self.fromTheTop.setUpdateFunction( self.setToDisplaySaveRedisplayWindowUpdate )
 		self.drawArrows = preferences.BooleanPreference().getFromValue( 'Draw Arrows', self, False )
 		self.drawArrows.setUpdateFunction( self.setToDisplaySaveUpdate )
 		self.goAroundExtruderOffTravel = preferences.BooleanPreference().getFromValue( 'Go Around Extruder Off Travel', self, False )
 		self.goAroundExtruderOffTravel.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
-		self.layer = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
-		self.layer.setUpdateFunction( self.setToDisplaySaveUpdate )
+		self.layer = preferences.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
 		self.layersFrom = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Layers From (index):', self, 912345678, 0 )
 		self.layersFrom.setUpdateFunction( self.setToDisplaySaveUpdate )
 		self.layersTo = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 0 )
 		self.layersTo.setUpdateFunction( self.setToDisplaySaveUpdate )
-		self.line = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
-		self.line.setUpdateFunction( self.setToDisplaySaveUpdate )
+		self.line = preferences.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
 		self.mouseMode = preferences.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )
 		self.displayLine = preferences.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
 		self.setNewMouseToolUpdate( display_line.getNewMouseTool, self.displayLine )
@@ -181,9 +220,9 @@ class BeholdRepository( tableau.TableauRepository ):
 		self.viewRotate = preferences.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Rotate', self, False )
 		self.setNewMouseToolUpdate( view_rotate.getNewMouseTool, self.viewRotate )
 		self.numberOfFillBottomLayers = preferences.IntSpinUpdate().getFromValue( 0, 'Number of Fill Bottom Layers (integer):', self, 5, 1 )
-		self.numberOfFillBottomLayers.setUpdateFunction( self.setToDisplaySaveResizeUpdate )
+		self.numberOfFillBottomLayers.setUpdateFunction( self.setToDisplaySaveRedisplayWindowUpdate )
 		self.numberOfFillTopLayers = preferences.IntSpinUpdate().getFromValue( 0, 'Number of Fill Top Layers (integer):', self, 5, 1 )
-		self.numberOfFillTopLayers.setUpdateFunction( self.setToDisplaySaveResizeUpdate )
+		self.numberOfFillTopLayers.setUpdateFunction( self.setToDisplaySaveRedisplayWindowUpdate )
 		self.addScaleScreenSlide()
 		self.viewpointLatitude = preferences.FloatSpin().getFromValue( 0.0, 'Viewpoint Latitude (degrees):', self, 180.0, 15.0 )
 		self.viewpointLatitude.setUpdateFunction( self.setToDisplaySaveUpdate )
@@ -505,14 +544,14 @@ class SkeinWindow( tableau.TableauWindow ):
 	def drawXYAxisLines( self, viewVectors ):
 		"Draw the x and y axis lines."
 		if self.repository.widthOfXAxis.value > 0:
-			self.getDrawnColoredLine( 'last', self.xAxisLine, viewVectors, self.repository.widthOfXAxis.value )
+			self.getDrawnColoredLine( 'last', self.xAxisLine, self.xAxisLine.tagString, viewVectors, self.repository.widthOfXAxis.value )
 		if self.repository.widthOfYAxis.value > 0:
-			self.getDrawnColoredLine( 'last', self.yAxisLine, viewVectors, self.repository.widthOfYAxis.value )
+			self.getDrawnColoredLine( 'last', self.yAxisLine, self.yAxisLine.tagString, viewVectors, self.repository.widthOfYAxis.value )
 
 	def drawZAxisLine( self, viewVectors ):
 		"Draw the z axis line."
 		if self.repository.widthOfZAxis.value > 0:
-			self.getDrawnColoredLine( 'last', self.zAxisLine, viewVectors, self.repository.widthOfZAxis.value )
+			self.getDrawnColoredLine( 'last', self.zAxisLine, self.zAxisLine.tagString, viewVectors, self.repository.widthOfZAxis.value )
 
 	def getCentered( self, coordinate ):
 		"Get the centered coordinate."
@@ -541,7 +580,7 @@ class SkeinWindow( tableau.TableauWindow ):
 		"Get a copy of this window with a new skein."
 		return getWindowGivenTextRepository( self.skein.fileName, self.skein.gcodeText, self.repository )
 
-	def getDrawnColoredLine( self, arrowType, coloredLine, viewVectors, width ):
+	def getDrawnColoredLine( self, arrowType, coloredLine, tags, viewVectors, width ):
 		"Draw colored line."
 		viewBegin = self.getViewComplex( coloredLine.begin, viewVectors )
 		viewEnd = self.getViewComplex( coloredLine.end, viewVectors )
@@ -552,7 +591,7 @@ class SkeinWindow( tableau.TableauWindow ):
 			viewEnd.imag,
 			fill = coloredLine.colorName,
 			arrow = arrowType,
-			tags = coloredLine.tagString,
+			tags = tags,
 			width = width )
 
 	def getDrawnColoredLineMotion( self, coloredLine, viewVectors, width ):
@@ -568,7 +607,7 @@ class SkeinWindow( tableau.TableauWindow ):
 			arrow = 'last',
 			arrowshape = self.arrowshape,
 			stipple = self.motionStippleName,
-			tags = 'view_rotate_item',
+			tags = 'mouse_item',
 			width = width + 4 )
 
 	def getDrawnColoredLines( self, coloredLines, viewVectors, width ):
@@ -577,23 +616,23 @@ class SkeinWindow( tableau.TableauWindow ):
 			return
 		drawnColoredLines = []
 		for coloredLine in coloredLines:
-			drawnColoredLines.append( self.getDrawnColoredLine( self.arrowType, coloredLine, viewVectors, width ) )
+			drawnColoredLines.append( self.getDrawnColoredLine( self.arrowType, coloredLine, coloredLine.tagString, viewVectors, width ) )
 		return drawnColoredLines
+
+	def getDrawnSelectedColoredLine( self, coloredLine ):
+		"Get the drawn selected colored line."
+		viewVectors = view_rotate.ViewVectors( self.repository.viewpointLatitude.value, self.repository.viewpointLongitude.value )
+		return self.getDrawnColoredLine( self.arrowType, coloredLine, 'mouse_item', viewVectors, self.repository.widthOfSelectionThread.value )
 
 	def getLayersAround( self, layers ):
 		"Get the layers wrappers around the number of skein panes."
 		if layers < 0:
-			return layers % len( self.skeinPanes )
-		return layers % len( self.skeinPanes )
+			return max( 0, len( self.skeinPanes ) + layers )
+		return min( layers, len( self.skeinPanes ) - 1 )
 
 	def getScreenComplex( self, pointComplex ):
 		"Get the point in screen perspective."
 		return complex( pointComplex.real, - pointComplex.imag ) + self.center
-
-	def getSelectedDrawnColoredLines( self, coloredLines ):
-		"Get the selected drawn colored lines."
-		viewVectors = view_rotate.ViewVectors( self.repository.viewpointLatitude.value, self.repository.viewpointLongitude.value )
-		return self.getDrawnColoredLines( coloredLines, viewVectors, self.repository.widthOfSelectionThread.value )
 
 	def getViewComplex( self, point, viewVectors ):
 		"Get the point in view perspective."

@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Postscript is an export canvas plugin to export the canvas to a postscript file.
 
 When the export menu item in the file menu in an analyze viewer tool, like skeinview or behold is clicked, the postscript dialog will be displayed.  When the 'Export to Postscript' button on that dialog is clicked, the canvas will be exported as a postscript file.  If the 'Postscript Program' is set to a program name, the postscript file will be sent to that program to be opened.  The default is gimp, the Gnu Image Manipulation Program (Gimp), which is open source, can open postscript and save in a variety of formats.  It is available at:

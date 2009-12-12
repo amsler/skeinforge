@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Scalable vector graphics is an export canvas plugin to export the canvas to a scalable vector graphics (.svg) file.
 
 When the export menu item in the file menu in an analyze viewer tool, like skeinview or behold is clicked, the postscript dialog will be displayed.  When the 'Export to Scalable Vector Graphics' button on that dialog is clicked, the canvas will be exported as a scalable vector graphics file.  If the 'Scalable Vector Graphics Program' is set the default 'webbrowser', the scalable vector graphics file will be sent to the default browser to be opened.  If the 'Scalable Vector Graphics Program' is set to a program name, the scalable vector graphics file will be sent to that program to be opened.
@@ -29,6 +30,13 @@ def getNewRepository():
 	"Get the repository constructor."
 	return ScalableVectorGraphicsRepository()
 
+def parseLineReplace( firstWordTable, line, output ):
+	"Parse the line and replace it if the first word of the line is in the first word table."
+	firstWord = gcodec.getFirstWordFromLine( line )
+	if firstWord in firstWordTable:
+		line = firstWordTable[ firstWord ]
+	gcodec.addLineAndNewlineIfNecessary( line, output )
+
 
 class ScalableVectorGraphicsRepository:
 	"A class to handle the export preferences."
@@ -49,7 +57,7 @@ class ScalableVectorGraphicsRepository:
 		color = self.canvas.itemcget( objectIDNumber, 'fill' )
 		width = self.canvas.itemcget( objectIDNumber, 'width' )
 		line = '<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-width="%spx"/>\n' % ( xBegin, yBegin, xEnd, yEnd, color, width )
-		canvasLinesOutput.write( line )
+		canvasLinesOutput.write( line + '\n' )
 
 	def execute( self ):
 		"Export the canvas as an svg file."
@@ -60,17 +68,17 @@ class ScalableVectorGraphicsRepository:
 		boxWidth = boundingBox[ 2 ] - self.boxW
 		boxHeight = boundingBox[ 3 ] - self.boxN
 		print( 'Exported svg file saved as ' + svgFileName )
-		self.output = cStringIO.StringIO()
 		svgTemplateText = gcodec.getFileTextInFileDirectory( preferences.__file__, 'svg_canvas.template' )
+		output = cStringIO.StringIO()
 		lines = gcodec.getTextLines( svgTemplateText )
 		firstWordTable = {}
-		firstWordTable[ 'height="999px"' ] = '		height="%spx"\n' % int( round( boxHeight ) )
-		firstWordTable[ '<!--replaceLineWithColoredLines-->' ] = self.getCanvasLinesOutput()
-		firstWordTable[ 'replaceLineWithTitle' ] = gcodec.getSummarizedFileName( self.fileName ) + '\n'
-		firstWordTable[ 'width="999px"' ] = '		width="%spx"\n' % int( round( boxWidth ) )
+		firstWordTable[ 'height="999px"' ] = '		height="%spx"' % int( round( boxHeight ) )
+		firstWordTable[ '<!--replaceLineWith_coloredLines-->' ] = self.getCanvasLinesOutput()
+		firstWordTable[ 'replaceLineWithTitle' ] = gcodec.getSummarizedFileName( self.fileName )
+		firstWordTable[ 'width="999px"' ] = '		width="%spx"' % int( round( boxWidth ) )
 		for line in lines:
-			self.parseLineReplace( firstWordTable, line )
-		gcodec.writeFileText( svgFileName, self.output.getvalue() )
+			parseLineReplace( firstWordTable, line, output )
+		gcodec.writeFileText( svgFileName, output.getvalue() )
 		fileExtension = self.fileExtension.value
 		svgProgram = self.svgProgram.value
 		if svgProgram == '':
@@ -108,15 +116,6 @@ class ScalableVectorGraphicsRepository:
 			if self.canvas.type( objectIDNumber ) == 'line':
 				self.addCanvasLineToOutput( canvasLinesOutput, objectIDNumber )
 		return canvasLinesOutput.getvalue()
-
-	def parseLineReplace( self, firstWordTable, line ):
-		"Parse the line and replace it if the first word of the line is in the first word table."
-		splitLine = line.split()
-		if len( splitLine ) > 0:
-			firstWord = splitLine[ 0 ]
-			if firstWord in firstWordTable:
-				line = firstWordTable[ firstWord ]
-			self.output.write( line )
 
 	def setCanvasFileNameSuffix( self, canvas, fileName, suffix ):
 		"Set the canvas and initialize the execute title."

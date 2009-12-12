@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Milling is a script to set the milling profile for the skeinforge chain.
 
 On the milling dialog, clicking the 'Add Profile' button will duplicate the selected profile and give it the name in the input field.  For example, if laser is selected and the name laser_10mm is in the input field, clicking the 'Add Profile' button will duplicate laser and save it as laser_10mm.  The 'Delete Profile' button deletes the selected profile.
@@ -34,7 +35,7 @@ __license__ = "GPL 3.0"
 
 
 def getCraftSequence():
-	"Get the sequence chop,preface,outset,mill,multiply,drill,lift,flow,feed,wipe,home,lash,fillet,unpause,export."
+	"Get the milling craft sequence."
 	return 'chop,preface,outset,mill,multiply,drill,lift,flow,feed,wipe,home,lash,fillet,unpause,export'.split( ',' )
 
 def getNewRepository():
@@ -46,7 +47,7 @@ class MillingRepository:
 	"A class to handle the milling preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsSetCraftProfileArchive( 'end_mill', self, 'skeinforge_tools.profile_plugins.milling.html' )
+		preferences.addListsSetCraftProfileArchive( getCraftSequence(), 'end_mill', self, 'skeinforge_tools.profile_plugins.milling.html' )
 
 
 def main():

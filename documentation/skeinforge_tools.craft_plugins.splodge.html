@@ -9,13 +9,17 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_tools.html"><font color="#ffffff">skeinforge_tools</font></a>.<a href="skeinforge_tools.craft_plugins.html"><font color="#ffffff">craft_plugins</font></a>.splodge</strong></big></big> ($Date: 2008/21/04 $)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/splodge.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/splodge.py</a></font></td></tr></table>
-    <p><tt>Splodge is a script to add a bit of extrusion before the beginning of a thread.<br>
+    <p>
+<a href="skeinforge_tools.craft_plugins.speed.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.stretch.html">Next</a> / <a href="contents.html">Contents</a>
+</p>
+<p><tt><br>
+Splodge is a script to add a bit of extrusion before the beginning of a thread.<br>
  <br>
 The default 'Activate Splodge' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
 Splodge turns the extruder on just before the start of a thread.  This is to give the extrusion a bit anchoring at the beginning.<br>
  <br>
-The 'Initial Splodge Feed Rate' is the feed rate at which the initial extra extrusion will be added, the default is 1 mm/s.  The 'Initial Splodge Quantity Length' is the quantity length of extra extrusion at the operating feed rate that will be added to the initial thread, the default is 50 millimeters.  The 'Operating Splodge Feed Rate' is the feed rate at which the next extra extrusions will be added, the default is 1 mm/s.  The 'Operating Splodge Quantity Length' is the quantity length of extra extrusion at the operating feed rate that will be added for the next threads, the default is one millimeter.  If a splodge quantity less is smaller than 0.15 times the perimeter width, no splodge of that type will be added.  With the default feed rates, the splodge will be added slower so it will be thicker than the regular extrusion.<br>
+The 'Initial Splodge Feed Rate' is the feed rate at which the initial extra extrusion will be added, the default is 1 mm/s.  The 'Initial Splodge Quantity Length' is the quantity length of extra extrusion at the operating feed rate that will be added to the initial thread, the default is 30 millimeters.  The 'Operating Splodge Feed Rate' is the feed rate at which the next extra extrusions will be added, the default is 1 mm/s.  The 'Operating Splodge Quantity Length' is the quantity length of extra extrusion at the operating feed rate that will be added for the next threads, the default is one millimeter.  If a splodge quantity less is smaller than 0.15 times the perimeter width, no splodge of that type will be added.  With the default feed rates, the splodge will be added slower so it will be thicker than the regular extrusion.<br>
  <br>
 The 'Initial Lift over Extra Thickness' ratio is the amount the extruder will be lifted over the extra thickness of the initial splodge thread, the default is 1.  The 'Operating Lift over Extra Thickness' ratio is the amount the extruder will be lifted over the extra thickness of the operating splodge thread, the default is 1.  The higher the ratio, the more the extruder will be lifted over the splodge, if the ratio is too low the extruder might plow through the splodge extrusion.<br>
  <br>
@@ -48,7 +52,14 @@ The splodge tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
 The splodge tool has created the file:<br>
-.. Screw Holder Bottom_splodge.gcode</tt></p>
+.. Screw Holder Bottom_splodge.gcode</tt>
+<br />
+<br />
+<p>
+<a href="skeinforge_tools.craft_plugins.speed.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.stretch.html">Next</a> / <a href="contents.html">Contents</a>
+</p>
+<hr>
+</p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">

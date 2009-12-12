@@ -9,15 +9,88 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_tools.html"><font color="#ffffff">skeinforge_tools</font></a>.<a href="skeinforge_tools.analyze_plugins.html"><font color="#ffffff">analyze_plugins</font></a>.behold</strong></big></big> ($Date: 2008/21/04 $)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/analyze_plugins/behold.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/analyze_plugins/behold.py</a></font></td></tr></table>
-    <p><tt>Behold is an analysis script to display a gcode file in an isometric view.<br>
+    <p>
+<a href="skeinforge_tools.analyze_plugins.analyze_utilities.zoom_out.html">Previous</a> / <a href="skeinforge_tools.analyze_plugins.comment.html">Next</a> / <a href="contents.html">Contents</a>
+</p>
+<p><tt><br>
+Behold is an analysis script to display a gcode file in an isometric view.<br>
  <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Banding">Banding</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Band Height">Band Height</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Bottom Band Brightness">Bottom Band Brightness</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Bottom Layer Brightness">Bottom Layer Brightness</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Bright Band Start">Bright Band Start</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#From the Bottom">From the Bottom</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#From the Top">From the Top</a><br />
+&nbsp;&nbsp;<a href="#Draw Arrows">Draw Arrows</a><br />
+&nbsp;&nbsp;<a href="#Go Around Extruder Off Travel">Go Around Extruder Off Travel</a><br />
+&nbsp;&nbsp;<a href="#Export Menu">Export Menu</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Behold' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Behold' checkbox is on, when behold is run directly.  Behold can not separate the layers when it reads gcode without comments.<br>
  <br>
 The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.  The layers will be displayed starting at the "Layer From" index up until the "Layer To" index.  All of the preferences can be set in the initial "Behold Preferences" window and some can be changed after the viewer is running in the "Behold Dynamic Preferences" window.  In the viewer, dragging the mouse will change the viewpoint.<br>
  <br>
-The "Band Height" is height of the band in layers, with the default of five, a pair of bands is ten layers high.  The "Bottom Band Brightness" is the ratio of the brightness of the bottom band over the brightness of the top band, the default is 0.7.  The "Bottom Layer Brightness" is the ratio of the brightness of the bottom layer over the brightness of the top layer, the default is 1.0.  With a low bottom layer brightness ratio the bottom of the model will be darker than the top of the model, as if it was being illuminated by a light just above the top.  The "Bright Band Start" button group determines where the bright band starts from.  If the "From the Bottom" choice is selected, the bright bands will start from the bottom.  If the default "From the Top" choice is selected, the bright bands will start from the top.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
  <br>
-If "Draw Arrows" is selected, arrows will be drawn at the end of each line segment, the default is on.  If "Go Around Extruder Off Travel" is selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.<br>
+<a name="Banding" id="Banding"></a><h3>Banding</h3>
+
+ <br>
+<a name="Band Height" id="Band Height"></a><h4>Band Height</h4>
+
+Default five layers.<br>
+ <br>
+Defines the height of the band in layers, a pair of bands is twice that height.<br>
+ <br>
+<a name="Bottom Band Brightness" id="Bottom Band Brightness"></a><h4>Bottom Band Brightness</h4>
+
+Default 0.7.<br>
+ <br>
+Defines the ratio of the brightness of the bottom band over the brightness of the top band.  The higher it is the brighter the bottom band will be.<br>
+ <br>
+<a name="Bottom Layer Brightness" id="Bottom Layer Brightness"></a><h4>Bottom Layer Brightness</h4>
+
+Default is one.<br>
+ <br>
+Defines the ratio of the brightness of the bottom layer over the brightness of the top layer.  With a low bottom layer brightness ratio the bottom of the model will be darker than the top of the model, as if it was being illuminated by a light just above the top.<br>
+ <br>
+<a name="Bright Band Start" id="Bright Band Start"></a><h4>Bright Band Start</h4>
+
+Default choice is 'From the Top'.<br>
+ <br>
+The button group that determines where the bright band starts from.<br>
+ <br>
+<a name="From the Bottom" id="From the Bottom"></a><h5>From the Bottom</h5>
+
+ <br>
+When selected, the bright bands will start from the bottom.<br>
+ <br>
+<a name="From the Top" id="From the Top"></a><h5>From the Top</h5>
+
+ <br>
+When selected, the bright bands will start from the top.<br>
+ <br>
+<a name="Draw Arrows" id="Draw Arrows"></a><h3>Draw Arrows</h3>
+
+Default is on.<br>
+ <br>
+When selected, arrows will be drawn at the end of each line segment.<br>
+ <br>
+<a name="Go Around Extruder Off Travel" id="Go Around Extruder Off Travel"></a><h3>Go Around Extruder Off Travel</h3>
+
+Default is off.<br>
+ <br>
+When selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.<br>
+ <br>
+<a name="Export Menu" id="Export Menu"></a><h3>Export Menu</h3>
+
  <br>
 When the submenu in the export menu item in the file menu is clicked, an export canvas dialog will be displayed, which can export the canvas to a file.<br>
  <br>
@@ -72,8 +145,15 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the behold dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; behold.<a href="#-beholdFile">beholdFile</a>()<br>
-This brings up the behold window to view the gcode file.</tt></p>
+&gt;&gt;&gt; behold.<a href="#-beholdFile">beholdFile</a>( 'Screw Holder.gcode' )<br>
+This brings up the behold window to view the gcode file.</tt>
+<br />
+<br />
+<p>
+<a href="skeinforge_tools.analyze_plugins.analyze_utilities.zoom_out.html">Previous</a> / <a href="skeinforge_tools.analyze_plugins.comment.html">Next</a> / <a href="contents.html">Contents</a>
+</p>
+<hr>
+</p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -229,17 +309,17 @@ Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utiliti
 
 <dl><dt><a name="SkeinWindow-getCopyWithNewSkein"><strong>getCopyWithNewSkein</strong></a>(self)</dt><dd><tt>Get&nbsp;a&nbsp;copy&nbsp;of&nbsp;this&nbsp;window&nbsp;with&nbsp;a&nbsp;new&nbsp;skein.</tt></dd></dl>
 
-<dl><dt><a name="SkeinWindow-getDrawnColoredLine"><strong>getDrawnColoredLine</strong></a>(self, arrowType, coloredLine, viewVectors, width)</dt><dd><tt>Draw&nbsp;colored&nbsp;line.</tt></dd></dl>
+<dl><dt><a name="SkeinWindow-getDrawnColoredLine"><strong>getDrawnColoredLine</strong></a>(self, arrowType, coloredLine, tags, viewVectors, width)</dt><dd><tt>Draw&nbsp;colored&nbsp;line.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getDrawnColoredLineMotion"><strong>getDrawnColoredLineMotion</strong></a>(self, coloredLine, viewVectors, width)</dt><dd><tt>Draw&nbsp;colored&nbsp;line&nbsp;with&nbsp;motion&nbsp;stipple&nbsp;and&nbsp;tag.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getDrawnColoredLines"><strong>getDrawnColoredLines</strong></a>(self, coloredLines, viewVectors, width)</dt><dd><tt>Draw&nbsp;colored&nbsp;lines.</tt></dd></dl>
 
+<dl><dt><a name="SkeinWindow-getDrawnSelectedColoredLine"><strong>getDrawnSelectedColoredLine</strong></a>(self, coloredLine)</dt><dd><tt>Get&nbsp;the&nbsp;drawn&nbsp;selected&nbsp;colored&nbsp;line.</tt></dd></dl>
+
 <dl><dt><a name="SkeinWindow-getLayersAround"><strong>getLayersAround</strong></a>(self, layers)</dt><dd><tt>Get&nbsp;the&nbsp;layers&nbsp;wrappers&nbsp;around&nbsp;the&nbsp;number&nbsp;of&nbsp;skein&nbsp;panes.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getScreenComplex"><strong>getScreenComplex</strong></a>(self, pointComplex)</dt><dd><tt>Get&nbsp;the&nbsp;point&nbsp;in&nbsp;screen&nbsp;perspective.</tt></dd></dl>
-
-<dl><dt><a name="SkeinWindow-getSelectedDrawnColoredLines"><strong>getSelectedDrawnColoredLines</strong></a>(self, coloredLines)</dt><dd><tt>Get&nbsp;the&nbsp;selected&nbsp;drawn&nbsp;colored&nbsp;lines.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getViewComplex"><strong>getViewComplex</strong></a>(self, point, viewVectors)</dt><dd><tt>Get&nbsp;the&nbsp;point&nbsp;in&nbsp;view&nbsp;perspective.</tt></dd></dl>
 
@@ -253,11 +333,17 @@ Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utiliti
 
 <dl><dt><a name="SkeinWindow-addCanvasMenuRootScrollSkein"><strong>addCanvasMenuRootScrollSkein</strong></a>(self, repository, skein, suffix, title)</dt><dd><tt>Add&nbsp;the&nbsp;canvas,&nbsp;menu&nbsp;bar,&nbsp;scroll&nbsp;bar,&nbsp;skein&nbsp;panes,&nbsp;tableau&nbsp;repository,&nbsp;root&nbsp;and&nbsp;skein.</tt></dd></dl>
 
+<dl><dt><a name="SkeinWindow-addLayer"><strong>addLayer</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;the&nbsp;layer&nbsp;frame&nbsp;items.</tt></dd></dl>
+
+<dl><dt><a name="SkeinWindow-addLine"><strong>addLine</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;the&nbsp;line&nbsp;frame&nbsp;items.</tt></dd></dl>
+
 <dl><dt><a name="SkeinWindow-addMouseInstantTool"><strong>addMouseInstantTool</strong></a>(self, fileName, mouseInstantTool)</dt><dd><tt>Add&nbsp;the&nbsp;mouse&nbsp;instant&nbsp;tool&nbsp;and&nbsp;derived&nbsp;photo&nbsp;button.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-addMouseToolsBind"><strong>addMouseToolsBind</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;mouse&nbsp;tool&nbsp;and&nbsp;bind&nbsp;button&nbsp;one&nbsp;clicked,&nbsp;button&nbsp;one&nbsp;released&nbsp;and&nbsp;motion.</tt></dd></dl>
 
-<dl><dt><a name="SkeinWindow-addPhotoImage"><strong>addPhotoImage</strong></a>(self, fileName)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+<dl><dt><a name="SkeinWindow-addPhotoImage"><strong>addPhotoImage</strong></a>(self, fileName, gridPosition)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+
+<dl><dt><a name="SkeinWindow-addScale"><strong>addScale</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;the&nbsp;line&nbsp;frame&nbsp;items.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-addSettingsMenuSetWindowGeometry"><strong>addSettingsMenuSetWindowGeometry</strong></a>(self, center)</dt><dd><tt>Add&nbsp;the&nbsp;settings&nbsp;menu,&nbsp;center&nbsp;the&nbsp;scroll&nbsp;region,&nbsp;update,&nbsp;and&nbsp;set&nbsp;the&nbsp;window&nbsp;geometry.</tt></dd></dl>
 
@@ -285,7 +371,7 @@ Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utiliti
 
 <dl><dt><a name="SkeinWindow-getDrawnLineText"><strong>getDrawnLineText</strong></a>(self, location, tags, text)</dt><dd><tt>Get&nbsp;the&nbsp;line&nbsp;text&nbsp;drawn&nbsp;on&nbsp;the&nbsp;canvas.</tt></dd></dl>
 
-<dl><dt><a name="SkeinWindow-getPhotoButtonGridIncrement"><strong>getPhotoButtonGridIncrement</strong></a>(self, commandFunction, fileName)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+<dl><dt><a name="SkeinWindow-getPhotoButtonGridIncrement"><strong>getPhotoButtonGridIncrement</strong></a>(self, commandFunction, fileName, gridPosition)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getScrollPaneCenter"><strong>getScrollPaneCenter</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;the&nbsp;scroll&nbsp;pane.</tt></dd></dl>
 
@@ -337,19 +423,17 @@ Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utiliti
 
 <dl><dt><a name="SkeinWindow-save"><strong>save</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;preference&nbsp;values&nbsp;to&nbsp;the&nbsp;display,&nbsp;save&nbsp;the&nbsp;new&nbsp;values.</tt></dd></dl>
 
-<dl><dt><a name="SkeinWindow-saveUpdate"><strong>saveUpdate</strong></a>(self)</dt><dd><tt>Save&nbsp;and&nbsp;update.</tt></dd></dl>
-
 <dl><dt><a name="SkeinWindow-scaleEntryReturnPressed"><strong>scaleEntryReturnPressed</strong></a>(self, event)</dt><dd><tt>The&nbsp;scale&nbsp;entry&nbsp;return&nbsp;was&nbsp;pressed.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-setButtonImageText"><strong>setButtonImageText</strong></a>(self, button, text)</dt><dd><tt>Set&nbsp;the&nbsp;text&nbsp;of&nbsp;the&nbsp;e&nbsp;periodic&nbsp;buttons.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-setDisplayLayerIndex"><strong>setDisplayLayerIndex</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;display&nbsp;of&nbsp;the&nbsp;layer&nbsp;index&nbsp;entry&nbsp;field&nbsp;and&nbsp;buttons.</tt></dd></dl>
 
+<dl><dt><a name="SkeinWindow-setInsetToDisplay"><strong>setInsetToDisplay</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;archive&nbsp;to&nbsp;the&nbsp;display.</tt></dd></dl>
+
 <dl><dt><a name="SkeinWindow-setLayerIndex"><strong>setLayerIndex</strong></a>(self, layerIndex)</dt><dd><tt>Set&nbsp;the&nbsp;layer&nbsp;index.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-setLineButtonsState"><strong>setLineButtonsState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;of&nbsp;the&nbsp;line&nbsp;buttons.</tt></dd></dl>
-
-<dl><dt><a name="SkeinWindow-setLineButtonsStateSave"><strong>setLineButtonsStateSave</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;of&nbsp;the&nbsp;line&nbsp;buttons.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-shiftButtonRelease1"><strong>shiftButtonRelease1</strong></a>(self, event)</dt><dd><tt>The&nbsp;button&nbsp;was&nbsp;released&nbsp;while&nbsp;the&nbsp;shift&nbsp;key&nbsp;was&nbsp;pressed.</tt></dd></dl>
 
@@ -372,7 +456,7 @@ Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utiliti
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-beholdFile"><strong>beholdFile</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Behold&nbsp;a&nbsp;gcode&nbsp;file.&nbsp;&nbsp;If&nbsp;no&nbsp;fileName&nbsp;is&nbsp;specified,&nbsp;behold&nbsp;the&nbsp;first&nbsp;gcode&nbsp;file&nbsp;in&nbsp;this&nbsp;folder&nbsp;that&nbsp;is&nbsp;not&nbsp;modified.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-beholdFile"><strong>beholdFile</strong></a>(fileName)</dt><dd><tt>Behold&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-compareLayerSequence"><strong>compareLayerSequence</strong></a>(first, second)</dt><dd><tt>Get&nbsp;comparison&nbsp;in&nbsp;order&nbsp;to&nbsp;sort&nbsp;skein&nbsp;panes&nbsp;in&nbsp;ascending&nbsp;order&nbsp;of&nbsp;layer&nbsp;zone&nbsp;index&nbsp;then&nbsp;sequence&nbsp;index.</tt></dd></dl>
  <dl><dt><a name="-displayFileGivenText"><strong>displayFileGivenText</strong></a>(fileName, gcodeText, beholdRepository<font color="#909090">=None</font>)</dt><dd><tt>Display&nbsp;a&nbsp;beholded&nbsp;gcode&nbsp;file&nbsp;for&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>

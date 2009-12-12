@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Jitter is a script to jitter the ends of the loops of a gcode file.
 
 The default 'Activate Jitter' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.

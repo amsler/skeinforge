@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Comment is a script to comment a gcode file.
 
 The default 'Activate Comment' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Comment' checkbox is on, when comment is run directly.

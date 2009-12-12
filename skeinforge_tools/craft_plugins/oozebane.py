@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Oozebane is a script to turn off the extruder before the end of a thread and turn it on before the beginning.
 
 The default 'Activate Oozebane' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.

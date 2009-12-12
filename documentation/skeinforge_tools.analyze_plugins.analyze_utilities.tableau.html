@@ -104,11 +104,17 @@
 
 <dl><dt><a name="TableauWindow-addCanvasMenuRootScrollSkein"><strong>addCanvasMenuRootScrollSkein</strong></a>(self, repository, skein, suffix, title)</dt><dd><tt>Add&nbsp;the&nbsp;canvas,&nbsp;menu&nbsp;bar,&nbsp;scroll&nbsp;bar,&nbsp;skein&nbsp;panes,&nbsp;tableau&nbsp;repository,&nbsp;root&nbsp;and&nbsp;skein.</tt></dd></dl>
 
+<dl><dt><a name="TableauWindow-addLayer"><strong>addLayer</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;the&nbsp;layer&nbsp;frame&nbsp;items.</tt></dd></dl>
+
+<dl><dt><a name="TableauWindow-addLine"><strong>addLine</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;the&nbsp;line&nbsp;frame&nbsp;items.</tt></dd></dl>
+
 <dl><dt><a name="TableauWindow-addMouseInstantTool"><strong>addMouseInstantTool</strong></a>(self, fileName, mouseInstantTool)</dt><dd><tt>Add&nbsp;the&nbsp;mouse&nbsp;instant&nbsp;tool&nbsp;and&nbsp;derived&nbsp;photo&nbsp;button.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-addMouseToolsBind"><strong>addMouseToolsBind</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;mouse&nbsp;tool&nbsp;and&nbsp;bind&nbsp;button&nbsp;one&nbsp;clicked,&nbsp;button&nbsp;one&nbsp;released&nbsp;and&nbsp;motion.</tt></dd></dl>
 
-<dl><dt><a name="TableauWindow-addPhotoImage"><strong>addPhotoImage</strong></a>(self, fileName)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+<dl><dt><a name="TableauWindow-addPhotoImage"><strong>addPhotoImage</strong></a>(self, fileName, gridPosition)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+
+<dl><dt><a name="TableauWindow-addScale"><strong>addScale</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;the&nbsp;line&nbsp;frame&nbsp;items.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-addSettingsMenuSetWindowGeometry"><strong>addSettingsMenuSetWindowGeometry</strong></a>(self, center)</dt><dd><tt>Add&nbsp;the&nbsp;settings&nbsp;menu,&nbsp;center&nbsp;the&nbsp;scroll&nbsp;region,&nbsp;update,&nbsp;and&nbsp;set&nbsp;the&nbsp;window&nbsp;geometry.</tt></dd></dl>
 
@@ -136,7 +142,7 @@
 
 <dl><dt><a name="TableauWindow-getDrawnLineText"><strong>getDrawnLineText</strong></a>(self, location, tags, text)</dt><dd><tt>Get&nbsp;the&nbsp;line&nbsp;text&nbsp;drawn&nbsp;on&nbsp;the&nbsp;canvas.</tt></dd></dl>
 
-<dl><dt><a name="TableauWindow-getPhotoButtonGridIncrement"><strong>getPhotoButtonGridIncrement</strong></a>(self, commandFunction, fileName)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+<dl><dt><a name="TableauWindow-getPhotoButtonGridIncrement"><strong>getPhotoButtonGridIncrement</strong></a>(self, commandFunction, fileName, gridPosition)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-getScrollPaneCenter"><strong>getScrollPaneCenter</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;the&nbsp;scroll&nbsp;pane.</tt></dd></dl>
 
@@ -188,19 +194,17 @@
 
 <dl><dt><a name="TableauWindow-save"><strong>save</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;preference&nbsp;values&nbsp;to&nbsp;the&nbsp;display,&nbsp;save&nbsp;the&nbsp;new&nbsp;values.</tt></dd></dl>
 
-<dl><dt><a name="TableauWindow-saveUpdate"><strong>saveUpdate</strong></a>(self)</dt><dd><tt>Save&nbsp;and&nbsp;update.</tt></dd></dl>
-
 <dl><dt><a name="TableauWindow-scaleEntryReturnPressed"><strong>scaleEntryReturnPressed</strong></a>(self, event)</dt><dd><tt>The&nbsp;scale&nbsp;entry&nbsp;return&nbsp;was&nbsp;pressed.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-setButtonImageText"><strong>setButtonImageText</strong></a>(self, button, text)</dt><dd><tt>Set&nbsp;the&nbsp;text&nbsp;of&nbsp;the&nbsp;e&nbsp;periodic&nbsp;buttons.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-setDisplayLayerIndex"><strong>setDisplayLayerIndex</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;display&nbsp;of&nbsp;the&nbsp;layer&nbsp;index&nbsp;entry&nbsp;field&nbsp;and&nbsp;buttons.</tt></dd></dl>
 
+<dl><dt><a name="TableauWindow-setInsetToDisplay"><strong>setInsetToDisplay</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;archive&nbsp;to&nbsp;the&nbsp;display.</tt></dd></dl>
+
 <dl><dt><a name="TableauWindow-setLayerIndex"><strong>setLayerIndex</strong></a>(self, layerIndex)</dt><dd><tt>Set&nbsp;the&nbsp;layer&nbsp;index.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-setLineButtonsState"><strong>setLineButtonsState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;of&nbsp;the&nbsp;line&nbsp;buttons.</tt></dd></dl>
-
-<dl><dt><a name="TableauWindow-setLineButtonsStateSave"><strong>setLineButtonsStateSave</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;of&nbsp;the&nbsp;line&nbsp;buttons.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-shiftButtonRelease1"><strong>shiftButtonRelease1</strong></a>(self, event)</dt><dd><tt>The&nbsp;button&nbsp;was&nbsp;released&nbsp;while&nbsp;the&nbsp;shift&nbsp;key&nbsp;was&nbsp;pressed.</tt></dd></dl>
 
@@ -223,7 +227,8 @@
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getScrollbarCanvasPortion"><strong>getScrollbarCanvasPortion</strong></a>(scrollbar)</dt><dd><tt>Get&nbsp;the&nbsp;canvas&nbsp;portion&nbsp;of&nbsp;the&nbsp;scrollbar.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getGridHorizontalFrame"><strong>getGridHorizontalFrame</strong></a>(gridPosition)</dt><dd><tt>Get&nbsp;the&nbsp;grid&nbsp;horizontal&nbsp;object&nbsp;with&nbsp;a&nbsp;frame&nbsp;from&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+ <dl><dt><a name="-getScrollbarCanvasPortion"><strong>getScrollbarCanvasPortion</strong></a>(scrollbar)</dt><dd><tt>Get&nbsp;the&nbsp;canvas&nbsp;portion&nbsp;of&nbsp;the&nbsp;scrollbar.</tt></dd></dl>
  <dl><dt><a name="-setStateNormalDisabled"><strong>setStateNormalDisabled</strong></a>(active, widget)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;of&nbsp;the&nbsp;widget&nbsp;to&nbsp;normal&nbsp;if&nbsp;active&nbsp;and&nbsp;disabled&nbsp;if&nbsp;inactive.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

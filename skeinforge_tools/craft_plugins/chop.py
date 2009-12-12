@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Chop shape is a script to chop a list of slice layers.
 
 Chop chops a list of slices into svg slice layers.  The 'Layer Thickness' is the thickness the extrusion layer at default extruder speed, this is the most important chop preference.  The 'Perimeter Width over Thickness' is the ratio of the extrusion perimeter width to the layer thickness.  The higher the value the more the perimeter will be inset, the default is 1.8.  A ratio of one means the extrusion is a circle, a typical ratio of 1.8 means the extrusion is a wide oval.  These values should be measured from a test extrusion line.
@@ -68,23 +69,23 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def getCraftedText( fileName, text = '', chopRepository = None ):
+def getCraftedText( fileName, text = '', repository = None ):
 	"Get chopped text."
 	if gcodec.getHasSuffix( fileName, '.svg' ):
 		if text == '':
 			text = gcodec.getFileText( fileName )
 		return text
-	return getCraftedTextFromFileName( fileName, chopRepository = None )
+	return getCraftedTextFromFileName( fileName, repository = None )
 
-def getCraftedTextFromFileName( fileName, chopRepository = None ):
+def getCraftedTextFromFileName( fileName, repository = None ):
 	"Chop a shape file."
 	carving = svg_codec.getCarving( fileName )
 	if carving == None:
 		return ''
-	if chopRepository == None:
-		chopRepository = ChopRepository()
-		preferences.getReadRepository( chopRepository )
-	return ChopSkein().getCarvedSVG( chopRepository, carving, fileName )
+	if repository == None:
+		repository = ChopRepository()
+		preferences.getReadRepository( repository )
+	return ChopSkein().getCarvedSVG( carving, fileName, repository )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -150,56 +151,34 @@ class ChopSkein( svg_codec.SVGCodecSkein ):
 		extraTopRotatedBoundaryLayer = topRotatedBoundaryLayer.getCopyAtZ( topRotatedBoundaryLayer.z + self.layerThickness )
 		rotatedBoundaryLayers.append( extraTopRotatedBoundaryLayer )
 
-	def addRotatedLoopLayersToOutput( self, rotatedBoundaryLayers ):
-		"Add rotated boundary layers to the output."
-		truncatedRotatedBoundaryLayers = rotatedBoundaryLayers[ self.chopRepository.layersFrom.value : self.chopRepository.layersTo.value ]
-		for truncatedRotatedBoundaryLayerIndex in xrange( len( truncatedRotatedBoundaryLayers ) ):
-			truncatedRotatedBoundaryLayer = truncatedRotatedBoundaryLayers[ truncatedRotatedBoundaryLayerIndex ]
-			self.addRotatedLoopLayerToOutput( truncatedRotatedBoundaryLayerIndex, truncatedRotatedBoundaryLayer )
-
 	def addRotatedLoopLayerToOutput( self, layerIndex, rotatedBoundaryLayer ):
 		"Add rotated boundary layer to the output."
-		self.addLayerStart( layerIndex, rotatedBoundaryLayer.z )
-		pathString = '\t\t\t<path transform="scale(%s, %s) translate(%s, %s)" d="' % ( self.unitScale, - self.unitScale, self.getRounded( - self.cornerMinimum.x ), self.getRounded( - self.cornerMinimum.y ) )
-		if len( rotatedBoundaryLayer.loops ) > 0:
-			pathString += self.getSVGLoopString( rotatedBoundaryLayer.loops[ 0 ] )
-		for loop in rotatedBoundaryLayer.loops[ 1 : ]:
-			pathString += ' ' + self.getSVGLoopString( loop )
-		pathString += '"/>'
-		self.addLine( pathString )
-		self.addLine( '\t\t</g>' )
+		self.addLayerBegin( layerIndex, rotatedBoundaryLayer.z )
+		self.addLayerEnd( rotatedBoundaryLayer )
 
-	def getCarvedSVG( self, chopRepository, carving, fileName ):
+	def getCarvedSVG( self, carving, fileName, repository ):
 		"Parse gnu triangulated surface text and store the chopped gcode."
-		self.chopRepository = chopRepository
-		self.layerThickness = chopRepository.layerThickness.value
-		self.setExtrusionDiameterWidth( chopRepository )
+		self.carving = carving
+		self.repository = repository
+		self.layerThickness = repository.layerThickness.value
+		self.setExtrusionDiameterWidth( repository )
 		carving.setCarveLayerThickness( self.layerThickness )
-		importRadius = 0.5 * chopRepository.importCoarseness.value * abs( self.perimeterWidth )
+		importRadius = 0.5 * repository.importCoarseness.value * abs( self.perimeterWidth )
 		carving.setCarveImportRadius( max( importRadius, 0.01 * self.layerThickness ) )
-		carving.setCarveIsCorrectMesh( chopRepository.correctMesh.value )
+		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
 		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
 		if len( rotatedBoundaryLayers ) < 1:
 			return ''
 		self.cornerMaximum = carving.getCarveCornerMaximum()
 		self.cornerMinimum = carving.getCarveCornerMinimum()
-		if chopRepository.addExtraTopLayerIfNecessary.value:
+		if repository.addExtraTopLayerIfNecessary.value:
 			self.addExtraTopLayerIfNecessary( rotatedBoundaryLayers )
 		rotatedBoundaryLayers.reverse()
-		#reset from slicable
-		self.layerThickness = carving.getCarveLayerThickness()
-		self.setExtrusionDiameterWidth( chopRepository )
-		self.decimalPlacesCarried = max( 0, 1 + chopRepository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
-		self.extent = self.cornerMaximum - self.cornerMinimum
-		self.svgTemplateLines = self.getReplacedSVGTemplateLines( fileName, rotatedBoundaryLayers )
-		self.addInitializationToOutputSVG( 'chop' )
-		self.addRotatedLoopLayersToOutput( rotatedBoundaryLayers )
-		self.addShutdownToOutput()
-		return self.output.getvalue()
+		return self.getReplacedSVGTemplate( fileName, 'chop', rotatedBoundaryLayers )
 
-	def setExtrusionDiameterWidth( self, chopRepository ):
+	def setExtrusionDiameterWidth( self, repository ):
 		"Set the extrusion diameter & width and the bridge thickness & width."
-		self.perimeterWidth = chopRepository.perimeterWidth.value
+		self.perimeterWidth = repository.perimeterWidth.value
 
 
 def main():

@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Description is a script to store a description of the profile.
 
 The suggested format is a description, followed by a link to the profile post or web page.

@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Help has buttons and menu items to open help, blog and forum pages in your primary browser.
 
 The Fabmetheus Blog is the skeinforge announcements blog and the place to post questions, bugs and skeinforge requests.

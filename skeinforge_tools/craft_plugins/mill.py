@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Mill is a script to mill the outlines.
 
 The default 'Activate Mill' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.

@@ -15,10 +15,6 @@ __license__ = "GPL 3.0"
 
 class MouseToolBase:
 	"The mouse tool base class, which does nothing."
-	def __init__( self ):
-		"Initialize."
-		self.items = []
-
 	def button1( self, event ):
 		"The left button was clicked, <Button-1> function."
 		pass
@@ -29,18 +25,12 @@ class MouseToolBase:
 
 	def destroyEverything( self ):
 		"Destroy items."
-		self.destroyItems()
+		self.canvas.delete( 'mouse_item' )
 
 	def destroyEverythingGetFocus( self ):
 		"Destroy items and get the focus for the canvas."
 		self.destroyEverything()
 		self.canvas.focus_set()
-
-	def destroyItems( self ):
-		"Destroy items."
-		for item in self.items:
-			self.canvas.delete( item )
-		self.items = []
 
 	def getReset( self, window ):
 		"Reset the mouse tool to default."

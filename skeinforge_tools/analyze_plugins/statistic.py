@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Statistic is a script to generate statistics a gcode file.
 
 The default 'Activate Statistic' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Statistic' checkbox is on, when statistic is run directly.
@@ -252,7 +253,7 @@ class StatisticSkein:
 		afterCenterDifferenceAngle = euclidean.getAngleAroundZAxisDifference( afterCenterSegment, beforeCenterSegment )
 		absoluteDifferenceAngle = abs( afterCenterDifferenceAngle )
 		steps = int( round( 0.5 + max( absoluteDifferenceAngle * 2.4, absoluteDifferenceAngle * beforeCenterSegment.magnitude() / curveSection ) ) )
-		stepPlaneAngle = euclidean.getPolar( afterCenterDifferenceAngle / steps, 1.0 )
+		stepPlaneAngle = euclidean.getUnitPolar( afterCenterDifferenceAngle / steps, 1.0 )
 		zIncrement = ( afterCenterSegment.z - beforeCenterSegment.z ) / float( steps )
 		for step in xrange( 1, steps ):
 			beforeCenterSegment = euclidean.getRoundZAxisByPlaneAngle( stepPlaneAngle, beforeCenterSegment )

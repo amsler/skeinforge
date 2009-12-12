@@ -1,11 +1,10 @@
 """
+This page is in the table of contents.
 Binary 16 byte is an export plugin to convert gcode into 16 byte binary segments.
 
 An export plugin is a script in the export_plugins folder which has the functions getOuput, and writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getOutput function of this script takes a gcode text and returns that text converted into 16 byte segments.  The writeOutput function of this script takes a gcode text and writes that in a binary format converted into 16 byte segments.
-
-Many of the functions in this script are copied from gcodec in skeinforge_utilities.  They are copied rather than imported so developers making new plugins do not have to learn about gcodec, the code here is all they need to learn.
 
 This plugin is just a starter to make a real binary converter.
 
@@ -68,7 +67,7 @@ __license__ = "GPL 3.0"
 
 def getIntegerFromCharacterLengthLineOffset( character, offset, splitLine, stepLength ):
 	"Get the integer after the first occurence of the character in the split line."
-	lineFromCharacter = getStringFromCharacterSplitLine( character, splitLine )
+	lineFromCharacter = gcodec.getStringFromCharacterSplitLine( character, splitLine )
 	if lineFromCharacter == None:
 		return 0
 	floatValue = ( float( lineFromCharacter ) + offset ) / stepLength
@@ -76,7 +75,7 @@ def getIntegerFromCharacterLengthLineOffset( character, offset, splitLine, stepL
 
 def getIntegerFlagFromCharacterSplitLine( character, splitLine ):
 	"Get the integer flag after the first occurence of the character in the split line."
-	lineFromCharacter = getStringFromCharacterSplitLine( character, splitLine )
+	lineFromCharacter = gcodec.getStringFromCharacterSplitLine( character, splitLine )
 	if lineFromCharacter == None:
 		return 0
 	return 1
@@ -95,44 +94,9 @@ def getNewRepository():
 	"Get the repository constructor."
 	return Binary16ByteRepository()
 
-def getStringFromCharacterSplitLine( character, splitLine ):
-	"Get the string after the first occurence of the character in the split line."
-	indexOfCharacter = indexOfStartingWithSecond( character, splitLine )
-	if indexOfCharacter < 0:
-		return None
-	return splitLine[ indexOfCharacter ][ 1 : ]
-
-def getSummarizedFileName( fileName ):
-	"Get the fileName basename if the file is in the current working directory, otherwise return the original full name."
-	if os.getcwd() == os.path.dirname( fileName ):
-		return os.path.basename( fileName )
-	return fileName
-
-def getTextLines( text ):
-	"Get the all the lines of text of a text."
-	return text.replace( '\r', '\n' ).split( '\n' )
-
-def indexOfStartingWithSecond( letter, splitLine ):
-	"Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found"
-	for wordIndex in xrange( 1, len( splitLine ) ):
-		word = splitLine[ wordIndex ]
-		firstLetter = word[ 0 ]
-		if firstLetter == letter:
-			return wordIndex
-	return - 1
-
 def isReplacable():
 	"Return whether or not the output from this plugin is replacable.  This should be true if the output is text and false if it is binary."
 	return False
-
-def writeFileText( fileName, fileText ):
-	"Write a text to a file."
-	try:
-		file = open( fileName, 'wb' )
-		file.write( fileText )
-		file.close()
-	except IOError:
-		print( 'The file ' + fileName + ' can not be written to.' )
 
 def writeOutput( fileName, gcodeText = '' ):
 	"Write the exported version of a gcode file.  This function, and getOutput are the only necessary functions in a skeinforge export plugin."
@@ -141,8 +105,8 @@ def writeOutput( fileName, gcodeText = '' ):
 	gcodeText = gcodec.getGcodeFileText( fileName, gcodeText )
 	skeinOutput = getOutput( gcodeText, binary16ByteRepository )
 	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '.' + binary16ByteRepository.fileExtension.value
-	writeFileText( suffixFileName, skeinOutput )
-	print( 'The converted file is saved as ' + getSummarizedFileName( suffixFileName ) )
+	gcodec.writeFileText( suffixFileName, skeinOutput )
+	print( 'The converted file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 
 
 class Binary16ByteRepository:
@@ -178,7 +142,7 @@ class Binary16ByteSkein:
 	def getCraftedGcode( self, gcodeText, binary16ByteRepository ):
 		"Parse gcode text and store the gcode."
 		self.binary16ByteRepository = binary16ByteRepository
-		lines = getTextLines( gcodeText )
+		lines = gcodec.getTextLines( gcodeText )
 		for line in lines:
 			self.parseLine( line )
 		return self.output.getvalue()
@@ -187,9 +151,7 @@ class Binary16ByteSkein:
 		"Parse a gcode line."
 		binary16ByteRepository = self.binary16ByteRepository
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
-		if len( splitLine ) < 1:
-			return
-		firstWord = splitLine[ 0 ]
+		firstWord = gcodec.getFirstWord( splitLine )
 		if len( firstWord ) < 1:
 			return
 		firstLetter = firstWord[ 0 ]

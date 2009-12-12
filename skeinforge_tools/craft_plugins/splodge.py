@@ -1,11 +1,12 @@
 """
+This page is in the table of contents.
 Splodge is a script to add a bit of extrusion before the beginning of a thread.
 
 The default 'Activate Splodge' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
 Splodge turns the extruder on just before the start of a thread.  This is to give the extrusion a bit anchoring at the beginning.
 
-The 'Initial Splodge Feed Rate' is the feed rate at which the initial extra extrusion will be added, the default is 1 mm/s.  The 'Initial Splodge Quantity Length' is the quantity length of extra extrusion at the operating feed rate that will be added to the initial thread, the default is 50 millimeters.  The 'Operating Splodge Feed Rate' is the feed rate at which the next extra extrusions will be added, the default is 1 mm/s.  The 'Operating Splodge Quantity Length' is the quantity length of extra extrusion at the operating feed rate that will be added for the next threads, the default is one millimeter.  If a splodge quantity less is smaller than 0.15 times the perimeter width, no splodge of that type will be added.  With the default feed rates, the splodge will be added slower so it will be thicker than the regular extrusion.
+The 'Initial Splodge Feed Rate' is the feed rate at which the initial extra extrusion will be added, the default is 1 mm/s.  The 'Initial Splodge Quantity Length' is the quantity length of extra extrusion at the operating feed rate that will be added to the initial thread, the default is 30 millimeters.  The 'Operating Splodge Feed Rate' is the feed rate at which the next extra extrusions will be added, the default is 1 mm/s.  The 'Operating Splodge Quantity Length' is the quantity length of extra extrusion at the operating feed rate that will be added for the next threads, the default is one millimeter.  If a splodge quantity less is smaller than 0.15 times the perimeter width, no splodge of that type will be added.  With the default feed rates, the splodge will be added slower so it will be thicker than the regular extrusion.
 
 The 'Initial Lift over Extra Thickness' ratio is the amount the extruder will be lifted over the extra thickness of the initial splodge thread, the default is 1.  The 'Operating Lift over Extra Thickness' ratio is the amount the extruder will be lifted over the extra thickness of the operating splodge thread, the default is 1.  The higher the ratio, the more the extruder will be lifted over the splodge, if the ratio is too low the extruder might plow through the splodge extrusion.
 
@@ -95,7 +96,7 @@ class SplodgeRepository:
 		self.activateSplodge = preferences.BooleanPreference().getFromValue( 'Activate Splodge', self, False )
 		self.initialLiftOverExtraThickness = preferences.FloatSpin().getFromValue( 0.5, 'Initial Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
 		self.initialSplodgeFeedRate = preferences.FloatSpin().getFromValue( 0.4, 'Initial Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
-		self.initialSplodgeQuantityLength = preferences.FloatSpin().getFromValue( 10.0, 'Initial Splodge Quantity Length (millimeters):', self, 90.0, 50.0 )
+		self.initialSplodgeQuantityLength = preferences.FloatSpin().getFromValue( 10.0, 'Initial Splodge Quantity Length (millimeters):', self, 90.0, 30.0 )
 		self.operatingLiftOverExtraThickness = preferences.FloatSpin().getFromValue( 0.5, 'Operating Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
 		self.operatingSplodgeFeedRate = preferences.FloatSpin().getFromValue( 0.4, 'Operating Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
 		self.operatingSplodgeQuantityLength = preferences.FloatSpin().getFromValue( 0.4, 'Operating Splodge Quantity Length (millimeters):', self, 2.4, 1.0 )
@@ -153,6 +154,7 @@ class SplodgeSkein:
 		self.boundingRectangle = gcodec.BoundingRectangle().getFromGcodeLines( self.lines[ self.lineIndex : ], 0.5 * self.perimeterWidth )
 		self.initialSplodgeFeedRateMinute = 60.0 * splodgeRepository.initialSplodgeFeedRate.value
 		self.initialStartupDistance = splodgeRepository.initialSplodgeQuantityLength.value * splodgeRepository.initialSplodgeFeedRate.value / self.operatingFeedRatePerSecond
+		print( self.initialStartupDistance )
 		self.operatingSplodgeFeedRateMinute = 60.0 * splodgeRepository.operatingSplodgeFeedRate.value
 		self.operatingStartupDistance = splodgeRepository.operatingSplodgeQuantityLength.value * splodgeRepository.operatingSplodgeFeedRate.value / self.operatingFeedRatePerSecond
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):

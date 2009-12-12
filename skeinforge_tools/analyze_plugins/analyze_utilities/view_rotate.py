@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Viewpoint rotate is a mouse tool to rotate the viewpoint around the origin.
 
 When the mouse is clicked, dragged and released on the canvas, viewpoint rotate will rotate the longitude by the amount the mouse is dragged around the origin.  If the mouse is moved towards the origin, the latitude will be increased, so the viewpoint will be closer to the top.  If the mouse is moved away from the origin, the latitude will be decreased.  If the shift key is also pressed, only the latitude or longitude will be changed, whichever is being changed the most.
@@ -58,8 +59,8 @@ class LatitudeLongitude:
 class ViewVectors:
 	def __init__( self, viewpointLatitude, viewpointLongitude ):
 		"Initialize the view vectors."
-		longitudeComplex = euclidean.getPolar( math.radians( 90.0 - viewpointLongitude ) )
-		self.viewpointLatitudeRatio = euclidean.getPolar( math.radians( viewpointLatitude ) )
+		longitudeComplex = euclidean.getUnitPolar( math.radians( 90.0 - viewpointLongitude ) )
+		self.viewpointLatitudeRatio = euclidean.getUnitPolar( math.radians( viewpointLatitude ) )
 		self.viewpointVector3 = Vector3( self.viewpointLatitudeRatio.imag * longitudeComplex.real, self.viewpointLatitudeRatio.imag * longitudeComplex.imag, self.viewpointLatitudeRatio.real )
 		self.viewXVector3 = Vector3( - longitudeComplex.imag, longitudeComplex.real, 0.0 )
 		self.viewXVector3.normalize()
@@ -91,7 +92,7 @@ class ViewpointRotate( MouseToolBase ):
 		self.keyStartCanvasCoordinate = None
 		self.relativeLatitude = 0.0
 		self.relativeLongitude = 0.5 * math.pi
-		self.canvas.delete( 'view_rotate_item' )
+		self.canvas.delete( 'mouse_item' )
 
 	def getMoveCoordinate( self ):
 		"Get the movement coordinate from the class relative latitude and longitude."
@@ -163,7 +164,7 @@ class ViewpointRotate( MouseToolBase ):
 		motionPressedScreen = self.window.getScreenComplex( motionPressedStart )
 		motionColorName = '#4B0082'
 		motionWidth = 9
-		self.canvas.delete( 'view_rotate_item' )
+		self.canvas.delete( 'mouse_item' )
 		if abs( latitudeLongitude.deltaLongitude ) > 0.0:
 			self.canvas.create_arc(
 				buttonOnePressedCornerBottomLeft.real,
@@ -175,7 +176,7 @@ class ViewpointRotate( MouseToolBase ):
 				outline = motionColorName,
 				outlinestipple = self.window.motionStippleName,
 				style = preferences.Tkinter.ARC,
-				tags = 'view_rotate_item',
+				tags = 'mouse_item',
 				width = motionWidth )
 		if abs( latitudeLongitude.deltaLatitude ) > 0.0:
 			self.canvas.create_line(
@@ -187,9 +188,9 @@ class ViewpointRotate( MouseToolBase ):
 				arrow = 'last',
 				arrowshape = self.window.arrowshape,
 				stipple = self.window.motionStippleName,
-				tags = 'view_rotate_item',
+				tags = 'mouse_item',
 				width = motionWidth )
-		self.window.getDrawnLineText( motionCoordinate, 'view_rotate_item', 'Latitude: %s, Longitude: %s' % ( round( latitudeLongitude.latitude ), round( latitudeLongitude.longitude ) ) )
+		self.window.getDrawnLineText( motionCoordinate, 'mouse_item', 'Latitude: %s, Longitude: %s' % ( round( latitudeLongitude.latitude ), round( latitudeLongitude.longitude ) ) )
 		if self.repository.widthOfXAxis.value > 0:
 			self.window.getDrawnColoredLineMotion( self.window.xAxisLine, viewVectors, self.repository.widthOfXAxis.value )
 		if self.repository.widthOfYAxis.value > 0:
@@ -201,7 +202,7 @@ class ViewpointRotate( MouseToolBase ):
 		"Move the viewpoint given the move coordinates."
 		if abs( startCoordinate - moveCoordinate ) < 3:
 			startCoordinate = None
-			self.canvas.delete( 'view_rotate_item' )
+			self.canvas.delete( 'mouse_item' )
 			return
 		latitudeLongitude = LatitudeLongitude( startCoordinate, moveCoordinate, self.window, shift )
 		self.repository.viewpointLatitude.value = latitudeLongitude.latitude

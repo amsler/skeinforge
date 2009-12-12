@@ -33,6 +33,14 @@ __license__ = "GPL 3.0"
 
 
 #getFileTextInFileDirectory might not be needed anymore
+def addLineAndNewlineIfNecessary( line, output ):
+	"Add the line and if the line does not end with a newline add a newline."
+	output.write( line )
+	if len( line ) < 1:
+		return
+	if not getHasSuffix( line, '\n' ):
+		output.write( '\n' )
+
 def createInitFile():
 	"Create the __init__.py file."
 	fileText = '__all__ = ' + str( getPythonFileNamesExceptInit() )
@@ -146,6 +154,10 @@ def getFirstWord( splitLine ):
 		return splitLine[ 0 ]
 	return ''
 
+def getFirstWordFromLine( line ):
+	"Get the first word of a line."
+	return getFirstWord( line.split() )
+
 def getGcodeFileText( fileName, gcodeText ):
 	"Get the gcode text from a file if it the gcode text is empty and if the file is a gcode file."
 	if gcodeText != '':
@@ -255,6 +267,13 @@ def getSplitLineBeforeBracketSemicolon( line ):
 	if bracketSemicolonIndex < 0:
 		return line.split()
 	return line[ : bracketSemicolonIndex ].split()
+
+def getStringFromCharacterSplitLine( character, splitLine ):
+	"Get the string after the first occurence of the character in the split line."
+	indexOfCharacter = indexOfStartingWithSecond( character, splitLine )
+	if indexOfCharacter < 0:
+		return None
+	return splitLine[ indexOfCharacter ][ 1 : ]
 
 def getSummarizedFileName( fileName ):
 	"Get the fileName basename if the file is in the current working directory, otherwise return the original full name."

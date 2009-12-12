@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Stretch is a script to stretch the threads to partially compensate for filament shrinkage when extruded.
 
 The default 'Activate Stretch' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.

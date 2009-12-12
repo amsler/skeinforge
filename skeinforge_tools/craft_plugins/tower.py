@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Tower is a script to extrude a few layers up, then go across to other regions.
 
 The default 'Activate Tower' checkbox is off.  The default is off because tower could result in the extruder collidiing with an already extruded part of the shape and because extruding in one region for more than one layer could result in the shape melting.  When it is on, the functions described below will work, when it is off, the functions will not be called.

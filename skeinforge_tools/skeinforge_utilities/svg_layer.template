@@ -2,7 +2,9 @@
 <!--Created with Sketsa SVG Editor (http://www.kiyut.com)-->
 <svg contentScriptType="text/ecmascript"
 	baseProfile="full" zoomAndPan="magnify" contentStyleType="text/css"
-	width="550px" height="1680px" onload="init()"
+width="999px"
+height="999px"
+	onload="init()"
 	preserveAspectRatio="xMidYMid meet"
 	xmlns="http://www.w3.org/2000/svg" version="1.0"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -10,7 +12,7 @@
 	<script type="text/ecmascript"><![CDATA[
 //Meta data variables 
 units='mm';
-//End of svg header
+<!--replaceLineWith_sliceVariableLines-->
 sliceMinX = 0;
 sliceMaxX = 0;
 sliceMinY = 0;
@@ -214,7 +216,7 @@ function viewSingle(){
 }
 	]]></script>
 	
-	<title>replaceWithTitle</title>
+	<title>replaceWith_Title</title>
 	<desc></desc>
 	<metadata>
 		<slice:layers id="sliceData" version="0.1" units="mm" layerThickness="0.2" minX="0" maxX="61" minY="-5" maxY="50" minZ="0" maxZ="1"/>
@@ -222,24 +224,10 @@ function viewSingle(){
 	<!--Begin Layer Data   -->
 	<g id="layerData" fill="darkseagreen" stroke="#00F" stroke-width="0.54px" font-weight="bold" font-family="Arial" font-size="15px">
 <!--Beginning of path section-->
-<!-- transform algorithm
-	unit scale (mm=3.7, in=96)
-	
-	g transform
-		x = margin
-		y = (layer + 1) * ( margin + (slice height * unit scale)) + (layer * 20)
-	
-	text
-		y = text height
-	
-	path transform
-		scale = (unit scale) (-1 * unitscale)
-		translate = (-1 * minX) (-1 * minY)
--->
-		<g id="z 0.1" transform="translate(20, 242)">
-			<text y="15" fill="#000" stroke="none">Layer 1, z 0.1</text>
-			<path transform="scale(3.7, -3.7) translate(0, 5)" d="M 0 -5 L 50 0 L60 50 L 5 50 z M 5 3 L5 15 L15 15 L15 5 z"/>
-		</g>
+<!--replaceLineWith_boundaryLayerLines--> 		<g id="z 0.1" transform="translate(20, 242)">
+<!--replaceLineWith_emptyString--> 			<text y="15" fill="#000" stroke="none">Layer 1, z 0.1</text>
+<!--replaceLineWith_emptyString--> 			<path transform="scale(3.7, -3.7) translate(0, 5)" d="M 0 -5 L 50 0 L60 50 L 5 50 z M 5 3 L5 15 L15 15 L15 5 z"/>
+<!--replaceLineWith_emptyString--> 		</g>
 <!--End of path section-->
 	</g>
 	<!--End Layer Data-->
@@ -293,7 +281,7 @@ function viewSingle(){
 	</g>
 	
 	<!--No Javascript Control box   -->
-	<g id="noJavascriptControls" fill="#000" transform="translate(20, 1400)">
+<!--replaceLineWith_noJavascriptControls--> <g id="noJavascriptControls" fill="#000" transform="translate(20, 1400)">
 		<rect width="300" height="110" stroke="gray" stroke-width="4px" fill="silver"/>
 		<g transform="translate(10, 0)">
 			<g transform="translate(0, 20)">
@@ -303,25 +291,25 @@ function viewSingle(){
 				<path stroke="#000" stroke-width="3" d="M 5 40 h5 l-5 -10 l-5 10 h5 v35 h35 v-5 l10 5 l-10 5 v-5 h-35 z"/>
 				<text x="3" y="20" font-weight="bold">Y</text>
 				<text x="60" y="80" font-weight="bold">X</text>
-				<text x="120" y="80" id="layerThicknessNoJavascript">Layer Thickness: replaceWithlayerThickness mm</text>
+				<text x="120" y="80" id="layerThicknessNoJavascript">Layer Thickness: replaceWith_layerThickness mm</text>
 			</g>
 			<g transform="translate(100, 40)">
 				<text>X</text>
-				<text id="minXNoJavascript" x="20">replaceWithminX</text>
-				<text id="maxXNoJavascript" x="70">replaceWithmaxX</text>
-				<text id="dimXNoJavascript" x="120">replaceWithdimX</text>
+				<text id="minXNoJavascript" x="20">replaceWith_minX</text>
+				<text id="maxXNoJavascript" x="70">replaceWith_maxX</text>
+				<text id="dimXNoJavascript" x="120">replaceWith_dimX</text>
 			</g>
 			<g transform="translate(100, 60)">
 				<text>Y</text>
-				<text id="minYNoJavascript" x="20">replaceWithminY</text>
-				<text id="maxYNoJavascript" x="70">replaceWithmaxY</text>
-				<text id="dimYNoJavascript" x="120">replaceWithdimY</text>
+				<text id="minYNoJavascript" x="20">replaceWith_minY</text>
+				<text id="maxYNoJavascript" x="70">replaceWith_maxY</text>
+				<text id="dimYNoJavascript" x="120">replaceWith_dimY</text>
 			</g>
 			<g transform="translate(100, 80)">
 				<text>Z</text>
-				<text id="minZNoJavascript" x="20">replaceWithminZ</text>
-				<text id="maxZNoJavascript" x="70">replaceWithmaxZ</text>
-				<text id="dimZNoJavascript" x="120">replaceWithdimZ</text>
+				<text id="minZNoJavascript" x="20">replaceWith_minZ</text>
+				<text id="maxZNoJavascript" x="70">replaceWith_maxZ</text>
+				<text id="dimZNoJavascript" x="120">replaceWith_dimZ</text>
 			</g>
 		</g>
 	</g>

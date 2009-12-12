@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Cool is a script to cool the shape.
 
 Allan Ecker aka The Masked Retriever's has written the "Skeinforge Quicktip: Cool" at:

@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Display line is a mouse tool to select and display information about the line.
 
 When a line is clicked, the line will be selected and information about the line will be displayed.  If a gcode line is clicked, the information will be file line count of the line clicked, counting from one, and the line itself.
@@ -44,16 +45,15 @@ class DisplayLine( MouseToolBase ):
 
 	def drawLineText( self, location, tags ):
 		"Draw the line text."
-		self.items.append( self.window.getDrawnLineText( location, 'display_line', tags ) )
+		self.window.getDrawnLineText( location, 'mouse_item', tags )
 
 	def drawSelectedColoredLineText( self ):
 		"Draw the selected line and text."
 		selectedColoredLine = self.getSelectedColoredLine()
-		if len( self.items ) < 1:
+		if len( self.canvas.find_withtag( 'mouse_item' ) ) < 1:
 			return
 		tags = selectedColoredLine.displayString
-		drawnLine = self.items[ - 1 ]
-		lineCoordinates = self.canvas.coords( drawnLine )
+		lineCoordinates = self.canvas.coords( self.canvas.find_withtag( 'mouse_item' )[ - 1 ] )
 		begin = complex( lineCoordinates[ 0 ], lineCoordinates[ 1 ] )
 		end = complex( lineCoordinates[ 2 ], lineCoordinates[ 3 ] )
 		segment = end - begin
@@ -72,17 +72,14 @@ class DisplayLine( MouseToolBase ):
 		self.repository.line.value = max( 0, self.repository.line.value )
 		self.repository.line.value = min( len( coloredLines ) - 1, self.repository.line.value )
 		coloredLine = coloredLines[ self.repository.line.value ]
-		selectedDrawnColoredLines = self.window.getSelectedDrawnColoredLines( [ coloredLine ] )
-		drawnLine = selectedDrawnColoredLines[ - 1 ]
-		lineCoordinates = self.canvas.coords( drawnLine )
+		lineCoordinates = self.canvas.coords( self.window.getDrawnSelectedColoredLine( coloredLine ) )
 		end = complex( lineCoordinates[ 2 ], lineCoordinates[ 3 ] )
 		radiusComplex = complex( 16.0, 16.0 )
 		upperLeft = end - radiusComplex
 		lowerRight = end + radiusComplex
-		self.items.append( self.canvas.create_oval ( int( upperLeft.real ), int( upperLeft.imag ), int( lowerRight.real ), int( lowerRight.imag ) ) )
-		self.items += selectedDrawnColoredLines
+		self.canvas.create_oval ( int( upperLeft.real ), int( upperLeft.imag ), int( lowerRight.real ), int( lowerRight.imag ), tags = 'mouse_item' )
 		preferences.setEntryText( self.window.lineEntry, self.repository.line.value )
-		self.window.setLineButtonsStateSave()
+		self.window.setLineButtonsState()
 		return coloredLine
 
 	def isSelectionTool( self ):

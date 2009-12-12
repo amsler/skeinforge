@@ -1,23 +1,28 @@
 """
+This page is in the table of contents.
 Some filaments warp too much and to prevent this you have to print the object in a temperature regulated chamber or on a temperature regulated bed. The chamber tool allows you to control the bed and chamber temperature.
 
 The chamber manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber
 
+==Operation==
 The default 'Activate Chamber' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The 'Bed Temperature' preference sets the temperature of the bed by sending an M110 command, the default is 60.0.  The 'Chamber Temperature' preference sets the temperature of the chamber by sending an M111 command, the default is 30.0.
+==Settings==
 
-Kulitorum has made a heated bed.  It is a 5mm Alu sheet with a pattern laid out in kapton tape.  The wire is a 0.6mm2 Konstantin wire and it's held in place by small pieces of kapton tape.  The description and picture is at:
-http://gallery.kulitorum.com/main.php?g2_itemId=283
+===Bed Temperature===
+Default: 60C
 
-Other heated bed descriptions follow below.
+Defines the print_bed temperature in Celcius by adding an M110 command.
 
-A heated base by the Metalab folks:
-http://reprap.soup.io
+===Chamber Temperature===
+Default: 30C
 
-with information at:
-http://reprap.soup.io/?search=heated%20base
+Defines the chamber temperature in Celcius by adding an M111 command.
+
+==Heated Beds==
+
+===Jmil===
 
 A heated build stage by jmil, over at:
 http://www.hive76.org
@@ -26,11 +31,36 @@ with articles at:
 http://www.hive76.org/handling-hot-build-surfaces
 http://www.hive76.org/heated-build-stage-success
 
+===Kulitorum===
+
+Kulitorum has made a heated bed.  It is a 5mm Alu sheet with a pattern laid out in kapton tape.  The wire is a 0.6mm2 Konstantin wire and it's held in place by small pieces of kapton tape.  The description and picture is at:
+http://gallery.kulitorum.com/main.php?g2_itemId=283
+
+===Metalab===
+
+A heated base by the Metalab folks:
+http://reprap.soup.io
+
+with information at:
+http://reprap.soup.io/?search=heated%20base
+
+===Prusajr===
+
+A resistive wire heated plexiglass plate by prusajr:
+http://prusadjs.cz/
+
+with an article at:
+http://prusadjs.cz/2009/11/look-ma-no-warping-heated-reprap-print-bed/
+
+===Pumpernickel2===
+
 A resistor heated aluminum plate by Pumpernickel2:
 http://dev.forums.reprap.org/profile.php?14,844
 
 with a picture at:
 http://dev.forums.reprap.org/file.php?14,file=1228,filename=heatedplate.jpg
+
+===Zaggo===
 
 A resistor heated aluminum plate by Zaggo at Pleasant Software:
 http://pleasantsoftware.com/developer/3d/
@@ -39,14 +69,7 @@ with articles at:
 http://pleasantsoftware.com/developer/3d/2009/12/05/raftless/
 http://pleasantsoftware.com/developer/3d/2009/11/12/canned-heat/
 
-A resistive wire heated plexiglass plate by prusajr:
-http://prusadjs.cz/
-
-with an article at:
-http://prusadjs.cz/2009/11/look-ma-no-warping-heated-reprap-print-bed/
-
-jmil; http://www.hive76.org/heated-build-stage-success http://www.hive76.org/handling-hot-build-surfaces
-
+==Examples==
 
 The following examples chamber the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and chamber.py.
 
@@ -133,7 +156,7 @@ class ChamberRepository:
 		"Set the default preferences, execute title & preferences fileName."
 		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.chamber.html', self )
 		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Chamber', self, '' )
-		self.openWikiManualHelpPage = preferences.HelpPage().getOpenFromAfterWWW( 'bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber' )
+		self.openWikiManualHelpPage = preferences.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber' )
 		self.activateChamber = preferences.BooleanPreference().getFromValue( 'Activate Chamber:', self, True )
 		self.bedTemperature = preferences.FloatSpin().getFromValue( 20.0, 'Bed Temperature (Celcius):', self, 90.0, 60.0 )
 		self.chamberTemperature = preferences.FloatSpin().getFromValue( 20.0, 'Chamber Temperature (Celcius):', self, 90.0, 30.0 )

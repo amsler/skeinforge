@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Speed is a script to set the feed rate, and flow rate.
 
 The default 'Activate Speed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The speed script sets the feed rate, and flow rate.

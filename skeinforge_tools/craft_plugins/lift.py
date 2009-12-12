@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Lift is a script to change the altitude of a gcode file.
 
 Lift will change the altitude of the cutting tool when it is on so that it will cut through the slab at the correct altitude.  It will also lift the gcode when the tool is off so that the cutting tool will clear the top of the slab.

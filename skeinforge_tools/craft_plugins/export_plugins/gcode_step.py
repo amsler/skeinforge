@@ -1,9 +1,10 @@
 """
+This page is in the table of contents.
 Gcode step is an export plugin to convert gcode from float position to number of steps.
 
 An export plugin is a script in the export_plugins folder which has the functions getOuput, and writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
-If the "Add FeedRate Even When Unchanging" checkbox is true, the feedRate will be added even when it did not change from the previous line.  If the "Add Space Between Words" checkbox is true, a space will be added between each gcode word.  If the "Add Z Even When Unchanging" checkbox is true, the z word will be added even when it did not change.  The defaults for these checkboxes are all true. 
+If the "Add FeedRate Even When Unchanging" checkbox is true, the feedRate will be added even when it did not change from the previous line.  If the "Add Space Between Words" checkbox is true, a space will be added between each gcode word.  If the "Add Z Even When Unchanging" checkbox is true, the z word will be added even when it did not change.  The defaults for these checkboxes are all true.
 
 The "FeedRate Step Length" is the length of one feedRate increment.  The "Radius Step Length" is the length of one radius increment.  The "X Step Length" is the length of one x step.  The "Y Step Length" is the length of one y step.  The "Z Step Length" is the length of one z step.
 
@@ -42,7 +43,7 @@ def getCharacterIntegerString( character, offset, splitLine, stepLength ):
 
 def getFloatFromCharacterSplitLine( character, splitLine ):
 	"Get the float after the first occurence of the character in the split line."
-	lineFromCharacter = getStringFromCharacterSplitLine( character, splitLine )
+	lineFromCharacter = gcodec.getStringFromCharacterSplitLine( character, splitLine )
 	if lineFromCharacter == None:
 		return None
 	return float( lineFromCharacter )
@@ -61,32 +62,6 @@ def getNewRepository():
 	"Get the repository constructor."
 	return GcodeStepRepository()
 
-def getStringFromCharacterSplitLine( character, splitLine ):
-	"Get the string after the first occurence of the character in the split line."
-	indexOfCharacter = indexOfStartingWithSecond( character, splitLine )
-	if indexOfCharacter < 0:
-		return None
-	return splitLine[ indexOfCharacter ][ 1 : ]
-
-def getSummarizedFileName( fileName ):
-	"Get the fileName basename if the file is in the current working directory, otherwise return the original full name."
-	if os.getcwd() == os.path.dirname( fileName ):
-		return os.path.basename( fileName )
-	return fileName
-
-def getTextLines( text ):
-	"Get the all the lines of text of a text."
-	return text.replace( '\r', '\n' ).split( '\n' )
-
-def indexOfStartingWithSecond( letter, splitLine ):
-	"Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found"
-	for wordIndex in xrange( 1, len( splitLine ) ):
-		word = splitLine[ wordIndex ]
-		firstLetter = word[ 0 ]
-		if firstLetter == letter:
-			return wordIndex
-	return - 1
-
 def isReplacable():
 	"Return whether or not the output from this plugin is replacable.  This should be true if the output is text and false if it is binary."
 	return True
@@ -99,7 +74,7 @@ def writeOutput( fileName, gcodeText = '' ):
 	output = getOutput( gcodeText, repository )
 	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_gcode_step.gcode'
 	gcodec.writeFileText( suffixFileName, output )
-	print( 'The converted file is saved as ' + getSummarizedFileName( suffixFileName ) )
+	print( 'The converted file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 
 
 class GcodeStepRepository:
@@ -157,7 +132,7 @@ class GcodeStepSkein:
 	def getCraftedGcode( self, gcodeStepRepository, gcodeText ):
 		"Parse gcode text and store the gcode."
 		self.gcodeStepRepository = gcodeStepRepository
-		lines = getTextLines( gcodeText )
+		lines = gcodec.getTextLines( gcodeText )
 		for line in lines:
 			self.parseLine( line )
 		return self.output.getvalue()
@@ -165,9 +140,7 @@ class GcodeStepSkein:
 	def parseLine( self, line ):
 		"Parse a gcode line."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
-		if len( splitLine ) < 1:
-			return
-		firstWord = splitLine[ 0 ]
+		firstWord = gcodec.getFirstWord( splitLine )
 		if len( firstWord ) < 1:
 			return
 		firstLetter = firstWord[ 0 ]

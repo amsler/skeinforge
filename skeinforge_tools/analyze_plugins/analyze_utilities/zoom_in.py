@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Zoom in is a mouse tool to zoom in the display at the point where the mouse was clicked, increasing the scale by a factor of two.
 
 """

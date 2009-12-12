@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Extrusion is a script to set the extrusion profile for the skeinforge chain.
 
 On the extrusion dialog, clicking the 'Add Profile' button will duplicate the selected profile and give it the name in the input field.  For example, if ABS is selected and the name ABS_black is in the input field, clicking the 'Add Profile' button will duplicate ABS and save it as ABS_black.  The 'Delete Profile' button deletes the selected profile.
@@ -34,7 +35,7 @@ __license__ = "GPL 3.0"
 
 
 def getCraftSequence():
-	"Get the sequence carve,preface,inset,fill,multiply,speed,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,splodge,home,lash,fillet,unpause,export."
+	"Get the extrusion craft sequence."
 	return 'carve,preface,inset,fill,multiply,speed,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,splodge,home,lash,fillet,unpause,export'.split( ',' )
 
 def getNewRepository():
@@ -46,7 +47,7 @@ class ExtrusionRepository:
 	"A class to handle the export preferences."
 	def __init__( self ):
 		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsSetCraftProfileArchive( 'ABS', self, 'skeinforge_tools.profile_plugins.extrusion.html' )
+		preferences.addListsSetCraftProfileArchive( getCraftSequence(), 'ABS', self, 'skeinforge_tools.profile_plugins.extrusion.html' )
 
 
 def main():

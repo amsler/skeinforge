@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 """
+This page is in the table of contents.
 Preface is a script to convert an svg file into a prefaced gcode file.
 
 Preface converts the svg slices into gcode extrusion layers, optionally prefaced with some gcode commands.

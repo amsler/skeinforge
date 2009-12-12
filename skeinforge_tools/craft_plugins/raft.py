@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Raft is a script to create a raft, elevate the nozzle and set the temperature.
 
 Allan Ecker aka The Masked Retriever's has written two quicktips for raft which follow below.

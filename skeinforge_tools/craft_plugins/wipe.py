@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Wipe is a script to wipe the nozzle.
 
 At the beginning of a layer, depending on the preferences, wipe will move the nozzle with the extruder off to the arrival point, then to the wipe point, then to the departure point, then back to the layer.

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 """
+This page is in the table of contents.
 Introduction
 
 Skeinforge is a GPL tool chain to forge a gcode skein for a model.

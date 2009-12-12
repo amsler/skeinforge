@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Zoom out is a mouse tool to zoom out the display at the point where the mouse was clicked, decreasing the scale by a factor of two.
 
 """

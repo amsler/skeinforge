@@ -1,4 +1,5 @@
 """
+This page is in the table of contents.
 Profile is a script to set the craft types preference for the skeinforge chain.
 
 Profile presents the user with a choice of the craft types in the profile_plugins folder.  The chosen craft type is used to determine the craft type profile for the skeinforge chain.  The default craft type is extrusion.
