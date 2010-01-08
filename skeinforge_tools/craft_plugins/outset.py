@@ -48,14 +48,15 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
+from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.skeinforge_utilities import triangle_mesh
-from skeinforge_tools.meta_plugins import polyfile
 import sys
 
 
@@ -63,14 +64,6 @@ __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
-
-def compareAreaAscending( loopArea, otherLoopArea ):
-	"Get comparison in order to sort loop areas in ascending order of area."
-	if loopArea.area > otherLoopArea.area:
-		return 1
-	if loopArea.area < otherLoopArea.area:
-		return - 1
-	return 0
 
 def getCraftedText( fileName, text = '', outsetRepository = None ):
 	"Outset the preface file or text."
@@ -81,7 +74,7 @@ def getCraftedTextFromText( gcodeText, outsetRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'outset' ):
 		return gcodeText
 	if outsetRepository == None:
-		outsetRepository = preferences.getReadRepository( OutsetRepository() )
+		outsetRepository = settings.getReadRepository( OutsetRepository() )
 	if not outsetRepository.activateOutset.value:
 		return gcodeText
 	return OutsetSkein().getCraftedGcode( outsetRepository, gcodeText )
@@ -98,12 +91,12 @@ def writeOutput( fileName = '' ):
 
 
 class OutsetRepository:
-	"A class to handle the outset preferences."
+	"A class to handle the outset settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.outset.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Outset', self, '' )
-		self.activateOutset = preferences.BooleanPreference().getFromValue( 'Activate Outset:', self, True )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.outset.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Outset', self, '' )
+		self.activateOutset = settings.BooleanSetting().getFromValue( 'Activate Outset:', self, True )
 		self.executeTitle = 'Outset'
 
 	def execute( self ):
@@ -134,7 +127,7 @@ class OutsetSkein:
 		"Add outset to the layer."
 		self.distanceFeedRate.addLine( '(<layer> %s )' % rotatedBoundaryLayer.z ) # Indicate that a new layer is starting.
 		extrudateLoops = intercircle.getInsetLoopsFromLoops( - self.absoluteHalfPerimeterWidth, rotatedBoundaryLayer.loops )
-		sortedLoops = triangle_mesh.getLoopsInOrderOfArea( compareAreaAscending, extrudateLoops )
+		sortedLoops = triangle_mesh.getLoopsInOrderOfArea( triangle_mesh.compareAreaAscending, extrudateLoops )
 		for sortedLoop in sortedLoops:
 			self.addGcodeFromRemainingLoop( sortedLoop, self.absoluteHalfPerimeterWidth, rotatedBoundaryLayer.z )
 		self.distanceFeedRate.addLine( '(</layer>)' )
@@ -202,7 +195,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

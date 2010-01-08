@@ -4,11 +4,11 @@ Tower is a script to extrude a few layers up, then go across to other regions.
 
 The default 'Activate Tower' checkbox is off.  The default is off because tower could result in the extruder collidiing with an already extruded part of the shape and because extruding in one region for more than one layer could result in the shape melting.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-This script commands the fabricator to extrude a disconnected region for a few layers, then go to another disconnected region and extrude there.  Its purpose is to reduce the number of stringers between a shape and reduce extruder travel.  The important value for the tower preferences is "Maximum Tower Height (layers)" which is the maximum number of layers that the extruder will extrude in one region before going to another.
+This script commands the fabricator to extrude a disconnected region for a few layers, then go to another disconnected region and extrude there.  Its purpose is to reduce the number of stringers between a shape and reduce extruder travel.  The important value for the tower settings is "Maximum Tower Height (layers)" which is the maximum number of layers that the extruder will extrude in one region before going to another.
 
-Tower works by looking for islands in each layer and if it finds another island in the layer above, it goes to the next layer above instead of going across to other regions on the original layer.  It checks for collision with shapes already extruded within a cone from the nozzle tip.  The "Extruder Possible Collision Cone Angle (degrees)" preference is the angle of that cone.  Realistic values for the cone angle range between zero and ninety.  The higher the angle, the less likely a collision with the rest of the shape is, generally the extruder will stay in the region for only a few layers before a collision is detected with the wide cone.  The default angle is sixty degrees.
+Tower works by looking for islands in each layer and if it finds another island in the layer above, it goes to the next layer above instead of going across to other regions on the original layer.  It checks for collision with shapes already extruded within a cone from the nozzle tip.  The "Extruder Possible Collision Cone Angle (degrees)" setting is the angle of that cone.  Realistic values for the cone angle range between zero and ninety.  The higher the angle, the less likely a collision with the rest of the shape is, generally the extruder will stay in the region for only a few layers before a collision is detected with the wide cone.  The default angle is sixty degrees.
 
-The "Tower Start Layer" is the layer which the script starts extruding towers, after the last raft layer which does not have support material.  It is best to not tower at least the first layer because the temperature of the first layer should sometimes be different than that of the other layers.  The default preference is one.
+The "Tower Start Layer" is the layer which the script starts extruding towers, after the last raft layer which does not have support material.  It is best to not tower at least the first layer because the temperature of the first layer should sometimes be different than that of the other layers.  The default setting is one.
 
 The following examples tower the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and tower.py.
 
@@ -47,13 +47,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 import math
 import sys
@@ -72,7 +73,7 @@ def getCraftedTextFromText( gcodeText, towerRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'tower' ):
 		return gcodeText
 	if towerRepository == None:
-		towerRepository = preferences.getReadRepository( TowerRepository() )
+		towerRepository = settings.getReadRepository( TowerRepository() )
 	if not towerRepository.activateTower.value:
 		return gcodeText
 	return TowerSkein().getCraftedGcode( gcodeText, towerRepository )
@@ -122,15 +123,15 @@ class ThreadLayer:
 
 
 class TowerRepository:
-	"A class to handle the tower preferences."
+	"A class to handle the tower settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.tower.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Towered', self, '' )
-		self.activateTower = preferences.BooleanPreference().getFromValue( 'Activate Tower', self, False )
-		self.extruderPossibleCollisionConeAngle = preferences.FloatSpin().getFromValue( 40.0, 'Extruder Possible Collision Cone Angle (degrees):', self, 80.0, 60.0 )
-		self.maximumTowerHeight = preferences.IntSpin().getFromValue( 2, 'Maximum Tower Height (layers):', self, 10, 5 )
-		self.towerStartLayer = preferences.IntSpin().getFromValue( 1, 'Tower Start Layer (integer):', self, 5, 1 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.tower.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Towered', self, '' )
+		self.activateTower = settings.BooleanSetting().getFromValue( 'Activate Tower', self, False )
+		self.extruderPossibleCollisionConeAngle = settings.FloatSpin().getFromValue( 40.0, 'Extruder Possible Collision Cone Angle (degrees):', self, 80.0, 60.0 )
+		self.maximumTowerHeight = settings.IntSpin().getFromValue( 2, 'Maximum Tower Height (layers):', self, 10, 5 )
+		self.towerStartLayer = settings.IntSpin().getFromValue( 1, 'Tower Start Layer (integer):', self, 5, 1 )
 		self.executeTitle = 'Tower'
 
 	def execute( self ):
@@ -378,7 +379,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

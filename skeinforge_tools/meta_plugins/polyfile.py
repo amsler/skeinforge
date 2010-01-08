@@ -2,9 +2,9 @@
 This page is in the table of contents.
 Polyfile is a script to choose whether the skeinforge toolchain will operate on one file or all the files in a directory.
 
-Polyfile stores and lets the user change the preference of whether to operate on one file or all the files in a directory.  The default 'Polyfile Choice' radio button group choice is 'Execute File'.  With 'Execute File' chosen, the toolchain will operate on only the chosen file.  When the chosen choice is 'Execute All Unmodified Files in a Directory', the toolchain will operate on all the unmodifed files in the directory that the chosen file is in.
+Polyfile stores and lets the user change the setting of whether to operate on one file or all the files in a directory.  The default 'Polyfile Choice' radio button group choice is 'Execute File'.  With 'Execute File' chosen, the toolchain will operate on only the chosen file.  When the chosen choice is 'Execute All Unmodified Files in a Directory', the toolchain will operate on all the unmodifed files in the directory that the chosen file is in.
 
-To use the dialog to change the polyfile preferences, in a shell type:
+To use the dialog to change the polyfile settings, in a shell type:
 > python polyfile.py
 
 Polyfile examples follow below.
@@ -16,10 +16,10 @@ Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import polyfile
 >>> polyfile.main()
-This brings up the polyfile preference dialog.
+This brings up the polyfile setting dialog.
 
 
->>> polyfile.isDirectoryPreference()
+>>> polyfile.isDirectorySetting()
 This returns true if 'Execute All Unmodified Files in a Directory' is chosen and returns false if 'Execute File' is chosen.
 
 """
@@ -29,7 +29,7 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -38,26 +38,26 @@ __license__ = "GPL 3.0"
 
 
 def getFileOrGcodeDirectory( fileName, wasCancelled, words = [] ):
-	"Get the gcode files in the directory the file is in if directory preference is true.  Otherwise, return the file in a list."
+	"Get the gcode files in the directory the file is in if directory setting is true.  Otherwise, return the file in a list."
 	if isEmptyOrCancelled( fileName, wasCancelled ):
 		return []
-	if isDirectoryPreference():
+	if isDirectorySetting():
 		return gcodec.getFilesWithFileTypeWithoutWords( 'gcode', words, fileName )
 	return [ fileName ]
 
 def getFileOrDirectoryTypes( fileName, fileTypes, wasCancelled ):
-	"Get the gcode files in the directory the file is in if directory preference is true.  Otherwise, return the file in a list."
+	"Get the gcode files in the directory the file is in if directory setting is true.  Otherwise, return the file in a list."
 	if isEmptyOrCancelled( fileName, wasCancelled ):
 		return []
-	if isDirectoryPreference():
+	if isDirectorySetting():
 		return gcodec.getFilesWithFileTypesWithoutWords( fileTypes, [], fileName )
 	return [ fileName ]
 
 def getFileOrDirectoryTypesUnmodifiedGcode( fileName, fileTypes, wasCancelled ):
-	"Get the gcode files in the directory the file is in if directory preference is true.  Otherwise, return the file in a list."
+	"Get the gcode files in the directory the file is in if directory setting is true.  Otherwise, return the file in a list."
 	if isEmptyOrCancelled( fileName, wasCancelled ):
 		return []
-	if isDirectoryPreference():
+	if isDirectorySetting():
 		return gcodec.getFilesWithFileTypesWithoutWords( fileTypes, [], fileName ) + gcodec.getUnmodifiedGCodeFiles( fileName )
 	return [ fileName ]
 
@@ -65,9 +65,9 @@ def getNewRepository():
 	"Get the repository constructor."
 	return PolyfileRepository()
 
-def isDirectoryPreference():
-	"Determine if the directory preference is true."
-	return preferences.getReadRepository( PolyfileRepository() ).directoryPreference.value
+def isDirectorySetting():
+	"Determine if the directory setting is true."
+	return settings.getReadRepository( PolyfileRepository() ).directorySetting.value
 
 def isEmptyOrCancelled( fileName, wasCancelled ):
 	"Determine if the fileName is empty or the dialog was cancelled."
@@ -75,19 +75,19 @@ def isEmptyOrCancelled( fileName, wasCancelled ):
 
 
 class PolyfileRepository:
-	"A class to handle the polyfile preferences."
+	"A class to handle the polyfile settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.meta_plugins.polyfile.html', '', self )
-		self.directoryOrFileChoiceLabel = preferences.LabelDisplay().getFromName( 'Directory or File Choice: ', self )
-		directoryRadio = []
-		self.directoryPreference = preferences.Radio().getFromRadio( 'Execute All Unmodified Files in a Directory', directoryRadio, self, False )
-		self.filePreference = preferences.Radio().getFromRadio( 'Execute File', directoryRadio, self, True )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.meta_plugins.polyfile.html', '', self )
+		self.directoryOrFileChoiceLabel = settings.LabelDisplay().getFromName( 'Directory or File Choice: ', self )
+		directoryLatentStringVar = settings.LatentStringVar()
+		self.directorySetting = settings.Radio().getFromRadio( directoryLatentStringVar, 'Execute All Unmodified Files in a Directory', self, False )
+		self.fileSetting = settings.Radio().getFromRadio( directoryLatentStringVar, 'Execute File', self, True )
 
 
 def main():
 	"Display the file or directory dialog."
-	preferences.startMainLoopFromConstructor( getNewRepository() )
+	settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

@@ -9,7 +9,7 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base import MouseToolBase
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -37,7 +37,7 @@ class ZoomIn( MouseToolBase ):
 		"Set the window mouse tool to this."
 		self.window.destroyMouseToolRaiseMouseButtons()
 		self.window.mouseTool = self
-		self.mouseButton[ 'relief' ] = preferences.Tkinter.SUNKEN
+		self.mouseButton[ 'relief' ] = settings.Tkinter.SUNKEN
 
 	def getReset( self, window ):
 		"Reset the mouse tool to default."

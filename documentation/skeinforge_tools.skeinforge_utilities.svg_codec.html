@@ -57,6 +57,8 @@ Svg_codec uses the svg_layer.template file in the same folder as svg_codec, to o
 
 <dl><dt><a name="SVGCodecSkein-addLines"><strong>addLines</strong></a>(self, lines)</dt><dd><tt>Add&nbsp;lines&nbsp;of&nbsp;text&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
 
+<dl><dt><a name="SVGCodecSkein-addRotatedLoopLayerToOutput"><strong>addRotatedLoopLayerToOutput</strong></a>(self, layerIndex, rotatedBoundaryLayer)</dt><dd><tt>Add&nbsp;rotated&nbsp;boundary&nbsp;layer&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
+
 <dl><dt><a name="SVGCodecSkein-addRotatedLoopLayersToOutput"><strong>addRotatedLoopLayersToOutput</strong></a>(self, rotatedBoundaryLayers)</dt><dd><tt>Add&nbsp;rotated&nbsp;boundary&nbsp;layers&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
 
 <dl><dt><a name="SVGCodecSkein-getInitializationForOutputSVG"><strong>getInitializationForOutputSVG</strong></a>(self, procedureName)</dt><dd><tt>Get&nbsp;initialization&nbsp;gcode&nbsp;for&nbsp;the&nbsp;output.</tt></dd></dl>
@@ -81,6 +83,8 @@ Svg_codec uses the svg_layer.template file in the same folder as svg_codec, to o
 <td width="100%"><dl><dt><a name="-getCarving"><strong>getCarving</strong></a>(fileName)</dt><dd><tt>Get&nbsp;a&nbsp;carving&nbsp;for&nbsp;the&nbsp;file&nbsp;using&nbsp;an&nbsp;import&nbsp;plugin.</tt></dd></dl>
  <dl><dt><a name="-getParameterFromJavascript"><strong>getParameterFromJavascript</strong></a>(lines, parameterName, parameterValue)</dt><dd><tt>Get&nbsp;a&nbsp;parameter&nbsp;from&nbsp;lines&nbsp;of&nbsp;javascript.</tt></dd></dl>
  <dl><dt><a name="-getReplaceWithLine"><strong>getReplaceWithLine</strong></a>(line, replaceWithTable)</dt><dd><tt>Parse&nbsp;the&nbsp;line&nbsp;and&nbsp;replace&nbsp;it&nbsp;a&nbsp;table&nbsp;key&nbsp;is&nbsp;in&nbsp;the&nbsp;line.</tt></dd></dl>
+ <dl><dt><a name="-getReplacedInQuotes"><strong>getReplacedInQuotes</strong></a>(original, replacement, text)</dt><dd><tt>Replace&nbsp;what&nbsp;follows&nbsp;in&nbsp;quotes&nbsp;after&nbsp;the&nbsp;word.</tt></dd></dl>
+ <dl><dt><a name="-getReplacedWordAndInQuotes"><strong>getReplacedWordAndInQuotes</strong></a>(original, replacement, text)</dt><dd><tt>Replace&nbsp;the&nbsp;word&nbsp;in&nbsp;the&nbsp;text&nbsp;and&nbsp;replace&nbsp;what&nbsp;follows&nbsp;in&nbsp;quotes&nbsp;after&nbsp;the&nbsp;word.</tt></dd></dl>
  <dl><dt><a name="-parseLineReplaceWithTable"><strong>parseLineReplaceWithTable</strong></a>(firstWordTable, line, output, replaceWithTable)</dt><dd><tt>Parse&nbsp;the&nbsp;line&nbsp;and&nbsp;replace&nbsp;it&nbsp;if&nbsp;the&nbsp;first&nbsp;word&nbsp;of&nbsp;the&nbsp;line&nbsp;is&nbsp;in&nbsp;the&nbsp;first&nbsp;word&nbsp;table.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

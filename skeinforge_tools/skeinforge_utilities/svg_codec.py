@@ -46,12 +46,29 @@ def getParameterFromJavascript( lines, parameterName, parameterValue ):
 			return float( splitLine[ 2 ] )
 	return parameterValue
 
+def getReplacedInQuotes( original, replacement, text ):
+	"Replace what follows in quotes after the word."
+	wordAndQuote = original + '="'
+	originalIndexStart = text.find( wordAndQuote )
+	if originalIndexStart == - 1:
+		return text
+	originalIndexEnd = text.find( '"', originalIndexStart + len( wordAndQuote ) )
+	if originalIndexEnd == - 1:
+		return text
+	wordAndBothQuotes = text[ originalIndexStart : originalIndexEnd + 1 ]
+	return text.replace( wordAndBothQuotes, wordAndQuote + replacement + '"' )
+
 def getReplaceWithLine( line, replaceWithTable ):
 	"Parse the line and replace it a table key is in the line."
 	for replaceWithTableKey in replaceWithTable.keys():
 		if line.find( replaceWithTableKey ) > - 1:
 			return line.replace( replaceWithTableKey, replaceWithTable[ replaceWithTableKey ] )
 	return line
+
+def getReplacedWordAndInQuotes( original, replacement, text ):
+	"Replace the word in the text and replace what follows in quotes after the word."
+	text = text.replace( 'replaceWith_' + original, replacement )
+	return getReplacedInQuotes( original, replacement, text )
 
 def parseLineReplaceWithTable( firstWordTable, line, output, replaceWithTable ):
 	"Parse the line and replace it if the first word of the line is in the first word table."
@@ -104,6 +121,11 @@ class SVGCodecSkein:
 		self.addLine( pathString )
 		self.addLine( '\t\t</g>' )
 
+	def addRotatedLoopLayerToOutput( self, layerIndex, rotatedBoundaryLayer ):
+		"Add rotated boundary layer to the output."
+		self.addLayerBegin( layerIndex, rotatedBoundaryLayer.z )
+		self.addLayerEnd( rotatedBoundaryLayer )
+
 	def addRotatedLoopLayersToOutput( self, rotatedBoundaryLayers ):
 		"Add rotated boundary layers to the output."
 		truncatedRotatedBoundaryLayers = rotatedBoundaryLayers[ self.repository.layersFrom.value : self.repository.layersTo.value ]
@@ -133,12 +155,16 @@ class SVGCodecSkein:
 	def getReplacedSVGTemplate( self, fileName, procedureName, rotatedBoundaryLayers ):
 		"Get the lines of text from the svg_layer.template file."
 #( layers.length + 1 ) * (margin + sliceDimY * unitScale + txtHeight) + margin + txtHeight + margin + 110
-		self.layerThickness = self.carving.getCarveLayerThickness()
-		self.setExtrusionDiameterWidth( self.repository )
-		self.decimalPlacesCarried = max( 0, 1 + self.repository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
 		self.extent = self.cornerMaximum - self.cornerMinimum
 		self.addRotatedLoopLayersToOutput( rotatedBoundaryLayers )
 		svgTemplateText = gcodec.getFileTextInFileDirectory( __file__, 'svg_layer.template' )
+		svgTemplateText = getReplacedWordAndInQuotes( 'layerThickness', self.getRounded( self.layerThickness ), svgTemplateText )
+		svgTemplateText = getReplacedWordAndInQuotes( 'maxX', self.getRounded( self.cornerMaximum.x ), svgTemplateText )
+		svgTemplateText = getReplacedWordAndInQuotes( 'minX', self.getRounded( self.cornerMinimum.x ), svgTemplateText )
+		svgTemplateText = getReplacedWordAndInQuotes( 'maxY', self.getRounded( self.cornerMaximum.y ), svgTemplateText )
+		svgTemplateText = getReplacedWordAndInQuotes( 'minY', self.getRounded( self.cornerMinimum.y ), svgTemplateText )
+		svgTemplateText = getReplacedWordAndInQuotes( 'maxZ', self.getRounded( self.cornerMaximum.z ), svgTemplateText )
+		svgTemplateText = getReplacedWordAndInQuotes( 'minZ', self.getRounded( self.cornerMinimum.z ), svgTemplateText )
 		lines = gcodec.getTextLines( svgTemplateText )
 		self.margin = getParameterFromJavascript( lines, 'margin', self.margin )
 		self.textHeight = getParameterFromJavascript( lines, 'textHeight', self.textHeight )
@@ -146,7 +172,7 @@ class SVGCodecSkein:
 		noJavascriptControlsHeight = getParameterFromJavascript( lines, 'noJavascriptControlBoxY', 110.0 )
 		controlTop = len( rotatedBoundaryLayers ) * ( self.margin + self.extent.y * self.unitScale + self.textHeight ) + 2.0 * self.margin + self.textHeight
 #	width = margin + (sliceDimX * unitScale) + margin;
-		width = 2.0 * self.margin + max( self.extent.y * self.unitScale, javascriptControlsWidth )
+		width = 2.0 * self.margin + max( self.extent.x * self.unitScale, javascriptControlsWidth )
 		summarizedFileName = gcodec.getSummarizedFileName( fileName ) + ' SVG Slice File'
 		noJavascriptControlsTagString = '	<g id="noJavascriptControls" fill="#000" transform="translate(%s, %s)">' % ( self.getRounded( self.margin ), self.getRounded( controlTop ) )
 		firstWordTable = {}
@@ -158,15 +184,8 @@ class SVGCodecSkein:
 		firstWordTable[ '<!--replaceLineWith_sliceVariableLines-->' ] = self.getInitializationForOutputSVG( procedureName )
 		replaceWithTable = {}
 		replaceWithTable[ 'replaceWith_Title' ] = summarizedFileName
-		replaceWithTable[ 'replaceWith_layerThickness' ] = self.getRounded( self.layerThickness )
-		replaceWithTable[ 'replaceWith_maxX' ] = self.getRounded( self.cornerMaximum.x )
-		replaceWithTable[ 'replaceWith_minX' ] = self.getRounded( self.cornerMinimum.x )
 		replaceWithTable[ 'replaceWith_dimX' ] = self.getRounded( self.extent.x )
-		replaceWithTable[ 'replaceWith_maxY' ] = self.getRounded( self.cornerMaximum.y )
-		replaceWithTable[ 'replaceWith_minY' ] = self.getRounded( self.cornerMinimum.y )
 		replaceWithTable[ 'replaceWith_dimY' ] = self.getRounded( self.extent.y )
-		replaceWithTable[ 'replaceWith_maxZ' ] = self.getRounded( self.cornerMaximum.z )
-		replaceWithTable[ 'replaceWith_minZ' ] = self.getRounded( self.cornerMinimum.z )
 		replaceWithTable[ 'replaceWith_dimZ' ] = self.getRounded( self.extent.z )
 		output = cStringIO.StringIO()
 		for line in lines:
@@ -189,17 +208,10 @@ class SVGCodecSkein:
 
 	def getSVGPathString( self, path ):
 		"Get the svg path string."
-		if len( path ) < 1:
-			return ''
 		svgLoopString = ''
-		oldRoundedComplexString = self.getRoundedComplexString( path[ - 1 ] )
-		for pointIndex in xrange( len( path ) ):
-			point = path[ pointIndex ]
+		for point in path:
 			stringBeginning = 'M '
 			if len( svgLoopString ) > 0:
 				stringBeginning = ' L '
-			roundedComplexString = self.getRoundedComplexString( point )
-			if roundedComplexString != oldRoundedComplexString:
-				svgLoopString += stringBeginning + roundedComplexString
-			oldRoundedComplexString = roundedComplexString
+			svgLoopString += stringBeginning + self.getRoundedComplexString( point )
 		return svgLoopString

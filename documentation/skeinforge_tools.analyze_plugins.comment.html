@@ -15,10 +15,22 @@
 <p><tt><br>
 Comment is a script to comment a gcode file.<br>
  <br>
+The comment manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comment">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comment</a><br>
+ <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Gcodes">Gcodes</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Comment' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Comment' checkbox is on, when comment is run directly.<br>
  <br>
-To run comment, in a shell in the folder which comment is in type:<br>
-&gt; python comment.py<br>
+<a name="Gcodes" id="Gcodes"></a><h2>Gcodes</h2>
+<hr>
+
  <br>
 An explanation of the gcodes is at:<br>
 <a href="http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter">http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter</a><br>
@@ -29,7 +41,18 @@ and at:<br>
 A gode example is at:<br>
 <a href="http://forums.reprap.org/file.php?12,file=565">http://forums.reprap.org/file.php?12,file=565</a><br>
  <br>
-This example comments the gcode file Screw Holder_comb.gcode.  This example is run in a terminal in the folder which contains Screw Holder_comb.gcode and comment.py.<br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
+ <br>
+Below are examples of comment being used.  These examples are run in a terminal in the folder which contains Screw_Holder_penultimate.gcode and comment.py.<br>
+ <br>
+&gt; python comment.py<br>
+This brings up the comment dialog.<br>
+ <br>
+ <br>
+&gt; python comment.py Screw Holder_penultimate.gcode<br>
+The comment file is saved as Screw_Holder_penultimate_comment.gcode<br>
  <br>
  <br>
 &gt; python<br>
@@ -41,8 +64,8 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the comment dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; comment.<a href="#-commentFile">commentFile</a>()<br>
-The commented file is saved as Screw Holder_comb_comment.gcode</tt>
+&gt;&gt;&gt; comment.<a href="#-analyzeFile">analyzeFile</a>( 'Screw Holder_penultimate.gcode' )<br>
+The commente file is saved as Screw_Holder_penultimate_comment.gcode</tt>
 <br />
 <br />
 <p>
@@ -61,7 +84,7 @@ The commented file is saved as Screw Holder_comb_comment.gcode</tt>
 <a href="cStringIO.html">cStringIO</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.preferences.html">skeinforge_tools.skeinforge_utilities.preferences</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
 </td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -81,10 +104,10 @@ The commented file is saved as Screw Holder_comb_comment.gcode</tt>
 <font color="#000000" face="helvetica, arial"><a name="CommentRepository">class <strong>CommentRepository</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;comment&nbsp;preferences.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;comment&nbsp;settings.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="CommentRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;preferences,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;preferences&nbsp;fileName.</tt></dd></dl>
+<dl><dt><a name="CommentRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;settings,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;settings&nbsp;fileName.</tt></dd></dl>
 
 <dl><dt><a name="CommentRepository-execute"><strong>execute</strong></a>(self)</dt><dd><tt>Write&nbsp;button&nbsp;has&nbsp;been&nbsp;clicked.</tt></dd></dl>
 
@@ -117,11 +140,10 @@ The commented file is saved as Screw Holder_comb_comment.gcode</tt>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-commentFile"><strong>commentFile</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Comment&nbsp;a&nbsp;gcode&nbsp;file.&nbsp;&nbsp;If&nbsp;no&nbsp;fileName&nbsp;is&nbsp;specified,&nbsp;comment&nbsp;the&nbsp;first&nbsp;gcode&nbsp;file&nbsp;in&nbsp;this&nbsp;folder&nbsp;that&nbsp;is&nbsp;not&nbsp;modified.</tt></dd></dl>
- <dl><dt><a name="-getCommentGcode"><strong>getCommentGcode</strong></a>(gcodeText)</dt><dd><tt>Get&nbsp;gcode&nbsp;text&nbsp;with&nbsp;added&nbsp;comments.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-analyzeFile"><strong>analyzeFile</strong></a>(fileName)</dt><dd><tt>Comment&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-analyzeFileGivenText"><strong>analyzeFileGivenText</strong></a>(fileName, gcodeText)</dt><dd><tt>Write&nbsp;a&nbsp;commented&nbsp;gcode&nbsp;file&nbsp;for&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;comment&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeCommentFileGivenText"><strong>writeCommentFileGivenText</strong></a>(fileName, gcodeText)</dt><dd><tt>Write&nbsp;a&nbsp;commented&nbsp;gcode&nbsp;file&nbsp;for&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, gcodeText<font color="#909090">=''</font>)</dt><dd><tt>Write&nbsp;a&nbsp;commented&nbsp;gcode&nbsp;file&nbsp;for&nbsp;a&nbsp;skeinforge&nbsp;gcode&nbsp;file,&nbsp;if&nbsp;'Write&nbsp;Commented&nbsp;File&nbsp;for&nbsp;Skeinforge&nbsp;Chain'&nbsp;is&nbsp;selected.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

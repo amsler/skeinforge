@@ -52,11 +52,12 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
+from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_tools.skeinforge_utilities import settings
 import sys
 
 
@@ -74,7 +75,7 @@ def getCraftedTextFromText( gcodeText, liftRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'lift' ):
 		return gcodeText
 	if liftRepository == None:
-		liftRepository = preferences.getReadRepository( LiftRepository() )
+		liftRepository = settings.getReadRepository( LiftRepository() )
 	if not liftRepository.activateLift.value:
 		return gcodeText
 	return LiftSkein().getCraftedGcode( liftRepository, gcodeText )
@@ -91,14 +92,14 @@ def writeOutput( fileName = '' ):
 
 
 class LiftRepository:
-	"A class to handle the lift preferences."
+	"A class to handle the lift settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.lift.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lifted', self, '' )
-		self.activateLift = preferences.BooleanPreference().getFromValue( 'Activate Lift:', self, True )
-		self.cuttingLiftOverLayerStep = preferences.FloatSpin().getFromValue( - 1.0, 'Cutting Lift over Layer Step (ratio):', self, 1.0, - 0.5 )
-		self.clearanceAboveTop = preferences.FloatSpin().getFromValue( 0.0, 'Clearance above Top (mm):', self, 10.0, 5.0 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.lift.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lifted', self, '' )
+		self.activateLift = settings.BooleanSetting().getFromValue( 'Activate Lift:', self, True )
+		self.cuttingLiftOverLayerStep = settings.FloatSpin().getFromValue( - 1.0, 'Cutting Lift over Layer Step (ratio):', self, 1.0, - 0.5 )
+		self.clearanceAboveTop = settings.FloatSpin().getFromValue( 0.0, 'Clearance above Top (mm):', self, 10.0, 5.0 )
 		self.executeTitle = 'Lift'
 
 	def execute( self ):
@@ -194,7 +195,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

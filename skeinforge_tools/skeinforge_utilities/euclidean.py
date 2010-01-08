@@ -48,43 +48,6 @@ def addCircleToPixelTable( pixelTable, pointComplex ):
 			stepKey = ( xCircleStep, yCircleStep )
 			pixelTable[ stepKey ] = None
 
-def addElementSegmentToPixelTable( beginComplex, element, endComplex, pixelTable, width ):
-	"Add line segment to the pixel table."
-	if abs( beginComplex - endComplex ) <= 0.0:
-		return
-	beginComplex /= width
-	endComplex /= width
-	deltaX = endComplex.real - beginComplex.real
-	deltaY = endComplex.imag - beginComplex.imag
-	isSteep = abs( deltaY ) > abs( deltaX )
-	if isSteep:
-		beginComplex = complex( beginComplex.imag, beginComplex.real )
-		endComplex = complex( endComplex.imag, endComplex.real )
-	if beginComplex.real > endComplex.real:
-		newBeginComplex = endComplex
-		endComplex = beginComplex
-		beginComplex = newBeginComplex
-	deltaX = endComplex.real - beginComplex.real
-	deltaY = endComplex.imag - beginComplex.imag
-	if deltaX > 0.0:
-		gradient = deltaY / deltaX
-	else:
-		gradient = 0.0
-		print( 'This should never happen, deltaX in addElementSegmentToPixelTable in euclidean is 0.' )
-		print( beginComplex )
-		print( element )
-		print( endComplex )
-		print( width )
-	xBegin = int( round( beginComplex.real ) )
-	xEnd = int( round( endComplex.real ) )
-	yIntersection = beginComplex.imag - beginComplex.real * gradient
-	addPixelToPixelTableWithSteepness( isSteep, pixelTable, xBegin, int( round( beginComplex.imag ) ) )
-	addPixelToPixelTableWithSteepness( isSteep, pixelTable, xEnd, int( round( endComplex.imag ) ) )
-	for x in xrange( xBegin + 1, xEnd ):
-		y = int( math.floor( yIntersection + x * gradient ) )
-		addPixelToPixelTableWithSteepness( isSteep, pixelTable, x, y )
-		addPixelToPixelTableWithSteepness( isSteep, pixelTable, x, y + 1 )
-
 def addElementToListTable( element, key, listTable ):
 	"Add an element to the list table."
 	if key in listTable:
@@ -106,33 +69,38 @@ def addLoopToPixelTable( loop, pixelTable, width ):
 	for pointIndex in xrange( len( loop ) ):
 		pointBegin = loop[ pointIndex ]
 		pointEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
-		addSegmentToPixelTable( pointBegin, pointEnd, pixelTable, 0, 0, width )
+		addValueSegmentToPixelTable( pointBegin, pointEnd, pixelTable, None, width )
 
-def addPathToPixelTable( path, pixelTable, width ):
+def addPathToPixelTable( path, pixelTable, value, width ):
 	"Add path to the pixel table."
 	for pointIndex in xrange( len( path ) - 1 ):
 		pointBegin = path[ pointIndex ]
 		pointEnd = path[ pointIndex + 1 ]
-		addSegmentToPixelTable( pointBegin, pointEnd, pixelTable, 0, 0, width )
+		addValueSegmentToPixelTable( pointBegin, pointEnd, pixelTable, value, width )
+
+def addPixelTableToPixelTable( fromPixelTable, intoPixelTable ):
+	"Add from pixel table to the into pixel table."
+	for fromPixelTableKey in fromPixelTable.keys():
+		intoPixelTable[ fromPixelTableKey ] = fromPixelTable[ fromPixelTableKey ]
 
 def addPixelToPixelTable( pixelTable, value, x, y ):
 	"Add pixel to the pixel table."
 	pixelTable[ getStepKey( x, y ) ] = value
 
-def addPixelToPixelTableWithSteepness( isSteep, pixelTable, x, y ):
+def addPixelToPixelTableWithSteepness( isSteep, pixelTable, value, x, y ):
 	"Add pixels to the pixel table with steepness."
 	if isSteep:
-		addPixelToPixelTable( pixelTable, None, y, x )
+		addPixelToPixelTable( pixelTable, value, y, x )
 	else:
-		addPixelToPixelTable( pixelTable, None, x, y )
+		addPixelToPixelTable( pixelTable, value, x, y )
 
-def addPointToPath( path, pixelTable, point, width ):
+def addPointToPath( path, pixelTable, point, value, width ):
 	"Add a point to a path and the pixel table."
 	path.append( point )
 	if len( path ) < 2:
 		return
 	begin = path[ - 2 ]
-	addSegmentToPixelTable( begin, point, pixelTable, 0, 0, width )
+	addValueSegmentToPixelTable( begin, point, pixelTable, value, width )
 
 def addSegmentToPixelTable( beginComplex, endComplex, pixelTable, shortenDistanceBegin, shortenDistanceEnd, width ):
 	"Add line segment to the pixel table."
@@ -177,12 +145,12 @@ def addSegmentToPixelTable( beginComplex, endComplex, pixelTable, shortenDistanc
 	xBegin = int( round( beginComplex.real ) )
 	xEnd = int( round( endComplex.real ) )
 	yIntersection = beginComplex.imag - beginComplex.real * gradient
-	addPixelToPixelTableWithSteepness( isSteep, pixelTable, xBegin, int( round( beginComplex.imag ) ) )
-	addPixelToPixelTableWithSteepness( isSteep, pixelTable, xEnd, int( round( endComplex.imag ) ) )
+	addPixelToPixelTableWithSteepness( isSteep, pixelTable, None, xBegin, int( round( beginComplex.imag ) ) )
+	addPixelToPixelTableWithSteepness( isSteep, pixelTable, None, xEnd, int( round( endComplex.imag ) ) )
 	for x in xrange( xBegin + 1, xEnd ):
 		y = int( math.floor( yIntersection + x * gradient ) )
-		addPixelToPixelTableWithSteepness( isSteep, pixelTable, x, y )
-		addPixelToPixelTableWithSteepness( isSteep, pixelTable, x, y + 1 )
+		addPixelToPixelTableWithSteepness( isSteep, pixelTable, None, x, y )
+		addPixelToPixelTableWithSteepness( isSteep, pixelTable, None, x, y + 1 )
 
 def addSurroundingLoopBeginning( loop, skein, z ):
 	"Add surrounding loop beginning to gcode output."
@@ -197,9 +165,13 @@ def addToThreadsFromLoop( extrusionHalfWidth, gcodeType, loop, oldOrderedLocatio
 	loop = getLoopStartingNearest( extrusionHalfWidth, oldOrderedLocation.dropAxis( 2 ), loop )
 	oldOrderedLocation.x = loop[ 0 ].real
 	oldOrderedLocation.y = loop[ 0 ].imag
-	skein.distanceFeedRate.addLine( gcodeType )
+	gcodeTypeStart = gcodeType
+	if isWiddershins( loop ):
+		skein.distanceFeedRate.addLine( '(<%s> outer )' % gcodeType )
+	else:
+		skein.distanceFeedRate.addLine( '(<%s> inner )' % gcodeType )
 	skein.addGcodeFromThreadZ( loop + [ loop[ 0 ] ], oldOrderedLocation.z ) # Turn extruder on and indicate that a loop is beginning.
-	skein.distanceFeedRate.addLine( gcodeType.replace( '(<', '(</' ) )
+	skein.distanceFeedRate.addLine( '(</%s>)' % gcodeType )
 
 def addToThreadsRemoveFromSurroundings( oldOrderedLocation, surroundingLoops, skein ):
 	"Add to threads from the last location from surrounding loops."
@@ -207,6 +179,43 @@ def addToThreadsRemoveFromSurroundings( oldOrderedLocation, surroundingLoops, sk
 		return
 	while len( surroundingLoops ) > 0:
 		getTransferClosestSurroundingLoop( oldOrderedLocation, surroundingLoops, skein )
+
+def addValueSegmentToPixelTable( beginComplex, endComplex, pixelTable, value, width ):
+	"Add line segment to the pixel table."
+	if abs( beginComplex - endComplex ) <= 0.0:
+		return
+	beginComplex /= width
+	endComplex /= width
+	deltaX = endComplex.real - beginComplex.real
+	deltaY = endComplex.imag - beginComplex.imag
+	isSteep = abs( deltaY ) > abs( deltaX )
+	if isSteep:
+		beginComplex = complex( beginComplex.imag, beginComplex.real )
+		endComplex = complex( endComplex.imag, endComplex.real )
+	if beginComplex.real > endComplex.real:
+		newBeginComplex = endComplex
+		endComplex = beginComplex
+		beginComplex = newBeginComplex
+	deltaX = endComplex.real - beginComplex.real
+	deltaY = endComplex.imag - beginComplex.imag
+	if deltaX > 0.0:
+		gradient = deltaY / deltaX
+	else:
+		gradient = 0.0
+		print( 'This should never happen, deltaX in addValueSegmentToPixelTable in euclidean is 0.' )
+		print( beginComplex )
+		print( value )
+		print( endComplex )
+		print( width )
+	xBegin = int( round( beginComplex.real ) )
+	xEnd = int( round( endComplex.real ) )
+	yIntersection = beginComplex.imag - beginComplex.real * gradient
+	addPixelToPixelTableWithSteepness( isSteep, pixelTable, value, xBegin, int( round( beginComplex.imag ) ) )
+	addPixelToPixelTableWithSteepness( isSteep, pixelTable, value, xEnd, int( round( endComplex.imag ) ) )
+	for x in xrange( xBegin + 1, xEnd ):
+		y = int( math.floor( yIntersection + x * gradient ) )
+		addPixelToPixelTableWithSteepness( isSteep, pixelTable, value, x, y )
+		addPixelToPixelTableWithSteepness( isSteep, pixelTable, value, x, y + 1 )
 
 def addXIntersectionIndexesFromLoop( frontOverWidth, loop, solidIndex, xIntersectionIndexLists, width, yList ):
 	"Add the x intersection indexes for a loop."
@@ -341,7 +350,7 @@ def concatenateRemovePath( connectedPaths, pathIndex, paths, pixelTable, segment
 	concatenatedPath = bottomSegmentEndpoint.path + nextEndpoint.path
 	paths[ nextEndpoint.pathIndex ] = concatenatedPath
 	segments[ nextEndpoint.pathIndex ] = getSegmentFromPath( concatenatedPath, nextEndpoint.pathIndex )
-	addElementSegmentToPixelTable( bottomSegmentEndpoint.point, None, nextEndpoint.point, pixelTable, width )
+	addValueSegmentToPixelTable( bottomSegmentEndpoint.point, nextEndpoint.point, pixelTable, None, width )
 
 def getAngleAroundZAxisDifference( subtractFromVec3, subtractVec3 ):
 	"Get the angle around the Z axis difference between a pair of Vector3s."
@@ -663,6 +672,14 @@ def getListTableElements( listTable ):
 		listTableElements += listTableValue
 	return listTableElements
 
+def getLoopInsideContainingLoop( containingLoop, loops ):
+	"Get a loop that is inside the containing loop."
+	for loop in loops:
+		if loop != containingLoop:
+			if isPathInsideLoop( containingLoop, loop ):
+				return loop
+	return None
+
 def getLoopStartingNearest( extrusionHalfWidth, location, loop ):
 	"Add to threads from the last location from loop."
 	nearestIndex = getNearestDistanceIndex( location, loop ).index
@@ -763,7 +780,7 @@ def getOrderedSurroundingLoops( perimeterWidth, surroundingLoops ):
 			otherLoops.append( surroundingLoops[ beforeIndex ].boundary )
 		for afterIndex in xrange( loopIndex + 1, len( surroundingLoops ) ):
 			otherLoops.append( surroundingLoops[ afterIndex ].boundary )
-		if isPathInsideLoops( otherLoops, surroundingLoop.boundary ):
+		if isPathEntirelyInsideLoops( otherLoops, surroundingLoop.boundary ):
 			insides.append( surroundingLoop )
 		else:
 			orderedSurroundingLoops.append( surroundingLoop )
@@ -798,8 +815,8 @@ def getPathsFromEndpoints( endpoints, fillInset, pixelTable, width ):
 			if abs( nextEndpoint.point - endpointFirst.point ) < abs( nextEndpoint.point - otherEndpoint.point ):
 				endpointFirst = endpointFirst.otherEndpoint
 				otherEndpoint = endpointFirst.otherEndpoint
-	addPointToPath( path, pixelTable, endpointFirst.point, width )
-	addPointToPath( path, pixelTable, otherEndpoint.point, width )
+	addPointToPath( path, pixelTable, endpointFirst.point, None, width )
+	addPointToPath( path, pixelTable, otherEndpoint.point, len( paths ) - 1, width )
 	oneOverEndpointWidth = 0.2 / fillInset
 	endpointTable = {}
 	for endpoint in endpoints:
@@ -825,7 +842,7 @@ def getPathsFromEndpoints( endpoints, fillInset, pixelTable, width ):
 #				nextEndpoint = otherEndpoint.getNearestEndpoint( endpoints )
 #				endpoints = getSquareValuesFromPoint( endpointTable, nextEndpoint.point * oneOverEndpointWidth )
 #				nextEndpoint = otherEndpoint.getNearestEndpoint( endpoints )
-		addPointToPath( path, pixelTable, nextEndpoint.point, width )
+		addPointToPath( path, pixelTable, nextEndpoint.point, len( paths ) - 1, width )
 		removeElementFromPixelListFromPoint( nextEndpoint, endpointTable, nextEndpoint.point * oneOverEndpointWidth )
 		otherEndpoint = nextEndpoint.otherEndpoint
 		hop = nextEndpoint.getHop( fillInset, path )
@@ -835,7 +852,7 @@ def getPathsFromEndpoints( endpoints, fillInset, pixelTable, width ):
 				print( path )
 			path = [ hop ]
 			paths.append( path )
-		addPointToPath( path, pixelTable, otherEndpoint.point, width )
+		addPointToPath( path, pixelTable, otherEndpoint.point, len( paths ) - 1, width )
 		removeElementFromPixelListFromPoint( otherEndpoint, endpointTable, otherEndpoint.point * oneOverEndpointWidth )
 	return paths
 
@@ -1164,6 +1181,23 @@ def isLoopListIntersectingInsideXSegment( loopList, segmentFirstX, segmentSecond
 			return True
 	return False
 
+def isPathEntirelyInsideLoop( loop, path ):
+	"Determine if a path is entirely inside another loop."
+	leftPoint = getLeftPoint( path )
+	if not isPointInsideLoop( loop, leftPoint ):
+		return False
+	for point in path:
+		if not isPointInsideLoop( loop, point ):
+			return False
+	return True
+
+def isPathEntirelyInsideLoops( loops, path ):
+	"Determine if a path is entirely inside another loop in a list."
+	for loop in loops:
+		if isPathEntirelyInsideLoop( loop, path ):
+			return True
+	return False
+
 def isPathInsideLoop( loop, path ):
 	"Determine if a path is inside another loop."
 	leftPoint = getLeftPoint( path )
@@ -1344,8 +1378,12 @@ def transferClosestFillLoop( extrusionHalfWidth, oldOrderedLocation, remainingFi
 		if distance < closestDistance:
 			closestDistance = distance
 			closestFillLoop = remainingFillLoop
+	newClosestFillLoop = getLoopInsideContainingLoop( closestFillLoop, remainingFillLoops )
+	while newClosestFillLoop != None:
+		closestFillLoop = newClosestFillLoop
+		newClosestFillLoop = getLoopInsideContainingLoop( closestFillLoop, remainingFillLoops )
 	remainingFillLoops.remove( closestFillLoop )
-	addToThreadsFromLoop( extrusionHalfWidth, '(<loop>)', closestFillLoop[ : ], oldOrderedLocation, skein )
+	addToThreadsFromLoop( extrusionHalfWidth, 'loop', closestFillLoop[ : ], oldOrderedLocation, skein )
 
 def transferClosestPath( oldOrderedLocation, remainingPaths, skein ):
 	"Transfer the closest remaining path."
@@ -1578,7 +1616,7 @@ class SurroundingLoop:
 	def __repr__( self ):
 		"Get the string representation of this surrounding loop."
 		stringRepresentation = 'boundary\n%s\n' % self.boundary
-		stringRepresentation = 'loop\n%s\n' % self.loop
+		stringRepresentation += 'loop\n%s\n' % self.loop
 		stringRepresentation += 'inner surroundings\n%s\n' % self.innerSurroundings
 		stringRepresentation += 'infillPaths\n'
 		for infillPath in self.infillPaths:
@@ -1605,7 +1643,7 @@ class SurroundingLoop:
 		if self.loop == None:
 			transferClosestPaths( oldOrderedLocation, self.perimeterPaths[ : ], skein )
 		else:
-			addToThreadsFromLoop( self.extrusionHalfWidth, '(<perimeter>)', self.loop[ : ], oldOrderedLocation, skein )
+			addToThreadsFromLoop( self.extrusionHalfWidth, 'perimeter', self.loop[ : ], oldOrderedLocation, skein )
 		skein.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )
 		addToThreadsRemoveFromSurroundings( oldOrderedLocation, self.innerSurroundings[ : ], skein )
 

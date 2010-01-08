@@ -1,10 +1,10 @@
 """
 This page is in the table of contents.
-Gcode_small is an export plugin to remove the comments and the redundant z and feedRate parameters from a gcode file.
+Gcode_small is an export plugin to remove the comments and the redundant z and feed rate parameters from a gcode file.
 
-An export plugin is a script in the export_plugins folder which has the functions getOuput, and writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An export plugin is a script in the export_plugins folder which has the functions getOutput, isReplaceable and if it's output is not replaceable, writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
-The getOuput function of this script takes a gcode text and returns that text without comments and redundant z and feed rate parameters.  The writeOutput function of this script takes a gcode text and writes that text without comments and redundant z and feedRate parameterscomments to a file.
+The getOutput function of this script takes a gcode text and returns that text without comments and redundant z and feed rate parameters.  The writeOutput function of this script takes a gcode text and writes that text without comments and redundant z and feed rate parameters to a file.
 
 Many of the functions in this script are copied from gcodec in skeinforge_utilities.  They are copied rather than imported so developers making new plugins do not have to learn about gcodec, the code here is all they need to learn.
 
@@ -57,13 +57,13 @@ def indexOfStartingWithSecond( letter, splitLine ):
 			return wordIndex
 	return - 1
 
-def isReplacable():
-	"Return whether or not the output from this plugin is replacable.  This should be true if the output is text and false if it is binary."
+def isReplaceable():
+	"Return whether or not the output from this plugin is replaceable.  This should be true if the output is text and false if it is binary."
 	return True
 
 
 class GcodeSmallSkein:
-	"A class to remove redundant z and feedRate parameters from a skein of extrusions."
+	"A class to remove redundant z and feed rate parameters from a skein of extrusions."
 	def __init__( self ):
 		self.lastFeedRateString = None
 		self.lastZString = None

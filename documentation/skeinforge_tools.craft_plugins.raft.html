@@ -15,6 +15,9 @@
 <p><tt><br>
 Raft is a script to create a raft, elevate the nozzle and set the temperature.<br>
  <br>
+The raft manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Raft">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Raft</a><br>
+ <br>
 Allan Ecker aka The Masked Retriever's has written two quicktips for raft which follow below.<br>
 "Skeinforge Quicktip: The Raft, Part 1" at:<br>
 <a href="http://blog.thingiverse.com/2009/07/14/skeinforge-quicktip-the-raft-part-1/">http://blog.thingiverse.com/2009/07/14/skeinforge-quicktip-the-raft-part-1/</a><br>
@@ -25,25 +28,25 @@ The default 'Activate Raft' checkbox is on.  When it is on, the functions descri
  <br>
 Raft is based on the Nophead's reusable raft, which has a base layer running one way, and a couple of perpendicular layers above.  Each set of layers can be set to a different temperature.  There is the option of having the extruder orbit the raft for a while, so the heater barrel has time to reach a different temperature, without ooze accumulating around the nozzle.<br>
  <br>
-The important values for the raft preferences are the temperatures of the raft, the first layer and the next layers.  These will be different for each material.  The default preferences for ABS, HDPE, PCL &amp; PLA are extrapolated from Nophead's experiments.<br>
+The important values for the raft settings are the temperatures of the raft, the first layer and the next layers.  These will be different for each material.  The default settings for ABS, HDPE, PCL &amp; PLA are extrapolated from Nophead's experiments.<br>
  <br>
-This brings up the profile preferences dialog.  In that dialog you can add or delete a profile on the listbox and you change the selected profile.  After you can change the selected profile, run raft again.  If there are preferences for the new profile, those will be in the raft dialog.  If there are no preferences for the new profile, the preferences will be set to defaults and you will have to set new preferences for the new profile.<br>
+This brings up the profile settings dialog.  In that dialog you can add or delete a profile on the listbox and you change the selected profile.  After you can change the selected profile, run raft again.  If there are settings for the new profile, those will be in the raft dialog.  If there are no settings for the new profile, the settings will be set to defaults and you will have to set new settings for the new profile.<br>
  <br>
-The "Base Infill Density" preference is the infill density ratio of the base of the raft, the default ratio is half.  The "Base Layer Height over Layer Thickness" preference is the ratio of the height &amp; width of the base layer compared to the height and width of the shape infill, the default is two.  The feed rate will be slower for raft layers which have thicker extrusions than the shape infill.  The "Base Layers" preference is the number of base layers, the default is one.  The "Base Nozzle Lift over Base Layer Thickness" is the amount the nozzle is above the center of the extrusion divided by the base layer thickness.<br>
+The "Base Infill Density" setting is the infill density ratio of the base of the raft, the default ratio is half.  The "Base Layer Height over Layer Thickness" setting is the ratio of the height &amp; width of the base layer compared to the height and width of the shape infill, the default is two.  The feed rate will be slower for raft layers which have thicker extrusions than the shape infill.  The "Base Layers" setting is the number of base layers, the default is one.  The "Base Nozzle Lift over Base Layer Thickness" is the amount the nozzle is above the center of the extrusion divided by the base layer thickness.<br>
  <br>
-The interface of the raft has equivalent preferences called "Interface Infill Density", "Interface Layer Thickness over Extrusion Height", "Interface Layers" and "Interface Nozzle Lift over Base Layer Thickness".  The shape has the equivalent preference of called "Operating Nozzle Lift over Layer Thickness".<br>
+The interface of the raft has equivalent settings called "Interface Infill Density", "Interface Layer Thickness over Extrusion Height", "Interface Layers" and "Interface Nozzle Lift over Base Layer Thickness".  The shape has the equivalent setting of called "Operating Nozzle Lift over Layer Thickness".<br>
  <br>
-The altitude that the bottom of the raft will be set to the "Bottom Altitude" preference.<br>
+The altitude that the bottom of the raft will be set to the "Bottom Altitude" setting.<br>
  <br>
 The raft fills a rectangle whose base size is the rectangle around the bottom layer of the shape expanded on each side by the 'Raft Margin' plus the 'Raft Additional Margin over Length (%)' percentage times the length of the side.  The default 'Raft Margin' is 3 millimeters and the default 'Raft Additional Margin over Length (%)' is 1 percent.  The rectangle size is then reduced by the 'Infill Overhang' ratio times the width of the extrusion of the raft.<br>
  <br>
-In the "Support Material Choice" radio button group, if "No Support Material" is selected then raft will not add support material, this is the default because the raft takes time to generate.  If "Support Material Everywhere" is selected, support material will be added wherever there are overhangs, even inside the object; because support material inside objects is hard or impossible to remove, this option should only be chosen if the shape has a cavity that needs support and there is some way to extract the support material.  If "Support Material on Exterior Only" is selected, support material will be added only the exterior of the object; this is the best option for most objects which require support material.  The "Support Minimum Angle" preference is the minimum angle that a surface overhangs before support material is added, the default is sixty degrees. The "Support Flow Rate over Operating Flow Rate" is the ratio of the flow rate when the support is extruded over the operating flow rate.  With a number less than one, the support flow rate will be smaller so the support will be thinner and easier to remove, the default is 0.9.  The "Support Gap over Perimeter Extrusion Width" is the gap between the support material and the object over the perimeter extrusion width, the default is 0.5.<br>
+In the "Support Material Choice" radio button group, if "No Support Material" is selected then raft will not add support material, this is the default because the raft takes time to generate.  If "Support Material Everywhere" is selected, support material will be added wherever there are overhangs, even inside the object; because support material inside objects is hard or impossible to remove, this option should only be chosen if the shape has a cavity that needs support and there is some way to extract the support material.  If "Support Material on Exterior Only" is selected, support material will be added only the exterior of the object; this is the best option for most objects which require support material.  The "Support Minimum Angle" setting is the minimum angle that a surface overhangs before support material is added, the default is sixty degrees. The "Support Flow Rate over Operating Flow Rate" is the ratio of the flow rate when the support is extruded over the operating flow rate.  With a number less than one, the support flow rate will be smaller so the support will be thinner and easier to remove, the default is 0.9.  The "Support Gap over Perimeter Extrusion Width" is the gap between the support material and the object over the perimeter extrusion width, the default is 0.5.<br>
  <br>
 If support material is generated, then if there is a file support_start.gcode, it will add that to the start of the support gcode. After it has added the support gcode, it will add the file support_end.gcode if it exists.  Raft does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  Raft looks for those files in the alterations folder in the .skeinforge folder in the home directory. If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the skeinforge_tools folder.<br>
  <br>
 The extruder will orbit for at least "Temperature Change Time Before Raft" seconds before extruding the raft.  It will orbit for at least "Temperature Change Time Before First Layer Outline" seconds before extruding the outline of the first layer of the shape.  It will orbit for at least "Temperature Change Time Before Next Threads" seconds before extruding within the outline of the first layer of the shape and before extruding the next layers of the shape.  It will orbit for at least "Temperature Change Time Before Support Layers" seconds before extruding the support layers.  It will orbit for at least "Temperature Change Time Before Supported Layers" seconds before extruding the layer of the shape above the support layer.  If a time is zero, it will not orbit.<br>
  <br>
-The "Temperature of Raft" preference sets the temperature of the raft.  The "Temperature of Shape First Layer Outline" preference sets the temperature of the outline of the first layer of the shape.  The "Temperature of Shape First Layer Within" preference sets the temperature within the outline of the first layer of the shape.  The "Temperature of Shape Next Layers" preference sets the temperature of the next layers of the shape.  The "Temperature of Support Layers" preference sets the temperature of the support layer.  The "Temperature of Supported Layers" preference sets the temperature of the layer of the shape above the support layer.<br>
+The "Temperature of Raft" setting sets the temperature of the raft.  The "Temperature of Shape First Layer Outline" setting sets the temperature of the outline of the first layer of the shape.  The "Temperature of Shape First Layer Within" setting sets the temperature within the outline of the first layer of the shape.  The "Temperature of Shape Next Layers" setting sets the temperature of the next layers of the shape.  The "Temperature of Support Layers" setting sets the temperature of the support layer.  The "Temperature of Supported Layers" setting sets the temperature of the layer of the shape above the support layer.<br>
  <br>
 The following examples raft the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and raft.py.  Pictures of rafting in action are available from the Metalab blog at:<br>
 <a href="http://reprap.soup.io/?search=rafting">http://reprap.soup.io/?search=rafting</a><br>
@@ -100,7 +103,7 @@ Screw Holder Bottom_raft.gcode</tt>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
 <a href="os.html">os</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.preferences.html">skeinforge_tools.skeinforge_utilities.preferences</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -121,10 +124,10 @@ Screw Holder Bottom_raft.gcode</tt>
 <font color="#000000" face="helvetica, arial"><a name="RaftRepository">class <strong>RaftRepository</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;raft&nbsp;preferences.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;raft&nbsp;settings.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="RaftRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;preferences,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;preferences&nbsp;fileName.</tt></dd></dl>
+<dl><dt><a name="RaftRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;settings,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;settings&nbsp;fileName.</tt></dd></dl>
 
 <dl><dt><a name="RaftRepository-execute"><strong>execute</strong></a>(self)</dt><dd><tt>Raft&nbsp;button&nbsp;has&nbsp;been&nbsp;clicked.</tt></dd></dl>
 
@@ -160,7 +163,7 @@ Screw Holder Bottom_raft.gcode</tt>
 
 <dl><dt><a name="RaftSkein-addTemperature"><strong>addTemperature</strong></a>(self, temperature)</dt><dd><tt>Add&nbsp;a&nbsp;line&nbsp;of&nbsp;temperature.</tt></dd></dl>
 
-<dl><dt><a name="RaftSkein-addTemperatureOrbits"><strong>addTemperatureOrbits</strong></a>(self, endpoints, temperaturePreference, temperatureTimeChangePreference, z)</dt><dd><tt>Add&nbsp;the&nbsp;temperature&nbsp;and&nbsp;orbits&nbsp;around&nbsp;the&nbsp;support&nbsp;layer.</tt></dd></dl>
+<dl><dt><a name="RaftSkein-addTemperatureOrbits"><strong>addTemperatureOrbits</strong></a>(self, endpoints, temperatureSetting, temperatureTimeChangeSetting, z)</dt><dd><tt>Add&nbsp;the&nbsp;temperature&nbsp;and&nbsp;orbits&nbsp;around&nbsp;the&nbsp;support&nbsp;layer.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addToFillXIntersectionIndexTables"><strong>addToFillXIntersectionIndexTables</strong></a>(self, supportLayer)</dt><dd><tt>Add&nbsp;fill&nbsp;segments&nbsp;from&nbsp;the&nbsp;boundary&nbsp;layers.</tt></dd></dl>
 
@@ -184,7 +187,7 @@ Screw Holder Bottom_raft.gcode</tt>
 
 <dl><dt><a name="RaftSkein-setCornersZ"><strong>setCornersZ</strong></a>(self)</dt><dd><tt>Set&nbsp;maximum&nbsp;and&nbsp;minimum&nbsp;corners&nbsp;and&nbsp;z.</tt></dd></dl>
 
-<dl><dt><a name="RaftSkein-setInterfaceVariables"><strong>setInterfaceVariables</strong></a>(self, interfaceExtrusionWidth, stepBegin, stepEnd)</dt><dd><tt>Set&nbsp;the&nbsp;interface&nbsp;variables.</tt></dd></dl>
+<dl><dt><a name="RaftSkein-setInterfaceVariables"><strong>setInterfaceVariables</strong></a>(self, halfInterfaceExtrusionWidth, stepBegin, stepEnd)</dt><dd><tt>Set&nbsp;the&nbsp;interface&nbsp;variables.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-setOperatingFlowString"><strong>setOperatingFlowString</strong></a>(self, splitLine)</dt><dd><tt>Set&nbsp;the&nbsp;operating&nbsp;flow&nbsp;string&nbsp;from&nbsp;the&nbsp;split&nbsp;line.</tt></dd></dl>
 

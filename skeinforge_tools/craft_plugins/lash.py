@@ -47,11 +47,12 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
+from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_tools.skeinforge_utilities import settings
 import sys
 
 
@@ -69,7 +70,7 @@ def getCraftedTextFromText( gcodeText, lashRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'lash' ):
 		return gcodeText
 	if lashRepository == None:
-		lashRepository = preferences.getReadRepository( LashRepository() )
+		lashRepository = settings.getReadRepository( LashRepository() )
 	if not lashRepository.activateLash.value:
 		return gcodeText
 	return LashSkein().getCraftedGcode( gcodeText, lashRepository )
@@ -86,14 +87,14 @@ def writeOutput( fileName = '' ):
 
 
 class LashRepository:
-	"A class to handle the lash preferences."
+	"A class to handle the lash settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.lash.html', '', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lashed', self, '' )
-		self.activateLash = preferences.BooleanPreference().getFromValue( 'Activate Lash', self, False )
-		self.xBacklash = preferences.FloatSpin().getFromValue( 0.1, 'X Backlash (mm):', self, 0.5, 0.2 )
-		self.yBacklash = preferences.FloatSpin().getFromValue( 0.1, 'Y Backlash (mm):', self, 0.5, 0.3 )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.lash.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lashed', self, '' )
+		self.activateLash = settings.BooleanSetting().getFromValue( 'Activate Lash', self, False )
+		self.xBacklash = settings.FloatSpin().getFromValue( 0.1, 'X Backlash (mm):', self, 0.5, 0.2 )
+		self.yBacklash = settings.FloatSpin().getFromValue( 0.1, 'Y Backlash (mm):', self, 0.5, 0.3 )
 		self.executeTitle = 'Lash'
 
 	def execute( self ):
@@ -168,7 +169,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

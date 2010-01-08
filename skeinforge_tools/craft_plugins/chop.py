@@ -1,14 +1,52 @@
 """
 This page is in the table of contents.
-Chop shape is a script to chop a list of slice layers.
+Chop is a script to chop a shape into svg slice layers.
 
-Chop chops a list of slices into svg slice layers.  The 'Layer Thickness' is the thickness the extrusion layer at default extruder speed, this is the most important chop preference.  The 'Perimeter Width over Thickness' is the ratio of the extrusion perimeter width to the layer thickness.  The higher the value the more the perimeter will be inset, the default is 1.8.  A ratio of one means the extrusion is a circle, a typical ratio of 1.8 means the extrusion is a wide oval.  These values should be measured from a test extrusion line.
+==Settings==
 
-When a triangle mesh has holes in it, the triangle mesh slicer switches over to a slow algorithm that spans gaps in the mesh.  The higher the 'Import Coarseness' setting, the wider the gaps in the mesh it will span.  An import coarseness of one means it will span gaps of the perimeter width.  When the Mesh Type preference is Correct Mesh, the mesh will be accurately chopped, and if a hole is found, chop will switch over to the algorithm that spans gaps.  If the Mesh Type preference is Unproven Mesh, chop will use the gap spanning algorithm from the start.  The problem with the gap spanning algothm is that it will span gaps, even if there is not actually a gap in the model.
+===Extra Decimal Places===
+Default is one.
 
-The 'Extra Decimal Places' is the number of extra decimal places export will output compared to the number of decimal places in the layer thickness.  The higher the 'Extra Decimal Places', the more significant figures the output numbers will have, the default is one.
+Defines the number of extra decimal places export will output compared to the number of decimal places in the layer thickness.  The higher the 'Extra Decimal Places', the more significant figures the output numbers will have.
 
-Chop slices from top to bottom.  The output will go from the "Layers From" index to the "Layers To" index.  The default for the "Layers From" index is zero and the default for the "Layers To" is a really big number.  To get only the bottom layer, set the "Layers From" to minus one.
+===Import Coarseness===
+Default is one.
+
+When a triangle mesh has holes in it, the triangle mesh slicer switches over to a slow algorithm that spans gaps in the mesh.  The higher the 'Import Coarseness' setting, the wider the gaps in the mesh it will span.  An import coarseness of one means it will span gaps of the perimeter width.
+
+===Layer Thickness===
+Default is 0.4 mm.
+
+Defines the thickness of the layer, this is the most important chop setting.
+
+===Layers===
+Chop slices from top to bottom.  To get only the bottom layer, set the "Layers From" to minus one.  The layer from until layer to range is a python slice.
+
+====Layers From====
+Default is zero.
+
+Defines the index of the top layer that will be chopped.  If the layer from is the default zero, the carving will start from the top layer.  If the the layer from index is negative, then the carving will start from the layer from index above the bottom layer.
+
+====Layers To====
+Default is a huge number, which will be limited to the highest index number.
+
+Defines the index of the bottom layer that will be carved.  If the layer to index is a huge number like the default, the carving will go to the bottom of the model.  If the layer to index is negative, then the carving will go to the layer to index above the bottom layer.
+
+===Mesh Type===
+Default is 'Correct Mesh'.
+
+====Correct Mesh====
+When selected, the mesh will be accurately chopped, and if a hole is found, chop will switch over to the algorithm that spans gaps.
+
+====Unproven Mesh====
+When selected, chop will use the gap spanning algorithm from the start.  The problem with the gap spanning algothm is that it will span gaps, even if there is not actually a gap in the model.
+
+===Perimeter Width===
+Default is 2 mm.
+
+Defines the width of the perimeter.
+
+==Examples==
 
 The following examples chop the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and chop.py.
 
@@ -52,11 +90,12 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.skeinforge_utilities import svg_codec
 import math
 import os
@@ -84,7 +123,7 @@ def getCraftedTextFromFileName( fileName, repository = None ):
 		return ''
 	if repository == None:
 		repository = ChopRepository()
-		preferences.getReadRepository( repository )
+		settings.getReadRepository( repository )
 	return ChopSkein().getCarvedSVG( carving, fileName, repository )
 
 def getNewRepository():
@@ -111,26 +150,26 @@ def writeOutput( fileName = '' ):
 	gcodec.writeFileText( suffixFileName, chopGcode )
 	print( 'The chopped file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to chop the file.' )
-	preferences.openWebPage( suffixFileName )
+	settings.openWebPage( suffixFileName )
 
 
 class ChopRepository:
-	"A class to handle the chop preferences."
+	"A class to handle the chop settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.chop.html', self )
-		self.addExtraTopLayerIfNecessary = preferences.BooleanPreference().getFromValue( 'Add Extra Top Layer if Necessary', self, True )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '' )
-		self.extraDecimalPlaces = preferences.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
-		self.importCoarseness = preferences.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
-		self.layerThickness = preferences.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
-		self.layersFrom = preferences.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
-		self.layersTo = preferences.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
-		self.meshTypeLabel = preferences.LabelDisplay().getFromName( 'Mesh Type: ', self, )
-		importRadio = []
-		self.correctMesh = preferences.Radio().getFromRadio( 'Correct Mesh', importRadio, self, True )
-		self.unprovenMesh = preferences.Radio().getFromRadio( 'Unproven Mesh', importRadio, self, False )
-		self.perimeterWidth = preferences.FloatSpin().getFromValue( 0.1, 'Perimeter Width (mm):', self, 2.0, 0.6 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.chop.html', self )
+		self.addExtraTopLayerIfNecessary = settings.BooleanSetting().getFromValue( 'Add Extra Top Layer if Necessary', self, True )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '' )
+		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
+		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
+		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
+		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
+		self.layersTo = settings.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
+		self.meshTypeLabel = settings.LabelDisplay().getFromName( 'Mesh Type: ', self, )
+		importLatentStringVar = settings.LatentStringVar()
+		self.correctMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Correct Mesh', self, True )
+		self.unprovenMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Unproven Mesh', self, False )
+		self.perimeterWidth = settings.FloatSpin().getFromValue( 0.4, 'Perimeter Width (mm):', self, 4.0, 2.0 )
 		self.executeTitle = 'Chop'
 
 	def execute( self ):
@@ -151,17 +190,12 @@ class ChopSkein( svg_codec.SVGCodecSkein ):
 		extraTopRotatedBoundaryLayer = topRotatedBoundaryLayer.getCopyAtZ( topRotatedBoundaryLayer.z + self.layerThickness )
 		rotatedBoundaryLayers.append( extraTopRotatedBoundaryLayer )
 
-	def addRotatedLoopLayerToOutput( self, layerIndex, rotatedBoundaryLayer ):
-		"Add rotated boundary layer to the output."
-		self.addLayerBegin( layerIndex, rotatedBoundaryLayer.z )
-		self.addLayerEnd( rotatedBoundaryLayer )
-
 	def getCarvedSVG( self, carving, fileName, repository ):
 		"Parse gnu triangulated surface text and store the chopped gcode."
 		self.carving = carving
 		self.repository = repository
 		self.layerThickness = repository.layerThickness.value
-		self.setExtrusionDiameterWidth( repository )
+		self.perimeterWidth = repository.perimeterWidth.value
 		carving.setCarveLayerThickness( self.layerThickness )
 		importRadius = 0.5 * repository.importCoarseness.value * abs( self.perimeterWidth )
 		carving.setCarveImportRadius( max( importRadius, 0.01 * self.layerThickness ) )
@@ -174,11 +208,9 @@ class ChopSkein( svg_codec.SVGCodecSkein ):
 		if repository.addExtraTopLayerIfNecessary.value:
 			self.addExtraTopLayerIfNecessary( rotatedBoundaryLayers )
 		rotatedBoundaryLayers.reverse()
+		self.layerThickness = self.carving.layerThickness
+		self.decimalPlacesCarried = max( 0, 1 + self.repository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
 		return self.getReplacedSVGTemplate( fileName, 'chop', rotatedBoundaryLayers )
-
-	def setExtrusionDiameterWidth( self, repository ):
-		"Set the extrusion diameter & width and the bridge thickness & width."
-		self.perimeterWidth = repository.perimeterWidth.value
 
 
 def main():
@@ -186,7 +218,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

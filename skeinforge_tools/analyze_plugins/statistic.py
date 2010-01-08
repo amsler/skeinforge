@@ -2,14 +2,30 @@
 This page is in the table of contents.
 Statistic is a script to generate statistics a gcode file.
 
+The statistic manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic
+
+==Operation==
 The default 'Activate Statistic' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Statistic' checkbox is on, when statistic is run directly.
 
-The 'Extrusion Diameter over Thickness is the ratio of the extrusion diameter over the layer thickness, the default is 1.25.  The extrusion fill density ratio that is printed to the console, ( it is derived quantity not a parameter ) is the area of the extrusion diameter over the extrusion width over the layer thickness.  Assuming the extrusion diameter is correct, a high value means the filament will be packed tightly, and the object will be almost as dense as the filament.  If the fill density ratio is too high, there could be too little room for the filament, and the extruder will end up plowing through the extra filament.  A low fill density ratio means the filaments will be far away from each other, the object will be leaky and light.  The fill density ratio with the default extrusion preferences is around 0.68.
+==Settings==
 
-When the 'Print Statistics' checkbox is on, the statistics will be printed to the console, the default is on.  When the 'Save Statistics' checkbox is on, the statistics will be save as a .txt file, the default is off.
+===Extrusion Diameter over Thickness===
+Default is 1.25.
 
-To run statistic, in a shell in the folder which statistic is in type:
-> python statistic.py
+The 'Extrusion Diameter over Thickness is the ratio of the extrusion diameter over the layer thickness, the default is 1.25.  The extrusion fill density ratio that is printed to the console, ( it is derived quantity not a parameter ) is the area of the extrusion diameter over the extrusion width over the layer thickness.  Assuming the extrusion diameter is correct, a high value means the filament will be packed tightly, and the object will be almost as dense as the filament.  If the fill density ratio is too high, there could be too little room for the filament, and the extruder will end up plowing through the extra filament.  A low fill density ratio means the filaments will be far away from each other, the object will be leaky and light.  The fill density ratio with the default extrusion settings is around 0.68.
+
+===Print Statistics===
+Default is on.
+
+When the 'Print Statistics' checkbox is on, the statistics will be printed to the console.
+
+===Save Statistics===
+Default is off.
+
+When the 'Save Statistics' checkbox is on, the statistics will be saved as a .txt file.
+
+==Gcodes==
 
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
@@ -20,7 +36,17 @@ http://reprap.org/bin/view/Main/MCodeReference
 A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
 
-This example generates statistics for the gcode file Screw Holder_comb.gcode.  This example is run in a terminal in the folder which contains Screw Holder_comb.gcode and statistic.py.
+==Examples==
+
+Below are examples of statistic being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and statistic.py.  The 'Save Statistics' checkbox is selected.
+
+
+> python statistic.py
+This brings up the statistic dialog.
+
+
+> python statistic.py Screw Holder_penultimate.gcode
+The statistic file is saved as Screw_Holder_penultimate_statistic.txt
 
 
 > python
@@ -32,8 +58,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the statistic dialog.
 
 
->>> statistic.statisticFile()
-The statistics file is saved as Screw Holder_comb_statistic.gcode
+>>> statistic.analyzeFile( 'Screw Holder_penultimate.gcode' )
+The statistics file is saved as Screw Holder_penultimate_statistic.txt
 
 """
 
@@ -44,7 +70,7 @@ import __init__
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.meta_plugins import polyfile
 import cStringIO
 import math
@@ -56,36 +82,17 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def getNewRepository():
-	"Get the repository constructor."
-	return StatisticRepository()
+def analyzeFile( fileName ):
+	"Write statistics for a gcode file."
+	analyzeFileGivenText( fileName, gcodec.getFileText( fileName ) )
 
-def statisticFile( fileName = '' ):
-	"Write statistics for a gcode file.  If no fileName is specified, write statistics for the first gcode file in this folder that is not modified."
-	if fileName == '':
-		unmodified = gcodec.getUnmodifiedGCodeFiles()
-		if len( unmodified ) == 0:
-			print( "There are no unmodified gcode files in this folder." )
-			return
-		fileName = unmodified[ 0 ]
-	repository = StatisticRepository()
-	preferences.getReadRepository( repository )
-	writeStatisticFileGivenText( fileName, gcodec.getFileText( fileName ), repository )
-
-def writeOutput( fileName, gcodeText = '' ):
-	"Write statistics for a skeinforge gcode file, if 'Write Statistics File for Skeinforge Chain' is selected."
-	repository = StatisticRepository()
-	preferences.getReadRepository( repository )
-	if gcodeText == '':
-		gcodeText = gcodec.getFileText( fileName )
-	if repository.activateStatistic.value:
-		writeStatisticFileGivenText( fileName, gcodeText, repository )
-
-def writeStatisticFileGivenText( fileName, gcodeText, repository ):
+def analyzeFileGivenText( fileName, gcodeText, repository = None ):
 	"Write statistics for a gcode file."
 	print( '' )
 	print( '' )
 	print( 'Statistics are being generated for the file ' + gcodec.getSummarizedFileName( fileName ) )
+	if repository == None:
+		repository = settings.getReadRepository( StatisticRepository() )
 	skein = StatisticSkein()
 	statisticGcode = skein.getCraftedGcode( gcodeText, repository )
 	if repository.printStatistics.value:
@@ -93,25 +100,38 @@ def writeStatisticFileGivenText( fileName, gcodeText, repository ):
 	if repository.saveStatistics.value:
 		gcodec.writeFileMessageEnd( '.txt', fileName, statisticGcode, 'The statistics file is saved as ' )
 
+def getNewRepository():
+	"Get the repository constructor."
+	return StatisticRepository()
+
+def writeOutput( fileName, gcodeText = '' ):
+	"Write statistics for a skeinforge gcode file, if 'Write Statistics File for Skeinforge Chain' is selected."
+	repository = settings.getReadRepository( StatisticRepository() )
+	if gcodeText == '':
+		gcodeText = gcodec.getFileText( fileName )
+	if repository.activateStatistic.value:
+		analyzeFileGivenText( fileName, gcodeText, repository )
+
 
 class StatisticRepository:
-	"A class to handle the statistics preferences."
+	"A class to handle the statistics settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.analyze_plugins.statistic.html', '', self )
-		self.activateStatistic = preferences.BooleanPreference().getFromValue( 'Activate Statistic', self, True )
-		self.extrusionDiameterOverThickness = preferences.FloatSpin().getFromValue( 1.0, 'Extrusion Diameter over Thickness (ratio):', self, 1.5, 1.25 )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Generate Statistics for', self, '' )
-		self.printStatistics = preferences.BooleanPreference().getFromValue( 'Print Statistics', self, True )
-		self.saveStatistics = preferences.BooleanPreference().getFromValue( 'Save Statistics', self, False )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.analyze_plugins.statistic.html', '', self )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic' )
+		self.activateStatistic = settings.BooleanSetting().getFromValue( 'Activate Statistic', self, True )
+		self.extrusionDiameterOverThickness = settings.FloatSpin().getFromValue( 1.0, 'Extrusion Diameter over Thickness (ratio):', self, 1.5, 1.25 )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Generate Statistics for', self, '' )
+		self.printStatistics = settings.BooleanSetting().getFromValue( 'Print Statistics', self, True )
+		self.saveStatistics = settings.BooleanSetting().getFromValue( 'Save Statistics', self, False )
+		#Create the archive, title of the execute button, title of the dialog & settings fileName.
 		self.executeTitle = 'Generate Statistics'
 
 	def execute( self ):
 		"Write button has been clicked."
 		fileNames = polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
 		for fileName in fileNames:
-			statisticFile( fileName )
+			analyzeFile( fileName )
 
 
 class StatisticSkein:
@@ -305,9 +325,9 @@ class StatisticSkein:
 def main():
 	"Display the statistics dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		analyzeFile( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

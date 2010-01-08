@@ -104,13 +104,17 @@ def addWithLeastLength( loops, point, shortestAdditionalLength ):
 		if isInlineAfter or isInlineBefore:
 			shortestLoop.insert( shortestPointIndex, point )
 
+def compareAreaAscending( loopArea, otherLoopArea ):
+	"Get comparison in order to sort loop areas in ascending order of area."
+	if loopArea.area < otherLoopArea.area:
+		return - 1
+	return int( loopArea.area > otherLoopArea.area )
+
 def compareAreaDescending( loopArea, otherLoopArea ):
 	"Get comparison in order to sort loop areas in descending order of area."
-	if loopArea.area < otherLoopArea.area:
-		return 1
 	if loopArea.area > otherLoopArea.area:
 		return - 1
-	return 0
+	return int( loopArea.area < otherLoopArea.area )
 
 def getAdditionalLoopLength( loop, point, pointIndex ):
 	"Get the additional length added by inserting a point into a loop."
@@ -125,12 +129,11 @@ def getBridgeDirection( belowLoops, layerLoops, layerThickness ):
 	belowOutsetLoops = []
 	overhangInset = 1.875 * layerThickness
 	slightlyGreaterThanOverhang = 1.1 * overhangInset
-	muchGreaterThanOverhang = 2.5 * overhangInset
 	for loop in belowLoops:
 		centers = intercircle.getCentersFromLoopDirection( True, loop, slightlyGreaterThanOverhang )
 		for center in centers:
 			outset = intercircle.getSimplifiedInsetFromClockwiseLoop( center, overhangInset )
-			if intercircle.isLargeSameDirection( outset, center, muchGreaterThanOverhang ):
+			if intercircle.isLargeSameDirection( outset, center, overhangInset ):
 				belowOutsetLoops.append( outset )
 	bridgeRotation = complex()
 	for loop in layerLoops:
@@ -147,12 +150,11 @@ def getBridgeLoops( layerThickness, loop ):
 	"Get the inset bridge loops from the loop."
 	halfWidth = 1.5 * layerThickness
 	slightlyGreaterThanHalfWidth = 1.1 * halfWidth
-	muchGreaterThanHalfWIdth = 2.5 * halfWidth
 	extrudateLoops = []
 	centers = intercircle.getCentersFromLoop( loop, slightlyGreaterThanHalfWidth )
 	for center in centers:
 		extrudateLoop = intercircle.getSimplifiedInsetFromClockwiseLoop( center, halfWidth )
-		if intercircle.isLargeSameDirection( extrudateLoop, center, muchGreaterThanHalfWIdth ):
+		if intercircle.isLargeSameDirection( extrudateLoop, center, halfWidth ):
 			if euclidean.isPathInsideLoop( loop, extrudateLoop ) == euclidean.isWiddershins( loop ):
 				extrudateLoop.reverse()
 				extrudateLoops.append( extrudateLoop )

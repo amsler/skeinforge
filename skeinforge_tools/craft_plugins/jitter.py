@@ -2,6 +2,9 @@
 This page is in the table of contents.
 Jitter is a script to jitter the ends of the loops of a gcode file.
 
+The jitter manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Jitter
+
 The default 'Activate Jitter' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
 Jitter jitters the loop end position to a different place on each layer to prevent the a ridge from forming.  The "Jitter Over Perimeter Width (ratio)" is the amount the loop ends will be jittered over the extrusion width.  A high value means the loops will start all over the place and a low value means loops will start at roughly the same place on each layer.
@@ -43,13 +46,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
+from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_tools.skeinforge_utilities import settings
 import math
 import sys
 
@@ -67,10 +71,36 @@ def getCraftedTextFromText( gcodeText, jitterRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'jitter' ):
 		return gcodeText
 	if jitterRepository == None:
-		jitterRepository = preferences.getReadRepository( JitterRepository() )
+		jitterRepository = settings.getReadRepository( JitterRepository() )
 	if not jitterRepository.activateJitter.value:
 		return gcodeText
 	return JitterSkein().getCraftedGcode( jitterRepository, gcodeText )
+
+def getJitteredLoop( jitterDistance, jitterLoop ):
+	"Get a jittered loop path."
+	loopLength = euclidean.getPolygonLength( jitterLoop )
+	lastLength = 0.0
+	pointIndex = 0
+	totalLength = 0.0
+	jitterPosition = ( jitterDistance + 256.0 * loopLength ) % loopLength
+	while totalLength < jitterPosition and pointIndex < len( jitterLoop ):
+		firstPoint = jitterLoop[ pointIndex ]
+		secondPoint  = jitterLoop[ ( pointIndex + 1 ) % len( jitterLoop ) ]
+		pointIndex += 1
+		lastLength = totalLength
+		totalLength += abs( firstPoint - secondPoint )
+	remainingLength = jitterPosition - lastLength
+	pointIndex = pointIndex % len( jitterLoop )
+	ultimateJitteredPoint = jitterLoop[ pointIndex ]
+	penultimateJitteredPointIndex = ( pointIndex + len( jitterLoop ) - 1 ) % len( jitterLoop )
+	penultimateJitteredPoint = jitterLoop[ penultimateJitteredPointIndex ]
+	segment = ultimateJitteredPoint - penultimateJitteredPoint
+	segmentLength = abs( segment )
+	originalOffsetLoop = euclidean.getAroundLoop( pointIndex, pointIndex, jitterLoop )
+	if segmentLength <= 0.0:
+		return originalOffsetLoop
+	newUltimatePoint = penultimateJitteredPoint + segment * remainingLength / segmentLength
+	return [ newUltimatePoint ] + originalOffsetLoop
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -90,13 +120,14 @@ def writeOutput( fileName = '' ):
 
 
 class JitterRepository:
-	"A class to handle the jitter preferences."
+	"A class to handle the jitter settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.jitter.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Jitter', self, '' )
-		self.activateJitter = preferences.BooleanPreference().getFromValue( 'Activate Jitter', self, True )
-		self.jitterOverPerimeterWidth = preferences.FloatSpin().getFromValue( 1.0, 'Jitter Over Perimeter Width (ratio):', self, 3.0, 2.0 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.jitter.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Jitter', self, '' )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Jitter' )
+		self.activateJitter = settings.BooleanSetting().getFromValue( 'Activate Jitter', self, True )
+		self.jitterOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Jitter Over Perimeter Width (ratio):', self, 3.0, 2.0 )
 		self.executeTitle = 'Jitter'
 
 	def execute( self ):
@@ -118,6 +149,7 @@ class JitterSkein:
 		self.lines = None
 		self.loopPath = None
 		self.oldLocation = None
+		self.oldLoopLocationComplex = None
 
 	def addGcodeFromThreadZ( self, thread, z ):
 		"Add a gcode thread to the output."
@@ -145,13 +177,16 @@ class JitterSkein:
 		"Add a clipped and jittered loop path."
 		loop = self.loopPath.path[ : - 1 ]
 		if self.beforeLoopLocation != None:
+			if self.oldLoopLocationComplex != None:
+				self.beforeLoopLocation = self.oldLoopLocationComplex
 			perimeterHalfWidth = 0.5 * self.perimeterWidth
 			loop = euclidean.getLoopStartingNearest( perimeterHalfWidth, self.beforeLoopLocation, loop )
-		if self.layerJitter != 0.0:
-			loop = self.getJitteredLoop( self.layerJitter, loop )
+		if self.layerJitter != 0.0 and self.oldLoopLocationComplex == None:
+			loop = getJitteredLoop( self.layerJitter, loop )
 			loop = euclidean.getAwayPoints( loop, 0.2 * self.perimeterWidth )
 		self.loopPath.path = loop + [ loop[ 0 ] ]
 		self.addGcodeFromThreadZ( self.loopPath.path, self.loopPath.z )
+		self.oldLoopLocationComplex = loop[ 0 ]
 		self.loopPath = None
 
 	def getCraftedGcode( self, jitterRepository, gcodeText ):
@@ -162,32 +197,6 @@ class JitterSkein:
 			line = self.lines[ self.lineIndex ]
 			self.parseAddJitter( line )
 		return self.distanceFeedRate.output.getvalue()
-
-	def getJitteredLoop( self, jitterDistance, jitterLoop ):
-		"Get a jittered loop path."
-		loopLength = euclidean.getPolygonLength( jitterLoop )
-		lastLength = 0.0
-		pointIndex = 0
-		totalLength = 0.0
-		jitterPosition = ( jitterDistance + 256.0 * loopLength ) % loopLength
-		while totalLength < jitterPosition and pointIndex < len( jitterLoop ):
-			firstPoint = jitterLoop[ pointIndex ]
-			secondPoint  = jitterLoop[ ( pointIndex + 1 ) % len( jitterLoop ) ]
-			pointIndex += 1
-			lastLength = totalLength
-			totalLength += abs( firstPoint - secondPoint )
-		remainingLength = jitterPosition - lastLength
-		pointIndex = pointIndex % len( jitterLoop )
-		ultimateJitteredPoint = jitterLoop[ pointIndex ]
-		penultimateJitteredPointIndex = ( pointIndex + len( jitterLoop ) - 1 ) % len( jitterLoop )
-		penultimateJitteredPoint = jitterLoop[ penultimateJitteredPointIndex ]
-		segment = ultimateJitteredPoint - penultimateJitteredPoint
-		segmentLength = abs( segment )
-		originalOffsetLoop = euclidean.getAroundLoop( pointIndex, pointIndex, jitterLoop )
-		if segmentLength <= 0.0:
-			return originalOffsetLoop
-		newUltimatePoint = penultimateJitteredPoint + segment * remainingLength / segmentLength
-		return [ newUltimatePoint ] + originalOffsetLoop
 
 	def getLinearMove( self, line, splitLine ):
 		"Add to loop path if this is a loop or path."
@@ -200,6 +209,7 @@ class JitterSkein:
 					self.beforeLoopLocation = self.oldLocation.dropAxis( 2 )
 		self.oldLocation = location
 		if self.loopPath == None:
+			self.oldLoopLocationComplex = None
 			return line
 		self.loopPath.path.append( location.dropAxis( 2 ) )
 		return ''
@@ -236,7 +246,7 @@ class JitterSkein:
 		elif firstWord == '(<layer>':
 			self.layerGolden += 0.61803398874989479
 			self.layerJitter = self.jitter * ( math.fmod( self.layerGolden, 1.0 ) - 0.5 )
-		elif firstWord == '(<loop>)' or firstWord == '(<perimeter>)':
+		elif firstWord == '(<loop>' or firstWord == '(<perimeter>':
 			self.isLoopPerimeter = True
 		self.distanceFeedRate.addLine( line )
 
@@ -265,7 +275,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

@@ -2,10 +2,20 @@
 This page is in the table of contents.
 Drill is a script to drill down small holes.
 
+==Operation==
 The default 'Activate Drill' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The drill script will move the tool from the top of the hole plus the 'Drilling Margin on Top', to the bottom of the hole minus the 'Drilling Margin on Bottom'.  The 'Drilling Margin on Bottom' default is one millimeter.  The 'Drilling Margin on Top' default is three millimeters.
+==Settings==
+===Drilling Margin===
+The drill script will move the tool from the top of the hole plus the 'Drilling Margin on Top', to the bottom of the hole minus the 'Drilling Margin on Bottom'.
 
+===Drilling Margin on Top===
+Default is three millimeters.
+
+===Drilling Margin on Bottom===
+Default is one millimeter.
+
+==Examples==
 The following examples drill the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and drill.py.
 
 
@@ -43,13 +53,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 import sys
 
 
@@ -66,7 +77,7 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'drill' ):
 		return gcodeText
 	if repository == None:
-		repository = preferences.getReadRepository( DrillRepository() )
+		repository = settings.getReadRepository( DrillRepository() )
 	if not repository.activateDrill.value:
 		return gcodeText
 	return DrillSkein().getCraftedGcode( gcodeText, repository )
@@ -107,14 +118,14 @@ class ThreadLayer:
 
 
 class DrillRepository:
-	"A class to handle the drill preferences."
+	"A class to handle the drill settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.drill.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Drill', self, '' )
-		self.activateDrill = preferences.BooleanPreference().getFromValue( 'Activate Drill', self, True )
-		self.drillingMarginOnBottom = preferences.FloatSpin().getFromValue( 0.0, 'Drilling Margin on Bottom (millimeters):', self, 5.0, 1.0 )
-		self.drillingMarginOnTop = preferences.FloatSpin().getFromValue( 0.0, 'Drilling Margin on Top (millimeters):', self, 20.0, 3.0 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.drill.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Drill', self, '' )
+		self.activateDrill = settings.BooleanSetting().getFromValue( 'Activate Drill', self, True )
+		self.drillingMarginOnBottom = settings.FloatSpin().getFromValue( 0.0, 'Drilling Margin on Bottom (millimeters):', self, 5.0, 1.0 )
+		self.drillingMarginOnTop = settings.FloatSpin().getFromValue( 0.0, 'Drilling Margin on Top (millimeters):', self, 20.0, 3.0 )
 		self.executeTitle = 'Drill'
 
 	def execute( self ):
@@ -261,7 +272,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

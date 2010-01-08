@@ -14,7 +14,7 @@ import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base import MouseToolBase
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __date__ = "$Date: 2008/21/04 $"
@@ -78,7 +78,7 @@ class DisplayLine( MouseToolBase ):
 		upperLeft = end - radiusComplex
 		lowerRight = end + radiusComplex
 		self.canvas.create_oval ( int( upperLeft.real ), int( upperLeft.imag ), int( lowerRight.real ), int( lowerRight.imag ), tags = 'mouse_item' )
-		preferences.setEntryText( self.window.lineEntry, self.repository.line.value )
+		settings.setEntryText( self.window.lineEntry, self.repository.line.value )
 		self.window.setLineButtonsState()
 		return coloredLine
 

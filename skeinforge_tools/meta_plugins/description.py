@@ -4,7 +4,7 @@ Description is a script to store a description of the profile.
 
 The suggested format is a description, followed by a link to the profile post or web page.
 
-To change the description preference, in a shell in the description folder type:
+To change the description setting, in a shell in the description folder type:
 > python description.py
 
 An example of using description from the python interpreter follows below.
@@ -16,7 +16,7 @@ Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import description
 >>> description.main()
-This brings up the description preference dialog.
+This brings up the description setting dialog.
 
 """
 
@@ -24,7 +24,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -38,17 +38,17 @@ def getNewRepository():
 
 
 class DescriptionRepository:
-	"A class to handle the description preferences."
+	"A class to handle the description settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.description.html', self )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.meta_plugins.description.html', '', self )
 		description = 'Write your description of the profile here.\n\nSuggested format is a description, followed by a link to the profile post or web page.'
-		self.descriptionText = preferences.TextPreference().getFromValue( 'Description Text:', self, description )
+		self.descriptionText = settings.TextSetting().getFromValue( 'Description Text:', self, description )
 
 
 def main():
 	"Display the file or directory dialog."
-	preferences.startMainLoopFromConstructor( getNewRepository() )
+	settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

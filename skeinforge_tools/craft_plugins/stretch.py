@@ -2,11 +2,14 @@
 This page is in the table of contents.
 Stretch is a script to stretch the threads to partially compensate for filament shrinkage when extruded.
 
+The stretch manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch
+
 The default 'Activate Stretch' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The important value for the stretch preferences is "Perimeter Inside Stretch Over Perimeter Width" which is the ratio of the maximum amount the inside perimeter thread will be stretched compared to the perimeter width, the default is 0.32.  The higher the value the more it will stretch the perimeter and the wider holes will be.  If the value is too small, the holes could be drilled out after fabrication, if the value is too high, the holes would be too wide and the part would have to junked.  The 'Perimeter Outside Stretch Over Perimeter Width' is the ratio of the maximum amount the outside perimeter thread will be stretched compared to the perimeter width, in general this value should be around a third of the 'Perimeter Inside Stretch Over Perimeter Width' preference.  The 'Loop Stretch Over Perimeter Width' is the ratio of the maximum amount the loop aka inner shell threads will be stretched compared to the perimeter width, in general this value should be the same as the 'Perimeter Outside Stretch Over Perimeter Width' preference.  The 'Path Stretch Over Perimeter Width' is the ratio of the maximum amount the threads which are not loops, like the infill threads, will be stretched compared to the perimeter width, the default is 0.
+The important value for the stretch settings is "Perimeter Inside Stretch Over Perimeter Width" which is the ratio of the maximum amount the inside perimeter thread will be stretched compared to the perimeter width, the default is 0.32.  The higher the value the more it will stretch the perimeter and the wider holes will be.  If the value is too small, the holes could be drilled out after fabrication, if the value is too high, the holes would be too wide and the part would have to junked.  The 'Perimeter Outside Stretch Over Perimeter Width' is the ratio of the maximum amount the outside perimeter thread will be stretched compared to the perimeter width, in general this value should be around a third of the 'Perimeter Inside Stretch Over Perimeter Width' setting.  The 'Loop Stretch Over Perimeter Width' is the ratio of the maximum amount the loop aka inner shell threads will be stretched compared to the perimeter width, in general this value should be the same as the 'Perimeter Outside Stretch Over Perimeter Width' setting.  The 'Path Stretch Over Perimeter Width' is the ratio of the maximum amount the threads which are not loops, like the infill threads, will be stretched compared to the perimeter width, the default is 0.
 
-All these defaults assume that the thread sequence choice preference in fill is the perimeter being extruded first, then the loops, then the infill.  If the thread sequence choice is different, the optimal thread parameters will also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.
+All these defaults assume that the thread sequence choice setting in fill is the perimeter being extruded first, then the loops, then the infill.  If the thread sequence choice is different, the optimal thread parameters will also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.
 
 In general, stretch will widen holes and push corners out.  The algorithm works by checking at each turning point on the extrusion path what the direction of the thread is at a distance of "Stretch from Distance over Perimeter Width (ratio)" times the perimeter width, on both sides, and moves the thread in the opposite direction.  The magnitude of the stretch increases with the amount that the direction of the two threads is similar and by the Stretch Over Perimeter Width ratio.  The script then also stretches the thread at two locations on the path on close to the turning points.  In practice the filament contraction will be similar but different from the algorithm, so even once the optimal parameters are determined, the stretch script will not be able to eliminate the inaccuracies caused by contraction, but it should reduce them.
 
@@ -48,14 +51,15 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
+from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
-from skeinforge_tools.meta_plugins import polyfile
 import sys
 
 
@@ -74,7 +78,7 @@ def getCraftedTextFromText( gcodeText, stretchRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'stretch' ):
 		return gcodeText
 	if stretchRepository == None:
-		stretchRepository = preferences.getReadRepository( StretchRepository() )
+		stretchRepository = settings.getReadRepository( StretchRepository() )
 	if not stretchRepository.activateStretch.value:
 		return gcodeText
 	return StretchSkein().getCraftedGcode( gcodeText, stretchRepository )
@@ -196,17 +200,19 @@ class LineIteratorForward:
 
 
 class StretchRepository:
-	"A class to handle the stretch preferences."
+	"A class to handle the stretch settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.stretch.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Stretch', self, '' )
-		self.activateStretch = preferences.BooleanPreference().getFromValue( 'Activate Stretch', self, False )
-		self.loopStretchOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.05, 'Loop Stretch Over Perimeter Width (ratio):', self, 0.25, 0.11 )
-		self.pathStretchOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.0, 'Path Stretch Over Perimeter Width (ratio):', self, 0.2, 0.0 )
-		self.perimeterInsideStretchOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.12, 'Perimeter Inside Stretch Over Perimeter Width (ratio):', self, 0.52, 0.32 )
-		self.perimeterOutsideStretchOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.05, 'Perimeter Outside Stretch Over Perimeter Width (ratio):', self, 0.25, 0.1 )
-		self.stretchFromDistanceOverPerimeterWidth = preferences.FloatSpin().getFromValue( 1.0, 'Stretch From Distance Over Perimeter Width (ratio):', self, 3.0, 2.0 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.stretch.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Stretch', self, '' )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch' )
+		self.activateStretch = settings.BooleanSetting().getFromValue( 'Activate Stretch', self, False )
+		self.crossLimitDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 3.0, 'Cross Limit Distance Over Perimeter Width (ratio):', self, 10.0, 5.0 )
+		self.loopStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.05, 'Loop Stretch Over Perimeter Width (ratio):', self, 0.25, 0.11 )
+		self.pathStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Path Stretch Over Perimeter Width (ratio):', self, 0.2, 0.0 )
+		self.perimeterInsideStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.12, 'Perimeter Inside Stretch Over Perimeter Width (ratio):', self, 0.52, 0.32 )
+		self.perimeterOutsideStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.05, 'Perimeter Outside Stretch Over Perimeter Width (ratio):', self, 0.25, 0.1 )
+		self.stretchFromDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Stretch From Distance Over Perimeter Width (ratio):', self, 3.0, 2.0 )
 		self.executeTitle = 'Stretch'
 
 	def execute( self ):
@@ -228,48 +234,6 @@ class StretchSkein:
 		self.oldLocation = None
 		self.perimeterWidth = 0.4
 
-	def addAlongWayLine( self, alongWay, location ):
-		"Add stretched gcode line, along the way from the location to the old location."
-		alongWayLocation = euclidean.getIntermediateLocation( alongWay, location, self.oldLocation )
-		alongWayLine = self.getStretchedLineFromIndexLocation( self.lineIndex - 1, self.lineIndex, alongWayLocation )
-		self.distanceFeedRate.addLine( alongWayLine )
-
-	def addStretchesBeforePoint( self, location ):
-		"Get stretched gcode line."
-		distanceToOld = location.distance( self.oldLocation )
-		if distanceToOld == 0.0:
-			print( 'This should never happen, stretch should never see two identical points in a row.' )
-			print( location )
-			return
-		alongRatio = self.stretchFromDistance / distanceToOld
-		if alongRatio > 0.7:
-			return
-		if alongRatio > 0.33333333333:
-			alongRatio = 0.33333333333
-		self.addAlongWayLine( 1.0 - alongRatio, location )
-		self.addAlongWayLine( alongRatio, location )
-
-	def getIsThreadWiddershins( self ):
-		"Determine if the thread is widdershins."
-		oldThreadLocation = self.oldLocation
-		thread = None
-		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
-			line = self.lines[ lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
-			firstWord = gcodec.getFirstWord( splitLine )
-			if firstWord == 'G1':
-				location = gcodec.getLocationFromSplitLine( oldThreadLocation, splitLine )
-				if thread != None:
-					thread.append( location.dropAxis( 2 ) )
-				oldThreadLocation = location
-			if firstWord == 'M101':
-				thread = [ oldThreadLocation.dropAxis( 2 ) ]
-			if firstWord == 'M103':
-				if thread != None:
-					return euclidean.isWiddershins( thread )
-				else:
-					return True
-
 	def getCraftedGcode( self, gcodeText, stretchRepository ):
 		"Parse gcode text and store the stretch gcode."
 		self.lines = gcodec.getTextLines( gcodeText )
@@ -280,16 +244,36 @@ class StretchSkein:
 			self.parseStretch( line )
 		return self.distanceFeedRate.output.getvalue()
 
-	def getRelativeStretch( self, location, lineIndexRange ):
-		"Get relative stretch for a location minus a point."
-		locationComplex = location.dropAxis( 2 )
+	def getCrossLimitedStretch( self, crossLimitedStretch, crossLineIterator, locationComplex ):
+		"Get cross limited relative stretch for a location."
+		try:
+			line = crossLineIterator.getNext()
+		except StopIteration:
+			return crossLimitedStretch
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		pointComplex = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine ).dropAxis( 2 )
+		pointMinusLocation = locationComplex - pointComplex
+		pointMinusLocationLength = abs( pointMinusLocation )
+		if pointMinusLocationLength <= self.crossLimitDistanceFraction:
+			return crossLimitedStretch
+		parallelNormal = pointMinusLocation / pointMinusLocationLength
+		parallelStretch = euclidean.getDotProduct( parallelNormal, crossLimitedStretch ) * parallelNormal
+		if pointMinusLocationLength > self.crossLimitDistance:
+			return parallelStretch
+		crossNormal = complex( parallelNormal.imag, - parallelNormal.real )
+		crossStretch = euclidean.getDotProduct( crossNormal, crossLimitedStretch ) * crossNormal
+		crossPortion = ( self.crossLimitDistance - pointMinusLocationLength ) / self.crossLimitDistanceRemainder
+		return parallelStretch + crossStretch * crossPortion
+
+	def getRelativeStretch( self, locationComplex, lineIterator ):
+		"Get relative stretch for a location."
 		lastLocationComplex = locationComplex
 		oldTotalLength = 0.0
 		pointComplex = locationComplex
 		totalLength = 0.0
 		while 1:
 			try:
-				line = lineIndexRange.getNext()
+				line = lineIterator.getNext()
 			except StopIteration:
 				locationMinusPoint = locationComplex - pointComplex
 				locationMinusPointLength = abs( locationMinusPoint )
@@ -314,9 +298,6 @@ class StretchSkein:
 		"Get stretched gcode line."
 		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
-		if self.oldLocation != None:
-			if self.extruderActive and self.threadMaximumAbsoluteStretch > 0.0:
-				self.addStretchesBeforePoint( location )
 		self.oldLocation = location
 		if self.extruderActive and self.threadMaximumAbsoluteStretch > 0.0:
 			return self.getStretchedLineFromIndexLocation( self.lineIndex - 1, self.lineIndex + 1, location )
@@ -326,10 +307,18 @@ class StretchSkein:
 
 	def getStretchedLineFromIndexLocation( self, indexPreviousStart, indexNextStart, location ):
 		"Get stretched gcode line from line index and location."
-		nextRange = LineIteratorForward( self.isLoop, indexNextStart, self.lines )
-		previousRange = LineIteratorBackward( self.isLoop, indexPreviousStart, self.lines )
-		relativeStretch = self.getRelativeStretch( location, nextRange ) + self.getRelativeStretch( location, previousRange )
+		crossIteratorForward = LineIteratorForward( self.isLoop, indexNextStart, self.lines )
+		crossIteratorBackward = LineIteratorBackward( self.isLoop, indexPreviousStart, self.lines )
+		iteratorForward = LineIteratorForward( self.isLoop, indexNextStart, self.lines )
+		iteratorBackward = LineIteratorBackward( self.isLoop, indexPreviousStart, self.lines )
+		locationComplex = location.dropAxis( 2 )
+		relativeStretch = self.getRelativeStretch( locationComplex, iteratorForward ) + self.getRelativeStretch( locationComplex, iteratorBackward )
 		relativeStretch *= 0.8
+#		print( 'relativeStretch' )
+#		print( relativeStretch )
+		relativeStretch = self.getCrossLimitedStretch( relativeStretch, crossIteratorForward, locationComplex )
+		relativeStretch = self.getCrossLimitedStretch( relativeStretch, crossIteratorBackward, locationComplex )
+#		print( relativeStretch )
 		relativeStretchLength = abs( relativeStretch )
 		if relativeStretchLength > 1.0:
 			relativeStretch /= relativeStretchLength
@@ -362,12 +351,15 @@ class StretchSkein:
 				return
 			elif firstWord == '(<perimeterWidth>':
 				perimeterWidth = float( splitLine[ 1 ] )
+				self.crossLimitDistance = self.perimeterWidth * self.stretchRepository.crossLimitDistanceOverPerimeterWidth.value
 				self.loopMaximumAbsoluteStretch = self.perimeterWidth * self.stretchRepository.loopStretchOverPerimeterWidth.value
 				self.pathAbsoluteStretch = self.perimeterWidth * self.stretchRepository.pathStretchOverPerimeterWidth.value
 				self.perimeterInsideAbsoluteStretch = self.perimeterWidth * self.stretchRepository.perimeterInsideStretchOverPerimeterWidth.value
 				self.perimeterOutsideAbsoluteStretch = self.perimeterWidth * self.stretchRepository.perimeterOutsideStretchOverPerimeterWidth.value
 				self.stretchFromDistance = self.stretchRepository.stretchFromDistanceOverPerimeterWidth.value * perimeterWidth
 				self.threadMaximumAbsoluteStretch = self.pathAbsoluteStretch
+				self.crossLimitDistanceFraction = 0.333333333 * self.crossLimitDistance
+				self.crossLimitDistanceRemainder = self.crossLimitDistance - self.crossLimitDistanceFraction
 			self.distanceFeedRate.addLine( line )
 
 	def parseStretch( self, line ):
@@ -382,17 +374,25 @@ class StretchSkein:
 			self.extruderActive = True
 		elif firstWord == 'M103':
 			self.extruderActive = False
-			self.isLoop = False
-			self.threadMaximumAbsoluteStretch = self.pathAbsoluteStretch
-		elif firstWord == '(<loop>)':
+			self.setStretchToPath()
+		elif firstWord == '(<loop>':
 			self.isLoop = True
 			self.threadMaximumAbsoluteStretch = self.loopMaximumAbsoluteStretch
-		elif firstWord == '(<perimeter>)':
+		elif firstWord == '(</loop>)':
+			self.setStretchToPath()
+		elif firstWord == '(<perimeter>':
 			self.isLoop = True
 			self.threadMaximumAbsoluteStretch = self.perimeterInsideAbsoluteStretch
-			if self.getIsThreadWiddershins():
+			if splitLine[ 1 ] == 'outer':
 				self.threadMaximumAbsoluteStretch = self.perimeterOutsideAbsoluteStretch
+		elif firstWord == '(</perimeter>)':
+			self.setStretchToPath()
 		self.distanceFeedRate.addLine( line )
+
+	def setStretchToPath( self ):
+		"Set the thread stretch to path stretch and is loop false."
+		self.isLoop = False
+		self.threadMaximumAbsoluteStretch = self.pathAbsoluteStretch
 
 
 def main():
@@ -400,7 +400,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

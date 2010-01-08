@@ -7,7 +7,7 @@ The default 'Activate Unpause' checkbox is on.  When it is on, the functions des
 The unpause script is based on the Shane Hathaway's patch to speed up a line segment to compensate for the delay of the microprocessor.  The description is at:
 http://shane.willowrise.com/archives/delay-compensation-in-firmware/
 
-The "Delay (milliseconds)" preference is the delay on the microprocessor that will be at least partially compensated for.  The default is 28 milliseconds, which Shane found for the Arduino.  The "Maximum Speed" ratio is the maximum amount that the feed rate will be sped up to, compared to the original feed rate, the default is 1.5.
+The "Delay (milliseconds)" setting is the delay on the microprocessor that will be at least partially compensated for.  The default is 28 milliseconds, which Shane found for the Arduino.  The "Maximum Speed" ratio is the maximum amount that the feed rate will be sped up to, compared to the original feed rate, the default is 1.5.
 
 The equation to set the feed rate is from Shane Hathaway's description at:
 http://shane.willowrise.com/archives/delay-compensation-in-firmware/
@@ -49,13 +49,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 import math
 import sys
 
@@ -74,7 +75,7 @@ def getCraftedTextFromText( gcodeText, unpauseRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'unpause' ):
 		return gcodeText
 	if unpauseRepository == None:
-		unpauseRepository = preferences.getReadRepository( UnpauseRepository() )
+		unpauseRepository = settings.getReadRepository( UnpauseRepository() )
 	if not unpauseRepository.activateUnpause.value:
 		return gcodeText
 	return UnpauseSkein().getCraftedGcode( unpauseRepository, gcodeText )
@@ -98,14 +99,14 @@ def writeOutput( fileName = '' ):
 
 
 class UnpauseRepository:
-	"A class to handle the unpause preferences."
+	"A class to handle the unpause settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.unpause.html', '', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '' )
-		self.activateUnpause = preferences.BooleanPreference().getFromValue( 'Activate Unpause', self, False )
-		self.delay = preferences.FloatSpin().getFromValue( 2.0, 'Delay (milliseconds):', self, 42.0, 28.0 )
-		self.maximumSpeed = preferences.FloatSpin().getFromValue( 1.1, 'Maximum Speed (ratio):', self, 1.9, 1.5 )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.unpause.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '' )
+		self.activateUnpause = settings.BooleanSetting().getFromValue( 'Activate Unpause', self, False )
+		self.delay = settings.FloatSpin().getFromValue( 2.0, 'Delay (milliseconds):', self, 42.0, 28.0 )
+		self.maximumSpeed = settings.FloatSpin().getFromValue( 1.1, 'Maximum Speed (ratio):', self, 1.9, 1.5 )
 		self.executeTitle = 'Unpause'
 
 	def execute( self ):
@@ -222,7 +223,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

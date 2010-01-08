@@ -528,7 +528,10 @@ class DistanceFeedRate:
 		"Add the perimeter gcode block for the loop."
 		if len( loop ) < 2:
 			return
-		self.addLine( '(<perimeter>)' ) # Indicate that a perimeter is beginning.
+		if euclidean.isWiddershins( loop ): # Indicate that a perimeter is beginning.
+			self.addLine( '(<perimeter> outer )' )
+		else:
+			self.addLine( '(<perimeter> inner )' )
 		self.addGcodeFromThreadZ( loop + [ loop[ 0 ] ], z )
 		self.addLine( '(</perimeter>)' ) # Indicate that a perimeter is beginning.
 

@@ -43,12 +43,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 import math
 import os
@@ -69,7 +70,7 @@ def getCraftedTextFromText( gcodeText, homeRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'home' ):
 		return gcodeText
 	if homeRepository == None:
-		homeRepository = preferences.getReadRepository( HomeRepository() )
+		homeRepository = settings.getReadRepository( HomeRepository() )
 	if not homeRepository.activateHome.value:
 		return gcodeText
 	return HomeSkein().getCraftedGcode( gcodeText, homeRepository )
@@ -86,13 +87,13 @@ def writeOutput( fileName = '' ):
 
 
 class HomeRepository:
-	"A class to handle the home preferences."
+	"A class to handle the home settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.home.html', '', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Homed', self, '' )
-		self.activateHome = preferences.BooleanPreference().getFromValue( 'Activate Home', self, True )
-		self.nameOfHomingFile = preferences.StringPreference().getFromValue( 'Name of Homing File:', self, 'homing.gcode' )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.home.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Homed', self, '' )
+		self.activateHome = settings.BooleanSetting().getFromValue( 'Activate Home', self, True )
+		self.nameOfHomingFile = settings.StringSetting().getFromValue( 'Name of Homing File:', self, 'homing.gcode' )
 		self.executeTitle = 'Home'
 
 	def execute( self ):
@@ -148,10 +149,12 @@ class HomeSkein:
 
 	def getCraftedGcode( self, gcodeText, homeRepository ):
 		"Parse gcode text and store the home gcode."
+		self.homingText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), homeRepository.nameOfHomingFile.value )
+		if len( self.homingText ) < 1:
+			return gcodeText
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.homeRepository = homeRepository
 		self.parseInitialization( homeRepository )
-		self.homingText = preferences.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), homeRepository.nameOfHomingFile.value )
 		self.homingLines = gcodec.getTextLines( self.homingText )
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
@@ -198,7 +201,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

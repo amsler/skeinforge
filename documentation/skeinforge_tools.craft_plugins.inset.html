@@ -15,9 +15,12 @@
 <p><tt><br>
 Inset is a script to inset a gcode file.<br>
  <br>
+The inset manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Inset">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Inset</a><br>
+ <br>
 Inset will inset the outside outlines by half the perimeter width, and the inside outlines will be outset by half the perimeter width.<br>
  <br>
-If "Add Custom Code for Temperature Reading" is selected, the M105 custom code for temperature reading will be added at the beginning of the file, the default is on.  If the "Turn Extruder Heater Off at Shut Down" preference is selected, the M104 S0 gcode line will be added to the end of the file to turn the extruder heater off by setting the extruder heater temperature to 0, this is the default choice.<br>
+If "Add Custom Code for Temperature Reading" is selected, the M105 custom code for temperature reading will be added at the beginning of the file, the default is on.  If the "Turn Extruder Heater Off at Shut Down" setting is selected, the M104 S0 gcode line will be added to the end of the file to turn the extruder heater off by setting the extruder heater temperature to 0, this is the default choice.<br>
  <br>
 The 'Bridge Width Multiplier' is the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers, the default is 1.0.<br>
  <br>
@@ -75,8 +78,9 @@ The inset tool has created the file:<br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
 <a href="os.html">os</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.preferences.html">skeinforge_tools.skeinforge_utilities.preferences</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.triangle_mesh.html">skeinforge_tools.skeinforge_utilities.triangle_mesh</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -95,10 +99,10 @@ The inset tool has created the file:<br>
 <font color="#000000" face="helvetica, arial"><a name="InsetRepository">class <strong>InsetRepository</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;inset&nbsp;preferences.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;inset&nbsp;settings.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="InsetRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;preferences,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;preferences&nbsp;fileName.</tt></dd></dl>
+<dl><dt><a name="InsetRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;settings,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;settings&nbsp;fileName.</tt></dd></dl>
 
 <dl><dt><a name="InsetRepository-execute"><strong>execute</strong></a>(self)</dt><dd><tt>Inset&nbsp;button&nbsp;has&nbsp;been&nbsp;clicked.</tt></dd></dl>
 

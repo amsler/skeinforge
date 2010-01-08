@@ -2,15 +2,67 @@
 This page is in the table of contents.
 Gcode step is an export plugin to convert gcode from float position to number of steps.
 
-An export plugin is a script in the export_plugins folder which has the functions getOuput, and writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
-
-If the "Add FeedRate Even When Unchanging" checkbox is true, the feedRate will be added even when it did not change from the previous line.  If the "Add Space Between Words" checkbox is true, a space will be added between each gcode word.  If the "Add Z Even When Unchanging" checkbox is true, the z word will be added even when it did not change.  The defaults for these checkboxes are all true.
-
-The "FeedRate Step Length" is the length of one feedRate increment.  The "Radius Step Length" is the length of one radius increment.  The "X Step Length" is the length of one x step.  The "Y Step Length" is the length of one y step.  The "Z Step Length" is the length of one z step.
-
-The "X Offset " is the distance the x word in a gcode line will be offset.  The "Y Offset " is the distance the y word will be offset.  The "Z Offset " is the distance the z word will be offset.
+An export plugin is a script in the export_plugins folder which has the functions getOutput, isReplaceable and if it's output is not replaceable, writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getOutput function of this script takes a gcode text and returns it with the positions converted into number of steps.  The writeOutput function of this script takes a gcode text and writes that with the positions converted into number of steps.
+
+==Settings==
+===Add Feed Rate Even When Unchanging===
+Default is on.
+
+When selected, the feed rate will be added even when it did not change from the previous line.
+
+===Add Space Between Words===
+Default is on.
+
+When selected, a space will be added between each gcode word.
+
+===Add Z Even When Unchanging===
+Default is on.
+
+When selected, the z word will be added even when it did not change.
+
+===Feed Rate Step Length===
+Default is 0.1 millimeters/second.
+
+Defines the feed rate step length.
+
+===Offset===
+====X Offset====
+Default is zero.
+
+Defines the X Offset.
+
+====Y Offset====
+Default is zero.
+
+Defines the Y Offset.
+
+====Z Offset====
+Default is zero.
+
+Defines the Z Offset.
+
+===Radius Rate Step Length===
+Default is 0.1 millimeters/second.
+
+Defines the radius step length.
+
+===Step Length===
+====X Step Length====
+Default is 0.1 millimeters.
+
+Defines the X axis step length.
+
+====Y Step Length====
+Default is 0.1 millimeters.
+
+Defines the Y axis step length.
+
+====Z Step Length====
+Default is 0.01 millimeters.
+
+Defines the Z axis step length.
 
 """
 
@@ -18,7 +70,7 @@ The getOutput function of this script takes a gcode text and returns it with the
 from __future__ import absolute_import
 import __init__
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.skeinforge_utilities import interpret
 from skeinforge_tools.meta_plugins import polyfile
 from struct import Struct
@@ -49,28 +101,27 @@ def getFloatFromCharacterSplitLine( character, splitLine ):
 	return float( lineFromCharacter )
 
 def getOutput( gcodeText, gcodeStepRepository = None ):
-	"""Get the exported version of a gcode file.  This function, and writeOutput are the only necessary functions in a skeinforge export plugin.
-	If this plugin writes an output than should not be printed, an empty string should be returned."""
+	"Get the exported version of a gcode file.  This function, isReplaceable and if it's output is not replaceable, writeOutput are the only necessary functions in a skeinforge export plugin."
 	if gcodeText == '':
 		return ''
 	if gcodeStepRepository == None:
 		gcodeStepRepository = GcodeStepRepository()
-		preferences.getReadRepository( gcodeStepRepository )
+		settings.getReadRepository( gcodeStepRepository )
 	return GcodeStepSkein().getCraftedGcode( gcodeStepRepository, gcodeText )
 
 def getNewRepository():
 	"Get the repository constructor."
 	return GcodeStepRepository()
 
-def isReplacable():
-	"Return whether or not the output from this plugin is replacable.  This should be true if the output is text and false if it is binary."
+def isReplaceable():
+	"Return whether or not the output from this plugin is replaceable.  This should be true if the output is text and false if it is binary."
 	return True
 
 def writeOutput( fileName, gcodeText = '' ):
 	"Write the exported version of a gcode file."
 	gcodeText = gcodec.getGcodeFileText( fileName, gcodeText )
 	repository = GcodeStepRepository()
-	preferences.getReadRepository( repository )
+	settings.getReadRepository( repository )
 	output = getOutput( gcodeText, repository )
 	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_gcode_step.gcode'
 	gcodec.writeFileText( suffixFileName, output )
@@ -78,24 +129,26 @@ def writeOutput( fileName, gcodeText = '' ):
 
 
 class GcodeStepRepository:
-	"A class to handle the export preferences."
+	"A class to handle the export settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		#Set the default preferences.
-		preferences.addListsToRepository( 'skeinforge_tools.craft_plugins.export_plugins.gcode_step.html', '', self )
-		self.addFeedRateEvenWhenUnchanging = preferences.BooleanPreference().getFromValue( 'Add FeedRate Even When Unchanging', self, True )
-		self.addSpaceBetweenWords = preferences.BooleanPreference().getFromValue( 'Add Space Between Words', self, True )
-		self.addZEvenWhenUnchanging = preferences.BooleanPreference().getFromValue( 'Add Z Even When Unchanging', self, True )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Gcode Step', self, '' )
-		self.feedRateStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Feed Rate Step Length (millimeters/second)', self, 1.0, 0.1 )
-		self.radiusStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Radius Step Length (millimeters)', self, 1.0, 0.1 )
-		self.xStepLength = preferences.FloatSpin().getFromValue( 0.0, 'X Step Length (millimeters)', self, 1.0, 0.1 )
-		self.yStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Y Step Length (millimeters)', self, 1.0, 0.1 )
-		self.zStepLength = preferences.FloatSpin().getFromValue( 0.0, 'Z Step Length (millimeters)', self, 0.2, 0.01 )
-		self.xOffset = preferences.FloatSpin().getFromValue( - 100.0, 'X Offset (millimeters)', self, 100.0, 0.0 )
-		self.yOffset = preferences.FloatSpin().getFromValue( -100.0, 'Y Offset (millimeters)', self, 100.0, 0.0 )
-		self.zOffset = preferences.FloatSpin().getFromValue( - 10.0, 'Z Offset (millimeters)', self, 10.0, 0.0 )
-		#Create the archive, title of the execute button, title of the dialog & preferences fileName.
+		"Set the default settings, execute title & settings fileName."
+		#Set the default settings.
+		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.export_plugins.gcode_step.html', '', self )
+		self.addFeedRateEvenWhenUnchanging = settings.BooleanSetting().getFromValue( 'Add Feed Rate Even When Unchanging', self, True )
+		self.addSpaceBetweenWords = settings.BooleanSetting().getFromValue( 'Add Space Between Words', self, True )
+		self.addZEvenWhenUnchanging = settings.BooleanSetting().getFromValue( 'Add Z Even When Unchanging', self, True )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Gcode Step', self, '' )
+		self.feedRateStepLength = settings.FloatSpin().getFromValue( 0.0, 'Feed Rate Step Length (millimeters/second)', self, 1.0, 0.1 )
+		settings.LabelDisplay().getFromName( 'Offset:', self )
+		self.xOffset = settings.FloatSpin().getFromValue( - 100.0, 'X Offset (millimeters)', self, 100.0, 0.0 )
+		self.yOffset = settings.FloatSpin().getFromValue( -100.0, 'Y Offset (millimeters)', self, 100.0, 0.0 )
+		self.zOffset = settings.FloatSpin().getFromValue( - 10.0, 'Z Offset (millimeters)', self, 10.0, 0.0 )
+		self.radiusStepLength = settings.FloatSpin().getFromValue( 0.0, 'Radius Step Length (millimeters)', self, 1.0, 0.1 )
+		settings.LabelDisplay().getFromName( 'Step Length:', self )
+		self.xStepLength = settings.FloatSpin().getFromValue( 0.0, 'X Step Length (millimeters)', self, 1.0, 0.1 )
+		self.yStepLength = settings.FloatSpin().getFromValue( 0.0, 'Y Step Length (millimeters)', self, 1.0, 0.1 )
+		self.zStepLength = settings.FloatSpin().getFromValue( 0.0, 'Z Step Length (millimeters)', self, 0.2, 0.01 )
+		#Create the archive, title of the execute button, title of the dialog & settings fileName.
 		self.executeTitle = 'Convert to Gcode Step'
 
 	def execute( self ):
@@ -174,7 +227,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

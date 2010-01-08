@@ -2,28 +2,106 @@
 This page is in the table of contents.
 Skeinview is a script to display each layer of a gcode file.
 
+The skeinview manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview
+
 Skeinview is derived from Nophead's preview script.  The extruded lines are in the resistor colors red, orange, yellow, green, blue, purple & brown.  When the extruder is off, the travel line is grey.  Skeinview is useful for a detailed view of the extrusion, behold is better to see the orientation of the shape.  To get an initial overview of the skein, when the skeinview display window appears, click the Soar button (double right arrow button beside the layer field).
 
+==Operation==
 The default 'Activate Skeinview' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeinview' checkbox is on, when skeinview is run directly.  Skeinview has trouble separating the layers when it reads gcode without comments.
 
-If 'Draw Arrows' is selected, arrows will be drawn at the end of each line segment, the default is on.  If 'Go Around Extruder Off Travel' is selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.
+==Settings==
 
-The scale setting is the scale of the image in pixels per millimeter, the higher the number, the greater the size of the display.  The "Screen Horizontal Inset" determines how much the display will be inset in the horizontal direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be, the default is one hundred.  The "Screen Vertical Inset" determines how much the display will be inset in the vertical direction from the edge of screen, the default is fifty.
+===Animation===
+
+====Animation Line Quickening====
+Default is one.
+
+The quickness of the tool animation over the quickness of the actual tool.
+
+====Animation Slide Show Rate====
+Default is two layers per second.
+
+The rate, in layers per second, at which the layer changes when the soar or dive button is pressed..
+
+===Draw Arrows===
+Default is on.
+
+When selected, arrows will be drawn at the end of each line segment.
+
+===Export Menu===
 
 When the submenu in the export menu item in the file menu is clicked, an export canvas dialog will be displayed, which can export the canvas to a file.
 
-The mouse tool can be changed from the 'Mouse Mode' menu button or picture button.  The 'Display Line' tool will display the line index of the line clicked, counting from one, and the line itself.  The 'View Move' tool will move the viewpoint in the xy plane when the mouse is clicked and dragged on the canvas.  The mouse tools listen to the arrow keys when the canvas has the focus.  Clicking in the canvas gives the canvas the focus, and when the canvas has the focus a thick black border is drawn around the canvas.
+===Go Around Extruder Off Travel===
+Default is off.
 
-On the display window, the layer spin box up button increases the 'Layer' by one, and the down button decreases the layer index by one.  When the layer displayed in the layer field is changed then <Return> is hit, the layer shown will be set to the layer field, to a mimimum of zero and to a maximum of the highest index layer.  The layer can also be changed from the skeinview dialog.  The Soar button increases the layer at the 'Animation Slide Show Rate', and the Dive (double left arrow button beside the layer field) button decreases the layer at the slide show rate.
+When selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.
 
-Also on the display window, there is the line spin box, which is the index of the selected line on the layer.  The line spin box up button increases the 'Line' by one.  If the line index of the layer goes over the index of the last line, the layer index will be increased by one and the new line index will be zero.  The down button decreases the line index by one.  If the line index goes below the index of the first line, the layer index will be decreased by one and the new line index will be at the last line.  When the line displayed in the line field is changed then <Return> is hit, the line shown will be set to the line field, to a mimimum of zero and to a maximum of the highest index line.  The line can also be changed from the skeinview dialog.  The Soar button increases the line at the speed at which the extruder would move, times the 'Animation Line Quickening' ratio, and the Dive (double left arrow button beside the line field) button decreases the line at the line quickening ratio.
+===Layer===
+Default is zero.
 
-The "Width of Extrusion Thread" sets the width of the extrusion thread, the default is two.  The "Width of Selection Thread" sets the width of the selected line, the default is six.  The "Width of Travel Thread" sets the width of the grey extruder off travel threads, the default is one.
+On the display window, the Up button increases the 'Layer' by one, and the Down button decreases the layer by one.  When the layer displayed in the layer spin box is changed then <Return> is hit, the layer shown will be set to the spin box, to a mimimum of zero and to a maximum of the highest index layer.The Soar button increases the layer at the 'Animation Slide Show Rate', and the Dive (double left arrow button beside the layer field) button decreases the layer at the slide show rate.
+
+===Line===
+Default is zero.
+
+The index of the selected line on the layer that is highlighted when the 'Display Line' mouse tool is chosen.  The line spin box up button increases the 'Line' by one.  If the line index of the layer goes over the index of the last line, the layer index will be increased by one and the new line index will be zero.  The down button decreases the line index by one.  If the line index goes below the index of the first line, the layer index will be decreased by one and the new line index will be at the last line.  When the line displayed in the line field is changed then <Return> is hit, the line shown will be set to the line field, to a mimimum of zero and to a maximum of the highest index line.  The Soar button increases the line at the speed at which the extruder would move, times the 'Animation Line Quickening' ratio, and the Dive (double left arrow button beside the line field) button decreases the line at the animation line quickening ratio.
+
+===Mouse Mode===
+Default is 'Display Line'.
+
+The mouse tool can be changed from the 'Mouse Mode' menu button or picture button.  The mouse tools listen to the arrow keys when the canvas has the focus.  Clicking in the canvas gives the canvas the focus, and when the canvas has the focus a thick black border is drawn around the canvas.
+
+====Display Line====
+The 'Display Line' tool will display the highlight the selected line, and display the file line count, counting from one, and the gcode line itself.  When the 'Display Line' tool is active, clicking the canvas will select the nearest line to the mouse click.
+
+====Viewpoint Move====
+The 'Viewpoint Move' tool will move the viewpoint in the xy plane when the mouse is clicked and dragged on the canvas.
+
+===Scale===
+Default is ten.
+
+The scale setting is the scale of the image in pixels per millimeter, the higher the number, the greater the size of the display.
 
 The zoom in mouse tool will zoom in the display at the point where the mouse was clicked, increasing the scale by a factor of two.  The zoom out tool will zoom out the display at the point where the mouse was clicked, decreasing the scale by a factor of two.
 
+===Screen Inset===
+
+====Screen Horizontal Inset====
+Default is one hundred.
+
+The "Screen Horizontal Inset" determines how much the canvas will be inset in the horizontal direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be.
+
+====Screen Vertical Inset====
+Default is two hundred.
+
+The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen.
+
+===Width===
+The width of each type of thread and of each axis can be changed.  If the width is set to zero, the thread will not be visible.
+
+====Width of Extrusion Thread====
+Default is two.
+
+The "Width of Extrusion Thread" sets the width of the extrusion threads.
+
+====Width of Selection Thread====
+Default is six.
+
+The "Width of Selection Thread" sets the width of the selected line.
+
+====Width of Travel Thread====
+Default is one.
+
+The "Width of Travel Thread" sets the width of the grey extruder off travel threads.
+
+==Icons==
+
 The dive, soar and zoom icons are from Mark James' soarSilk icon set 1.3 at:
 http://www.famfamfam.com/lab/icons/silk/
+
+==Gcodes==
 
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
@@ -34,15 +112,17 @@ http://reprap.org/bin/view/Main/MCodeReference
 A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
 
-This example displays a skein view for the gcode file Screw Holder.gcode.  This example is run in a terminal in the folder which contains Screw Holder.gcode and skeinview.py.
+==Examples==
+
+Below are examples of skeinview being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeinview.py.
 
 
 > python skeinview.py
 This brings up the skeinview dialog.
 
 
-> python skeinview.py Screw Holder.gcode
-This brings up a skein window to view each layer of a gcode file.
+> python skeinview.py Screw Holder_penultimate.gcode
+This brings up the skeinview viewer to view each layer of a gcode file.
 
 
 > python
@@ -54,8 +134,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the skeinview dialog.
 
 
->>> skeinview.displayFile()
-This brings up a skein window to view each layer of a gcode file.
+>>> skeinview.analyzeFile( 'Screw Holder_penultimate.gcode' )
+This brings up the skeinview viewer to view each layer of a gcode file.
 
 """
 
@@ -69,7 +149,7 @@ from skeinforge_tools.analyze_plugins.analyze_utilities import view_move
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.meta_plugins import polyfile
 import math
 import os
@@ -80,19 +160,18 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def displayFile( fileName ):
+def analyzeFile( fileName ):
 	"Display a gcode file in a skeinview window."
 	gcodeText = gcodec.getFileText( fileName )
-	displayFileGivenText( fileName, gcodeText )
+	analyzeFileGivenText( fileName, gcodeText )
 
-def displayFileGivenText( fileName, gcodeText, skeinviewRepository = None ):
+def analyzeFileGivenText( fileName, gcodeText, repository = None ):
 	"Display a gcode file in a skeinview window given the text."
 	if gcodeText == '':
 		return
-	if skeinviewRepository == None:
-		skeinviewRepository = SkeinviewRepository()
-		preferences.getReadRepository( skeinviewRepository )
-	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, skeinviewRepository )
+	if repository == None:
+		repository = settings.getReadRepository( SkeinviewRepository() )
+	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, repository )
 	skeinWindow.updateDeiconify()
 
 def getGeometricDifference( first, second ):
@@ -107,55 +186,47 @@ def getRankIndex( rulingSeparationWidthMillimeters, screenOrdinate ):
 	"Get rank index."
 	return int( round( screenOrdinate / rulingSeparationWidthMillimeters ) )
 
-def getWindowGivenTextRepository( fileName, gcodeText, skeinviewRepository ):
-	"Display a gcode file in a skeinview window given the text and preferences."
+def getWindowGivenTextRepository( fileName, gcodeText, repository ):
+	"Display a gcode file in a skeinview window given the text and settings."
 	skein = SkeinviewSkein()
-	skein.parseGcode( fileName, gcodeText, skeinviewRepository )
-	return SkeinWindow( skeinviewRepository, skein )
+	skein.parseGcode( fileName, gcodeText, repository )
+	return SkeinWindow( repository, skein )
 
 def writeOutput( fileName, gcodeText = '' ):
 	"Display a skeinviewed gcode file for a skeinforge gcode file, if 'Activate Skeinview' is selected."
-	skeinviewRepository = SkeinviewRepository()
-	preferences.getReadRepository( skeinviewRepository )
-	if skeinviewRepository.activateSkeinview.value:
+	repository = settings.getReadRepository( SkeinviewRepository() )
+	if repository.activateSkeinview.value:
 		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
-		displayFileGivenText( fileName, gcodeText, skeinviewRepository )
+		analyzeFileGivenText( fileName, gcodeText, repository )
 
 
 class SkeinviewRepository( tableau.TableauRepository ):
-	"A class to handle the skeinview preferences."
+	"A class to handle the skeinview settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.analyze_plugins.skeinview.html', '', self )
-		self.initializeUpdateFunctionsToNone()
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Skeinview', self, '' )
-		self.activateSkeinview = preferences.BooleanPreference().getFromValue( 'Activate Skeinview', self, True )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.analyze_plugins.skeinview.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Skeinview', self, '' )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview' )
+		self.activateSkeinview = settings.BooleanSetting().getFromValue( 'Activate Skeinview', self, True )
 		self.addAnimation()
-		self.drawArrows = preferences.BooleanPreference().getFromValue( 'Draw Arrows', self, True )
-		self.drawArrows.setUpdateFunction( self.setToDisplaySaveUpdate )
-		self.goAroundExtruderOffTravel = preferences.BooleanPreference().getFromValue( 'Go Around Extruder Off Travel', self, False )
-		self.goAroundExtruderOffTravel.setUpdateFunction( self.setToDisplaySavePhoenixUpdate )
-		self.layer = preferences.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
-		self.line = preferences.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
-		self.mouseMode = preferences.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )
-		self.displayLine = preferences.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
-		self.setNewMouseToolUpdate( display_line.getNewMouseTool, self.displayLine )
-		self.viewMove = preferences.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Move', self, False )
-		self.setNewMouseToolUpdate( view_move.getNewMouseTool, self.viewMove )
+		self.drawArrows = settings.BooleanSetting().getFromValue( 'Draw Arrows', self, True )
+		self.goAroundExtruderOffTravel = settings.BooleanSetting().getFromValue( 'Go Around Extruder Off Travel', self, False )
+		self.layer = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
+		self.line = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
+		self.mouseMode = settings.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )
+		self.displayLine = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
+		self.viewMove = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Move', self, False )
 		self.addScaleScreenSlide()
-		self.widthOfExtrusionThread = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Extrusion Thread (pixels):', self, 5, 2 )
-		self.widthOfExtrusionThread.setUpdateFunction( self.setToDisplaySaveUpdate )
-		self.widthOfSelectionThread = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Selection Thread (pixels):', self, 10, 6 )
-		self.widthOfSelectionThread.setUpdateFunction( self.setToDisplaySaveUpdate )
-		self.widthOfTravelThread = preferences.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Travel Thread (pixels):', self, 5, 1 )
-		self.widthOfTravelThread.setUpdateFunction( self.setToDisplaySaveUpdate )
+		self.widthOfExtrusionThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Extrusion Thread (pixels):', self, 5, 2 )
+		self.widthOfSelectionThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Selection Thread (pixels):', self, 10, 6 )
+		self.widthOfTravelThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Travel Thread (pixels):', self, 5, 1 )
 		self.executeTitle = 'Skeinview'
 
 	def execute( self ):
 		"Write button has been clicked."
 		fileNames = polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			displayFile( fileName )
+			analyzeFile( fileName )
 
 
 class SkeinviewSkein:
@@ -217,9 +288,8 @@ class SkeinviewSkein:
 
 	def linearMove( self, line, location ):
 		"Get statistics for a linear move."
-		if self.skeinPane == None:
-			return
-		self.addToPath( line, location )
+		if self.skeinPane != None:
+			self.addToPath( line, location )
 
 	def parseCorner( self, line ):
 		"Parse a gcode line and use the location to update the bounding corners."
@@ -234,14 +304,14 @@ class SkeinviewSkein:
 		elif firstWord == 'M103':
 			self.extruderActive = False
 
-	def parseGcode( self, fileName, gcodeText, skeinviewRepository ):
+	def parseGcode( self, fileName, gcodeText, repository ):
 		"Parse gcode text and store the vector output."
 		self.fileName = fileName
 		self.gcodeText = gcodeText
 		self.initializeActiveLocation()
 		self.cornerHigh = Vector3( - 999999999.0, - 999999999.0, - 999999999.0 )
 		self.cornerLow = Vector3( 999999999.0, 999999999.0, 999999999.0 )
-		self.goAroundExtruderOffTravel = skeinviewRepository.goAroundExtruderOffTravel.value
+		self.goAroundExtruderOffTravel = repository.goAroundExtruderOffTravel.value
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.isThereALayerStartWord = gcodec.isThereAFirstWord( '(<layer>', self.lines, 1 )
 		self.parseInitialization()
@@ -249,7 +319,7 @@ class SkeinviewSkein:
 			self.parseCorner( line )
 		self.cornerHighComplex = self.cornerHigh.dropAxis( 2 )
 		self.cornerLowComplex = self.cornerLow.dropAxis( 2 )
-		self.scale = skeinviewRepository.scale.value
+		self.scale = repository.scale.value
 		self.scaleCornerHigh = self.scale * self.cornerHighComplex
 		self.scaleCornerLow = self.scale * self.cornerLowComplex
 		self.cornerImaginaryTotal = self.cornerHigh.y + self.cornerLow.y
@@ -303,45 +373,72 @@ class SkeinviewSkein:
 
 class SkeinWindow( tableau.TableauWindow ):
 	def __init__( self, repository, skein ):
-		"Initialize the skein window."
+		"Initialize the skein window.setWindowNewMouseTool"
 		self.rulingExtent = 24
+		self.rulingExtentShort = 0.382 * self.rulingExtent
+		self.rulingExtentTiny = 0.764 * self.rulingExtent
+		self.rulingExtentPointer = 0.5 * ( self.rulingExtentShort + self.rulingExtentTiny )
+		self.rulingPointerRadius = self.rulingExtent - self.rulingExtentPointer
 		self.rulingTargetSeparation = 150.0
 		self.addCanvasMenuRootScrollSkein( repository, skein, '_skeinview', 'Skeinview Viewer from Hydraraptor' )
 		horizontalRulerBoundingBox = ( 0, 0, int( skein.screenSize.real ), self.rulingExtent )
-		self.horizontalRulerCanvas = preferences.Tkinter.Canvas( self.root, width = self.canvasWidth, height = self.rulingExtent, scrollregion = horizontalRulerBoundingBox )
-		self.horizontalRulerCanvas.grid( row = 0, column = 2, columnspan = 96, sticky = preferences.Tkinter.E + preferences.Tkinter.W )
+		self.horizontalRulerCanvas = settings.Tkinter.Canvas( self.root, width = self.canvasWidth, height = self.rulingExtent, scrollregion = horizontalRulerBoundingBox )
+		self.horizontalRulerCanvas.grid( row = 0, column = 2, columnspan = 96, sticky = settings.Tkinter.E + settings.Tkinter.W )
 		self.horizontalRulerCanvas[ 'xscrollcommand' ] = self.xScrollbar.set
 		verticalRulerBoundingBox = ( 0, 0, self.rulingExtent, int( skein.screenSize.imag ) )
-		self.verticalRulerCanvas = preferences.Tkinter.Canvas( self.root, width = self.rulingExtent, height = self.canvasHeight, scrollregion = verticalRulerBoundingBox )
-		self.verticalRulerCanvas.grid( row = 1, rowspan = 97, column = 1, sticky = preferences.Tkinter.N + preferences.Tkinter.S )
+		self.verticalRulerCanvas = settings.Tkinter.Canvas( self.root, width = self.rulingExtent, height = self.canvasHeight, scrollregion = verticalRulerBoundingBox )
+		self.verticalRulerCanvas.grid( row = 1, rowspan = 97, column = 1, sticky = settings.Tkinter.N + settings.Tkinter.S )
 		self.verticalRulerCanvas[ 'yscrollcommand' ] = self.yScrollbar.set
+		self.repository.drawArrows.setUpdateFunction( self.setWindowToDisplaySaveUpdate )
+		self.repository.goAroundExtruderOffTravel.setUpdateFunction( self.setWindowToDisplaySavePhoenixUpdate )
+		self.setWindowNewMouseTool( display_line.getNewMouseTool, self.repository.displayLine )
+		self.setWindowNewMouseTool( view_move.getNewMouseTool, self.repository.viewMove )
+		self.repository.widthOfExtrusionThread.setUpdateFunction( self.setWindowToDisplaySaveUpdate )
+		self.repository.widthOfSelectionThread.setUpdateFunction( self.setWindowToDisplaySaveUpdate )
+		self.repository.widthOfTravelThread.setUpdateFunction( self.setWindowToDisplaySaveUpdate )
 		self.addMouseToolsBind()
 		self.createRulers()
 
 	def addHorizontalRulerRuling( self, xMillimeters ):
 		"Add a ruling to the horizontal ruler."
 		xPixel = self.skein.getScreenCoordinates( complex( xMillimeters, 0.0 ) ).real
-		self.horizontalRulerCanvas.create_line( xPixel, 0.0, xPixel, self.rulingExtent, fill = 'black' )
-		self.horizontalRulerCanvas.create_text( xPixel + 2, 0, anchor = preferences.Tkinter.NW, text = self.getRoundedRulingText( xMillimeters ) )
+		self.createVerticalLine( 0.0, xPixel )
+		self.horizontalRulerCanvas.create_text( xPixel + 2, 0, anchor = settings.Tkinter.NW, text = self.getRoundedRulingText( xMillimeters ) )
+		cumulativeDistance = xMillimeters
+		self.createVerticalLine( self.rulingExtentTiny, self.skein.getScreenCoordinates( complex( xMillimeters + self.separationWidthMillimetersTenth, 0.0 ) ).real )
+		for subRulingIndex in xrange( 4 ):
+			cumulativeDistance += self.separationWidthMillimetersFifth
+			self.createVerticalLine( self.rulingExtentShort, self.skein.getScreenCoordinates( complex( cumulativeDistance, 0.0 ) ).real )
+			self.createVerticalLine( self.rulingExtentTiny, self.skein.getScreenCoordinates( complex( cumulativeDistance + self.separationWidthMillimetersTenth, 0.0 ) ).real )
 
 	def addVerticalRulerRuling( self, yMillimeters ):
 		"Add a ruling to the vertical ruler."
 		fontHeight = 12
 		yPixel = self.skein.getScreenCoordinates( complex( 0.0, yMillimeters ) ).imag
-		self.verticalRulerCanvas.create_line( 0.0, yPixel, self.rulingExtent, yPixel, fill = 'black' )
+		self.createHorizontalLine( 0.0, yPixel )
 		yPixel += 2
 		roundedRulingText = self.getRoundedRulingText( yMillimeters )
 		effectiveRulingTextLength = len( roundedRulingText )
 		if roundedRulingText.find( '.' ) != - 1:
 			effectiveRulingTextLength -= 1
+		cumulativeDistance = yMillimeters
+		self.createHorizontalLine( self.rulingExtentTiny, self.skein.getScreenCoordinates( complex( 0.0, yMillimeters + self.separationWidthMillimetersTenth ) ).imag )
+		for subRulingIndex in xrange( 4 ):
+			cumulativeDistance += self.separationWidthMillimetersFifth
+			self.createHorizontalLine( self.rulingExtentShort, self.skein.getScreenCoordinates( complex( 0.0, cumulativeDistance ) ).imag )
+			self.createHorizontalLine( self.rulingExtentTiny, self.skein.getScreenCoordinates( complex( 0.0, cumulativeDistance + self.separationWidthMillimetersTenth ) ).imag )
 		if effectiveRulingTextLength < 4:
-			self.verticalRulerCanvas.create_text( 0, yPixel, anchor = preferences.Tkinter.NW, text = roundedRulingText )
+			self.verticalRulerCanvas.create_text( 0, yPixel, anchor = settings.Tkinter.NW, text = roundedRulingText )
 			return
 		for character in roundedRulingText:
 			if character == '.':
 				yPixel -= fontHeight * 2 / 3
-			self.verticalRulerCanvas.create_text( 0, yPixel, anchor = preferences.Tkinter.NW, text = character )
+			self.verticalRulerCanvas.create_text( 0, yPixel, anchor = settings.Tkinter.NW, text = character )
 			yPixel += fontHeight
+
+	def createHorizontalLine( self, begin, yPixel ):
+		"Create a horizontal line for the horizontal ruler."
+		self.verticalRulerCanvas.create_line( begin, yPixel, self.rulingExtent, yPixel, fill = 'black' )
 
 	def createRulers( self ):
 		"Create the rulers.."
@@ -356,6 +453,8 @@ class SkeinWindow( tableau.TableauWindow ):
 		if topDifference < bottomDifference:
 			rank = rankTop
 		self.rulingSeparationWidthMillimeters = euclidean.getIncrementFromRank( rank )
+		self.separationWidthMillimetersFifth = 0.2 * self.rulingSeparationWidthMillimeters
+		self.separationWidthMillimetersTenth = 0.1 * self.rulingSeparationWidthMillimeters
 		rulingSeparationWidthPixels = self.getRulingSeparationWidthPixels( rank )
 		marginOverScale = self.skein.margin / self.skein.scale
 		cornerHighMargin = self.skein.cornerHighComplex + marginOverScale
@@ -368,6 +467,10 @@ class SkeinWindow( tableau.TableauWindow ):
 		yRankIndexLow = getRankIndex( self.rulingSeparationWidthMillimeters, cornerLowMargin.imag )
 		for yRankIndex in xrange( yRankIndexLow - 2, yRankIndexHigh + 2 ): # 1 is enough, 2 is to be on the safe side
 			self.addVerticalRulerRuling( yRankIndex * self.rulingSeparationWidthMillimeters )
+
+	def createVerticalLine( self, begin, xPixel ):
+		"Create a vertical line for the horizontal ruler."
+		self.horizontalRulerCanvas.create_line( xPixel, begin, xPixel, self.rulingExtent, fill = 'black' )
 
 	def getColoredLines( self ):
 		"Get the colored lines from the skein pane."
@@ -415,6 +518,16 @@ class SkeinWindow( tableau.TableauWindow ):
 		"Get the separation width in pixels."
 		return euclidean.getIncrementFromRank( rank ) * self.skein.scale
 
+	def motion( self, event ):
+		"The mouse moved."
+		self.mouseTool.motion( event )
+		x = self.canvas.canvasx( event.x )
+		y = self.canvas.canvasx( event.y )
+		self.horizontalRulerCanvas.delete( 'pointer' )
+		self.horizontalRulerCanvas.create_polygon( x - self.rulingPointerRadius, self.rulingExtentPointer, x + self.rulingPointerRadius, self.rulingExtentPointer, x, self.rulingExtent, tag = 'pointer' )
+		self.verticalRulerCanvas.delete( 'pointer' )
+		self.verticalRulerCanvas.create_polygon( self.rulingExtentPointer, y - self.rulingPointerRadius, self.rulingExtentPointer, y + self.rulingPointerRadius, self.rulingExtent, y, tag = 'pointer' )
+
 	def relayXview( self, *args ):
 		"Relay xview changes."
 		self.canvas.xview( *args )
@@ -442,9 +555,9 @@ class SkeinWindow( tableau.TableauWindow ):
 def main():
 	"Display the skeinview dialog."
 	if len( sys.argv ) > 1:
-		displayFile( ' '.join( sys.argv[ 1 : ] ) )
+		analyzeFile( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

@@ -2,13 +2,13 @@
 This page is in the table of contents.
 Wipe is a script to wipe the nozzle.
 
-At the beginning of a layer, depending on the preferences, wipe will move the nozzle with the extruder off to the arrival point, then to the wipe point, then to the departure point, then back to the layer.
+At the beginning of a layer, depending on the settings, wipe will move the nozzle with the extruder off to the arrival point, then to the wipe point, then to the departure point, then back to the layer.
 
 The default 'Activate Wipe' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The "Location Arrival X" preference, is the x coordinate of the arrival location.  The "Location Arrival Y" and "Location Arrival Z" preferences are the y & z coordinates of the location.  The equivalent "Location Wipe.." and "Location Departure.." preferences are for the wipe and departure locations.
+The "Location Arrival X" setting, is the x coordinate of the arrival location.  The "Location Arrival Y" and "Location Arrival Z" settings are the y & z coordinates of the location.  The equivalent "Location Wipe.." and "Location Departure.." settings are for the wipe and departure locations.
 
-The "Wipe Period (layers)" preference is the number of layers between wipes.  Wipe will always wipe just before the first layer, afterwards it will wipe every "Wipe Period" layers.  With the default of three, wipe will wipe just before the zeroth layer, the third layer, sixth layer and so on.
+The "Wipe Period (layers)" setting is the number of layers between wipes.  Wipe will always wipe just before the first layer, afterwards it will wipe every "Wipe Period" layers.  With the default of three, wipe will wipe just before the zeroth layer, the third layer, sixth layer and so on.
 
 The following examples wipe the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and wipe.py.
 
@@ -47,12 +47,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 import math
 import sys
@@ -72,7 +73,7 @@ def getCraftedTextFromText( gcodeText, wipeRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'wipe' ):
 		return gcodeText
 	if wipeRepository == None:
-		wipeRepository = preferences.getReadRepository( WipeRepository() )
+		wipeRepository = settings.getReadRepository( WipeRepository() )
 	if not wipeRepository.activateWipe.value:
 		return gcodeText
 	return WipeSkein().getCraftedGcode( gcodeText, wipeRepository )
@@ -89,22 +90,22 @@ def writeOutput( fileName = '' ):
 
 
 class WipeRepository:
-	"A class to handle the wipe preferences."
+	"A class to handle the wipe settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.wipe.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Wipe', self, '' )
-		self.activateWipe = preferences.BooleanPreference().getFromValue( 'Activate Wipe', self, False )
-		self.locationArrivalX = preferences.FloatSpin().getFromValue( - 100.0, 'Location Arrival X (mm):', self, 100.0, - 70.0 )
-		self.locationArrivalY = preferences.FloatSpin().getFromValue( - 100.0, 'Location Arrival Y (mm):', self, 100.0, - 50.0 )
-		self.locationArrivalZ = preferences.FloatSpin().getFromValue( - 100.0, 'Location Arrival Z (mm):', self, 100.0, 50.0 )
-		self.locationDepartureX = preferences.FloatSpin().getFromValue( - 100.0, 'Location Departure X (mm):', self, 100.0, - 70.0 )
-		self.locationDepartureY = preferences.FloatSpin().getFromValue( - 100.0, 'Location Departure Y (mm):', self, 100.0, - 40.0 )
-		self.locationDepartureZ = preferences.FloatSpin().getFromValue( - 100.0, 'Location Departure Z (mm):', self, 100.0, 50.0 )
-		self.locationWipeX = preferences.FloatSpin().getFromValue( - 100.0, 'Location Wipe X (mm):', self, 100.0, - 70.0 )
-		self.locationWipeY = preferences.FloatSpin().getFromValue( - 100.0, 'Location Wipe Y (mm):', self, 100.0, - 70.0 )
-		self.locationWipeZ = preferences.FloatSpin().getFromValue( - 100.0, 'Location Wipe Z (mm):', self, 100.0, 50.0 )
-		self.wipePeriod = preferences.IntSpin().getFromValue( 1, 'Wipe Period (layers):', self, 5, 3 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.wipe.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Wipe', self, '' )
+		self.activateWipe = settings.BooleanSetting().getFromValue( 'Activate Wipe', self, False )
+		self.locationArrivalX = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival X (mm):', self, 100.0, - 70.0 )
+		self.locationArrivalY = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival Y (mm):', self, 100.0, - 50.0 )
+		self.locationArrivalZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival Z (mm):', self, 100.0, 50.0 )
+		self.locationDepartureX = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure X (mm):', self, 100.0, - 70.0 )
+		self.locationDepartureY = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure Y (mm):', self, 100.0, - 40.0 )
+		self.locationDepartureZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure Z (mm):', self, 100.0, 50.0 )
+		self.locationWipeX = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe X (mm):', self, 100.0, - 70.0 )
+		self.locationWipeY = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe Y (mm):', self, 100.0, - 70.0 )
+		self.locationWipeZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe Z (mm):', self, 100.0, 50.0 )
+		self.wipePeriod = settings.IntSpin().getFromValue( 1, 'Wipe Period (layers):', self, 5, 3 )
 		self.executeTitle = 'Wipe'
 
 	def execute( self ):
@@ -216,7 +217,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

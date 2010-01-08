@@ -1,5 +1,5 @@
 """
-Preferences is a collection of utilities to display, read & write the settings and position widgets.
+Settings is a collection of utilities to display, read & write the settings and position widgets.
 
 """
 
@@ -52,6 +52,11 @@ def addElementToListTableIfNotThere( element, key, listTable ):
 	else:
 		listTable[ key ] = [ element ]
 
+def addEmptyRow( gridPosition ):
+	"Add an empty row."
+	gridPosition.increment()
+	Tkinter.Label( gridPosition.master ).grid( row = gridPosition.row, column = gridPosition.column )
+
 def addListsSetCraftProfileArchive( craftSequence, defaultProfile, repository, fileNameHelp ):
 	"Set the craft profile archive."
 	addListsToRepository( fileNameHelp, '', repository )
@@ -65,25 +70,12 @@ def addListsSetCraftProfileArchive( craftSequence, defaultProfile, repository, f
 		LabelDisplay().getFromName( craftLine, repository )
 	LabelDisplay().getFromName( '', repository )
 	repository.profileList = ProfileList().getFromName( 'Profile List:', repository )
-	repository.profileListbox = ProfileListboxPreference().getFromListPreference( repository.profileList, 'Profile Selection:', repository, defaultProfile )
-	repository.addListboxSelection = AddProfile().getFromProfileListboxPreferenceRepository( repository.profileListbox, repository )
-	repository.deleteListboxSelection = DeleteProfile().getFromProfileListboxPreferenceRepository( repository.profileListbox, repository )
+	repository.profileListbox = ProfileListboxSetting().getFromListSetting( repository.profileList, 'Profile Selection:', repository, defaultProfile )
+	repository.addListboxSelection = AddProfile().getFromProfileListboxSettingRepository( repository.profileListbox, repository )
+	repository.deleteListboxSelection = DeleteProfile().getFromProfileListboxSettingRepository( repository.profileListbox, repository )
 	directoryName = getProfilesDirectoryPath()
 	makeDirectory( directoryName )
-	repository.windowPositionPreferences.value = '0+400'
-
-def addListsToCraftTypeRepository( fileNameHelp, repository ):
-	"Add the value to the lists."
-	craftTypeName = getCraftTypeName()
-	craftTypeProfileDirectory = os.path.join( craftTypeName, getProfileName( craftTypeName ) )
-	addListsToRepository( fileNameHelp, craftTypeProfileDirectory, repository )
-	dotsMinusOne = fileNameHelp.count( '.' ) - 1
-	x = 0
-	xAddition = 400
-	for step in xrange( dotsMinusOne ):
-		x += xAddition
-		xAddition /= 2
-	repository.windowPositionPreferences.value = '%s+0' % x
+	repository.windowPosition.value = '0+400'
 
 def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	"Add the value to the lists."
@@ -96,13 +88,13 @@ def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	repository.baseName = os.path.join( profileDirectory, repository.lowerName + '.csv' )
 	repository.capitalizedName = getEachWordCapitalized( repository.lowerName )
 	repository.openLocalHelpPage = HelpPage().getOpenFromDocumentationSubName( repository.fileNameHelp )
-	repository.openQuestionMarkHelpPage = repository.openLocalHelpPage
 	repository.openWikiManualHelpPage = None
+	repository.repositoryDialog = None
+	repository.saveListenerTable = {}
 	repository.title = repository.capitalizedName + ' Settings'
 	repository.menuEntities = []
 	repository.saveCloseTitle = 'Save and Close'
-	windowPositionName = 'windowPosition' + repository.title
-	repository.windowPositionPreferences = WindowPosition().getFromValue( windowPositionName, repository, '0+0' )
+	repository.windowPosition = WindowPosition().getFromValue( repository, '0+0' )
 	WindowVisibilities().getFromRepository( repository )
 	for setting in repository.archive:
 		setting.repository = repository
@@ -128,6 +120,13 @@ def addPluginsToMenu( directoryPath, menu, pluginFileNames ):
 	for pluginFileName in pluginFileNames:
 		ToolDialog().addPluginToMenu( menu, os.path.join( directoryPath, pluginFileName ) )
 
+def cancelRepository( repository ):
+	"Read the repository then set all the entities to the read archive values."
+	getReadRepository( repository )
+	for setting in repository.displayEntities:
+		if setting in repository.archive:
+			setting.setStateToValue()
+
 def deleteDirectory( directory, subfolderName ):
 	"Delete the directory if it exists."
 	subDirectory = os.path.join( directory, subfolderName )
@@ -141,7 +140,7 @@ def deleteMenuItems( menu ):
 		if lastMenuIndex != None:
 			menu.delete( 0, lastMenuIndex )
 	except:
-		print( 'this should never happen, the lastMenuIndex in deleteMenuItems in preferences could not be determined.' ) 
+		print( 'this should never happen, the lastMenuIndex in deleteMenuItems in settings could not be determined.' ) 
 
 def getAlongWayHexadecimalColor( beginBrightness, colorWidth, difference, endColorTuple, wayLength ):
 	"Get a color along the way from begin brightness to the end color."
@@ -164,24 +163,9 @@ def getArchiveText( repository ):
 	archiveWriter = cStringIO.StringIO()
 	archiveWriter.write( 'Format is tab separated %s.\n' % repository.title.lower() )
 	archiveWriter.write( 'Name                          %sValue\n' % globalSpreadsheetSeparator )
-	for preference in repository.archive:
-		preference.writeToArchiveWriter( archiveWriter )
+	for setting in repository.archive:
+		setting.writeToArchiveWriter( archiveWriter )
 	return archiveWriter.getvalue()
-
-def getCraftTypeName( subName = '' ):
-	"Get the craft type from the profile."
-	profilePreferences = getReadProfileRepository()
-	craftTypeName = getSelectedPluginName( profilePreferences.craftRadios )
-	if subName == '':
-		return craftTypeName
-	return os.path.join( craftTypeName, subName )
-
-def getCraftTypePluginModule( craftTypeName = '' ):
-	"Get the craft type plugin module."
-	if craftTypeName == '':
-		craftTypeName = getCraftTypeName()
-	profilePluginsDirectoryPath = getPluginsDirectoryPath()
-	return gcodec.getModuleWithDirectoryPath( profilePluginsDirectoryPath, craftTypeName )
 
 def getDirectoryInAboveDirectory( directory ):
 	"Get the directory in the above directory."
@@ -235,11 +219,11 @@ def getEachWordCapitalized( name ):
 
 def getFileInAlterationsOrGivenDirectory( directory, fileName ):
 	"Get the file from the fileName or the lowercase fileName in the alterations directories, if there is no file look in the given directory."
-	preferencesAlterationsDirectory = getPreferencesDirectoryPath( 'alterations' )
-	makeDirectory( preferencesAlterationsDirectory )
-	fileInPreferencesAlterationsDirectory = getFileInGivenDirectory( preferencesAlterationsDirectory, fileName )
-	if fileInPreferencesAlterationsDirectory != '':
-		return fileInPreferencesAlterationsDirectory
+	settingsAlterationsDirectory = getSettingsDirectoryPath( 'alterations' )
+	makeDirectory( settingsAlterationsDirectory )
+	fileInSettingsAlterationsDirectory = getFileInGivenDirectory( settingsAlterationsDirectory, fileName )
+	if fileInSettingsAlterationsDirectory != '':
+		return fileInSettingsAlterationsDirectory
 	alterationsDirectory = getDirectoryInAboveDirectory( 'alterations' )
 	fileInAlterationsDirectory = getFileInGivenDirectory( alterationsDirectory, fileName )
 	if fileInAlterationsDirectory != '':
@@ -287,30 +271,21 @@ def getPathFromFileNameHelp( fileNameHelp ):
 		skeinforgePath = os.path.join( skeinforgePath, splitFileNameDirectoryName )
 	return skeinforgePath
 
-def getPluginsDirectoryPath():
-	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'profile_plugins' )
-
-def getPluginFileNames():
-	"Get analyze plugin fileNames."
-	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
-
-def getPreferencesDirectoryPath( subfolder = '' ):
-	"Get the preferences directory path, which is the home directory joined with .skeinforge."
-	preferencesDirectory = os.path.join( os.path.expanduser( '~' ), '.skeinforge' )
-	if subfolder == '':
-		return preferencesDirectory
-	return os.path.join( preferencesDirectory, subfolder )
-
-def getProfileName( craftTypeName ):
-	"Get the profile name from the craft type name."
-	craftTypePreferences = getCraftTypePluginModule( craftTypeName ).getNewRepository()
-	getReadRepository( craftTypePreferences )
-	return craftTypePreferences.profileListbox.value
+def getRadioPluginsAddPluginFrame( directoryPath, importantFileNames, names, repository ):
+	"Get the radio plugins and add the plugin frame."
+	repository.pluginFrame = PluginFrame()
+	radioPlugins = []
+	for name in names:
+		radioPlugin = RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginFrame.latentStringVar, name, repository, name == importantFileNames[ 0 ] )
+		radioPlugin.updateFunction = repository.pluginFrame.update
+		radioPlugins.append( radioPlugin )
+	defaultRadioButton = getSelectedRadioPlugin( importantFileNames + [ radioPlugins[ 0 ].name ], radioPlugins )
+	repository.pluginFrame.getFromPath( defaultRadioButton, directoryPath, repository )
+	return radioPlugins
 
 def getProfilesDirectoryPath( subfolder = '' ):
-	"Get the profiles directory path, which is the preferences directory joined with profiles."
-	profilesDirectory = getPreferencesDirectoryPath( 'profiles' )
+	"Get the profiles directory path, which is the settings directory joined with profiles."
+	profilesDirectory = getSettingsDirectoryPath( 'profiles' )
 	if subfolder == '':
 		return profilesDirectory
 	return os.path.join( profilesDirectory, subfolder )
@@ -323,21 +298,17 @@ def getProfilesDirectoryInAboveDirectory( subName = '' ):
 	return os.path.join( aboveProfilesDirectory, subName )
 
 def getReadRepository( repository ):
-	"Read and return preferences from a file."
+	"Read and return settings from a file."
 	text = gcodec.getFileText( getProfilesDirectoryPath( repository.baseName ), 'r', False )
 	if text == '':
 		print( 'The default %s will be written in the .skeinforge folder in the home directory.' % repository.title.lower() )
 		text = gcodec.getFileText( getProfilesDirectoryInAboveDirectory( repository.baseName ), 'r', False )
 		if text != '':
-			readPreferencesFromText( repository, text )
-		writePreferences( repository )
+			readSettingsFromText( repository, text )
+		writeSettings( repository )
 		return repository
-	readPreferencesFromText( repository, text )
+	readSettingsFromText( repository, text )
 	return repository
-
-def getReadProfileRepository():
-	"Get the read profile repository."
-	return getReadRepository( ProfileRepository() )
 
 def getSelectedPluginModuleFromPath( filePath, plugins ):
 	"Get the selected plugin module."
@@ -352,6 +323,27 @@ def getSelectedPluginName( plugins ):
 		if plugin.value:
 			return plugin.name
 	return ''
+
+def getSelectedRadioPlugin( names, radioPlugins ):
+	"Get the selected radio button if it exists, None otherwise."
+	for radioPlugin in radioPlugins:
+		if radioPlugin.value:
+			return radioPlugin
+	for name in names:
+		for radioPlugin in radioPlugins:
+			if radioPlugin.name == name:
+				radioPlugin.value = True
+				return radioPlugin
+	print( 'this should never happen, no getSelectedRadioPlugin in settings' )
+	print( names )
+	return radioPlugin[ 0 ]
+
+def getSettingsDirectoryPath( subfolder = '' ):
+	"Get the settings directory path, which is the home directory joined with .skeinforge."
+	settingsDirectory = os.path.join( os.path.expanduser( '~' ), '.skeinforge' )
+	if subfolder == '':
+		return settingsDirectory
+	return os.path.join( settingsDirectory, subfolder )
 
 def getSkeinforgeToolsDirectoryPath():
 	"Get the skeinforge tools directory path."
@@ -373,7 +365,7 @@ def getSubfolderWithBasename( basename, directory ):
 	return None
 
 def getTitleFromName( title ):
-	"Get the title of this preference."
+	"Get the title of this setting."
 	if title[ - 1 ] == ':':
 		title = title[ : - 1 ]
 	spaceBracketIndex = title.find( ' (' )
@@ -383,7 +375,7 @@ def getTitleFromName( title ):
 
 def getWidthHex( number, width ):
 	"Get the first width hexadecimal digits."
-	return ( '%s0000' % hex( number ) )[ 2 : 2 + width ]
+	return ( '0000%s' % hex( number )[ 2 : ] )[ - width : ]
 
 def liftRepositoryDialogs( repositoryDialogs ):
 	"Lift the repository dialogs."
@@ -437,24 +429,43 @@ def quitWindows( event = None ):
 	for globalRepositoryDialogValue in globalRepositoryDialogValues:
 		quitWindow( globalRepositoryDialogValue.root )
 
-def readPreferencesFromText( repository, text ):
-	"Read preferences from a text."
+def readSettingsFromText( repository, text ):
+	"Read settings from a text."
 	lines = gcodec.getTextLines( text )
-	preferenceTable = {}
-	for preference in repository.archive:
-		preferenceTable[ preference.name ] = preference
+	settingTable = {}
+	for setting in repository.archive:
+		settingTable[ setting.name ] = setting
 	for lineIndex in xrange( len( lines ) ):
-		setArchiveToLine( lineIndex, lines, preferenceTable )
+		setArchiveToLine( lineIndex, lines, settingTable )
 
-def setArchiveToLine( lineIndex, lines, preferenceTable ):
-	"Set an archive to a preference line."
+def saveRepository( repository ):
+	"Set the entities to the dialog then write them."
+	for setting in repository.archive:
+		setting.setToDisplay()
+	writeSettingsPrintMessage( repository )
+	for saveListener in repository.saveListenerTable.values():
+		saveListener()
+
+def setArchiveToLine( lineIndex, lines, settingTable ):
+	"Set an archive to a setting line."
 	line = lines[ lineIndex ]
 	splitLine = line.split( globalSpreadsheetSeparator )
 	if len( splitLine ) < 2:
 		return
-	filePreferenceName = splitLine[ 0 ]
-	if filePreferenceName in preferenceTable:
-		preferenceTable[ filePreferenceName ].setValueToSplitLine( lineIndex, lines, splitLine )
+	fileSettingName = splitLine[ 0 ]
+	if fileSettingName in settingTable:
+		settingTable[ fileSettingName ].setValueToSplitLine( lineIndex, lines, splitLine )
+
+def setButtonFontWeightString( button, isBold ):
+	"Set button font weight given isBold."
+	try:
+		weightString = 'normal'
+		if isBold:
+			weightString = 'bold'
+		splitFont = button[ 'font' ].split()
+		button[ 'font' ] = ( splitFont[ 0 ], splitFont[ 1 ], weightString )
+	except:
+		pass
 
 def setEntryText( entry, value ):
 	"Set the entry text."
@@ -480,6 +491,8 @@ def setIntegerValueToString( integerSetting, valueString ):
 
 def setSpinColor( setting ):
 	"Set the spin box color to the value, yellow if it is lower than the default and blue if it is higher."
+	if setting.entry == None:
+		return
 	if setting.backgroundColor == None:
 		setting.backgroundColor = setting.entry[ 'background' ]
 		if setting.backgroundColor[ 0 ] != '#':
@@ -517,15 +530,15 @@ def writeValueListToArchiveWriter( archiveWriter, setting ):
 			archiveWriter.write( item )
 	archiveWriter.write( '\n' )
 
-def writePreferences( repository ):
-	"Write the preferences to a file."
+def writeSettings( repository ):
+	"Write the settings to a file."
 	profilesDirectoryPath = getProfilesDirectoryPath( repository.baseName )
 	makeDirectory( os.path.dirname( profilesDirectoryPath ) )
 	gcodec.writeFileText( profilesDirectoryPath, getArchiveText( repository ) )
 
-def writePreferencesPrintMessage( repository ):
-	"Set the preferences to the dialog then write them."
-	writePreferences( repository )
+def writeSettingsPrintMessage( repository ):
+	"Set the settings to the dialog then write them."
+	writeSettings( repository )
 	print( repository.title.lower().capitalize() + ' have been saved.' )
 
 
@@ -541,36 +554,36 @@ class AddProfile:
 		self.addButton.grid( row = gridPosition.row, column = 0 )
 
 	def addSelection( self ):
-		"Add the selection of a listbox preference."
+		"Add the selection of a listbox setting."
 		entryText = self.entry.get()
 		if entryText == '':
 			print( 'To add to the profiles, enter the material name.' )
 			return
-		self.profileListboxPreference.listPreference.setValueToFolders()
-		if entryText in self.profileListboxPreference.listPreference.value:
+		self.profileListboxSetting.listSetting.setValueToFolders()
+		if entryText in self.profileListboxSetting.listSetting.value:
 			print( 'There is already a profile by the name of %s, so no profile will be added.' % entryText )
 			return
 		self.entry.delete( 0, Tkinter.END )
-		craftTypeProfileDirectory = getProfilesDirectoryPath( self.profileListboxPreference.listPreference.craftTypeName )
+		craftTypeProfileDirectory = getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName )
 		destinationDirectory = os.path.join( craftTypeProfileDirectory, entryText )
-		shutil.copytree( self.profileListboxPreference.getSelectedFolder(), destinationDirectory )
-		self.profileListboxPreference.listPreference.setValueToFolders()
-		self.profileListboxPreference.value = entryText
-		self.profileListboxPreference.setListboxItems()
+		shutil.copytree( self.profileListboxSetting.getSelectedFolder(), destinationDirectory )
+		self.profileListboxSetting.listSetting.setValueToFolders()
+		self.profileListboxSetting.value = entryText
+		self.profileListboxSetting.setStateToValue()
 
 	def addSelectionWithEvent( self, event ):
-		"Add the selection of a listbox preference, given an event."
+		"Add the selection of a listbox setting, given an event."
 		self.addSelection()
 
-	def getFromProfileListboxPreferenceRepository( self, profileListboxPreference, repository ):
+	def getFromProfileListboxSettingRepository( self, profileListboxSetting, repository ):
 		"Initialize."
-		self.profileListboxPreference = profileListboxPreference
+		self.profileListboxSetting = profileListboxSetting
 		self.repository = repository
 		repository.displayEntities.append( self )
 		return self
 
 
-class StringPreference:
+class StringSetting:
 	"A class to display, read & write a string."
 	def __init__( self ):
 		"Set the update function to none."
@@ -660,7 +673,7 @@ class StringPreference:
 		self.setValueToString( splitLine[ 1 ] )
 
 	def setValueToString( self, valueString ):
-		"Set the string to the value string."
+		"Set the value to the value string."
 		self.value = valueString
 
 	def writeToArchiveWriter( self, archiveWriter ):
@@ -668,13 +681,13 @@ class StringPreference:
 		archiveWriter.write( '%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, self.value ) )
 
 
-class BooleanPreference( StringPreference ):
+class BooleanSetting( StringSetting ):
 	"A class to display, read & write a boolean."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		gridPosition.increment()
 		self.checkbutton = Tkinter.Checkbutton( gridPosition.master, command = self.toggleCheckbutton, text = self.name )
-#toggleCheckbutton is being used instead of a Tkinter IntVar because there is a weird bug where it doesn't work properly if this preference is not on the first window.
+#toggleCheckbutton is being used instead of a Tkinter IntVar because there is a weird bug where it doesn't work properly if this setting is not on the first window.
 		self.checkbutton.grid( row = gridPosition.row, columnspan = 5, sticky = Tkinter.W )
 		self.setStateToValue()
 
@@ -689,7 +702,12 @@ class BooleanPreference( StringPreference ):
 
 	def addToMenuFrameable( self, repositoryMenu ):
 		"Add this to the frameable repository menu."
-		self.addToMenu( repositoryMenu )
+		titleFromName = getTitleFromName( self.name )
+		helpWindowMenu = Tkinter.Menu( repositoryMenu, tearoff = 0 )
+		repositoryMenu.add_cascade( label = titleFromName, menu = helpWindowMenu, underline = 0 )
+		self.addToMenu( helpWindowMenu )
+		helpWindowMenu.add_separator()
+		helpWindowMenu.add_command( label = 'Help', command = HelpPage().getOpenFromDocumentationSubName( self.repository.fileNameHelp + '#' + titleFromName ) )
 
 	def setStateToValue( self ):
 		"Set the checkbutton to the boolean."
@@ -759,14 +777,14 @@ class DeleteProfile( AddProfile ):
 		self.deleteButton.grid( row = gridPosition.row, column = 0 )
 
 	def deleteSelection( self ):
-		"Delete the selection of a listbox preference."
-		DeleteProfileDialog( self.profileListboxPreference, Tkinter.Tk() )
+		"Delete the selection of a listbox setting."
+		DeleteProfileDialog( self.profileListboxSetting, Tkinter.Tk() )
 
 
 class DeleteProfileDialog:
-	def __init__( self, profileListboxPreference, root ):
+	def __init__( self, profileListboxSetting, root ):
 		"Display a delete dialog."
-		self.profileListboxPreference = profileListboxPreference
+		self.profileListboxSetting = profileListboxSetting
 		self.root = root
 		self.row = 0
 		root.title( 'Delete Warning' )
@@ -781,28 +799,28 @@ class DeleteProfileDialog:
 		noButton.grid( row = self.row, column = columnIndex )
 
 	def delete( self ):
-		"Delete the selection of a listbox preference."
-		self.profileListboxPreference.setToDisplay()
-		self.profileListboxPreference.listPreference.setValueToFolders()
-		if self.profileListboxPreference.value not in self.profileListboxPreference.listPreference.value:
+		"Delete the selection of a listbox setting."
+		self.profileListboxSetting.setToDisplay()
+		self.profileListboxSetting.listSetting.setValueToFolders()
+		if self.profileListboxSetting.value not in self.profileListboxSetting.listSetting.value:
 			return
 		lastSelectionIndex = 0
-		currentSelectionTuple = self.profileListboxPreference.listbox.curselection()
+		currentSelectionTuple = self.profileListboxSetting.listbox.curselection()
 		if len( currentSelectionTuple ) > 0:
 			lastSelectionIndex = int( currentSelectionTuple[ 0 ] )
 		else:
 			print( 'No profile is selected, so no profile will be deleted.' )
 			return
-		deleteDirectory( getProfilesDirectoryPath( self.profileListboxPreference.listPreference.craftTypeName ), self.profileListboxPreference.value )
-		deleteDirectory( getProfilesDirectoryInAboveDirectory( self.profileListboxPreference.listPreference.craftTypeName ), self.profileListboxPreference.value )
-		self.profileListboxPreference.listPreference.setValueToFolders()
-		if len( self.profileListboxPreference.listPreference.value ) < 1:
-			defaultPreferencesDirectory = getProfilesDirectoryPath( os.path.join( self.profileListboxPreference.listPreference.craftTypeName, self.profileListboxPreference.defaultValue ) )
-			makeDirectory( defaultPreferencesDirectory )
-			self.profileListboxPreference.listPreference.setValueToFolders()
-		lastSelectionIndex = min( lastSelectionIndex, len( self.profileListboxPreference.listPreference.value ) - 1 )
-		self.profileListboxPreference.value = self.profileListboxPreference.listPreference.value[ lastSelectionIndex ]
-		self.profileListboxPreference.setListboxItems()
+		deleteDirectory( getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
+		deleteDirectory( getProfilesDirectoryInAboveDirectory( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
+		self.profileListboxSetting.listSetting.setValueToFolders()
+		if len( self.profileListboxSetting.listSetting.value ) < 1:
+			defaultSettingsDirectory = getProfilesDirectoryPath( os.path.join( self.profileListboxSetting.listSetting.craftTypeName, self.profileListboxSetting.defaultValue ) )
+			makeDirectory( defaultSettingsDirectory )
+			self.profileListboxSetting.listSetting.setValueToFolders()
+		lastSelectionIndex = min( lastSelectionIndex, len( self.profileListboxSetting.listSetting.value ) - 1 )
+		self.profileListboxSetting.value = self.profileListboxSetting.listSetting.value[ lastSelectionIndex ]
+		self.profileListboxSetting.setStateToValue()
 		self.no()
 
 	def no( self ):
@@ -815,15 +833,8 @@ class DisplayToolButton:
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		self.displayButton = Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', text = getEachWordCapitalized( self.name ), command = self.displayDialog )
-		try:
-			weightString = 'normal'
-			if self.important:
-				weightString = 'bold'
-			splitFont = self.displayButton[ 'font' ].split()
-			self.displayButton[ 'font' ] = ( splitFont[ 0 ], splitFont[ 1 ], weightString )
-		except:
-			pass
-		gridPosition.incrementForTwoColumn()
+		setButtonFontWeightString( self.displayButton, self.important )
+		gridPosition.incrementGivenNumberOfColumns( 2 )
 		self.displayButton.grid( row = gridPosition.row, column = gridPosition.column, columnspan = 2 )
 
 	def displayDialog( self ):
@@ -866,7 +877,7 @@ class FileHelpMenuBar:
 		"Add a menu to the menu bar from a tool."
 		pluginModule = gcodec.getModuleWithPath( modulePath )
 		if pluginModule == None:
-			print( 'this should never happen, pluginModule in addMenuToMenuBar in preferences is None.' )
+			print( 'this should never happen, pluginModule in addMenuToMenuBar in settings is None.' )
 			return None
 		repositoryMenu = Tkinter.Menu( self.menuBar, tearoff = 0 )
 		labelText = getEachWordCapitalized( os.path.basename( modulePath ) )
@@ -893,16 +904,17 @@ class FileHelpMenuBar:
 		self.closeFunction()
 
 
-class FileNameInput( StringPreference ):
+class FileNameInput( StringSetting ):
 	"A class to display, read & write a fileName."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		self.repository.repositoryDialog.executables.append( self )
+		self.gridPosition = gridPosition
+		gridPosition.executables.append( self )
 
 	def execute( self ):
 		"Open the file picker."
 		self.wasCancelled = False
-		parent = self.repository.repositoryDialog.root
+		parent = self.gridPosition.master
 		try:
 			import tkFileDialog
 			summarized = gcodec.getSummarizedFileName( self.value )
@@ -915,12 +927,12 @@ class FileNameInput( StringPreference ):
 			self.setCancelledValue( fileName )
 			return
 		except:
-			print( 'Could not get the old directory in preferences, so the file picker will be opened in the default directory.' )
+			print( 'Could not get the old directory in settings, so the file picker will be opened in the default directory.' )
 		try:
 			fileName = tkFileDialog.askopenfilename( filetypes = self.getFileNameFirstTypes(), initialdir = '.', initialfile = '', parent = parent, title = self.name )
 			self.setCancelledValue( fileName )
 		except:
-			print( 'Error in execute in FileName in preferences, ' + self.name )
+			print( 'Error in execute in FileName in settings, ' + self.name )
 
 	def getFileNameFirstTypes( self ):
 		"Get the file types with the file type of the fileName moved to the front of the list."
@@ -966,7 +978,7 @@ class FileNameInput( StringPreference ):
 		pass
 
 
-class FloatPreference( StringPreference ):
+class FloatSetting( StringSetting ):
 	"A class to display, read & write a float."
 	def setValueToString( self, valueString ):
 		"Set the float to the string."
@@ -976,7 +988,7 @@ class FloatPreference( StringPreference ):
 			print( 'Oops, can not read float' + self.name + ' ' + valueString )
 
 
-class FloatSpin( FloatPreference ):
+class FloatSpin( FloatSetting ):
 	"A class to display, read & write an float in a spin box."
 	def addToMenuFrameable( self, repositoryMenu ):
 		"Add this to the frameable repository menu."
@@ -994,23 +1006,6 @@ class FloatSpin( FloatPreference ):
 		helpWindowMenu.add_separator()
 		helpWindowMenu.add_command( label = 'Help', command = HelpPage().getOpenFromDocumentationSubName( self.repository.fileNameHelp + '#' + titleFromName ) )
 
-	def decrease( self ):
-		"Decrease the value then set the state and color to the value."
-		self.value -= self.increment
-		self.setStateUpdateColor()
-
-	def setStateUpdateColor( self ):
-		"Set the state to the value, call the update function, then set the color."
-		self.setStateToValue()
-		if self.updateFunction != None:
-			self.updateFunction()
-		self.setColor()
-
-	def increase( self ):
-		"Increase the value then set the state and color to the value."
-		self.value += self.increment
-		self.setStateUpdateColor()
-
 	def bindEntry( self ):
 		"Bind the entry to the update function."
 		self.entry.bind( '<Return>', self.entryUpdated )
@@ -1020,11 +1015,16 @@ class FloatSpin( FloatPreference ):
 		"Create the entry."
 		self.entry = Tkinter.Spinbox( root, command = self.setColorToDisplay, from_ = self.from_, increment = self.increment, to = self.to )
 
+	def decrease( self ):
+		"Decrease the value then set the state and color to the value."
+		self.value -= self.increment
+		self.setStateUpdateColor()
+
 	def entryUpdated( self, event = None ):
 		"Create the entry."
+		self.setColorToDisplay()
 		if self.updateFunction != None:
 			self.updateFunction( event )
-		self.setColorToDisplay()
 
 	def getFromValue( self, from_, name, repository, to, value ):
 		"Initialize."
@@ -1036,6 +1036,11 @@ class FloatSpin( FloatPreference ):
 		self.to = to
 		return self.getFromValueOnlyAddToRepository( name, repository, value )
 
+	def increase( self ):
+		"Increase the value then set the state and color to the value."
+		self.value += self.increment
+		self.setStateUpdateColor()
+
 	def setColor( self, event = None ):
 		"Set the color to the value, yellow if it is lower than the default and blue if it is higher."
 		setSpinColor( self )
@@ -1044,6 +1049,17 @@ class FloatSpin( FloatPreference ):
 		"Set the color to the value, yellow if it is lower than the default and blue if it is higher."
 		self.setToDisplay()
 		self.setColor()
+
+	def setStateToValue( self ):
+		"Set the entry to the value."
+		setEntryText( self.entry, self.value )
+		self.setColor()
+
+	def setStateUpdateColor( self ):
+		"Set the state to the value, call the update function, then set the color."
+		self.setStateToValue()
+		if self.updateFunction != None:
+			self.updateFunction()
 
 
 class FloatSpinNotOnMenu( FloatSpin ):
@@ -1068,7 +1084,7 @@ class FrameList:
 		"Add the word to the sorted list."
 		self.value.append( word )
 		self.value.sort()
-		self.repository.setToDisplaySaveRedisplayWindowUpdate()
+		self.repository.window.redisplayWindowUpdate()
 
 	def getFromValue( self, name, repository, value ):
 		"Initialize."
@@ -1082,7 +1098,7 @@ class FrameList:
 		"Remove the word from the sorted list."
 		self.value.remove( word )
 		self.value.sort()
-		self.repository.setToDisplaySaveRedisplayWindowUpdate()
+		self.repository.window.redisplayWindowUpdate()
 
 	def setToDisplay( self ):
 		"Do nothing because frame list does not have a display."
@@ -1105,6 +1121,12 @@ class GridHorizontal:
 		self.columnStart = column
 		self.row = row
 
+	def getCopy( self ):
+		"Get a copy."
+		copy = GridHorizontal( self.column, self.row )
+		copy.columnStart = self.columnStart
+		return copy
+
 	def increment( self ):
 		"Increment the position horizontally."
 		self.column += 1
@@ -1118,6 +1140,22 @@ class GridVertical:
 		self.columnOffset = column
 		self.columnStart = column
 		self.row = row
+		self.rowStart = row
+
+	def execute( self ):
+		"The execute button was clicked."
+		for executable in self.executables:
+			executable.execute()
+		saveRepository( self.repository )
+		self.repository.execute()
+
+	def getCopy( self ):
+		"Get a copy."
+		copy = GridVertical( self.column, self.row )
+		copy.columnOffset = self.columnOffset
+		copy.columnStart = self.columnStart
+		copy.rowStart = self.rowStart
+		return copy
 
 	def increment( self ):
 		"Increment the position vertically."
@@ -1125,29 +1163,26 @@ class GridVertical:
 		self.columnOffset = self.columnStart
 		self.row += 1
 
-	def incrementForThreeColumn( self ):
-		"Increment the position vertically and offset it horizontally to create three columns of entities."
+	def incrementGivenNumberOfColumns( self, numberOfColumns ):
+		"Increment the position vertically and offset it horizontally by the given number of columns."
 		self.column = self.columnOffset
 		if self.columnOffset == self.columnStart:
 			self.columnOffset = self.columnStart + 1
 			self.row += 1
 			return
-		if self.columnOffset < self.columnStart + 2:
+		if self.columnOffset < self.columnStart + numberOfColumns - 1:
 			self.columnOffset += 1
 			return
 		self.columnOffset = self.columnStart
 
-	def incrementForTwoColumn( self ):
-		"Increment the position vertically and offset it horizontally to create two columns of entities."
-		self.column = self.columnOffset
-		if self.columnOffset == self.columnStart:
-			self.columnOffset = self.columnStart + 3
-			self.row += 1
-			return
-		self.columnOffset = self.columnStart
+	def setExecutablesRepository( self, repository ):
+		"Set the executables to an empty list and set the repository."
+		self.executables = []
+		self.repository = repository
 
 
 class HelpPage:
+	"A class to open a help page."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		self.displayButton = Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', text = getEachWordCapitalized( self.name ), command = self.openPage )
@@ -1211,7 +1246,37 @@ class HelpPage:
 		repository.menuEntities.append( self )
 
 
-class IntPreference( FloatPreference ):
+class HelpPageRepository:
+	"A class to open a repository help page."
+	def __init__( self, repository ):
+		"Add this to the dialog."
+		self.repository = repository
+
+	def openPage( self, event = None ):
+		"Open the browser to the repository help page."
+		if self.repository.openWikiManualHelpPage == None:
+			self.repository.openLocalHelpPage()
+			return
+		from skeinforge_tools import help
+		helpRepository = getReadRepository( help.HelpRepository() )
+		if helpRepository.wikiManualPrimary.value:
+			self.repository.openWikiManualHelpPage()
+			return
+		self.repository.openLocalHelpPage()
+
+
+class HiddenScrollbar( Tkinter.Scrollbar ):
+	"A class to hide the scrollbar if it is not needed."
+	def set( self, lo, hi ):
+		"Add to grid is needed, remove if not."
+		if float( lo ) <= 0.0 and float( hi ) >= 1.0:
+			self.tk.call( 'grid', 'remove', self )
+		else:
+			self.grid()
+		Tkinter.Scrollbar.set( self, lo, hi )
+
+
+class IntSetting( FloatSetting ):
 	"A class to display, read & write an int."
 	def setValueToString( self, valueString ):
 		"Set the integer to the string."
@@ -1301,6 +1366,27 @@ class LabelSeparator:
 		return self
 
 
+class LatentStringVar:
+	"A class to provide a StringVar when needed."
+	def __init__( self ):
+		"Set the string var."
+		self.stringVar = None
+
+	def getVar( self ):
+		"Get the string var."
+		if self.stringVar == None:
+			self.stringVar = Tkinter.StringVar()
+		return self.stringVar
+
+	def getString( self ):
+		"Get the string."
+		return self.getVar().get()
+
+	def setString( self, word ):
+		"Set the string."
+		return self.getVar().set( word )
+
+
 class MenuButtonDisplay:
 	"A class to add a menu button."
 	def addRadiosToDialog( self, gridPosition ):
@@ -1311,7 +1397,7 @@ class MenuButtonDisplay:
 	def addToMenu( self, repositoryMenu ):
 		"Add this to the repository menu."
 		if len( self.menuRadios ) < 1:
-			print( 'The MenuButtonDisplay in preferences should have menu items.' )
+			print( 'The MenuButtonDisplay in settings should have menu items.' )
 			print( self.name )
 			return
 		self.menu = Tkinter.Menu( repositoryMenu, tearoff = 0 )
@@ -1320,7 +1406,10 @@ class MenuButtonDisplay:
 
 	def addToMenuFrameable( self, repositoryMenu ):
 		"Add this to the frameable repository menu."
+		titleFromName = getTitleFromName( self.name )
 		self.addToMenu( repositoryMenu )
+		self.menu.add_command( label = 'Help', command = HelpPage().getOpenFromDocumentationSubName( self.repository.fileNameHelp + '#' + titleFromName ) )
+		self.menu.add_separator()
 
 	def getFromName( self, name, repository ):
 		"Initialize."
@@ -1357,7 +1446,7 @@ class MenuButtonDisplay:
 		self.menuButton[ 'menu' ]  =  self.menu
 
 
-class MenuRadio( BooleanPreference ):
+class MenuRadio( BooleanSetting ):
 	"A class to display, read & write a boolean with associated menu radio button."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
@@ -1402,10 +1491,128 @@ class MenuRadio( BooleanPreference ):
 		"Workaround for Tkinter bug, invoke to set the value when changed."
 		self.menuButtonDisplay.menu.invoke( self.menuLength )
 
+	def setStateToValue( self ):
+		"Set the checkbutton to the boolean."
+		try:
+			if self.value:
+				self.invoke()
+		except:
+			pass
+
 	def setToDisplay( self ):
 		"Set the boolean to the checkbutton."
 		if self.menuButtonDisplay.radioVar != None:
 			self.value = ( self.menuButtonDisplay.radioVar.get() == self.name )
+
+
+class PluginFrame:
+	"A class to list the profiles."
+	def __init__( self ):
+		"Set the radio."
+		self.gridTable = {}
+		self.latentStringVar = LatentStringVar()
+		self.oldLatentString = ''
+
+	def addToDialog( self, gridPosition ):
+		"Add this to the dialog."
+		gridPosition.increment()
+		self.gridPosition = gridPosition.getCopy()
+		self.gridPosition.master = gridPosition.master
+		self.createFrame( gridPosition )
+
+	def createFrame( self, gridPosition ):
+		"Create the frame."
+		gridVertical = GridVertical( 0, 0 )
+		gridVertical.master = Tkinter.LabelFrame( gridPosition.master, borderwidth = 3, relief = 'raised' )
+		gridVertical.master.grid( row = gridPosition.row, column = gridPosition.column, columnspan = 10, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
+		gridPosition.master.grid_rowconfigure( gridPosition.row, weight = 1 )
+		gridPosition.master.grid_columnconfigure( gridPosition.column + 9, weight = 1 )
+		if self.latentStringVar.getString() == '':
+			self.defaultRadioButton.setSelect()
+		self.gridTable[ self.latentStringVar.getString() ] = gridVertical
+		path = os.path.join( self.directoryPath, self.latentStringVar.getString() )
+		pluginModule = gcodec.getModuleWithPath( path )
+		if pluginModule == None:
+			print( 'this should never happen, pluginModule in addToDialog in PluginFrame in settings is None' )
+			print( path )
+			return
+		gridVertical.repository = getReadRepository( pluginModule.getNewRepository() )
+		gridVertical.frameGridVertical = GridVertical( 0, 0 )
+		gridVertical.frameGridVertical.setExecutablesRepository( gridVertical.repository )
+		executeTitle = gridVertical.repository.executeTitle
+		if executeTitle != None:
+			executeButton = Tkinter.Button( gridVertical.master, activebackground = 'black', activeforeground = 'blue', text = executeTitle, command = gridVertical.frameGridVertical.execute )
+			executeButton.grid( row = gridVertical.row, column = gridVertical.column )
+			gridVertical.column += 1
+		self.helpButton = Tkinter.Button( gridVertical.master, activebackground = 'black', activeforeground = 'white', text = "?", command = HelpPageRepository( gridVertical.repository ).openPage )
+		self.helpButton.grid( row = gridVertical.row, column = gridVertical.column )
+		addEmptyRow( gridVertical )
+		gridVertical.increment()
+		gridVertical.xScrollbar = HiddenScrollbar( gridVertical.master, orient = Tkinter.HORIZONTAL )
+		gridVertical.xScrollbar.grid( row = gridVertical.row + 1, column = gridVertical.column, columnspan = 10, sticky = Tkinter.E + Tkinter.W )
+		gridVertical.yScrollbar = HiddenScrollbar( gridVertical.master )
+		gridVertical.yScrollbar.grid( row = gridVertical.row, column = gridVertical.column + 11, sticky = Tkinter.N + Tkinter.S )
+		canvasHeight = min( 1000, gridPosition.master.winfo_screenheight() - 400 ) - 6 - int( gridVertical.xScrollbar[ 'width' ] )
+		canvasWidth = min( 650, gridPosition.master.winfo_screenwidth() - 100 ) - 6 - int( gridVertical.yScrollbar[ 'width' ] )
+		gridVertical.canvas = Tkinter.Canvas( gridVertical.master, height = canvasHeight, highlightthickness = 0, width = canvasWidth )
+		gridVertical.frameGridVertical.master = Tkinter.Frame( gridVertical.canvas )
+		for setting in gridVertical.repository.displayEntities:
+			setting.addToDialog( gridVertical.frameGridVertical )
+		gridVertical.frameGridVertical.master.update_idletasks()
+		gridVertical.xScrollbar.config( command = gridVertical.canvas.xview )
+		gridVertical.canvas[ 'xscrollcommand' ] = gridVertical.xScrollbar.set
+		gridVertical.yScrollbar.config( command = gridVertical.canvas.yview )
+		gridVertical.canvas[ 'yscrollcommand' ] = gridVertical.yScrollbar.set
+		gridVertical.canvas.create_window( 0, 0, anchor = Tkinter.NW, window = gridVertical.frameGridVertical.master )
+		gridVertical.canvas[ 'scrollregion' ] = gridVertical.frameGridVertical.master.grid_bbox()
+		gridVertical.canvas.grid( row = gridVertical.row, column = gridVertical.column, columnspan = 10, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
+		gridVertical.master.grid_rowconfigure( gridVertical.row, weight = 1 )
+		gridVertical.master.grid_columnconfigure( gridVertical.column + 9, weight = 1 )
+		gridVertical.frameGridVertical.master.lift()
+		self.oldLatentString = self.latentStringVar.getString()
+
+	def getFromPath( self, defaultRadioButton, directoryPath, repository ):
+		"Initialize."
+		self.defaultRadioButton = defaultRadioButton
+		self.directoryPath = directoryPath
+		self.name = 'PluginFrame'
+		self.repository = repository
+		repository.archive.append( self )
+		repository.displayEntities.append( self )
+		return self
+
+	def setStateToValue( self ):
+		"Set the state of all the plugins to the value."
+		for gridTableValue in self.gridTable.values():
+			cancelRepository( gridTableValue.repository )
+
+	def setToDisplay( self ):
+		"Set the plugins to the display."
+		pass
+
+	def update( self ):
+		"Update the frame."
+		self.repository.archive.remove( self )
+		for setting in self.repository.archive:
+			setting.setToDisplay()
+		writeSettingsPrintMessage( self.repository )
+		if self.oldLatentString != self.latentStringVar.getString():
+			for saveListener in self.repository.saveListenerTable.values():
+				saveListener()
+		self.repository.archive.append( self )
+		if self.latentStringVar.getString() in self.gridTable:
+			gridPosition = self.gridTable[ self.latentStringVar.getString() ]
+			gridPosition.master.lift()
+			gridPosition.frameGridVertical.master.focus_set()
+			return
+		self.createFrame( self.gridPosition )
+
+	def writeToArchiveWriter( self, archiveWriter ):
+		"Write tab separated name and value to the archive writer."
+		gridTableKeys = self.gridTable.keys()
+		gridTableKeys.sort()
+		for gridTableKey in gridTableKeys:
+			saveRepository( self.gridTable[ gridTableKey ].repository )
 
 
 class ProfileList:
@@ -1428,23 +1635,24 @@ class ProfileList:
 		self.value.sort()
 
 
-class ProfileListboxPreference( StringPreference ):
+class ProfileListboxSetting( StringSetting ):
+	"A class to handle the profile listbox."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 #http://www.pythonware.com/library/tkinter/introduction/x5453-patterns.htm
 		self.root = gridPosition.master
 		frame = Tkinter.Frame( gridPosition.master )
 		gridPosition.increment()
-		scrollbar = Tkinter.Scrollbar( frame, orient = Tkinter.VERTICAL )
+		scrollbar = HiddenScrollbar( frame )
 		self.listbox = Tkinter.Listbox( frame, selectmode = Tkinter.SINGLE, yscrollcommand = scrollbar.set )
 		self.listbox.bind( '<ButtonRelease-1>', self.buttonReleaseOne )
 		gridPosition.master.bind( '<FocusIn>', self.focusIn )
 		scrollbar.config( command = self.listbox.yview )
 		scrollbar.pack( side = Tkinter.RIGHT, fill = Tkinter.Y )
 		self.listbox.pack( side = Tkinter.LEFT, fill = Tkinter.BOTH, expand = 1 )
-		self.setListboxItems()
+		self.setStateToValue()
 		frame.grid( row = gridPosition.row, columnspan = 5, sticky = Tkinter.W )
-		self.repository.repositoryDialog.saveListenerTable[ 'updateProfileSaveListeners' ] = updateProfileSaveListeners
+		self.repository.saveListenerTable[ 'updateProfileSaveListeners' ] = updateProfileSaveListeners
 
 	def buttonReleaseOne( self, event ):
 		"Button one released."
@@ -1452,28 +1660,29 @@ class ProfileListboxPreference( StringPreference ):
 
 	def focusIn( self, event ):
 		"The root has gained focus."
-		self.setListboxItems()
+		getReadRepository( self.repository )
+		self.setStateToValue()
 
-	def getFromListPreference( self, listPreference, name, repository, value ):
+	def getFromListSetting( self, listSetting, name, repository, value ):
 		"Initialize."
 		self.getFromValueOnly( name, repository, value )
-		self.listPreference = listPreference
+		self.listSetting = listSetting
 		repository.archive.append( self )
 		repository.displayEntities.append( self )
 		return self
 
 	def getSelectedFolder( self ):
 		"Get the selected folder."
-		preferenceProfileSubfolder = getSubfolderWithBasename( self.value, getProfilesDirectoryPath( self.listPreference.craftTypeName ) )
-		if preferenceProfileSubfolder != None:
-			return preferenceProfileSubfolder
-		toolProfileSubfolder = getSubfolderWithBasename( self.value, getProfilesDirectoryInAboveDirectory( self.listPreference.craftTypeName ) )
+		settingProfileSubfolder = getSubfolderWithBasename( self.value, getProfilesDirectoryPath( self.listSetting.craftTypeName ) )
+		if settingProfileSubfolder != None:
+			return settingProfileSubfolder
+		toolProfileSubfolder = getSubfolderWithBasename( self.value, getProfilesDirectoryInAboveDirectory( self.listSetting.craftTypeName ) )
 		return toolProfileSubfolder
 
-	def setListboxItems( self ):
-		"Set the listbox items to the list preference."
+	def setStateToValue( self ):
+		"Set the listbox items to the list setting."
 		self.listbox.delete( 0, Tkinter.END )
-		for item in self.listPreference.value:
+		for item in self.listSetting.value:
 			self.listbox.insert( Tkinter.END, item )
 			if self.value == item:
 				self.listbox.select_set( Tkinter.END )
@@ -1490,204 +1699,114 @@ class ProfileListboxPreference( StringPreference ):
 		self.setValueToString( valueString )
 
 	def setValueToString( self, valueString ):
-		"Set the string to the value string."
+		"Set the value to the value string."
 		self.value = valueString
 		if self.getSelectedFolder() == None:
 			self.value = self.defaultValue
 		if self.getSelectedFolder() == None:
-			if len( self.listPreference.value ) > 0:
-				self.value = self.listPreference.value[ 0 ]
+			if len( self.listSetting.value ) > 0:
+				self.value = self.listSetting.value[ 0 ]
 
 
-class ProfileMenuRadio:
-	"A class to display a profile menu radio button."
-	def __init__( self, profilePluginFileName, menu, name, radioVar, value ):
-		"Create a profile menu radio."
-		self.activate = False
-		self.menu = menu
-		self.name = name
-		self.profileJoinName = profilePluginFileName + '.& /' + name
-		self.profilePluginFileName = profilePluginFileName
-		self.radioVar = radioVar
-		menu.add_radiobutton( label = name.replace( '_', ' ' ), command = self.clickRadio, value = self.profileJoinName, variable = self.radioVar )
-		self.menuLength = menu.index( Tkinter.END )
-		if value:
-			self.radioVar.set( self.profileJoinName )
-			self.menu.invoke( self.menuLength )
-		self.activate = True
-
-	def clickRadio( self ):
-		"Workaround for Tkinter bug, invoke and set the value when clicked."
-		if not self.activate:
-			return
-		self.radioVar.set( self.profileJoinName )
-		pluginModule = getCraftTypePluginModule( self.profilePluginFileName )
-		profilePluginPreferences = getReadRepository( pluginModule.getNewRepository() )
-		profilePluginPreferences.profileListbox.value = self.name
-		writePreferences( profilePluginPreferences )
-		profilePreferences = getReadProfileRepository()
-		plugins = profilePreferences.craftRadios
-		for plugin in plugins:
-			plugin.value = ( plugin.name == self.profilePluginFileName )
-		writePreferences( profilePreferences )
-		updateProfileSaveListeners()
-
-
-class ProfileSelectionMenuRadio:
-	"A class to display a profile selection menu radio button."
-	def addToDialog( self, gridPosition ):
-		"Add this to the dialog."
-		self.menuButtonDisplay.setToNameAddToDialog( self.valueName, gridPosition )
-		self.activate = False
-		self.menuButtonDisplay.menu.add_radiobutton( label = self.valueName, command = self.clickRadio, value = self.valueName, variable = self.menuButtonDisplay.radioVar )
-		self.menuLength = self.menuButtonDisplay.menu.index( Tkinter.END )
-		if self.value:
-			self.menuButtonDisplay.radioVar.set( self.valueName )
-			self.menuButtonDisplay.menu.invoke( self.menuLength )
-		self.activate = True
-		global globalProfileSaveListenerListTable
-		addElementToListTableIfNotThere( self.repository, self.repository.repositoryDialog, globalProfileSaveListenerListTable )
-
-	def clickRadio( self ):
-		"Workaround for Tkinter bug, invoke and set the value when clicked."
-		if not self.activate:
-			return
-		self.menuButtonDisplay.radioVar.set( self.valueName )
-		pluginModule = getCraftTypePluginModule()
-		profilePluginPreferences = getReadRepository( pluginModule.getNewRepository() )
-		profilePluginPreferences.profileListbox.value = self.name
-		writePreferences( profilePluginPreferences )
-		updateProfileSaveListeners()
-
-	def getFromMenuButtonDisplay( self, menuButtonDisplay, name, repository, value ):
-		"Initialize."
-		self.setToMenuButtonDisplay( menuButtonDisplay, name, repository, value )
-		self.valueName = name.replace( '_', ' ' )
-		return self
-
-	def setToMenuButtonDisplay( self, menuButtonDisplay, name, repository, value ):
-		"Initialize."
-		self.menuButtonDisplay = menuButtonDisplay
-		self.menuButtonDisplay.menuRadios.append( self )
-		self.name = name
-		self.repository = repository
-		self.value = value
-		repository.displayEntities.append( self )
-
-
-class ProfileTypeMenuRadio( ProfileSelectionMenuRadio ):
-	"A class to display a profile type menu radio button."
-	def clickRadio( self ):
-		"Workaround for Tkinter bug, invoke and set the value when clicked."
-		if not self.activate:
-			return
-		self.menuButtonDisplay.radioVar.set( self.valueName )
-		profilePreferences = getReadProfileRepository()
-		plugins = profilePreferences.craftRadios
-		for plugin in plugins:
-			plugin.value = ( plugin.name == self.name )
-		writePreferences( profilePreferences )
-		updateProfileSaveListeners()
-
-	def getFromMenuButtonDisplay( self, menuButtonDisplay, name, repository, value ):
-		"Initialize."
-		self.setToMenuButtonDisplay( menuButtonDisplay, name, repository, value )
-		self.valueName = getEachWordCapitalized( name )
-		return self
-
-
-class Radio( BooleanPreference ):
+class Radio( BooleanSetting ):
 	"A class to display, read & write a boolean with associated radio button."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		gridPosition.increment()
-		self.radiobutton = Tkinter.Radiobutton( gridPosition.master, command = self.clickRadio, text = self.name, value = gridPosition.row, variable = self.getIntVar() )
+		self.createRadioButton( gridPosition )
 		self.radiobutton.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
-		self.setDisplayState()
+		self.setStateToValue()
 
 	def clickRadio( self ):
 		"Workaround for Tkinter bug, set the value."
-		self.getIntVar().set( self.radiobutton[ 'value' ] )
+		self.latentStringVar.setString( self.radiobutton[ 'value' ] )
+		if self.updateFunction != None:
+			self.updateFunction()
 
-	def getFromRadio( self, name, radio, repository, value ):
+	def createRadioButton( self, gridPosition ):
+		"Create the radio button."
+		self.radiobutton = Tkinter.Radiobutton( gridPosition.master, command = self.clickRadio, text = self.name, value = self.name, variable = self.latentStringVar.getVar() )
+
+	def getFromRadio( self, latentStringVar, name, repository, value ):
 		"Initialize."
 		self.getFromValueOnly( name, repository, value )
-		self.radio = radio
+		self.latentStringVar = latentStringVar
 		repository.archive.append( self )
 		repository.displayEntities.append( self )
 #when addToMenu is added to this entity, the line below should be uncommented
 #		repository.menuEntities.append( self )
 		return self
 
-	def getIntVar( self ):
-		"Get the IntVar for this radio button group."
-		if len( self.radio ) == 0:
-			self.radio.append( Tkinter.IntVar() )
-		return self.radio[ 0 ]
-
 	def setToDisplay( self ):
 		"Set the boolean to the checkbutton."
-		self.value = ( self.getIntVar().get() == self.radiobutton[ 'value' ] )
+		self.value = ( self.latentStringVar.getString() == self.radiobutton[ 'value' ] )
 
-	def setDisplayState( self ):
+	def setSelect( self ):
+		"Set the int var and select the radio button."
+		self.latentStringVar.setString( self.radiobutton[ 'value' ] )
+		self.radiobutton.select()
+
+	def setStateToValue( self ):
 		"Set the checkbutton to the boolean."
 		if self.value:
 			self.setSelect()
 
-	def setSelect( self ):
-		"Set the int var and select the radio button."
-		self.getIntVar().set( self.radiobutton[ 'value' ] )
-		self.radiobutton.select()
-
 
 class RadioCapitalized( Radio ):
 	"A class to display, read & write a boolean with associated radio button."
-	def addRadioCapitalizedToDialog( self, gridPosition ):
-		"Add radio capitalized button to the dialog."
+	def createRadioButton( self, gridPosition ):
+		"Create the radio button."
 		capitalizedName = getEachWordCapitalized( self.name )
-		gridPosition.increment()
-		self.radiobutton = Tkinter.Radiobutton( gridPosition.master, command = self.clickRadio, text = capitalizedName, value = gridPosition.row, variable = self.getIntVar() )
-		self.radiobutton.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
-		self.setDisplayState()
-
-	def addToDialog( self, gridPosition ):
-		"Add this to the dialog."
-		self.addRadioCapitalizedToDialog( gridPosition )
+		self.radiobutton = Tkinter.Radiobutton( gridPosition.master, command = self.clickRadio, text = capitalizedName, value = self.name, variable = self.latentStringVar.getVar() )
 
 
-class RadioCapitalizedButton( RadioCapitalized ):
+class RadioCapitalizedButton( Radio ):
 	"A class to display, read & write a boolean with associated radio button."
-	def addRadioCapitalizedButtonToDialog( self, gridPosition ):
-		"Add this to the dialog."
-		self.addRadioCapitalizedToDialog( gridPosition )
-		self.displayButton = Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', text = getEachWordCapitalized( self.name ), command = self.displayDialog )
+	def createRadioButton( self, gridPosition ):
+		"Create the radio button."
+		capitalizedName = getEachWordCapitalized( self.name )
+		self.radiobutton = Tkinter.Radiobutton( gridPosition.master, command = self.clickRadio, text = capitalizedName, value = self.name, variable = self.latentStringVar.getVar() )
+		self.displayButton = Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', text = capitalizedName, command = self.displayDialog )
 		self.displayButton.grid( row = gridPosition.row, column = 3, columnspan = 2 )
-
-	def addToDialog( self, gridPosition ):
-		"Add this to the dialog."
-		self.addRadioCapitalizedButtonToDialog( gridPosition )
 
 	def displayDialog( self ):
 		"Display function."
 		ToolDialog().getFromPath( self.path ).display()
 		self.setSelect()
 
-	def getFromPath( self, name, path, radio, repository, value ):
+	def getFromPath( self, latentStringVar, name, path, repository, value ):
 		"Initialize."
-		self.getFromRadio( name, radio, repository, value )
+		self.getFromRadio( latentStringVar, name, repository, value )
 		self.path = path
 		return self
 
 
-class RadioCapitalizedProfileButton( RadioCapitalizedButton ):
+class RadioPlugin( RadioCapitalized ):
 	"A class to display, read & write a boolean with associated radio button."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		self.addRadioCapitalizedButtonToDialog( gridPosition )
-		self.repository.repositoryDialog.saveListenerTable[ 'updateProfileSaveListeners' ] = updateProfileSaveListeners
+		self.createRadioButton( gridPosition )
+		self.radiobutton[ 'activebackground' ] = 'black'
+		self.radiobutton[ 'activeforeground' ] = 'white'
+		self.radiobutton[ 'selectcolor' ] = 'white'
+		self.radiobutton[ 'borderwidth' ] = 3
+		self.radiobutton[ 'indicatoron' ] = 0
+		setButtonFontWeightString( self.radiobutton, self.important )
+		self.incrementGridPosition( gridPosition )
+		self.setStateToValue()
+
+	def getFromRadio( self, important, latentStringVar, name, repository, value ):
+		"Initialize."
+		self.important = important
+		return RadioCapitalized.getFromRadio( self, latentStringVar, name, repository, value )
+
+	def incrementGridPosition( self, gridPosition ):
+		"Increment the grid position."
+		gridPosition.incrementGivenNumberOfColumns( 8 )
+		self.radiobutton.grid( row = gridPosition.row, column = gridPosition.column, sticky = Tkinter.W )
 
 
-class TextPreference( StringPreference ):
+class TextSetting( StringSetting ):
 	"A class to display, read & write a text."
 	def __init__( self ):
 		"Set the update function to none."
@@ -1785,25 +1904,22 @@ class ToolDialog:
 		return self
 
 
-class WindowPosition( StringPreference ):
+class WindowPosition( StringSetting ):
 	"A class to display, read & write a window position."
 	def addToDialog( self, gridPosition ):
 		"Set the root to later get the geometry."
 		self.root = gridPosition.master
-		self.windowPositionName = 'windowPosition' + self.repository.title
 		self.setToDisplay()
 
-	def getFromValue( self, name, repository, value ):
+	def getFromValue( self, repository, value ):
 		"Initialize."
-		self.getFromValueOnly( name, repository, value )
+		self.getFromValueOnly( 'WindowPosition', repository, value )
 		repository.archive.append( self )
 		repository.displayEntities.append( self )
 		return self
 
 	def setToDisplay( self ):
 		"Set the string to the window position."
-		if self.name != self.windowPositionName:
-			return
 		try:
 			geometryString = self.root.geometry()
 		except:
@@ -1823,6 +1939,9 @@ class WindowVisibilities:
 	"A class to read & write window visibilities and display them."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
+		if self.repository.repositoryDialog == None:
+			self.isActive = False
+			return
 		self.isActive = self.repository.repositoryDialog.isFirst
 		if self.isActive:
 			self.repository.repositoryDialog.openDialogListeners.append( self )
@@ -1854,6 +1973,10 @@ class WindowVisibilities:
 				if keyPath not in self.value:
 					self.value.append( keyPath )
 
+	def setStateToValue( self ):
+		"Do nothing because the window visibility is not to be cancelled."
+		pass
+
 	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
 		"Set the value to the second and later words of a split line."
 		self.value = splitLine[ 1 : ]
@@ -1869,27 +1992,24 @@ class RepositoryDialog:
 		self.isFirst = ( len( globalRepositoryDialogListTable.keys() ) == 0 )
 		self.closeListener = CloseListener( self )
 		self.repository = repository
-		self.executables = []
 		self.gridPosition = GridVertical( 0, - 1 )
+		self.gridPosition.setExecutablesRepository( repository )
 		self.gridPosition.master = root
 		self.root = root
 		self.openDialogListeners = []
-		self.saveListenerTable = {}
 		repository.repositoryDialog = self
+		root.withdraw()
 		title = repository.title
 		if repository.fileNameInput != None:
 			title = os.path.basename( repository.fileNameInput.value ) + ' - ' + title
 		root.title( title )
 		fileHelpMenuBar = FileHelpMenuBar( root )
 		fileHelpMenuBar.completeMenu( self.close, repository, self.save, self )
-		if len( repository.displayEntities ) > 30:
-			self.addButtons( repository, root )
-		for preference in repository.displayEntities:
-			preference.addToDialog( self.gridPosition )
+		for setting in repository.displayEntities:
+			setting.addToDialog( self.gridPosition )
 		if self.gridPosition.row < 20:
-			self.addEmptyRow()
+			addEmptyRow( self.gridPosition )
 		self.addButtons( repository, root )
-		root.withdraw()
 		root.update_idletasks()
 		self.setWindowPositionDeiconify()
 		root.deiconify()
@@ -1903,42 +2023,29 @@ class RepositoryDialog:
 	def addButtons( self, repository, root ):
 		"Add buttons to the dialog."
 		columnIndex = 0
-		cancelCommand = self.close
-		cancelText = 'Cancel'
 		self.gridPosition.increment()
 		saveCommand = self.save
 		saveText = 'Save'
-		saveCloseCommand = self.saveClose
-		saveCloseText = repository.saveCloseTitle
 		if self.isFirst:
-			cancelCommand = self.iconify
-			cancelText = 'Iconify'
 			saveCommand = self.saveAll
 			saveText = 'Save All'
-			saveCloseCommand = self.saveReturnAll
-			saveCloseText = 'Save and Return All'
 		if repository.executeTitle != None:
-			executeButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'blue', text = repository.executeTitle, command = self.execute )
+			executeButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'blue', text = repository.executeTitle, command = self.gridPosition.execute )
 			executeButton.grid( row = self.gridPosition.row, column = columnIndex )
 			columnIndex += 1
-		self.helpButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'white', text = "?", command = self.repository.openQuestionMarkHelpPage )
+		self.helpButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'white', text = "?", command = HelpPageRepository( self.repository ).openPage )
 		self.helpButton.grid( row = self.gridPosition.row, column = columnIndex )
 		self.closeListener.listenToWidget( self.helpButton )
-		columnIndex += 1
-		cancelButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'red', command = cancelCommand, fg = 'red', text = cancelText )
+		columnIndex += 5
+		cancelButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'orange', command = self.cancel, fg = 'orange', text = 'Cancel' )
 		cancelButton.grid( row = self.gridPosition.row, column = columnIndex )
 		columnIndex += 1
-		if repository.saveCloseTitle != None:
-			saveCloseButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'orange', command = saveCloseCommand, fg = 'orange', text = saveCloseText )
-			saveCloseButton.grid( row = self.gridPosition.row, column = columnIndex )
-			columnIndex += 1
 		self.saveButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'darkgreen', command = saveCommand, fg = 'darkgreen', text = saveText )
 		self.saveButton.grid( row = self.gridPosition.row, column = columnIndex )
 
-	def addEmptyRow( self ):
-		"Add an empty row."
-		self.gridPosition.increment()
-		Tkinter.Label( self.root ).grid( row = self.gridPosition.row )
+	def cancel( self, event = None ):
+		"Set all entities to their saved state."
+		cancelRepository( self.repository )
 
 	def close( self, event = None ):
 		"The dialog was closed."
@@ -1947,25 +2054,9 @@ class RepositoryDialog:
 		except:
 			pass
 
-	def execute( self ):
-		"The execute button was clicked."
-		for executable in self.executables:
-			executable.execute()
-		self.save()
-		self.repository.execute()
-
-	def iconify( self ):
-		"The dialog was iconified."
-		self.root.iconify()
-		print( 'The first window, %s, has been iconified.' % self.repository.title )
-
 	def save( self, event = None ):
 		"Set the entities to the dialog then write them."
-		for preference in self.repository.archive:
-			preference.setToDisplay()
-		writePreferencesPrintMessage( self.repository )
-		for saveListener in self.saveListenerTable.values():
-			saveListener()
+		saveRepository( self.repository )
 
 	def saveAll( self ):
 		"Save all the dialogs."
@@ -1974,47 +2065,9 @@ class RepositoryDialog:
 		for globalRepositoryDialogValue in globalRepositoryDialogValues:
 			globalRepositoryDialogValue.save()
 
-	def saveClose( self ):
-		"Set the entities to the dialog, write them, then destroy the window."
-		self.save()
-		self.close()
-
-	def saveReturnAll( self ):
-		"Save and return all the dialogs."
-		self.saveAll()
-		global globalRepositoryDialogListTable
-		repositoryDialogListTableCopy = globalRepositoryDialogListTable.copy()
-		del repositoryDialogListTableCopy[ self ]
-		repositoryDialogCopyValues = euclidean.getListTableElements( repositoryDialogListTableCopy )
-		for repositoryDialogCopyValue in repositoryDialogCopyValues:
-			repositoryDialogCopyValue.close()
-
 	def setWindowPositionDeiconify( self ):
-		"Set the window position if that preference exists."
-		windowPositionName = 'windowPosition' + self.repository.title
-		for preference in self.repository.archive:
-			if isinstance( preference, WindowPosition ):
-				if preference.name == windowPositionName:
-					preference.setWindowPosition()
-					return
-
-
-class ProfileRepository:
-	"A class to handle the profile entities."
-	def __init__( self ):
-		"Set the default entities, execute title & repository fileName."
-		addListsToRepository( 'skeinforge_tools.profile.html', '', self )
-		profilePluginsDirectoryPath = getPluginsDirectoryPath()
-		self.craftTypeLabel = LabelDisplay().getFromName( 'Craft Types: ', self )
-		craftTypeFileNames = getPluginFileNames()
-		craftTypeRadio = []
-		self.craftRadios = []
-		craftTypeFileNames.sort()
-		for craftTypeFileName in craftTypeFileNames:
-			path = os.path.join( profilePluginsDirectoryPath, craftTypeFileName )
-			craftRadio = RadioCapitalizedProfileButton().getFromPath( craftTypeFileName, path, craftTypeRadio, self, craftTypeFileName == 'extrusion' )
-			self.craftRadios.append( craftRadio )
-		directoryName = getProfilesDirectoryPath()
-		makeDirectory( directoryName )
-		self.windowPositionPreferences.value = '0+200'
-
+		"Set the window position if that setting exists."
+		for setting in self.repository.archive:
+			if setting.name == 'WindowPosition':
+				setting.setWindowPosition()
+				return

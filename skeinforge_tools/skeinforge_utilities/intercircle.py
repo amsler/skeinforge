@@ -98,11 +98,11 @@ def getAroundsFromLoops( loops, radius ):
 def getAroundsFromPoints( points, radius ):
 	"Get the arounds from the points."
 	arounds = []
-	muchGreaterThanRadius = 2.5 * abs( radius )
-	centers = getCentersFromPoints( points, abs( radius ) )
+	radius = abs( radius )
+	centers = getCentersFromPoints( points, radius )
 	for center in centers:
-		inset = getSimplifiedInsetFromClockwiseLoop( center, abs( radius ) )
-		if isLargeSameDirection( inset, center, muchGreaterThanRadius ):
+		inset = getSimplifiedInsetFromClockwiseLoop( center, radius )
+		if isLargeSameDirection( inset, center, radius ):
 			arounds.append( inset )
 	return arounds
 
@@ -276,15 +276,20 @@ def getLargestInsetLoopFromLoop( loop, radius ):
 def getLargestInsetLoopFromLoopNoMatterWhat( loop, radius ):
 	"Get the largest inset loop from the loop, even if the radius has to be shrunk and even if there is still no inset loop."
 	largestInsetLoop = getLargestInsetLoopFromLoop( loop, radius )
-	if largestInsetLoop == None:
-		largestInsetLoop = getLargestInsetLoopFromLoop( loop, 0.55 * radius )
-	if largestInsetLoop == None:
-		largestInsetLoop = getLargestInsetLoopFromLoop( loop, 0.35 * radius )
-	if largestInsetLoop == None:
-		print( 'This should never happen, there should always be a largestInsetLoop in getLargestInsetLoopFromLoopNoMatterWhat in intercircle.' )
-		print( loop )
-		return loop
-	return largestInsetLoop
+	if largestInsetLoop != None:
+		return largestInsetLoop
+	largestInsetLoop = getLargestInsetLoopFromLoop( loop, 0.55 * radius )
+	if largestInsetLoop != None:
+		return largestInsetLoop
+	largestInsetLoop = getLargestInsetLoopFromLoop( loop, 0.35 * radius )
+	if largestInsetLoop != None:
+		return largestInsetLoop
+	largestInsetLoop = getLargestInsetLoopFromLoop( loop, 0.2 * radius )
+	if largestInsetLoop != None:
+		return largestInsetLoop
+	print( 'This should never happen, there should always be a largestInsetLoop in getLargestInsetLoopFromLoopNoMatterWhat in intercircle.' )
+	print( loop )
+	return loop
 
 def getLoopsFromLoopsDirection( isWiddershins, loops ):
 	"Get the loops going round in a given direction."
@@ -326,15 +331,11 @@ def getWithoutIntersections( loop ):
 		lastLoopLength = len( loop )
 	return loop
 
-def isLarge( loop, requiredSize ):
-	"Determine if the loop is as large as the required size."
-	return euclidean.getMaximumSpan( loop ) > abs( requiredSize )
-
-def isLargeSameDirection( inset, loop, requiredSize ):
-	"Determine if the inset is in the same direction as the loop and if the inset is as large as the required size."
+def isLargeSameDirection( inset, loop, radius ):
+	"Determine if the inset is in the same direction as the loop and it is large enough."
 	if euclidean.isWiddershins( inset ) != euclidean.isWiddershins( loop ):
 		return False
-	return isLarge( inset, requiredSize )
+	return euclidean.getMaximumSpan( inset ) > 2.01 * abs( radius )
 
 def isLoopIntersectingLoop( anotherLoop, loop ):
 	"Determine if the a loop is intersecting another loop."
@@ -390,16 +391,8 @@ def removeIntersection( loop ):
 
 class BoundingLoop:
 	"A class to hold a bounding loop composed of a minimum complex, a maximum complex and an outset loop."
-	def __cmp__( self, other ):
-		"Get comparison in order to sort bounding loops in descending order of area."
-		if self.area < other.area:
-			return 1
-		if self.area > other.area:
-			return - 1
-		return 0
-
 	def __eq__( self, other ):
-		"Determine whether this vector is identical to other one."
+		"Determine whether this bounding loop is identical to other one."
 		if other == None:
 			return False
 		return self.minimum == other.minimum and self.maximum == other.maximum and self.loop == other.loop

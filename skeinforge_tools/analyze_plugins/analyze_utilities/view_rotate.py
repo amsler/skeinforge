@@ -15,7 +15,7 @@ import __init__
 from skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base import MouseToolBase
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 import math
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -175,7 +175,7 @@ class ViewpointRotate( MouseToolBase ):
 				start = buttonOnePressedAngle,
 				outline = motionColorName,
 				outlinestipple = self.window.motionStippleName,
-				style = preferences.Tkinter.ARC,
+				style = settings.Tkinter.ARC,
 				tags = 'mouse_item',
 				width = motionWidth )
 		if abs( latitudeLongitude.deltaLatitude ) > 0.0:
@@ -210,6 +210,6 @@ class ViewpointRotate( MouseToolBase ):
 		self.repository.viewpointLongitude.value = latitudeLongitude.longitude
 		self.repository.viewpointLongitude.setStateToValue()
 		startCoordinate = None
-		preferences.writePreferences( self.repository )
+		settings.writeSettings( self.repository )
 		self.window.update()
 		self.destroyEverything()

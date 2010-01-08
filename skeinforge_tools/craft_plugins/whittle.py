@@ -51,11 +51,12 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
+from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_tools.skeinforge_utilities import settings
 import math
 import sys
 
@@ -74,7 +75,7 @@ def getCraftedTextFromText( gcodeText, whittleRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'whittle' ):
 		return gcodeText
 	if whittleRepository == None:
-		whittleRepository = preferences.getReadRepository( WhittleRepository() )
+		whittleRepository = settings.getReadRepository( WhittleRepository() )
 	if not whittleRepository.activateWhittle.value:
 		return gcodeText
 	return WhittleSkein().getCraftedGcode( whittleRepository, gcodeText )
@@ -92,13 +93,13 @@ def writeOutput( fileName = '' ):
 
 
 class WhittleRepository:
-	"A class to handle the whittle preferences."
+	"A class to handle the whittle settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.whittle.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Whittled', self, '' )
-		self.activateWhittle = preferences.BooleanPreference().getFromValue( 'Activate Whittle:', self, False )
-		self.maximumVerticalStep = preferences.FloatSpin().getFromValue( 0.02, 'Maximum Vertical Step (mm):', self, 0.42, 0.1 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.whittle.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Whittled', self, '' )
+		self.activateWhittle = settings.BooleanSetting().getFromValue( 'Activate Whittle:', self, False )
+		self.maximumVerticalStep = settings.FloatSpin().getFromValue( 0.02, 'Maximum Vertical Step (mm):', self, 0.42, 0.1 )
 		self.executeTitle = 'Whittle'
 
 	def execute( self ):
@@ -188,7 +189,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

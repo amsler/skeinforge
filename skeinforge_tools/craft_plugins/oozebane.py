@@ -4,11 +4,11 @@ Oozebane is a script to turn off the extruder before the end of a thread and tur
 
 The default 'Activate Oozebane' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The important value for the oozebane preferences is "Early Shutdown Distance" which is the distance before the end of the thread that the extruder will be turned off, the default is 1.2.  A higher distance means the extruder will turn off sooner and the end of the line will be thinner.
+The important value for the oozebane settings is "Early Shutdown Distance" which is the distance before the end of the thread that the extruder will be turned off, the default is 1.2.  A higher distance means the extruder will turn off sooner and the end of the line will be thinner.
 
-When oozebane turns the extruder off, it slows the feed rate down in steps so in theory the thread will remain at roughly the same thickness until the end.  The "Turn Off Steps" preference is the number of steps, the more steps the smaller the size of the step that the feed rate will be decreased and the larger the size of the resulting gcode file, the default is three.
+When oozebane turns the extruder off, it slows the feed rate down in steps so in theory the thread will remain at roughly the same thickness until the end.  The "Turn Off Steps" setting is the number of steps, the more steps the smaller the size of the step that the feed rate will be decreased and the larger the size of the resulting gcode file, the default is three.
 
-Oozebane also turns the extruder on just before the start of a thread.  The "Early Startup Maximum Distance" preference is the maximum distance before the thread starts that the extruder will be turned off, the default is 1.2.  The longer the extruder has been off, the earlier the extruder will turn back on, the ratio is one minus one over e to the power of the distance the extruder has been off over the "Early Startup Distance Constant".  The 'First Early Startup Distance' preference is the distance before the first thread starts that the extruder will be turned off.  This value should be high because, according to Marius, the extruder takes a second or two to extrude when starting for the first time, the default is twenty five.
+Oozebane also turns the extruder on just before the start of a thread.  The "Early Startup Maximum Distance" setting is the maximum distance before the thread starts that the extruder will be turned off, the default is 1.2.  The longer the extruder has been off, the earlier the extruder will turn back on, the ratio is one minus one over e to the power of the distance the extruder has been off over the "Early Startup Distance Constant".  The 'First Early Startup Distance' setting is the distance before the first thread starts that the extruder will be turned off.  This value should be high because, according to Marius, the extruder takes a second or two to extrude when starting for the first time, the default is twenty five.
 
 When oozebane reaches the point where the extruder would of turned on, it slows down so that the thread will be thick at that point.  Afterwards it speeds the extruder back up to operating speed.  The speed up distance is the "After Startup Distance".
 
@@ -53,12 +53,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
 from skeinforge_tools.skeinforge_utilities import interpret
+from skeinforge_tools.skeinforge_utilities import settings
 import math
 import sys
 
@@ -77,7 +78,7 @@ def getCraftedTextFromText( gcodeText, oozebaneRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'oozebane' ):
 		return gcodeText
 	if oozebaneRepository == None:
-		oozebaneRepository = preferences.getReadRepository( OozebaneRepository() )
+		oozebaneRepository = settings.getReadRepository( OozebaneRepository() )
 	if not oozebaneRepository.activateOozebane.value:
 		return gcodeText
 	return OozebaneSkein().getCraftedGcode( gcodeText, oozebaneRepository )
@@ -94,20 +95,20 @@ def writeOutput( fileName = '' ):
 
 
 class OozebaneRepository:
-	"A class to handle the oozebane preferences."
+	"A class to handle the oozebane settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.oozebane.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Oozebaned', self, '' )
-		self.activateOozebane = preferences.BooleanPreference().getFromValue( 'Activate Oozebane', self, False )
-		self.afterStartupDistance = preferences.FloatSpin().getFromValue( 0.7, 'After Startup Distance (millimeters):', self, 1.7, 1.2 )
-		self.earlyShutdownDistance = preferences.FloatSpin().getFromValue( 0.7, 'Early Shutdown Distance (millimeters):', self, 1.7, 1.2 )
-		self.earlyStartupDistanceConstant = preferences.FloatSpin().getFromValue( 10.0, 'Early Startup Distance Constant (millimeters):', self, 30.0, 20.0 )
-		self.earlyStartupMaximumDistance = preferences.FloatSpin().getFromValue( 0.7, 'Early Startup Maximum Distance (millimeters):', self, 1.7, 1.2 )
-		self.firstEarlyStartupDistance = preferences.FloatSpin().getFromValue( 5.0, 'First Early Startup Distance (millimeters):', self, 45.0, 25.0 )
-		self.minimumDistanceForEarlyStartup = preferences.FloatSpin().getFromValue( 0.0, 'Minimum Distance for Early Startup (millimeters):', self, 10.0, 0.0 )
-		self.minimumDistanceForEarlyShutdown = preferences.FloatSpin().getFromValue( 0.0, 'Minimum Distance for Early Shutdown (millimeters):', self, 10.0, 0.0 )
-		self.slowdownStartupSteps = preferences.IntSpin().getFromValue( 2, 'Slowdown Startup Steps (positive integer):', self, 5, 3 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.oozebane.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Oozebaned', self, '' )
+		self.activateOozebane = settings.BooleanSetting().getFromValue( 'Activate Oozebane', self, False )
+		self.afterStartupDistance = settings.FloatSpin().getFromValue( 0.7, 'After Startup Distance (millimeters):', self, 1.7, 1.2 )
+		self.earlyShutdownDistance = settings.FloatSpin().getFromValue( 0.7, 'Early Shutdown Distance (millimeters):', self, 1.7, 1.2 )
+		self.earlyStartupDistanceConstant = settings.FloatSpin().getFromValue( 10.0, 'Early Startup Distance Constant (millimeters):', self, 30.0, 20.0 )
+		self.earlyStartupMaximumDistance = settings.FloatSpin().getFromValue( 0.7, 'Early Startup Maximum Distance (millimeters):', self, 1.7, 1.2 )
+		self.firstEarlyStartupDistance = settings.FloatSpin().getFromValue( 5.0, 'First Early Startup Distance (millimeters):', self, 45.0, 25.0 )
+		self.minimumDistanceForEarlyStartup = settings.FloatSpin().getFromValue( 0.0, 'Minimum Distance for Early Startup (millimeters):', self, 10.0, 0.0 )
+		self.minimumDistanceForEarlyShutdown = settings.FloatSpin().getFromValue( 0.0, 'Minimum Distance for Early Shutdown (millimeters):', self, 10.0, 0.0 )
+		self.slowdownStartupSteps = settings.IntSpin().getFromValue( 2, 'Slowdown Startup Steps (positive integer):', self, 5, 3 )
 		self.executeTitle = 'Oozebane'
 
 	def execute( self ):
@@ -556,7 +557,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

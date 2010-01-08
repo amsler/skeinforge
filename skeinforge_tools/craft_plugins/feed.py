@@ -1,13 +1,35 @@
 """
 This page is in the table of contents.
-Feed is a script to set the feed rate.
+The feed script sets the maximum feed rate, operating feed rate & travel feed rate.
 
-The default 'Activate Feed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The feed script sets the maximum feed rate, operating feed rate & travel feed rate.
+==Operation==
+The default 'Activate Feed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The feed rate for the shape will be set to the 'Feed Rate" preference.  The 'Travel Feed Rate' is the feed rate when the cutter is off.  The default is 16 mm/s and it could be set as high as the cutter can be moved, it does not have to be limited by the maximum cutter rate.
+==Settings==
+===Feed Rate===
+Default is 16 millimeters/second.
 
-The 'Maximum Z Drill Feed Rate' is the maximum feed that the tool head will move in the z direction while the tool is on, the default is 0.1 mm/s.  The 'Maximum Z Feed Rate' is the maximum feed that the tool head will move in the z direction while the tool is off.  The default of 8 millimeters per second is the maximum z feed of Nophead's direct drive z stage, the belt driven z stages have a lower maximum feed rate.  If your firmware limits the z feed rate, you do not need to set these settings.
+Defines the feed rate for the shape.
 
+===Maximum Z Feed Rate===
+If your firmware limits the z feed rate, you do not need to set these settings.
+
+====Maximum Z Drill Feed Rate====
+Default is 0.1 millimeters/second.
+
+Defines the maximum feed that the tool head will move in the z direction while the tool is on.
+
+====Maximum Z Travel Feed Rate====
+Default is 8 millimeters/second.
+
+Defines the maximum feed that the tool head will move in the z direction while the tool is off.  The default of 8 millimeters per second is the maximum z feed of Nophead's direct drive z stage, the belt driven z stages have a lower maximum feed rate.
+
+===Travel Feed Rate===
+Default is 16 millimeters/second.
+
+Defines the feed rate when the cutter is off.  The travel feed rate could be set as high as the cutter can be moved, it does not have to be limited by the maximum cutter rate.
+
+==Examples==
 The following examples feed the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and feed.py.
 
 
@@ -45,14 +67,15 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import analyze
+from skeinforge_tools import profile
+from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
-from skeinforge_tools.skeinforge_utilities import preferences
-from skeinforge_tools import analyze
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_tools.skeinforge_utilities import settings
 import math
 import sys
 
@@ -71,7 +94,7 @@ def getCraftedTextFromText( gcodeText, feedRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'feed' ):
 		return gcodeText
 	if feedRepository == None:
-		feedRepository = preferences.getReadRepository( FeedRepository() )
+		feedRepository = settings.getReadRepository( FeedRepository() )
 	if not feedRepository.activateFeed.value:
 		return gcodeText
 	return FeedSkein().getCraftedGcode( gcodeText, feedRepository )
@@ -88,16 +111,17 @@ def writeOutput( fileName = '' ):
 
 
 class FeedRepository:
-	"A class to handle the feed preferences."
+	"A class to handle the feed settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.feed.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Feed', self, '' )
-		self.activateFeed = preferences.BooleanPreference().getFromValue( 'Activate Feed:', self, True )
-		self.feedRatePerSecond = preferences.FloatSpin().getFromValue( 2.0, 'Feed Rate (mm/s):', self, 50.0, 16.0 )
-		self.maximumZDrillFeedRatePerSecond = preferences.FloatSpin().getFromValue( 0.02, 'Maximum Z Drill Feed Rate (mm/s):', self, 0.5, 0.1 )
-		self.maximumZTravelFeedRatePerSecond = preferences.FloatSpin().getFromValue( 0.5, 'Maximum Z Travel Feed Rate (mm/s):', self, 10.0, 8.0 )
-		self.travelFeedRatePerSecond = preferences.FloatSpin().getFromValue( 2.0, 'Travel Feed Rate (mm/s):', self, 50.0, 16.0 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.feed.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Feed', self, '' )
+		self.activateFeed = settings.BooleanSetting().getFromValue( 'Activate Feed:', self, True )
+		self.feedRatePerSecond = settings.FloatSpin().getFromValue( 2.0, 'Feed Rate (mm/s):', self, 50.0, 16.0 )
+		settings.LabelDisplay().getFromName( 'Maximum Z Feed Rate:', self )
+		self.maximumZDrillFeedRatePerSecond = settings.FloatSpin().getFromValue( 0.02, 'Maximum Z Drill Feed Rate (mm/s):', self, 0.5, 0.1 )
+		self.maximumZTravelFeedRatePerSecond = settings.FloatSpin().getFromValue( 0.5, 'Maximum Z Travel Feed Rate (mm/s):', self, 10.0, 8.0 )
+		self.travelFeedRatePerSecond = settings.FloatSpin().getFromValue( 2.0, 'Travel Feed Rate (mm/s):', self, 50.0, 16.0 )
 		self.executeTitle = 'Feed'
 
 	def execute( self ):
@@ -178,7 +202,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

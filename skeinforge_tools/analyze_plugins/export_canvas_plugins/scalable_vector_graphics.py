@@ -15,7 +15,7 @@ An export canvas plugin is a script in the export_canvas_plugins folder which ha
 from __future__ import absolute_import
 import __init__
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 import cStringIO
 import os
 import sys
@@ -39,12 +39,12 @@ def parseLineReplace( firstWordTable, line, output ):
 
 
 class ScalableVectorGraphicsRepository:
-	"A class to handle the export preferences."
+	"A class to handle the export settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.analyze_plugins.export_canvas_plugins.svg.html', '', self )
-		self.fileExtension = preferences.StringPreference().getFromValue( 'File Extension:', self, '' )
-		self.svgProgram = preferences.StringPreference().getFromValue( 'Scalable Vector Graphics Program:', self, 'netscape' )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.analyze_plugins.export_canvas_plugins.svg.html', '', self )
+		self.fileExtension = settings.StringSetting().getFromValue( 'File Extension:', self, '' )
+		self.svgProgram = settings.StringSetting().getFromValue( 'Scalable Vector Graphics Program:', self, 'netscape' )
 
 	def addCanvasLineToOutput( self, canvasLinesOutput, objectIDNumber ):
 		"Add the canvas line to the output."
@@ -62,13 +62,13 @@ class ScalableVectorGraphicsRepository:
 	def execute( self ):
 		"Export the canvas as an svg file."
 		svgFileName = gcodec.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )
-		boundingBox = self.canvas.bbox( preferences.Tkinter.ALL ) # tuple (w, n, e, s)
+		boundingBox = self.canvas.bbox( settings.Tkinter.ALL ) # tuple (w, n, e, s)
 		self.boxW = boundingBox[ 0 ]
 		self.boxN = boundingBox[ 1 ]
 		boxWidth = boundingBox[ 2 ] - self.boxW
 		boxHeight = boundingBox[ 3 ] - self.boxN
 		print( 'Exported svg file saved as ' + svgFileName )
-		svgTemplateText = gcodec.getFileTextInFileDirectory( preferences.__file__, 'svg_canvas.template' )
+		svgTemplateText = gcodec.getFileTextInFileDirectory( settings.__file__, 'svg_canvas.template' )
 		output = cStringIO.StringIO()
 		lines = gcodec.getTextLines( svgTemplateText )
 		firstWordTable = {}
@@ -84,7 +84,7 @@ class ScalableVectorGraphicsRepository:
 		if svgProgram == '':
 			return
 		if svgProgram == 'webbrowser':
-			preferences.openWebPage( svgFileName )
+			settings.openWebPage( svgFileName )
 			return
 		svgFilePath = '"' + os.path.normpath( svgFileName ) + '"' # " to send in file name with spaces
 		shellCommand = svgProgram + ' ' + svgFilePath
@@ -127,7 +127,7 @@ class ScalableVectorGraphicsRepository:
 
 def main():
 	"Display the file or directory dialog."
-	preferences.startMainLoopFromConstructor( getNewRepository() )
+	settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

@@ -4,8 +4,13 @@ Analyze is a script to access the plugins which analyze a gcode file.
 
 The plugin buttons which are commonly used are bolded and the ones which are rarely used have normal font weight.
 
+==Gcodes==
+
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
+
+and at:
+http://reprap.org/bin/view/Main/MCodeReference
 
 A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
@@ -17,7 +22,7 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 from skeinforge_tools.meta_plugins import polyfile
 import os
 import sys
@@ -30,7 +35,7 @@ __license__ = "GPL 3.0"
 
 def addToMenu( master, menu, repository, window ):
 	"Add a tool plugin menu."
-	preferences.addPluginsParentToMenu( getPluginsDirectoryPath(), menu, __file__, getPluginFileNames() )
+	settings.addPluginsParentToMenu( getPluginsDirectoryPath(), menu, __file__, getPluginFileNames() )
 
 def getPluginFileNames():
 	"Get analyze plugin fileNames."
@@ -56,14 +61,13 @@ def writeOutput( fileName, gcodeText = '' ):
 
 
 class AnalyzeRepository:
-	"A class to handle the analyze preferences."
+	"A class to handle the analyze settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.analyze.html', '', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Analyzed', self, '' )
-		self.analyzeLabel = preferences.LabelDisplay().getFromName( 'Open Preferences: ', self )
-		importantFileNames = [ 'behold', 'skeinview', 'statistic' ]
-		preferences.getDisplayToolButtonsRepository( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.analyze.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Analyze', self, '' )
+		importantFileNames = [ 'skeinview', 'behold', 'statistic' ]
+		settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		self.executeTitle = 'Analyze'
 
 	def execute( self ):
@@ -78,7 +82,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

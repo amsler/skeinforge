@@ -2,11 +2,27 @@
 This page is in the table of contents.
 Comb is a script to comb the extrusion hair of a gcode file.
 
+The comb manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb
+
+Comb bends the extruder travel paths around holes in the slices, to avoid stringers.  It moves the extruder to the inside of perimeters before turning the extruder on so any start up ooze will be inside the shape.
+
+==Operation==
 The default 'Activate Comb' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-Comb bends the extruder travel paths around holes in the slices, to avoid stringers.  It moves the extruder to the inside of perimeters before turning the extruder on so any start up ooze will be inside the shape.  The 'Minimum Departure Distance over Perimeter Width' is the ratio of the minimum distance that the extruder will travel and loop before leaving a perimeter.  A high value means the extruder will loop many times before leaving, so that the ooze will finish within the perimeter, a low value means the extruder will not loop and the stringers will be thicker.  Since it sometimes loops when there's no need, the default is zero.
+==Settings==
 
-The 'Running Jump Space over Perimeter Width' ratio times the perimeter width is the running jump space that is added before going from one island to another.  The default is zero because sometimes an unnecessary running jump space is added, if you want to use it a reasonable value is five.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer across the islands will be thinner.  If the extruder does not have acceleration code, the speed will not be greater so there would be no benefit and 'Running Jump Space over Perimeter Width' should be left at zero.
+===Minimum Departure Distance over Perimeter Width===
+Default is zero.
+
+Defines the ratio of the minimum distance that the extruder will travel and loop before leaving a perimeter.  A high value means the extruder will loop many times before leaving, so that the ooze will finish within the perimeter, a low value means the extruder will not loop and the stringers will be thicker.  Since it sometimes loops when there's no need, the default is zero.
+
+===Running Jump Space over Perimeter Width===
+Default is zero.
+
+Defines the ratio of the running jump space that is added before going from one island to another to the perimeter width.  The default is zero because sometimes an unnecessary running jump space is added, if you want to use it a reasonable value is five.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer across the islands will be thinner.  If the extruder does not have acceleration code, the speed will not be greater so there would be no benefit and 'Running Jump Space over Perimeter Width' should be left at zero.
+
+==Examples==
 
 The following examples comb the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and comb.py.
 
@@ -45,13 +61,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
+from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
 from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import preferences
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_tools.skeinforge_utilities import settings
 import sys
 
 
@@ -69,7 +86,7 @@ def getCraftedTextFromText( gcodeText, combRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'comb' ):
 		return gcodeText
 	if combRepository == None:
-		combRepository = preferences.getReadRepository( CombRepository() )
+		combRepository = settings.getReadRepository( CombRepository() )
 	if not combRepository.activateComb.value:
 		return gcodeText
 	return CombSkein().getCraftedGcode( combRepository, gcodeText )
@@ -86,14 +103,15 @@ def writeOutput( fileName = '' ):
 
 
 class CombRepository:
-	"A class to handle the comb preferences."
+	"A class to handle the comb settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.comb.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Combed', self, '' )
-		self.activateComb = preferences.BooleanPreference().getFromValue( 'Activate Comb', self, True )
-		self.minimumDepartureDistanceOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.0, 'Minimum Departure Distance over Perimeter Width (ratio):', self, 50.0, 0.0 )
-		self.runningJumpSpaceOverPerimeterWidth = preferences.FloatSpin().getFromValue( 0.0, 'Running Jump Space over Perimeter Width (ratio):', self, 10.0, 0.0 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.comb.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Combed', self, '' )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb' )
+		self.activateComb = settings.BooleanSetting().getFromValue( 'Activate Comb', self, True )
+		self.minimumDepartureDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Minimum Departure Distance over Perimeter Width (ratio):', self, 50.0, 0.0 )
+		self.runningJumpSpaceOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Running Jump Space over Perimeter Width (ratio):', self, 10.0, 0.0 )
 		self.executeTitle = 'Comb'
 
 	def execute( self ):
@@ -391,7 +409,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

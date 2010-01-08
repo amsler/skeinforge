@@ -15,18 +15,69 @@
 <p><tt><br>
 Export is a script to pick an export plugin and optionally print the output to a file.<br>
  <br>
+The export manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Export">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Export</a><br>
+ <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Also Send Output To">Also Send Output To</a><br />
+&nbsp;&nbsp;<a href="#Delete Comments">Delete Comments</a><br />
+&nbsp;&nbsp;<a href="#Export Operations">Export Operations</a><br />
+&nbsp;&nbsp;<a href="#File Extension">File Extension</a><br />
+&nbsp;&nbsp;<a href="#Save Penultimate Gcode'">Save Penultimate Gcode'</a><br />
+<a href="#Alterations">Alterations</a><br />
+&nbsp;&nbsp;<a href="#replace.csv">replace.csv</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Export' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-Export presents the user with a choice of the export plugins in the export_plugins folder.  The chosen plugin will then modify the gcode or translate it into another format.  There is also the "Do Not Change Output" choice, which will not change the output.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Also Send Output To" id="Also Send Output To"></a><h3>Also Send Output To</h3>
+
+Default is empty.<br>
  <br>
-To print the output to a file, add the file output name to the "Also Send Output To" field.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  The default is nothing, in which case the output will not be printed to a file.  The 'File Extension' field determines the file extension added to the name of the output file, the default is gcode.<br>
+Defines the output name for sending to a file or pipe.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  With the empty default, nothing will be done.<br>
  <br>
-If the "Delete Comments" checkbox is true, export will delete the comments.  The comments are not necessary to run a fabricator.<br>
+<a name="Delete Comments" id="Delete Comments"></a><h3>Delete Comments</h3>
+
+Default is on.<br>
  <br>
+When selected, export will delete the comments.  The comments are not necessary to run a fabricator.<br>
+ <br>
+<a name="Export Operations" id="Export Operations"></a><h3>Export Operations</h3>
+
+Export presents the user with a choice of the export plugins in the export_plugins folder.  The chosen plugin will then modify the gcode or translate it into another format.  There is also the "Do Not Change Output" choice, which will not change the output.  An export plugin is a script in the export_plugins folder which has the functions getOutput, isReplaceable and if it's output is not replaceable, writeOutput.<br>
+ <br>
+<a name="File Extension" id="File Extension"></a><h3>File Extension</h3>
+
+Default is gcode.<br>
+ <br>
+Defines the file extension added to the name of the output file.<br>
+ <br>
+<a name="Save Penultimate Gcode'" id="Save Penultimate Gcode'"></a><h3>Save Penultimate Gcode'</h3>
+
+Default is off.<br>
+ <br>
+When selected, export will save the gcode with the suffix '_penultimate.gcode' just before it is exported.  This is useful because the code after it is exported could be in a form which the viewers can not display.<br>
+ <br>
+<a name="Alterations" id="Alterations"></a><h2>Alterations</h2>
+<hr>
+
+Export looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Export does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the skeinforge_tools folder.<br>
+ <br>
+<a name="replace.csv" id="replace.csv"></a><h3>replace.csv</h3>
+
 When export is exporting the code, if there is a file replace.csv, it will replace the word in the first column by its replacement in the second column.  There is an example file replace_example.csv to demonstrate the comma separated format, which can be edited in a text editor or a spreadsheet.<br>
  <br>
-An export plugin is a script in the export_plugins folder which has the functions getOuput and writeOutput.<br>
- <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples export the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and export.py.<br>
  <br>
  <br>
@@ -81,7 +132,7 @@ The export tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 </td><td width="25%" valign=top><a href="os.html">os</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.preferences.html">skeinforge_tools.skeinforge_utilities.preferences</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
 </td><td width="25%" valign=top><a href="time.html">time</a><br>
 </td></tr></table></td></tr></table><p>
@@ -102,10 +153,10 @@ The export tool has created the file:<br>
 <font color="#000000" face="helvetica, arial"><a name="ExportRepository">class <strong>ExportRepository</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;export&nbsp;preferences.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;export&nbsp;settings.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="ExportRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;preferences,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;preferences&nbsp;fileName.</tt></dd></dl>
+<dl><dt><a name="ExportRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;settings,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;settings&nbsp;fileName.</tt></dd></dl>
 
 <dl><dt><a name="ExportRepository-execute"><strong>execute</strong></a>(self)</dt><dd><tt>Export&nbsp;button&nbsp;has&nbsp;been&nbsp;clicked.</tt></dd></dl>
 

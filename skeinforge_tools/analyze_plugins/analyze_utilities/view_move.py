@@ -13,7 +13,7 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base import MouseToolBase
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __date__ = "$Date: 2008/21/04 $"
@@ -57,11 +57,6 @@ class ViewpointMove( MouseToolBase ):
 		"The up arrow was pressed."
 		self.setScrollPaneMove( complex( 0.0, - 1.0 ) )
 
-	def setScrollPaneMove( self, relativeMotion ):
-		"The up arrow was pressed."
-		self.scrollPaneFraction = self.window.getScrollPaneFraction()
-		self.relativeMove( relativeMotion )
-
 	def motion( self, event, shift = False ):
 		"The mouse moved, <Motion> function."
 		if self.buttonOnePressedScreenCoordinate == None:
@@ -79,5 +74,10 @@ class ViewpointMove( MouseToolBase ):
 		"Move the view given the relative motion."
 		relativeScreenMotion = complex( relativeMotion.real / float( self.window.screenSize.real ), relativeMotion.imag / float( self.window.screenSize.imag ) )
 		moveTo = self.scrollPaneFraction - relativeScreenMotion
-		self.window.relayXview( preferences.Tkinter.MOVETO, moveTo.real )
-		self.window.relayYview( preferences.Tkinter.MOVETO, moveTo.imag )
+		self.window.relayXview( settings.Tkinter.MOVETO, moveTo.real )
+		self.window.relayYview( settings.Tkinter.MOVETO, moveTo.imag )
+
+	def setScrollPaneMove( self, relativeMotion ):
+		"The up arrow was pressed."
+		self.scrollPaneFraction = self.window.getScrollPaneFraction()
+		self.relativeMove( relativeMotion )

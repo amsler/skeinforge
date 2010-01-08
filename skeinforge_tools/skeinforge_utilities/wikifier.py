@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 import cStringIO
 import os
 
@@ -153,7 +153,7 @@ def writeContentsLine( hypertextFile, output ):
 	prefixSpaces = '&nbsp;&nbsp;' * numberOfDots
 	if numberOfDots > 0:
 		summarizedFileName = summarizedFileName[ summarizedFileName.rfind( '.' ) + 1 : ]
-	capitalizedSummarizedFileName = preferences.getEachWordCapitalized( summarizedFileName )
+	capitalizedSummarizedFileName = settings.getEachWordCapitalized( summarizedFileName )
 	output.write( '%s<a href="%s">%s</a><br>\n' % ( prefixSpaces, hypertextFile, capitalizedSummarizedFileName ) )
 
 def writeHypertext():

@@ -104,7 +104,7 @@ function init(){
 	thumb.addEventListener("mousemove", SliderMove, false);
 	
 	//Control box data
-	setText('layerMax', layers.length)
+	setText('layerMax', layers.length - 1)
 	setText('minX', sliceMinX)
 	setText('minX', sliceMinX)
 	setText('minY', sliceMinY)
@@ -222,7 +222,7 @@ function viewSingle(){
 		<slice:layers id="sliceData" version="0.1" units="mm" layerThickness="0.2" minX="0" maxX="61" minY="-5" maxY="50" minZ="0" maxZ="1"/>
 	</metadata>
 	<!--Begin Layer Data   -->
-	<g id="layerData" fill="darkseagreen" stroke="#00F" stroke-width="0.54px" font-weight="bold" font-family="Arial" font-size="15px">
+	<g id="layerData" fill="#556B2F" stroke="#00F" stroke-width="0.54px" font-weight="bold" font-family="Arial" font-size="15px">
 <!--Beginning of path section-->
 <!--replaceLineWith_boundaryLayerLines--> 		<g id="z 0.1" transform="translate(20, 242)">
 <!--replaceLineWith_emptyString--> 			<text y="15" fill="#000" stroke="none">Layer 1, z 0.1</text>
@@ -246,7 +246,7 @@ function viewSingle(){
 				<text x="10" y="80" id="buttonAll" onclick="viewAll();" fill="darkslateblue">[Show All]</text>
 			</g>
 			<g transform="translate(100, 20)">
-				<text id="layerMin">1</text>
+				<text id="layerMin">0</text>
 				<rect id="slider" x="10" y="-12" width="150" height="14" fill="gray"/>
 				<circle id="thumb" cx="17" cy="-5" r="7" fill="darkslateblue"/>
 				<text x="163" id="layerMax" >5</text>

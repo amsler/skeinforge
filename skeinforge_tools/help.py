@@ -17,7 +17,7 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 import os
 
 
@@ -28,23 +28,20 @@ __license__ = "GPL 3.0"
 
 def addToMenu( master, menu, repository, window ):
 	"Add a tool plugin menu."
-	path = preferences.getPathFromFileNameHelp( repository.fileNameHelp )
+	path = settings.getPathFromFileNameHelp( repository.fileNameHelp )
 	capitalizedBasename = os.path.basename( path ).capitalize()
-	helpRepository = preferences.getReadRepository( HelpRepository() )
+	helpRepository = settings.getReadRepository( HelpRepository() )
 	if repository.openWikiManualHelpPage != None and helpRepository.wikiManualPrimary.value:
 		menu.add_command( label = 'Local ' + capitalizedBasename, command = repository.openLocalHelpPage )
 	else:
-		preferences.addAcceleratorCommand( '<F1>', repository.openLocalHelpPage, master, menu, 'Local ' + capitalizedBasename )
-		repository.openQuestionMarkHelpPage = repository.openLocalHelpPage
+		settings.addAcceleratorCommand( '<F1>', repository.openLocalHelpPage, master, menu, 'Local ' + capitalizedBasename )
 	if repository.openWikiManualHelpPage != None:
 		if helpRepository.wikiManualPrimary.value:
-			preferences.addAcceleratorCommand( '<F1>', repository.openWikiManualHelpPage, master, menu, 'Wiki Manual ' + capitalizedBasename )
-			repository.openQuestionMarkHelpPage = repository.openWikiManualHelpPage
+			settings.addAcceleratorCommand( '<F1>', repository.openWikiManualHelpPage, master, menu, 'Wiki Manual ' + capitalizedBasename )
 		else:
-			menu.add_command( label = 'Local ' + capitalizedBasename, command = repository.openLocalHelpPage )
+			menu.add_command( label = 'Wiki Manual ' + capitalizedBasename, command = repository.openWikiManualHelpPage )
 	menu.add_separator()
-	helpRepository = HelpRepository()
-	preferences.addMenuEntitiesToMenu( menu, helpRepository.menuEntities )
+	settings.addMenuEntitiesToMenu( menu, helpRepository.menuEntities )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -52,39 +49,39 @@ def getNewRepository():
 
 
 class HelpRepository:
-	"A class to handle the help preferences."
+	"A class to handle the help settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.help.html', '', self )
-		preferences.LabelDisplay().getFromName( 'Fabmetheus Blog, Announcements & Questions:', self )
-		preferences.HelpPage().getFromNameAfterHTTP( 'fabmetheus.blogspot.com/', 'Fabmetheus Blog', self )
-		preferences.LabelDisplay().getFromName( 'Index of Local Documentation: ', self )
-		preferences.HelpPage().getFromNameSubName( 'Index', self )
-		preferences.LabelDisplay().getFromName( 'Wiki Manual with Pictures & Charts: ', self )
-		preferences.HelpPage().getFromNameAfterWWW( 'bitsfrombytes.com/wiki/index.php?title=Skeinforge', 'Wiki Manual', self )
-		preferences.LabelDisplay().getFromName( 'Overview of Skeinforge: ', self )
-		preferences.HelpPage().getFromNameSubName( 'Overview', self, 'skeinforge.html' )
-		preferences.LabelSeparator().getFromRepository( self )
-		preferences.LabelDisplay().getFromName( 'Forums:', self )
-		preferences.LabelDisplay().getFromName( 'Bits from Bytes Printing Board:', self )
-		preferences.HelpPage().getFromNameAfterWWW( 'bitsfrombytes.com/fora/user/index.php?board=5.0', 'Bits from Bytes Printing Board', self )
-		preferences.LabelDisplay().getFromName( 'Bits from Bytes Software Board:', self )
-		preferences.HelpPage().getFromNameAfterWWW( 'bitsfrombytes.com/fora/user/index.php?board=4.0', 'Bits from Bytes Software Board', self )
-		preferences.LabelDisplay().getFromName( 'Skeinforge Contributions Thread:', self )
-		preferences.HelpPage().getFromNameAfterHTTP( 'dev.forums.reprap.org/read.php?12,27562', 'Skeinforge Contributions Thread', self )
-		preferences.LabelDisplay().getFromName( 'Skeinforge Settings Thread:', self )
-		preferences.HelpPage().getFromNameAfterHTTP( 'dev.forums.reprap.org/read.php?12,27434', 'Skeinforge Settings Thread', self )
-		preferences.LabelSeparator().getFromRepository( self )
-		self.wikiManualPrimary = preferences.BooleanPreference().getFromValue( 'Wiki Manual Primary', self, True )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.help.html', '', self )
+		settings.LabelDisplay().getFromName( 'Fabmetheus Blog, Announcements & Questions:', self )
+		settings.HelpPage().getFromNameAfterHTTP( 'fabmetheus.blogspot.com/', 'Fabmetheus Blog', self )
+		settings.LabelDisplay().getFromName( 'Index of Local Documentation: ', self )
+		settings.HelpPage().getFromNameSubName( 'Index', self )
+		settings.LabelDisplay().getFromName( 'Wiki Manual with Pictures & Charts: ', self )
+		settings.HelpPage().getFromNameAfterWWW( 'bitsfrombytes.com/wiki/index.php?title=Skeinforge', 'Wiki Manual', self )
+		settings.LabelDisplay().getFromName( 'Overview of Skeinforge: ', self )
+		settings.HelpPage().getFromNameSubName( 'Overview', self, 'skeinforge.html' )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( 'Forums:', self )
+		settings.LabelDisplay().getFromName( 'Bits from Bytes Printing Board:', self )
+		settings.HelpPage().getFromNameAfterWWW( 'bitsfrombytes.com/fora/user/index.php?board=5.0', 'Bits from Bytes Printing Board', self )
+		settings.LabelDisplay().getFromName( 'Bits from Bytes Software Board:', self )
+		settings.HelpPage().getFromNameAfterWWW( 'bitsfrombytes.com/fora/user/index.php?board=4.0', 'Bits from Bytes Software Board', self )
+		settings.LabelDisplay().getFromName( 'Skeinforge Contributions Thread:', self )
+		settings.HelpPage().getFromNameAfterHTTP( 'dev.forums.reprap.org/read.php?12,27562', 'Skeinforge Contributions Thread', self )
+		settings.LabelDisplay().getFromName( 'Skeinforge Settings Thread:', self )
+		settings.HelpPage().getFromNameAfterHTTP( 'dev.forums.reprap.org/read.php?12,27434', 'Skeinforge Settings Thread', self )
+		settings.LabelSeparator().getFromRepository( self )
+		self.wikiManualPrimary = settings.BooleanSetting().getFromValue( 'Wiki Manual Primary', self, True )
 		self.wikiManualPrimary.setUpdateFunction( self.save )
 
 	def save( self ):
 		"Write the entities."
-		preferences.writePreferencesPrintMessage( self )
+		settings.writeSettingsPrintMessage( self )
 
 def main():
 	"Display the help dialog."
-	preferences.startMainLoopFromConstructor( getNewRepository() )
+	settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

@@ -47,12 +47,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.skeinforge_utilities import consecution
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
 from skeinforge_tools.skeinforge_utilities import interpret
+from skeinforge_tools.skeinforge_utilities import settings
 import math
 import sys
 
@@ -71,7 +72,7 @@ def getCraftedTextFromText( gcodeText, splodgeRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'splodge' ):
 		return gcodeText
 	if splodgeRepository == None:
-		splodgeRepository = preferences.getReadRepository( SplodgeRepository() )
+		splodgeRepository = settings.getReadRepository( SplodgeRepository() )
 	if not splodgeRepository.activateSplodge.value:
 		return gcodeText
 	return SplodgeSkein().getCraftedGcode( gcodeText, splodgeRepository )
@@ -88,18 +89,18 @@ def writeOutput( fileName = '' ):
 
 
 class SplodgeRepository:
-	"A class to handle the splodge preferences."
+	"A class to handle the splodge settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.splodge.html', self )
-		self.fileNameInput = preferences.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Splodged', self, '' )
-		self.activateSplodge = preferences.BooleanPreference().getFromValue( 'Activate Splodge', self, False )
-		self.initialLiftOverExtraThickness = preferences.FloatSpin().getFromValue( 0.5, 'Initial Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
-		self.initialSplodgeFeedRate = preferences.FloatSpin().getFromValue( 0.4, 'Initial Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
-		self.initialSplodgeQuantityLength = preferences.FloatSpin().getFromValue( 10.0, 'Initial Splodge Quantity Length (millimeters):', self, 90.0, 30.0 )
-		self.operatingLiftOverExtraThickness = preferences.FloatSpin().getFromValue( 0.5, 'Operating Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
-		self.operatingSplodgeFeedRate = preferences.FloatSpin().getFromValue( 0.4, 'Operating Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
-		self.operatingSplodgeQuantityLength = preferences.FloatSpin().getFromValue( 0.4, 'Operating Splodge Quantity Length (millimeters):', self, 2.4, 1.0 )
+		"Set the default settings, execute title & settings fileName."
+		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.splodge.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Splodged', self, '' )
+		self.activateSplodge = settings.BooleanSetting().getFromValue( 'Activate Splodge', self, False )
+		self.initialLiftOverExtraThickness = settings.FloatSpin().getFromValue( 0.5, 'Initial Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
+		self.initialSplodgeFeedRate = settings.FloatSpin().getFromValue( 0.4, 'Initial Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
+		self.initialSplodgeQuantityLength = settings.FloatSpin().getFromValue( 10.0, 'Initial Splodge Quantity Length (millimeters):', self, 90.0, 30.0 )
+		self.operatingLiftOverExtraThickness = settings.FloatSpin().getFromValue( 0.5, 'Operating Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
+		self.operatingSplodgeFeedRate = settings.FloatSpin().getFromValue( 0.4, 'Operating Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
+		self.operatingSplodgeQuantityLength = settings.FloatSpin().getFromValue( 0.4, 'Operating Splodge Quantity Length (millimeters):', self, 2.4, 1.0 )
 		self.executeTitle = 'Splodge'
 
 	def execute( self ):
@@ -154,7 +155,6 @@ class SplodgeSkein:
 		self.boundingRectangle = gcodec.BoundingRectangle().getFromGcodeLines( self.lines[ self.lineIndex : ], 0.5 * self.perimeterWidth )
 		self.initialSplodgeFeedRateMinute = 60.0 * splodgeRepository.initialSplodgeFeedRate.value
 		self.initialStartupDistance = splodgeRepository.initialSplodgeQuantityLength.value * splodgeRepository.initialSplodgeFeedRate.value / self.operatingFeedRatePerSecond
-		print( self.initialStartupDistance )
 		self.operatingSplodgeFeedRateMinute = 60.0 * splodgeRepository.operatingSplodgeFeedRate.value
 		self.operatingStartupDistance = splodgeRepository.operatingSplodgeQuantityLength.value * splodgeRepository.operatingSplodgeFeedRate.value / self.operatingFeedRatePerSecond
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
@@ -219,14 +219,14 @@ class SplodgeSkein:
 		splodgeLayerThickness = self.layerThickness / math.sqrt( feedRateMultiplier )
 		extraLayerThickness = splodgeLayerThickness - self.layerThickness
 		lift = extraLayerThickness * liftOverExtraThickness
-		startLine = self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, startComplex, location.z + lift )
+		startLine = self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.feedRateMinute, startComplex, location.z + lift )
 		self.addLineUnlessIdenticalReactivate( startLine )
 		self.addLineUnlessIdenticalReactivate( 'M101' )
 		self.oldExtrusionDistanceRatio = self.distanceFeedRate.extrusionDistanceRatio
 		self.distanceFeedRate.addExtrusionDistanceRatioLine( 1.0 / feedRateMultiplier )
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
 		lineLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLineWithZ( line, splitLine, lineLocation.z + lift ) )
+		self.distanceFeedRate.addGcodeMovementZWithFeedRate( feedRateMinute, locationComplex, lineLocation.z + lift )
 		return self.distanceFeedRate.getExtrusionDistanceRatioLine( self.oldExtrusionDistanceRatio )
 
 	def getStartInsideBoundingRectangle( self, locationComplex, relativeStartComplex ):
@@ -306,7 +306,7 @@ def main():
 	if len( sys.argv ) > 1:
 		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
 	else:
-		preferences.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

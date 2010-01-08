@@ -15,11 +15,14 @@
 <p><tt><br>
 Stretch is a script to stretch the threads to partially compensate for filament shrinkage when extruded.<br>
  <br>
+The stretch manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch</a><br>
+ <br>
 The default 'Activate Stretch' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-The important value for the stretch preferences is "Perimeter Inside Stretch Over Perimeter Width" which is the ratio of the maximum amount the inside perimeter thread will be stretched compared to the perimeter width, the default is 0.32.  The higher the value the more it will stretch the perimeter and the wider holes will be.  If the value is too small, the holes could be drilled out after fabrication, if the value is too high, the holes would be too wide and the part would have to junked.  The 'Perimeter Outside Stretch Over Perimeter Width' is the ratio of the maximum amount the outside perimeter thread will be stretched compared to the perimeter width, in general this value should be around a third of the 'Perimeter Inside Stretch Over Perimeter Width' preference.  The 'Loop Stretch Over Perimeter Width' is the ratio of the maximum amount the loop aka inner shell threads will be stretched compared to the perimeter width, in general this value should be the same as the 'Perimeter Outside Stretch Over Perimeter Width' preference.  The 'Path Stretch Over Perimeter Width' is the ratio of the maximum amount the threads which are not loops, like the infill threads, will be stretched compared to the perimeter width, the default is 0.<br>
+The important value for the stretch settings is "Perimeter Inside Stretch Over Perimeter Width" which is the ratio of the maximum amount the inside perimeter thread will be stretched compared to the perimeter width, the default is 0.32.  The higher the value the more it will stretch the perimeter and the wider holes will be.  If the value is too small, the holes could be drilled out after fabrication, if the value is too high, the holes would be too wide and the part would have to junked.  The 'Perimeter Outside Stretch Over Perimeter Width' is the ratio of the maximum amount the outside perimeter thread will be stretched compared to the perimeter width, in general this value should be around a third of the 'Perimeter Inside Stretch Over Perimeter Width' setting.  The 'Loop Stretch Over Perimeter Width' is the ratio of the maximum amount the loop aka inner shell threads will be stretched compared to the perimeter width, in general this value should be the same as the 'Perimeter Outside Stretch Over Perimeter Width' setting.  The 'Path Stretch Over Perimeter Width' is the ratio of the maximum amount the threads which are not loops, like the infill threads, will be stretched compared to the perimeter width, the default is 0.<br>
  <br>
-All these defaults assume that the thread sequence choice preference in fill is the perimeter being extruded first, then the loops, then the infill.  If the thread sequence choice is different, the optimal thread parameters will also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.<br>
+All these defaults assume that the thread sequence choice setting in fill is the perimeter being extruded first, then the loops, then the infill.  If the thread sequence choice is different, the optimal thread parameters will also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.<br>
  <br>
 In general, stretch will widen holes and push corners out.  The algorithm works by checking at each turning point on the extrusion path what the direction of the thread is at a distance of "Stretch from Distance over Perimeter Width (ratio)" times the perimeter width, on both sides, and moves the thread in the opposite direction.  The magnitude of the stretch increases with the amount that the direction of the two threads is similar and by the Stretch Over Perimeter Width ratio.  The script then also stretches the thread at two locations on the path on close to the turning points.  In practice the filament contraction will be similar but different from the algorithm, so even once the optimal parameters are determined, the stretch script will not be able to eliminate the inaccuracies caused by contraction, but it should reduce them.<br>
  <br>
@@ -74,7 +77,7 @@ The stretch tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.intercircle.html">skeinforge_tools.skeinforge_utilities.intercircle</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.preferences.html">skeinforge_tools.skeinforge_utilities.preferences</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
 </td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -130,10 +133,10 @@ The stretch tool has created the file:<br>
 <font color="#000000" face="helvetica, arial"><a name="StretchRepository">class <strong>StretchRepository</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;stretch&nbsp;preferences.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;stretch&nbsp;settings.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="StretchRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;preferences,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;preferences&nbsp;fileName.</tt></dd></dl>
+<dl><dt><a name="StretchRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;settings,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;settings&nbsp;fileName.</tt></dd></dl>
 
 <dl><dt><a name="StretchRepository-execute"><strong>execute</strong></a>(self)</dt><dd><tt>Stretch&nbsp;button&nbsp;has&nbsp;been&nbsp;clicked.</tt></dd></dl>
 
@@ -149,15 +152,11 @@ The stretch tool has created the file:<br>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="StretchSkein-__init__"><strong>__init__</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="StretchSkein-addAlongWayLine"><strong>addAlongWayLine</strong></a>(self, alongWay, location)</dt><dd><tt>Add&nbsp;stretched&nbsp;gcode&nbsp;line,&nbsp;along&nbsp;the&nbsp;way&nbsp;from&nbsp;the&nbsp;location&nbsp;to&nbsp;the&nbsp;old&nbsp;location.</tt></dd></dl>
-
-<dl><dt><a name="StretchSkein-addStretchesBeforePoint"><strong>addStretchesBeforePoint</strong></a>(self, location)</dt><dd><tt>Get&nbsp;stretched&nbsp;gcode&nbsp;line.</tt></dd></dl>
-
 <dl><dt><a name="StretchSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeText, stretchRepository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;stretch&nbsp;gcode.</tt></dd></dl>
 
-<dl><dt><a name="StretchSkein-getIsThreadWiddershins"><strong>getIsThreadWiddershins</strong></a>(self)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;thread&nbsp;is&nbsp;widdershins.</tt></dd></dl>
+<dl><dt><a name="StretchSkein-getCrossLimitedStretch"><strong>getCrossLimitedStretch</strong></a>(self, crossLimitedStretch, crossLineIterator, locationComplex)</dt><dd><tt>Get&nbsp;cross&nbsp;limited&nbsp;relative&nbsp;stretch&nbsp;for&nbsp;a&nbsp;location.</tt></dd></dl>
 
-<dl><dt><a name="StretchSkein-getRelativeStretch"><strong>getRelativeStretch</strong></a>(self, location, lineIndexRange)</dt><dd><tt>Get&nbsp;relative&nbsp;stretch&nbsp;for&nbsp;a&nbsp;location&nbsp;minus&nbsp;a&nbsp;point.</tt></dd></dl>
+<dl><dt><a name="StretchSkein-getRelativeStretch"><strong>getRelativeStretch</strong></a>(self, locationComplex, lineIterator)</dt><dd><tt>Get&nbsp;relative&nbsp;stretch&nbsp;for&nbsp;a&nbsp;location.</tt></dd></dl>
 
 <dl><dt><a name="StretchSkein-getStretchedLine"><strong>getStretchedLine</strong></a>(self, splitLine)</dt><dd><tt>Get&nbsp;stretched&nbsp;gcode&nbsp;line.</tt></dd></dl>
 
@@ -168,6 +167,8 @@ The stretch tool has created the file:<br>
 <dl><dt><a name="StretchSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
 <dl><dt><a name="StretchSkein-parseStretch"><strong>parseStretch</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;stretch&nbsp;skein.</tt></dd></dl>
+
+<dl><dt><a name="StretchSkein-setStretchToPath"><strong>setStretchToPath</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;thread&nbsp;stretch&nbsp;to&nbsp;path&nbsp;stretch&nbsp;and&nbsp;is&nbsp;loop&nbsp;false.</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

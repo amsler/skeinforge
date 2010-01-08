@@ -9,7 +9,7 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -19,7 +19,7 @@ __license__ = "GPL 3.0"
 
 def addToMenu( master, menu, repository, window ):
 	"Add a tool plugin menu."
-	preferences.addPluginsParentToMenu( getPluginsDirectoryPath(), menu, __file__, getPluginFileNames() )
+	settings.addPluginsParentToMenu( getPluginsDirectoryPath(), menu, __file__, getPluginFileNames() )
 
 def getPluginFileNames():
 	"Get meta plugin file names."
@@ -35,17 +35,17 @@ def getNewRepository():
 
 
 class MetaRepository:
-	"A class to handle the meta preferences."
+	"A class to handle the meta settings."
 	def __init__( self ):
-		"Set the default preferences, execute title & preferences fileName."
-		preferences.addListsToRepository( 'skeinforge_tools.meta.html', '', self )
-		self.metaLabel = preferences.LabelDisplay().getFromName( 'Open Preferences: ', self )
-		preferences.getDisplayToolButtonsRepository( getPluginsDirectoryPath(), [], getPluginFileNames(), self )
+		"Set the default settings, execute title & settings fileName."
+		settings.addListsToRepository( 'skeinforge_tools.meta.html', '', self )
+		importantFileNames = [ 'polyfile' ]
+		settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 
 
 def main():
 	"Display the meta dialog."
-	preferences.startMainLoopFromConstructor( getNewRepository() )
+	settings.startMainLoopFromConstructor( getNewRepository() )
 
 if __name__ == "__main__":
 	main()

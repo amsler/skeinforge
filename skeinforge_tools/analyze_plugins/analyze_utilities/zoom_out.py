@@ -9,7 +9,7 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities import zoom_in
-from skeinforge_tools.skeinforge_utilities import preferences
+from skeinforge_tools.skeinforge_utilities import settings
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
