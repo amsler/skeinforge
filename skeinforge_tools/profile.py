@@ -212,15 +212,15 @@ class ProfileSelectionMenuRadio:
 	"A class to display a profile selection menu radio button."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		self.menuButtonDisplay.setToNameAddToDialog( self.valueName, gridPosition )
 		self.activate = False
+		self.menuButtonDisplay.setToNameAddToDialog( self.valueName, gridPosition )
 		self.menuButtonDisplay.menu.add_radiobutton( label = self.valueName, command = self.clickRadio, value = self.valueName, variable = self.menuButtonDisplay.radioVar )
 		self.menuLength = self.menuButtonDisplay.menu.index( settings.Tkinter.END )
 		if self.value:
 			self.menuButtonDisplay.radioVar.set( self.valueName )
 			self.menuButtonDisplay.menu.invoke( self.menuLength )
-		self.activate = True
 		settings.addElementToListTableIfNotThere( self.repository, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
+		self.activate = True
 
 	def clickRadio( self ):
 		"Workaround for Tkinter bug, invoke and set the value when clicked."

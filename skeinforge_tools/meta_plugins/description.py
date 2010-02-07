@@ -2,13 +2,18 @@
 This page is in the table of contents.
 Description is a script to store a description of the profile.
 
-The suggested format is a description, followed by a link to the profile post or web page.
+==Settings==
+===Description Text===
+Default is empty.
 
-To change the description setting, in a shell in the description folder type:
+The suggested format is a description, followed by a link to a profile post or web page.
+
+==Examples==
+Examples of using description follow below.
+
+
 > python description.py
-
-An example of using description from the python interpreter follows below.
-
+This brings up the description dialog.
 
 > python
 Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)

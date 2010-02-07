@@ -13,16 +13,48 @@
 <a href="skeinforge_tools.craft_plugins.stretch.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.unpause.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Tower is a script to extrude a few layers up, then go across to other regions.<br>
+Tower commands the fabricator to extrude a disconnected region for a few layers, then go to another disconnected region and extrude there.  Its purpose is to reduce the number of stringers between a shape and reduce extruder travel.<br>
  <br>
-The default 'Activate Tower' checkbox is off.  The default is off because tower could result in the extruder collidiing with an already extruded part of the shape and because extruding in one region for more than one layer could result in the shape melting.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
+The tower manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Tower">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Tower</a><br>
  <br>
-This script commands the fabricator to extrude a disconnected region for a few layers, then go to another disconnected region and extrude there.  Its purpose is to reduce the number of stringers between a shape and reduce extruder travel.  The important value for the tower settings is "Maximum Tower Height (layers)" which is the maximum number of layers that the extruder will extrude in one region before going to another.<br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Maximum Tower Height">Maximum Tower Height</a><br />
+&nbsp;&nbsp;<a href="#Extruder Possible Collision Cone Angle">Extruder Possible Collision Cone Angle</a><br />
+&nbsp;&nbsp;<a href="#Tower Start Layer">Tower Start Layer</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
+The default 'Activate Tower' checkbox is off.  The default is off because tower could result in the extruder colliding with an already extruded part of the shape and because extruding in one region for more than one layer could result in the shape melting.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-Tower works by looking for islands in each layer and if it finds another island in the layer above, it goes to the next layer above instead of going across to other regions on the original layer.  It checks for collision with shapes already extruded within a cone from the nozzle tip.  The "Extruder Possible Collision Cone Angle (degrees)" setting is the angle of that cone.  Realistic values for the cone angle range between zero and ninety.  The higher the angle, the less likely a collision with the rest of the shape is, generally the extruder will stay in the region for only a few layers before a collision is detected with the wide cone.  The default angle is sixty degrees.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Maximum Tower Height" id="Maximum Tower Height"></a><h3>Maximum Tower Height</h3>
+
+Default is five.<br>
  <br>
-The "Tower Start Layer" is the layer which the script starts extruding towers, after the last raft layer which does not have support material.  It is best to not tower at least the first layer because the temperature of the first layer should sometimes be different than that of the other layers.  The default setting is one.<br>
+Defines the maximum number of layers that the extruder will extrude in one region before going to another.  This is the most important value for tower.<br>
  <br>
+<a name="Extruder Possible Collision Cone Angle" id="Extruder Possible Collision Cone Angle"></a><h3>Extruder Possible Collision Cone Angle</h3>
+
+Default is sixty degrees.<br>
+ <br>
+Tower works by looking for islands in each layer and if it finds another island in the layer above, it goes to the next layer above instead of going across to other regions on the original layer.  It checks for collision with shapes already extruded within a cone from the nozzle tip.  The 'Extruder Possible Collision Cone Angle' setting is the angle of that cone.  Realistic values for the cone angle range between zero and ninety.  The higher the angle, the less likely a collision with the rest of the shape is, generally the extruder will stay in the region for only a few layers before a collision is detected with the wide cone.<br>
+ <br>
+<a name="Tower Start Layer" id="Tower Start Layer"></a><h3>Tower Start Layer</h3>
+
+Default is one.<br>
+ <br>
+Defines the layer index which the script starts extruding towers, after the last raft layer which does not have support material.  It is best to not tower at least the first layer because the temperature of the first layer is sometimes different than that of the other layers.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples tower the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and tower.py.<br>
  <br>
  <br>
@@ -75,8 +107,9 @@ The tower tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+<a href="sys.html">sys</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">

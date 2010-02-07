@@ -15,13 +15,44 @@
 <p><tt><br>
 Lash is a script to partially compensate for the backlash of the tool head.<br>
  <br>
+The lash manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash</a><br>
+ <br>
 The lash tool is ported from Erik de Bruijn's 3D-to-5D-Gcode php GPL'd script at:<br>
 <a href="http://objects.reprap.org/wiki/3D-to-5D-Gcode.php">http://objects.reprap.org/wiki/3D-to-5D-Gcode.php</a><br>
  <br>
+The default values are from the settings in Erik's 3D-to-5D-Gcode, I believe the settings are used on his Darwin reprap.<br>
+ <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#X Backlash">X Backlash</a><br />
+&nbsp;&nbsp;<a href="#Y Backlash">Y Backlash</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Lash' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-The 'X Backlash' is the distance the tool head will be lashed in the X direction, the default is 0.2 mm.  The 'Y Backlash' is the distance the tool head will be lashed in the Y direction, the default is 0.2 mm.  These default values are from the settings in Erik's 3D-to-5D-Gcode, I believe the settings are used on his Darwin reprap.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="X Backlash" id="X Backlash"></a><h3>X Backlash</h3>
+
+Default is 0.2 millimeters.<br>
  <br>
+Defines the distance the tool head will be lashed in the X direction.<br>
+ <br>
+<a name="Y Backlash" id="Y Backlash"></a><h3>Y Backlash</h3>
+
+Default is 0.2 millimeters.<br>
+ <br>
+Defines the distance the tool head will be lashed in the Y direction.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples lash the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and lash.py.<br>
  <br>
  <br>
@@ -71,8 +102,9 @@ The lash tool has created the file:<br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+<a href="sys.html">sys</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">

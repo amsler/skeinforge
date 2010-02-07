@@ -5,6 +5,9 @@ Carve is a script to carve a shape into svg slice layers.
 The carve manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Carve
 
+On the Arcol Blog a method of deriving the layer thickness is posted.  That article "Machine Calibrating" is at:
+http://blog.arcol.hu/?p=157
+
 ==Settings==
 ===Bridge Thickness Multiplier===
 Default is one.
@@ -160,7 +163,7 @@ class CarveRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.carve.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File to be Carved', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Carve' )
 		self.bridgeThicknessMultiplier = settings.FloatSpin().getFromValue( 0.8, 'Bridge Thickness Multiplier (ratio):', self, 1.2, 1.0 )
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )

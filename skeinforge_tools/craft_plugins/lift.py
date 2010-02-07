@@ -1,15 +1,22 @@
 """
 This page is in the table of contents.
-Lift is a script to change the altitude of a gcode file.
-
 Lift will change the altitude of the cutting tool when it is on so that it will cut through the slab at the correct altitude.  It will also lift the gcode when the tool is off so that the cutting tool will clear the top of the slab.
 
+==Operation==
 The default 'Activate Lift' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The 'Cutting Lift over Layer Step' is the ratio of the amount the cutting tool will be lifted over the layer step.  If whittle is off the layer step will be the layer thickness, if it is on, it will be the layer step from the whittle gcode.  If the cutting tool is like an end mill, where the cutting happens until the end of the tool, then the 'Cutting Lift over Layer Step' should be minus 0.5, so that the end mill cuts to the bottom of the slab.  If the cutting tool is like a laser, where the cutting happens around the focal point. the 'Cutting Lift over Layer Step' should be zero, so that the cutting action will be focused in the middle of the slab.  The default is minus 0.5, because the end mill is the more common tool.
+==Settings==
+===Cutting Lift over Layer Step===
+Default is minus 0.5, because the end mill is the more common tool.
 
-The 'Clearance above Top' is the distance above the top of the slab the cutting tool will be lifted when will tool is off so that the cutting tool will clear the top of the slab.  The default is 5 mm.
+Defines the ratio of the amount the cutting tool will be lifted over the layer step.  If whittle is off the layer step will be the layer thickness, if it is on, it will be the layer step from the whittle gcode.  If the cutting tool is like an end mill, where the cutting happens until the end of the tool, then the 'Cutting Lift over Layer Step' should be minus 0.5, so that the end mill cuts to the bottom of the slab.  If the cutting tool is like a laser, where the cutting happens around the focal point. the 'Cutting Lift over Layer Step' should be zero, so that the cutting action will be focused in the middle of the slab.
 
+===Clearance above Top===
+Default is 5 millimeters.
+
+Defines the distance above the top of the slab the cutting tool will be lifted when will tool is off so that the cutting tool will clear the top of the slab.
+
+==Examples==
 The following examples lift the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and lift.py.
 
 
@@ -137,6 +144,7 @@ class LiftSkein:
 		if self.layerStep == None:
 			self.layerStep = self.layerThickness
 		self.cuttingLift = self.layerStep * liftRepository.cuttingLiftOverLayerStep.value
+		self.setMaximumZ()
 		self.travelZ = self.maximumZ + 0.5 * self.layerStep + liftRepository.clearanceAboveTop.value
 		for line in self.lines[ self.lineIndex : ]:
 			self.parseLine( line )
@@ -188,6 +196,17 @@ class LiftSkein:
 		elif firstWord == 'M103':
 			self.extruderActive = False
 		self.distanceFeedRate.addLine( line )
+
+	def setMaximumZ( self ):
+		"Set maximum  z."
+		localOldLocation = None
+		for line in self.lines[ self.lineIndex : ]:
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			firstWord = gcodec.getFirstWord( splitLine )
+			if firstWord == 'G1':
+				location = gcodec.getLocationFromSplitLine( localOldLocation, splitLine )
+				self.maximumZ = max( self.maximumZ, location.z )
+				localOldLocation = location
 
 
 def main():

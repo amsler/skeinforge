@@ -1,19 +1,44 @@
 #! /usr/bin/env python
 """
 This page is in the table of contents.
-Inset is a script to inset a gcode file.
+Inset will inset the outside outlines by half the perimeter width, and outset the inside outlines by the same amount.
 
 The inset manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Inset
 
-Inset will inset the outside outlines by half the perimeter width, and the inside outlines will be outset by half the perimeter width.
+==Settings==
+===Add Custom Code for Temperature Reading===
+Default is on.
 
-If "Add Custom Code for Temperature Reading" is selected, the M105 custom code for temperature reading will be added at the beginning of the file, the default is on.  If the "Turn Extruder Heater Off at Shut Down" setting is selected, the M104 S0 gcode line will be added to the end of the file to turn the extruder heater off by setting the extruder heater temperature to 0, this is the default choice.
+When selected, the M105 custom code for temperature reading will be added at the beginning of the file.
 
-The 'Bridge Width Multiplier' is the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers, the default is 1.0.
+===Bridge Width Multiplier===
+Default is one.
 
-The 'Overlap Removal Width over Perimeter Width' is the ratio of the overlap removal width over the perimeter width, the default is 0.6.  Any part of the extrusion that comes within the overlap removal width of another is removed.  This is to prevent the extruder from depositing two extrusions right beside each other.  If the 'Overlap Removal Width over Perimeter Width' is less than 0.2, the overlap will not be removed.
+Defines the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers.
 
+===Loop Order Choice===
+When overlap is to be removed, for each loop, the overlap is checked against the list of loops already extruded.  If the latest loop overlaps an already extruded loop, the overlap is removed from the latest loop.  The loops are ordered according to their areas.
+
+The default loop order choice is 'Ascending Area'.
+
+====Ascending Area====
+When selected, the loops will be ordered in ascending area.  With thin walled parts, if overlap is being removed the outside of the container will not be extruded.  Holes will be the correct size.
+
+====Descending Area====
+When selected, the loops will be ordered in descending area.  With thin walled parts, if overlap is being removed the inside of the container will not be extruded.  Holes will be missing the interior wall so they will be slightly wider than model size.
+
+===Overlap Removal Width over Perimeter Width===
+Default is 0.6.
+
+Defines the ratio of the overlap removal width over the perimeter width.  Any part of the extrusion that comes within the overlap removal width of another is removed.  This is to prevent the extruder from depositing two extrusions right beside each other.  If the 'Overlap Removal Width over Perimeter Width' is less than 0.2, the overlap will not be removed.
+
+===Turn Extruder Heater Off at Shut Down===
+Default is on.
+
+When selected, the M104 S0 gcode line will be added to the end of the file to turn the extruder heater off by setting the extruder heater temperature to 0.
+
+==Examples==
 The following examples inset the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and inset.py.
 
 > python inset.py
@@ -141,28 +166,36 @@ def addSegmentOutline( isThick, outlines, pointBegin, pointEnd, width ):
 		outline.append( outsideBeginCenterDown )
 	outlines.append( euclidean.getPointsRoundZAxis( normalizedSegment, outline ) )
 
-def getCraftedText( fileName, text = '', insetRepository = None ):
+def getCraftedText( fileName, text = '', repository = None ):
 	"Inset the preface file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), insetRepository )
+	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
 
-def getCraftedTextFromText( gcodeText, insetRepository = None ):
+def getCraftedTextFromText( gcodeText, repository = None ):
 	"Inset the preface gcode text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'inset' ):
 		return gcodeText
-	if insetRepository == None:
-		insetRepository = settings.getReadRepository( InsetRepository() )
-	return InsetSkein().getCraftedGcode( insetRepository, gcodeText )
+	if repository == None:
+		repository = settings.getReadRepository( InsetRepository() )
+	return InsetSkein().getCraftedGcode( gcodeText, repository )
+
+def getIsIntersectingWithinList( loop, loopList ):
+	"Determine if the loop is intersecting or is within the loop list."
+	leftPoint = euclidean.getLeftPoint( loop )
+	for otherLoop in loopList:
+		if euclidean.getNumberOfIntersectionsToLeft( otherLoop, leftPoint ) % 2 == 1:
+			return True
+	return euclidean.isLoopIntersectingLoops( loop, loopList )
 
 def getNewRepository():
 	"Get the repository constructor."
 	return InsetRepository()
 
-def getSegmentsFromPoints( aroundLists, loopLists, pointBegin, pointEnd ):
+def getSegmentsFromLoopListsPoints( loopLists, pointBegin, pointEnd ):
 	"Get endpoint segments from the beginning and end of a line segment."
 	normalizedSegment = pointEnd - pointBegin
 	normalizedSegmentLength = abs( normalizedSegment )
 	if normalizedSegmentLength == 0.0:
-		return
+		return []
 	normalizedSegment /= normalizedSegmentLength
 	segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
 	pointBeginRotated = segmentYMirror * pointBegin
@@ -202,20 +235,10 @@ def isIntersectingItself( loop, width ):
 		addSegmentOutline( False, outlines, pointBegin, pointEnd, width )
 	return False
 
-def isIntersectingWithinList( loop, loopList ):
-	"Determine if the loop is intersecting or is within the loop list."
-	if euclidean.isLoopIntersectingLoops( loop, loopList ):
-		return True
-	totalNumberOfIntersections = 0
-	leftPoint = euclidean.getLeftPoint( loop )
-	for otherLoop in loopList:
-		totalNumberOfIntersections += euclidean.getNumberOfIntersectionsToLeft( otherLoop, leftPoint )
-	return totalNumberOfIntersections % 2 == 1
-
 def isIntersectingWithinLists( loop, loopLists ):
 	"Determine if the loop is intersecting or is within the loop lists."
 	for loopList in loopLists:
-		if isIntersectingWithinList( loop, loopList ):
+		if getIsIntersectingWithinList( loop, loopList ):
 			return True
 	return False
 
@@ -228,7 +251,7 @@ def isSegmentInsideAround( aroundLists, segment ):
 	return False
 
 def writeOutput( fileName = '' ):
-	"Inset the carving of a gcode file.  If no fileName is specified, inset the first unmodified gcode file in this folder."
+	"Inset the carving of a gcode file."
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
 		consecution.writeChainTextWithNounMessage( fileName, 'inset' )
@@ -262,10 +285,8 @@ class InsetSkein:
 	def __init__( self ):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
-		self.extruderActive = False
 		self.lineIndex = 0
-		self.rotatedBoundaryLayers = []
-		self.shutdownLines = None
+		self.rotatedBoundaryLayer = None
 
 	def addGcodeFromPerimeterPaths( self, isIntersectingSelf, loop, loopLists, radius, z ):
 		"Add the perimeter paths to the output."
@@ -279,13 +300,13 @@ class InsetSkein:
 			pointEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
 			if isIntersectingSelf:
 				if euclidean.isLineIntersectingLoops( outlines, pointBegin, pointEnd ):
-					segments += getSegmentsFromPoints( [], allLoopLists, pointBegin, pointEnd )
+					segments += getSegmentsFromLoopListsPoints( allLoopLists, pointBegin, pointEnd )
 				else:
-					segments += getSegmentsFromPoints( [], loopLists, pointBegin, pointEnd )
+					segments += getSegmentsFromLoopListsPoints( loopLists, pointBegin, pointEnd )
 				addSegmentOutline( False, outlines, pointBegin, pointEnd, self.overlapRemovalWidth )
 				addSegmentOutline( True, thickOutlines, pointBegin, pointEnd, self.overlapRemovalWidth )
 			else:
-				segments += getSegmentsFromPoints( aroundLists, loopLists, pointBegin, pointEnd )
+				segments += getSegmentsFromLoopListsPoints( loopLists, pointBegin, pointEnd )
 		perimeterPaths = []
 		path = []
 		muchSmallerThanRadius = 0.1 * radius
@@ -310,14 +331,14 @@ class InsetSkein:
 	def addGcodeFromRemainingLoop( self, loop, loopLists, radius, z ):
 		"Add the remainder of the loop which does not overlap the alreadyFilledArounds loops."
 		boundary = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, - radius )
-		euclidean.addSurroundingLoopBeginning( boundary, self, z )
+		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
 		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
 		self.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )
 		self.distanceFeedRate.addLine( '(</surroundingLoop>)' )
 
 	def addGcodePerimeterBlockFromRemainingLoop( self, loop, loopLists, radius, z ):
 		"Add the perimter block remainder of the loop which does not overlap the alreadyFilledArounds loops."
-		if self.insetRepository.overlapRemovalWidthOverPerimeterWidth.value < 0.2:
+		if self.repository.overlapRemovalWidthOverPerimeterWidth.value < 0.2:
 			self.distanceFeedRate.addPerimeterBlock( loop, z )
 			return
 		isIntersectingSelf = isIntersectingItself( loop, self.overlapRemovalWidth )
@@ -329,49 +350,31 @@ class InsetSkein:
 
 	def addInitializationToOutput( self ):
 		"Add initialization gcode to the output."
-		if self.insetRepository.addCustomCodeForTemperatureReading.value:
+		if self.repository.addCustomCodeForTemperatureReading.value:
 			self.distanceFeedRate.addLine( 'M105' ) # Custom code for temperature reading.
 
 	def addInset( self, rotatedBoundaryLayer ):
 		"Add inset to the layer."
 		alreadyFilledArounds = []
 		halfWidth = self.halfPerimeterWidth
-		self.distanceFeedRate.addLine( '(<layer> %s )' % rotatedBoundaryLayer.z )
 		if rotatedBoundaryLayer.rotation != None:
-			halfWidth *= self.insetRepository.bridgeWidthMultiplier.value
+			halfWidth *= self.repository.bridgeWidthMultiplier.value
 			self.distanceFeedRate.addTagBracketedLine( 'bridgeRotation', rotatedBoundaryLayer.rotation )
 		extrudateLoops = intercircle.getInsetLoopsFromLoops( halfWidth, rotatedBoundaryLayer.loops )
-		if self.insetRepository.loopOrderAscendingArea.value:
+		if self.repository.loopOrderAscendingArea.value:
 			extrudateLoops = triangle_mesh.getLoopsInOrderOfArea( triangle_mesh.compareAreaAscending, extrudateLoops )
 		else:
 			extrudateLoops = triangle_mesh.getLoopsInOrderOfArea( triangle_mesh.compareAreaDescending, extrudateLoops )
 		for extrudateLoop in extrudateLoops:
 			self.addGcodeFromRemainingLoop( extrudateLoop, alreadyFilledArounds, halfWidth, rotatedBoundaryLayer.z )
-		self.distanceFeedRate.addLine( '(</layer>)' )
 
-	def addRotatedLoopLayer( self, z ):
-		"Add rotated loop layer."
-		self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
-		self.rotatedBoundaryLayers.append( self.rotatedBoundaryLayer )
-
-	def addShutdownToOutput( self ):
-		"Add shutdown gcode to the output."
-		if len( self.shutdownLines ) > 0:
-			self.distanceFeedRate.addLine( self.shutdownLines[ 0 ] )
-		if self.insetRepository.turnExtruderHeaterOffAtShutDown.value:
-			self.distanceFeedRate.addLine( 'M104 S0' ) # Turn extruder heater off.
-		self.distanceFeedRate.addLines( self.shutdownLines[ 1 : ] )
-
-	def getCraftedGcode( self, insetRepository, gcodeText ):
+	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the bevel gcode."
-		self.insetRepository = insetRepository
+		self.repository = repository
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.parseInitialization()
 		for line in self.lines[ self.lineIndex : ]:
 			self.parseLine( line )
-		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
-			self.addInset( rotatedBoundaryLayer )
-		self.addShutdownToOutput()
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self ):
@@ -383,7 +386,7 @@ class InsetSkein:
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(<decimalPlacesCarried>':
 				self.addInitializationToOutput()
-				self.distanceFeedRate.addTagBracketedLine( 'bridgeWidthMultiplier', self.distanceFeedRate.getRounded( self.insetRepository.bridgeWidthMultiplier.value ) )
+				self.distanceFeedRate.addTagBracketedLine( 'bridgeWidthMultiplier', self.distanceFeedRate.getRounded( self.repository.bridgeWidthMultiplier.value ) )
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'inset' )
 			elif firstWord == '(<extrusion>)':
@@ -392,7 +395,7 @@ class InsetSkein:
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float( splitLine[ 1 ] )
 				self.halfPerimeterWidth = 0.5 * self.perimeterWidth
-				self.overlapRemovalWidth = self.perimeterWidth * self.insetRepository.overlapRemovalWidthOverPerimeterWidth.value
+				self.overlapRemovalWidth = self.perimeterWidth * self.repository.overlapRemovalWidthOverPerimeterWidth.value
 			self.distanceFeedRate.addLine( line )
 
 	def parseLine( self, line ):
@@ -407,15 +410,22 @@ class InsetSkein:
 		elif ( firstWord == '(<bridgeRotation>' or firstWord == '<!--bridgeRotation-->' ):
 			secondWordWithoutBrackets = splitLine[ 1 ].replace( '(', '' ).replace( ')', '' )
 			self.rotatedBoundaryLayer.rotation = complex( secondWordWithoutBrackets )
+		elif firstWord == '(</extrusion>)':
+				self.distanceFeedRate.addLine( line )
+				if self.repository.turnExtruderHeaterOffAtShutDown.value:
+					self.distanceFeedRate.addLine( 'M104 S0' ) # Turn extruder heater off.
+				return
 		elif firstWord == '(<layer>':
-			self.addRotatedLoopLayer( float( splitLine[ 1 ] ) )
+			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float( splitLine[ 1 ] ) )
+			self.distanceFeedRate.addLine( line )
+		elif firstWord == '(</layer>)':
+			self.addInset( self.rotatedBoundaryLayer )
+			self.rotatedBoundaryLayer = None
 		elif firstWord == '(<surroundingLoop>)':
 			self.boundary = []
 			self.rotatedBoundaryLayer.loops.append( self.boundary )
-		elif firstWord == '(</extrusion>)':
-			self.shutdownLines = []
-		if self.shutdownLines != None:
-			self.shutdownLines.append( line )
+		if self.rotatedBoundaryLayer == None:
+			self.distanceFeedRate.addLine( line )
 
 
 def main():

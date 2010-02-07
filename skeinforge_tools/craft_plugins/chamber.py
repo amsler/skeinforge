@@ -35,6 +35,10 @@ A heated copper build plate by Domingo:
 http://casainho-emcrepstrap.blogspot.com/
 
 with articles at:
+http://casainho-emcrepstrap.blogspot.com/2010/01/first-time-with-pla-testing-it-also-on.html
+http://casainho-emcrepstrap.blogspot.com/2010/01/call-for-helpideas-to-develop-heated.html
+http://casainho-emcrepstrap.blogspot.com/2010/01/new-heated-build-platform.html
+http://casainho-emcrepstrap.blogspot.com/2010/01/no-acrylic-and-instead-kapton-tape-on.html
 http://casainho-emcrepstrap.blogspot.com/2010/01/problems-with-heated-build-platform-and.html
 http://casainho-emcrepstrap.blogspot.com/2010/01/perfect-build-platform.html
 http://casainho-emcrepstrap.blogspot.com/2009/12/almost-no-warp.html
@@ -76,6 +80,7 @@ A resistor heated aluminum bed by Nophead:
 http://hydraraptor.blogspot.com
 
 with articles at:
+http://hydraraptor.blogspot.com/2010/01/will-it-stick.html
 http://hydraraptor.blogspot.com/2010/01/hot-metal-and-serendipity.html
 http://hydraraptor.blogspot.com/2010/01/new-year-new-plastic.html
 http://hydraraptor.blogspot.com/2010/01/hot-bed.html
@@ -85,7 +90,8 @@ http://hydraraptor.blogspot.com/2010/01/hot-bed.html
 A resistive wire heated plexiglass plate by prusajr:
 http://prusadjs.cz/
 
-with an article at:
+with articles at:
+http://prusadjs.cz/2010/01/heated-reprap-print-bed-mk2/
 http://prusadjs.cz/2009/11/look-ma-no-warping-heated-reprap-print-bed/
 
 ===Pumpernickel2===

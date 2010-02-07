@@ -222,13 +222,12 @@ This brings up the skeinview viewer to view each layer of a gcode file.</tt>
 <a href="skeinforge_tools.analyze_plugins.analyze_utilities.display_line.html">skeinforge_tools.analyze_plugins.analyze_utilities.display_line</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.euclidean.html">skeinforge_tools.skeinforge_utilities.euclidean</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
-<a href="math.html">math</a><br>
 <a href="os.html">os</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+<a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.analyze_plugins.analyze_utilities.tableau.html">skeinforge_tools.analyze_plugins.analyze_utilities.tableau</a><br>
-<a href="skeinforge_tools.analyze_plugins.analyze_utilities.view_move.html">skeinforge_tools.analyze_plugins.analyze_utilities.view_move</a><br>
+<a href="skeinforge_tools.analyze_plugins.analyze_utilities.tableau.html">skeinforge_tools.analyze_plugins.analyze_utilities.tableau</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.analyze_plugins.analyze_utilities.view_move.html">skeinforge_tools.analyze_plugins.analyze_utilities.view_move</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -282,10 +281,6 @@ This brings up the skeinview viewer to view each layer of a gcode file.</tt>
 <dl><dt><a name="SkeinWindow-getDrawnColoredLineIfThick"><strong>getDrawnColoredLineIfThick</strong></a>(self, coloredLine, width)</dt><dd><tt>Get&nbsp;the&nbsp;drawn&nbsp;colored&nbsp;line&nbsp;if&nbsp;it&nbsp;has&nbsp;a&nbsp;positive&nbsp;thickness.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getDrawnSelectedColoredLine"><strong>getDrawnSelectedColoredLine</strong></a>(self, coloredLine)</dt><dd><tt>Get&nbsp;the&nbsp;drawn&nbsp;selected&nbsp;colored&nbsp;line.</tt></dd></dl>
-
-<dl><dt><a name="SkeinWindow-getRoundedRulingText"><strong>getRoundedRulingText</strong></a>(self, number)</dt><dd><tt>Get&nbsp;the&nbsp;rounded&nbsp;ruling&nbsp;text.</tt></dd></dl>
-
-<dl><dt><a name="SkeinWindow-getRulingSeparationWidthPixels"><strong>getRulingSeparationWidthPixels</strong></a>(self, rank)</dt><dd><tt>Get&nbsp;the&nbsp;separation&nbsp;width&nbsp;in&nbsp;pixels.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-motion"><strong>motion</strong></a>(self, event)</dt><dd><tt>The&nbsp;mouse&nbsp;moved.</tt></dd></dl>
 
@@ -343,11 +338,17 @@ Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utiliti
 
 <dl><dt><a name="SkeinWindow-getPhotoButtonGridIncrement"><strong>getPhotoButtonGridIncrement</strong></a>(self, commandFunction, fileName, gridPosition)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
 
+<dl><dt><a name="SkeinWindow-getRoundedRulingText"><strong>getRoundedRulingText</strong></a>(self, extraDecimalPlaces, number)</dt><dd><tt>Get&nbsp;the&nbsp;rounded&nbsp;ruling&nbsp;text.</tt></dd></dl>
+
+<dl><dt><a name="SkeinWindow-getRulingSeparationWidthPixels"><strong>getRulingSeparationWidthPixels</strong></a>(self, rank)</dt><dd><tt>Get&nbsp;the&nbsp;separation&nbsp;width&nbsp;in&nbsp;pixels.</tt></dd></dl>
+
 <dl><dt><a name="SkeinWindow-getScrollPaneCenter"><strong>getScrollPaneCenter</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;the&nbsp;scroll&nbsp;pane.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getScrollPaneFraction"><strong>getScrollPaneFraction</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;the&nbsp;scroll&nbsp;pane.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getSlideShowDelay"><strong>getSlideShowDelay</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;slide&nbsp;show&nbsp;delay&nbsp;in&nbsp;milliseconds.</tt></dd></dl>
+
+<dl><dt><a name="SkeinWindow-getUpdateSkeinPanes"><strong>getUpdateSkeinPanes</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;update&nbsp;skein&nbsp;panes.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-isLineBelowZeroSetLayer"><strong>isLineBelowZeroSetLayer</strong></a>(self)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;line&nbsp;index&nbsp;is&nbsp;below&nbsp;zero,&nbsp;and&nbsp;if&nbsp;so&nbsp;set&nbsp;the&nbsp;layer&nbsp;index.</tt></dd></dl>
 
@@ -455,7 +456,9 @@ Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utiliti
 
 <dl><dt><a name="SkeinviewSkein-addToPath"><strong>addToPath</strong></a>(self, line, location)</dt><dd><tt>Add&nbsp;a&nbsp;point&nbsp;to&nbsp;travel&nbsp;and&nbsp;maybe&nbsp;extrusion.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-getScreenCoordinates"><strong>getScreenCoordinates</strong></a>(self, pointComplex)</dt><dd><tt>Get&nbsp;the&nbsp;screen&nbsp;coordinates.self.<strong>cornerImaginaryTotal</strong>&nbsp;-&nbsp;self.<strong>marginCornerLow</strong></tt></dd></dl>
+<dl><dt><a name="SkeinviewSkein-getModelCoordinates"><strong>getModelCoordinates</strong></a>(self, screenCoordinates)</dt><dd><tt>Get&nbsp;the&nbsp;model&nbsp;coordinates.</tt></dd></dl>
+
+<dl><dt><a name="SkeinviewSkein-getScreenCoordinates"><strong>getScreenCoordinates</strong></a>(self, pointComplex)</dt><dd><tt>Get&nbsp;the&nbsp;screen&nbsp;coordinates.</tt></dd></dl>
 
 <dl><dt><a name="SkeinviewSkein-initializeActiveLocation"><strong>initializeActiveLocation</strong></a>(self)</dt><dd><tt>Set&nbsp;variables&nbsp;to&nbsp;default.</tt></dd></dl>
 
@@ -482,7 +485,6 @@ Methods inherited from <a href="skeinforge_tools.analyze_plugins.analyze_utiliti
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-analyzeFile"><strong>analyzeFile</strong></a>(fileName)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinview&nbsp;window.</tt></dd></dl>
  <dl><dt><a name="-analyzeFileGivenText"><strong>analyzeFileGivenText</strong></a>(fileName, gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinview&nbsp;window&nbsp;given&nbsp;the&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getGeometricDifference"><strong>getGeometricDifference</strong></a>(first, second)</dt><dd><tt>Get&nbsp;the&nbsp;geometric&nbsp;difference&nbsp;of&nbsp;the&nbsp;two&nbsp;numbers.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getRankIndex"><strong>getRankIndex</strong></a>(rulingSeparationWidthMillimeters, screenOrdinate)</dt><dd><tt>Get&nbsp;rank&nbsp;index.</tt></dd></dl>
  <dl><dt><a name="-getWindowGivenTextRepository"><strong>getWindowGivenTextRepository</strong></a>(fileName, gcodeText, repository)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinview&nbsp;window&nbsp;given&nbsp;the&nbsp;text&nbsp;and&nbsp;settings.</tt></dd></dl>

@@ -1,11 +1,17 @@
 """
 This page is in the table of contents.
-Flow is a script to set the flow rate.
+The flow script sets the flow rate by writing the M108 gcode.
 
-The default 'Activate Flow' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The flow script sets the flow rate by writing the M108 gcode.
+==Operation==
+The default 'Activate Flow' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The 'Flow Rate (arbitrary units)' will be written following the M108 command.  The flow rate is usually a PWM setting, but could be anything, like the rpm of the tool or the duty cycle of the tool.  The default is 210.0.
+==Settings==
+===Flow Rate===
+Default is 210.
 
+Defines the flow rate which will be written following the M108 command.  The flow rate is usually a PWM setting, but could be anything, like the rpm of the tool or the duty cycle of the tool.
+
+==Examples==
 The following examples flow the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and flow.py.
 
 

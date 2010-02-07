@@ -2,13 +2,29 @@
 This page is in the table of contents.
 Lash is a script to partially compensate for the backlash of the tool head.
 
+The lash manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash
+
 The lash tool is ported from Erik de Bruijn's 3D-to-5D-Gcode php GPL'd script at:
 http://objects.reprap.org/wiki/3D-to-5D-Gcode.php
 
+The default values are from the settings in Erik's 3D-to-5D-Gcode, I believe the settings are used on his Darwin reprap.
+
+==Operation==
 The default 'Activate Lash' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-The 'X Backlash' is the distance the tool head will be lashed in the X direction, the default is 0.2 mm.  The 'Y Backlash' is the distance the tool head will be lashed in the Y direction, the default is 0.2 mm.  These default values are from the settings in Erik's 3D-to-5D-Gcode, I believe the settings are used on his Darwin reprap.
+==Settings==
+===X Backlash===
+Default is 0.2 millimeters.
 
+Defines the distance the tool head will be lashed in the X direction.
+
+===Y Backlash===
+Default is 0.2 millimeters.
+
+Defines the distance the tool head will be lashed in the Y direction.
+
+==Examples==
 The following examples lash the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and lash.py.
 
 
@@ -91,7 +107,8 @@ class LashRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.lash.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lashed', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Lash', self, '' )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash' )
 		self.activateLash = settings.BooleanSetting().getFromValue( 'Activate Lash', self, False )
 		self.xBacklash = settings.FloatSpin().getFromValue( 0.1, 'X Backlash (mm):', self, 0.5, 0.2 )
 		self.yBacklash = settings.FloatSpin().getFromValue( 0.1, 'Y Backlash (mm):', self, 0.5, 0.3 )

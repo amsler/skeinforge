@@ -15,20 +15,83 @@
 <p><tt><br>
 Oozebane is a script to turn off the extruder before the end of a thread and turn it on before the beginning.<br>
  <br>
+The oozebane manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Oozebane">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Oozebane</a><br>
+ <br>
+After oozebane turns the extruder on, it slows the feed rate down where the thread starts.  Then it speeds it up in steps so in theory the thread will remain at roughly the same thickness from the beginning.<br>
+ <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#After Startup Distance">After Startup Distance</a><br />
+&nbsp;&nbsp;<a href="#Early Shutdown Distance">Early Shutdown Distance</a><br />
+&nbsp;&nbsp;<a href="#Early Startup Maximum Distance">Early Startup Maximum Distance</a><br />
+&nbsp;&nbsp;<a href="#Early Startup Distance Constant">Early Startup Distance Constant</a><br />
+&nbsp;&nbsp;<a href="#First Early Startup Distance">First Early Startup Distance</a><br />
+&nbsp;&nbsp;<a href="#Minimum Distance for Early Shutdown">Minimum Distance for Early Shutdown</a><br />
+&nbsp;&nbsp;<a href="#Minimum Distance for Early Startup">Minimum Distance for Early Startup</a><br />
+&nbsp;&nbsp;<a href="#Slowdown Startup Steps">Slowdown Startup Steps</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Oozebane' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-The important value for the oozebane settings is "Early Shutdown Distance" which is the distance before the end of the thread that the extruder will be turned off, the default is 1.2.  A higher distance means the extruder will turn off sooner and the end of the line will be thinner.<br>
- <br>
-When oozebane turns the extruder off, it slows the feed rate down in steps so in theory the thread will remain at roughly the same thickness until the end.  The "Turn Off Steps" setting is the number of steps, the more steps the smaller the size of the step that the feed rate will be decreased and the larger the size of the resulting gcode file, the default is three.<br>
- <br>
-Oozebane also turns the extruder on just before the start of a thread.  The "Early Startup Maximum Distance" setting is the maximum distance before the thread starts that the extruder will be turned off, the default is 1.2.  The longer the extruder has been off, the earlier the extruder will turn back on, the ratio is one minus one over e to the power of the distance the extruder has been off over the "Early Startup Distance Constant".  The 'First Early Startup Distance' setting is the distance before the first thread starts that the extruder will be turned off.  This value should be high because, according to Marius, the extruder takes a second or two to extrude when starting for the first time, the default is twenty five.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="After Startup Distance" id="After Startup Distance"></a><h3>After Startup Distance</h3>
+
+Default is 1.2.<br>
  <br>
 When oozebane reaches the point where the extruder would of turned on, it slows down so that the thread will be thick at that point.  Afterwards it speeds the extruder back up to operating speed.  The speed up distance is the "After Startup Distance".<br>
  <br>
-The "Minimum Distance for Early Startup" is the minimum distance that the extruder has to be off before the thread begins for the early start up feature to activate.  The "Minimum Distance for Early Shutdown" is the minimum distance that the extruder has to be off after the thread end for the early shutdown feature to activate.<br>
+<a name="Early Shutdown Distance" id="Early Shutdown Distance"></a><h3>Early Shutdown Distance</h3>
+
+Default is 1.2.<br>
  <br>
-After oozebane turns the extruder on, it slows the feedRate down where the thread starts.  Then it speeds it up in steps so in theory the thread will remain at roughly the same thickness from the beginning.<br>
+Defines the distance before the end of the thread that the extruder will be turned off.  It is the most important oozebane setting.  A higher distance means the extruder will turn off sooner and the end of the line will be thinner.<br>
  <br>
+<a name="Early Startup Maximum Distance" id="Early Startup Maximum Distance"></a><h3>Early Startup Maximum Distance</h3>
+
+Default is 1.2.<br>
+ <br>
+Defines the maximum distance before the thread starts that the extruder will be turned on<br>
+ <br>
+<a name="Early Startup Distance Constant" id="Early Startup Distance Constant"></a><h3>Early Startup Distance Constant</h3>
+
+Default is twenty.<br>
+ <br>
+The longer the extruder has been off, the earlier the extruder will turn back on, the ratio is one minus one over e to the power of the distance the extruder has been off over the "Early Startup Distance Constant".<br>
+ <br>
+<a name="First Early Startup Distance" id="First Early Startup Distance"></a><h3>First Early Startup Distance</h3>
+
+Default is twenty five.<br>
+ <br>
+Defines the distance before the first thread starts that the extruder will be turned off.  This value should be high because, according to Marius, the extruder takes a second or two to extrude when starting for the first time.<br>
+ <br>
+<a name="Minimum Distance for Early Shutdown" id="Minimum Distance for Early Shutdown"></a><h3>Minimum Distance for Early Shutdown</h3>
+
+Default is zero.<br>
+ <br>
+Defines the minimum distance that the extruder has to be off after the thread end for the early shutdown feature to activate.<br>
+ <br>
+<a name="Minimum Distance for Early Startup" id="Minimum Distance for Early Startup"></a><h3>Minimum Distance for Early Startup</h3>
+
+Default is zero.<br>
+ <br>
+Defines the minimum distance that the extruder has to be off before the thread begins for the early start up feature to activate.<br>
+ <br>
+<a name="Slowdown Startup Steps" id="Slowdown Startup Steps"></a><h3>Slowdown Startup Steps</h3>
+
+Default is three.<br>
+ <br>
+When oozebane turns the extruder off, it slows the feed rate down in steps so in theory the thread will remain at roughly the same thickness until the end.  The "Slowdown Startup Steps" setting is the number of steps, the more steps the smaller the size of the step that the feed rate will be decreased and the larger the size of the resulting gcode file.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples oozebane the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and oozebane.py.<br>
  <br>
  <br>
@@ -80,9 +143,10 @@ The oozebane tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 <a href="math.html">math</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-<a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -123,7 +187,7 @@ The oozebane tool has created the file:<br>
 
 <dl><dt><a name="OozebaneSkein-addLineSetShutdowns"><strong>addLineSetShutdowns</strong></a>(self, line)</dt><dd><tt>Add&nbsp;a&nbsp;line&nbsp;and&nbsp;set&nbsp;the&nbsp;shutdown&nbsp;variables.</tt></dd></dl>
 
-<dl><dt><a name="OozebaneSkein-getActiveFeedRateRatio"><strong>getActiveFeedRateRatio</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;feedRate&nbsp;of&nbsp;the&nbsp;first&nbsp;active&nbsp;move&nbsp;over&nbsp;the&nbsp;operating&nbsp;feedRate.</tt></dd></dl>
+<dl><dt><a name="OozebaneSkein-getActiveFeedRateRatio"><strong>getActiveFeedRateRatio</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;feed&nbsp;rate&nbsp;of&nbsp;the&nbsp;first&nbsp;active&nbsp;move&nbsp;over&nbsp;the&nbsp;operating&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
 <dl><dt><a name="OozebaneSkein-getAddAfterStartupLines"><strong>getAddAfterStartupLines</strong></a>(self, line)</dt><dd><tt>Get&nbsp;and&nbsp;/&nbsp;or&nbsp;add&nbsp;after&nbsp;the&nbsp;startup&nbsp;lines.</tt></dd></dl>
 
@@ -145,9 +209,9 @@ The oozebane tool has created the file:<br>
 
 <dl><dt><a name="OozebaneSkein-getDistanceToThreadEnd"><strong>getDistanceToThreadEnd</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;distance&nbsp;to&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;thread.</tt></dd></dl>
 
-<dl><dt><a name="OozebaneSkein-getLinearMoveWithFeedRate"><strong>getLinearMoveWithFeedRate</strong></a>(self, feedRate, location)</dt><dd><tt>Get&nbsp;a&nbsp;linear&nbsp;move&nbsp;line&nbsp;with&nbsp;the&nbsp;feedRate.</tt></dd></dl>
+<dl><dt><a name="OozebaneSkein-getLinearMoveWithFeedRate"><strong>getLinearMoveWithFeedRate</strong></a>(self, feedRate, location)</dt><dd><tt>Get&nbsp;a&nbsp;linear&nbsp;move&nbsp;line&nbsp;with&nbsp;the&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
-<dl><dt><a name="OozebaneSkein-getLinearMoveWithFeedRateSplitLine"><strong>getLinearMoveWithFeedRateSplitLine</strong></a>(self, feedRate, splitLine)</dt><dd><tt>Get&nbsp;a&nbsp;linear&nbsp;move&nbsp;line&nbsp;with&nbsp;the&nbsp;feedRate&nbsp;and&nbsp;split&nbsp;line.</tt></dd></dl>
+<dl><dt><a name="OozebaneSkein-getLinearMoveWithFeedRateSplitLine"><strong>getLinearMoveWithFeedRateSplitLine</strong></a>(self, feedRate, splitLine)</dt><dd><tt>Get&nbsp;a&nbsp;linear&nbsp;move&nbsp;line&nbsp;with&nbsp;the&nbsp;feed&nbsp;rate&nbsp;and&nbsp;split&nbsp;line.</tt></dd></dl>
 
 <dl><dt><a name="OozebaneSkein-getOozebaneLine"><strong>getOozebaneLine</strong></a>(self, line)</dt><dd><tt>Get&nbsp;oozebaned&nbsp;gcode&nbsp;line.</tt></dd></dl>
 

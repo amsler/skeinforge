@@ -50,7 +50,7 @@ class DisplayLine( MouseToolBase ):
 	def drawSelectedColoredLineText( self ):
 		"Draw the selected line and text."
 		selectedColoredLine = self.getSelectedColoredLine()
-		if len( self.canvas.find_withtag( 'mouse_item' ) ) < 1:
+		if len( self.canvas.find_withtag( 'mouse_item' ) ) < 1 or selectedColoredLine == None:
 			return
 		tags = selectedColoredLine.displayString
 		lineCoordinates = self.canvas.coords( self.canvas.find_withtag( 'mouse_item' )[ - 1 ] )
@@ -70,6 +70,8 @@ class DisplayLine( MouseToolBase ):
 		self.window.cancelTimerResetButtons()
 		coloredLines = self.window.getColoredLines()
 		self.repository.line.value = max( 0, self.repository.line.value )
+		if len( coloredLines ) < 1:
+			return None
 		self.repository.line.value = min( len( coloredLines ) - 1, self.repository.line.value )
 		coloredLine = coloredLines[ self.repository.line.value ]
 		lineCoordinates = self.canvas.coords( self.window.getDrawnSelectedColoredLine( coloredLine ) )

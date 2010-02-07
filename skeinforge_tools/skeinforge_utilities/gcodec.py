@@ -298,7 +298,7 @@ def getUnmodifiedGCodeFiles( fileInDirectory = '' ):
 	return getFilesWithFileTypeWithoutWords( 'gcode', words, fileInDirectory )
 
 def getUntilDot( text ):
-	"Get the text until the dot, if any."
+	"Get the text until the last dot, if any."
 	dotIndex = text.rfind( '.' )
 	if dotIndex < 0:
 		return text
@@ -436,11 +436,8 @@ class DistanceFeedRate:
 		self.maximumZDrillFeedRatePerSecond = None
 		self.maximumZFeedRatePerSecond = None
 		self.maximumZTravelFeedRatePerSecond = None
-		self.resetLocationOutput()
-
-	def addExtrusionDistanceRatioLine( self, extrusionDistanceRatio ):
-		"Add an extrusion distance ratio tag bracketed line."
-		self.addLine( self.getExtrusionDistanceRatioLine( extrusionDistanceRatio ) )
+		self.oldAddedLocation = None
+		self.output = cStringIO.StringIO()
 
 	def addGcodeFromFeedRateThreadZ( self, feedRateMinute, thread, z ):
 		"Add a thread to the output."
@@ -456,6 +453,13 @@ class DistanceFeedRate:
 		for point in thread[ 1 : ]:
 			self.addGcodeMovementZWithFeedRate( feedRateMinute, point, z )
 		self.addLine( "M103" ) # Turn extruder off.
+
+	def addGcodeFromLoop( self, loop, z ):
+		"Add the gcode loop."
+		euclidean.addSurroundingLoopBeginning( self, loop, z )
+		self.addPerimeterBlock( loop, z )
+		self.addLine( '(</boundaryPerimeter>)' )
+		self.addLine( '(</surroundingLoop>)' )
 
 	def addGcodeFromThreadZ( self, thread, z ):
 		"Add a thread to the output."
@@ -490,8 +494,6 @@ class DistanceFeedRate:
 			self.absoluteDistanceMode = True
 		elif firstWord == 'G91':
 			self.absoluteDistanceMode = False
-		if firstWord == '(<extrusionDistanceRatio>':
-			self.extrusionDistanceRatio = float( splitLine[ 1 ] )
 		elif firstWord == 'G1':
 			feedRateMinute = getFeedRateMinute( None, splitLine )
 			if self.absoluteDistanceMode:
@@ -506,11 +508,8 @@ class DistanceFeedRate:
 		elif firstWord == 'G92':
 			self.oldAddedLocation = getLocationFromSplitLine( self.oldAddedLocation, splitLine )
 		elif firstWord == 'M101':
-			self.isAddedExtruderActive = True
 			self.maximumZFeedRatePerSecond = self.maximumZDrillFeedRatePerSecond
 		elif firstWord == 'M103':
-			self.isAddedExtruderActive = False
-			self.extrusionDistanceRatio = 1.0
 			self.maximumZFeedRatePerSecond = self.maximumZTravelFeedRatePerSecond
 		self.output.write( line + "\n" )
 
@@ -539,41 +538,9 @@ class DistanceFeedRate:
 		"Add a begin tag, balue and end tag."
 		self.addLine( self.getTagBracketedLine( tagName, value ) )
 
-	def getArcFeedRateString( self, afterCenterDifferenceAngle, afterPointMinusBefore, centerMinusBefore, feedRateMinute ):
-		"Get the start of the arc line."
-		if feedRateMinute == None:
-			return ''
-		deltaZ = abs( afterPointMinusBefore.z )
-		radius = abs( centerMinusBefore )
-		arcDistanceZ = complex( abs( afterCenterDifferenceAngle ) * radius, afterPointMinusBefore.z )
-		distance = abs( arcDistanceZ )
-		if distance <= 0.0:
-			print( 'this should never happen but does not really matter, distance <= 0.0 in getArcFeedRateString in gcodec' )
-			return ''
-		feedRateMinute = self.getZLimitedFeedRate( deltaZ, distance, feedRateMinute )
-		return self.getExtrusionDistanceString( distance ) + ' F' + self.getRounded( feedRateMinute )
-
 	def getBoundaryLine( self, location ):
 		"Get boundary gcode line."
 		return '(<boundaryPoint> X%s Y%s Z%s </boundaryPoint>)' % ( self.getRounded( location.x ), self.getRounded( location.y ), self.getRounded( location.z ) )
-
-	def getExtrusionDistanceRatioLine( self, extrusionDistanceRatio ):
-		"Add an extrusion distance ratio tag bracketed line."
-		return self.getTagBracketedLine( 'extrusionDistanceRatio', euclidean.getRoundedToDecimalPlacesString( 3, extrusionDistanceRatio ) )
-
-	def getExtrusionDistanceString( self, distance ):
-		"Get a z limited gcode movement."
-		if self.extrusionDistanceFormat == '':
-			return ''
-		extrusionDistance = 0.0
-		if self.isAddedExtruderActive:
-			extrusionDistance = self.extrusionDistanceRatio * distance
-		if extrusionDistance <= 0.0:
-			return ''
-		if self.extrusionDistanceFormat == 'relative':
-			return ' E' + self.getRounded( extrusionDistance )
-		self.totalExtrusionDistance += extrusionDistance
-		return ' E' + self.getRounded( self.totalExtrusionDistance )
 
 	def getFirstWordMovement( self, firstWord, location ):
 		"Get the start of the arc line."
@@ -601,14 +568,22 @@ class DistanceFeedRate:
 		extrusionDistanceString = ''
 		if self.oldAddedLocation != None:
 			distance = abs( location - self.oldAddedLocation )
-			extrusionDistanceString = self.getExtrusionDistanceString( distance )
-		linearGcodeMovement = self.getLinearGcodeMovement( location.dropAxis( 2 ), location.z ) + extrusionDistanceString
+		linearGcodeMovement = self.getLinearGcodeMovement( location.dropAxis( 2 ), location.z )
 		if feedRateMinute == None:
 			return linearGcodeMovement
 		if self.oldAddedLocation != None:
 			deltaZ = abs( location.z - self.oldAddedLocation.z )
 			feedRateMinute = self.getZLimitedFeedRate( deltaZ, distance, feedRateMinute )
 		return linearGcodeMovement + ' F' + self.getRounded( feedRateMinute )
+
+	def getLineWithFeedRate( self, feedRateMinute, line, splitLine ):
+		"Get the line with a feed rate."
+		roundedFeedRateString = 'F' + self.getRounded( feedRateMinute )
+		indexOfF = indexOfStartingWithSecond( 'F', splitLine )
+		if indexOfF < 0:
+			return line + ' ' + roundedFeedRateString
+		word = splitLine[ indexOfF ]
+		return line.replace( word, roundedFeedRateString )
 
 	def getLineWithX( self, line, splitLine, x ):
 		"Get the line with an x."
@@ -641,29 +616,13 @@ class DistanceFeedRate:
 		"Get a replaced limited gcode movement line."
 		if location == self.oldAddedLocation:
 			return ''
-		distance = 0.0
-		extrusionDistanceString = ''
-		if self.oldAddedLocation != None:
-			distance = abs( location - self.oldAddedLocation )
-			extrusionDistanceString = self.getExtrusionDistanceString( distance )
-		indexOfE = indexOfStartingWithSecond( 'E', splitLine )
-		if indexOfE == - 1:
-			line += extrusionDistanceString
-		else:
-			word = ' ' + splitLine[ indexOfE ]
-			line = line.replace( word, extrusionDistanceString )
-#		linearGcodeMovement = self.getLinearGcodeMovement( location.dropAxis( 2 ), location.z ) + extrusionDistanceString
 		if feedRateMinute == None:
 			return line
 		if self.oldAddedLocation != None:
 			deltaZ = abs( location.z - self.oldAddedLocation.z )
+			distance = abs( location - self.oldAddedLocation )
 			feedRateMinute = self.getZLimitedFeedRate( deltaZ, distance, feedRateMinute )
-		feedRateString = 'F' + self.getRounded( feedRateMinute )
-		indexOfF = indexOfStartingWithSecond( 'F', splitLine )
-		if indexOfF == - 1:
-			return line + ' ' + feedRateString
-		word = splitLine[ indexOfF ]
-		return line.replace( word, feedRateString )
+		return self.getLineWithFeedRate( feedRateMinute, line, splitLine )
 
 	def getRounded( self, number ):
 		"Get number rounded to the number of carried decimal places as a string."
@@ -687,18 +646,8 @@ class DistanceFeedRate:
 		firstWord = getWithoutBracketsEqualTab( firstWord )
 		if firstWord == 'decimalPlacesCarried':
 			self.decimalPlacesCarried = int( splitLine[ 1 ] )
-		elif firstWord == 'extrusionDistanceFormat':
-			self.extrusionDistanceFormat = splitLine[ 1 ]
 		elif firstWord == 'maximumZDrillFeedRatePerSecond':
 			self.maximumZDrillFeedRatePerSecond = float( splitLine[ 1 ] )
 			self.maximumZFeedRatePerSecond = self.maximumZDrillFeedRatePerSecond
 		elif firstWord == 'maximumZTravelFeedRatePerSecond':
 			self.maximumZTravelFeedRatePerSecond = float( splitLine[ 1 ] )
-
-	def resetLocationOutput( self ):
-		"Reset the added location and the output."
-		self.extrusionDistanceRatio = 1.0
-		self.isAddedExtruderActive = False
-		self.oldAddedLocation = None
-		self.output = cStringIO.StringIO()
-		self.totalExtrusionDistance = 0.0

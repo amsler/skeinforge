@@ -10,17 +10,34 @@
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/whittle.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/whittle.py</a></font></td></tr></table>
     <p>
-<a href="skeinforge_tools.craft_plugins.unpause.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.wipe.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_tools.craft_plugins.unpause.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.widen.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Whittle is a script to turn each polygon of a gcode file into a helix.<br>
- <br>
 Whittle will convert each polygon of a gcode file into a helix which has a vertical step down on each rotation.<br>
  <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Maximum Vertical Step'">Maximum Vertical Step'</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Whittle' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  If the cutting tool can cut the slab in one cut, the 'Activate Whittle' checkbox should be off, the default is off.<br>
  <br>
-The 'Maximum Vertical Step' is the maximum distance that the helix will step down on each rotation.  The number of steps in the helix will be the layer thickness divided by the 'Maximum Vertical Step', rounded up.  The amount the helix will step down is the layer thickness divided by the number of steps.  The default is 0.1 mm, the thinner the 'Maximum Vertical Step', the more times the cutting tool will circle around on its way to the bottom of the slab.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Maximum Vertical Step'" id="Maximum Vertical Step'"></a><h3>Maximum Vertical Step'</h3>
+
+Default is 0.1 mm.<br>
  <br>
+Defines the maximum distance that the helix will step down on each rotation.  The number of steps in the helix will be the layer thickness divided by the 'Maximum Vertical Step', rounded up.  The amount the helix will step down is the layer thickness divided by the number of steps.  The thinner the 'Maximum Vertical Step', the more times the cutting tool will circle around on its way to the bottom of the slab.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples whittle the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and whittle.py.<br>
  <br>
  <br>
@@ -54,7 +71,7 @@ The whittle tool has created the file:<br>
 <br />
 <br />
 <p>
-<a href="skeinforge_tools.craft_plugins.unpause.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.wipe.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_tools.craft_plugins.unpause.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.widen.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>
@@ -67,13 +84,14 @@ The whittle tool has created the file:<br>
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.consecution.html">skeinforge_tools.skeinforge_utilities.consecution</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
-</td><td width="25%" valign=top><a href="math.html">math</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
+<a href="math.html">math</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>

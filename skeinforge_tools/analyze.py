@@ -5,7 +5,6 @@ Analyze is a script to access the plugins which analyze a gcode file.
 The plugin buttons which are commonly used are bolded and the ones which are rarely used have normal font weight.
 
 ==Gcodes==
-
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
 

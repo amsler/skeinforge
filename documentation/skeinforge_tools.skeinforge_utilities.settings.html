@@ -46,7 +46,6 @@
 </font></dt></dl>
 </dd>
 <dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#CloseListener">CloseListener</a>
-</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#CraftRadioButtonsSaveListener">CraftRadioButtonsSaveListener</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#DeleteProfileDialog">DeleteProfileDialog</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#DisplayToolButton">DisplayToolButton</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#FileHelpMenuBar">FileHelpMenuBar</a>
@@ -54,22 +53,15 @@
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#GridHorizontal">GridHorizontal</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#GridVertical">GridVertical</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#HelpPage">HelpPage</a>
+</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#HelpPageRepository">HelpPageRepository</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#LabelDisplay">LabelDisplay</a>
+</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#LabelHelp">LabelHelp</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#LabelSeparator">LabelSeparator</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#LatentStringVar">LatentStringVar</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#MenuButtonDisplay">MenuButtonDisplay</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#PluginFrame">PluginFrame</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#ProfileList">ProfileList</a>
-</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#ProfileMenuRadio">ProfileMenuRadio</a>
-</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#ProfilePluginRadioButtonsSaveListener">ProfilePluginRadioButtonsSaveListener</a>
-</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#ProfileRepository">ProfileRepository</a>
-</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#ProfileSelectionMenuRadio">ProfileSelectionMenuRadio</a>
-</font></dt><dd>
-<dl>
-<dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#ProfileTypeMenuRadio">ProfileTypeMenuRadio</a>
-</font></dt></dl>
-</dd>
-<dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#RepositoryDialog">RepositoryDialog</a>
+</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#RepositoryDialog">RepositoryDialog</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.skeinforge_utilities.settings.html#StringSetting">StringSetting</a>
 </font></dt><dd>
 <dl>
@@ -204,24 +196,6 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.settings.h
 <dl><dt><a name="CloseListener-listenToWidget"><strong>listenToWidget</strong></a>(self, widget)</dt><dd><tt>Listen&nbsp;to&nbsp;the&nbsp;destroy&nbsp;message&nbsp;of&nbsp;the&nbsp;widget.</tt></dd></dl>
 
 <dl><dt><a name="CloseListener-wasClosed"><strong>wasClosed</strong></a>(self, event)</dt><dd><tt>The&nbsp;dialog&nbsp;was&nbsp;closed.</tt></dd></dl>
-
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="CraftRadioButtonsSaveListener">class <strong>CraftRadioButtonsSaveListener</strong></a></font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;update&nbsp;the&nbsp;craft&nbsp;radio&nbsp;buttons.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="CraftRadioButtonsSaveListener-addToDialog"><strong>addToDialog</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
-
-<dl><dt><a name="CraftRadioButtonsSaveListener-getFromRadioPlugins"><strong>getFromRadioPlugins</strong></a>(self, radioPlugins, repository)</dt><dd><tt>Initialize.</tt></dd></dl>
-
-<dl><dt><a name="CraftRadioButtonsSaveListener-save"><strong>save</strong></a>(self)</dt><dd><tt>Profile&nbsp;has&nbsp;been&nbsp;saved&nbsp;and&nbsp;craft&nbsp;radio&nbsp;plugins&nbsp;should&nbsp;be&nbsp;updated.</tt></dd></dl>
-
-<dl><dt><a name="CraftRadioButtonsSaveListener-setRadioButtons"><strong>setRadioButtons</strong></a>(self)</dt><dd><tt>Profile&nbsp;has&nbsp;been&nbsp;saved&nbsp;and&nbsp;craft&nbsp;radio&nbsp;plugins&nbsp;should&nbsp;be&nbsp;updated.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -690,6 +664,20 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.settings.h
 <dl><dt><a name="HelpPage-openPage"><strong>openPage</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Open&nbsp;the&nbsp;browser&nbsp;to&nbsp;the&nbsp;hypertext&nbsp;address.</tt></dd></dl>
 
 <dl><dt><a name="HelpPage-setToNameRepository"><strong>setToNameRepository</strong></a>(self, name, repository)</dt><dd><tt>Set&nbsp;to&nbsp;the&nbsp;name&nbsp;and&nbsp;repository.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="HelpPageRepository">class <strong>HelpPageRepository</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;open&nbsp;a&nbsp;repository&nbsp;help&nbsp;page.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="HelpPageRepository-__init__"><strong>__init__</strong></a>(self, repository)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
+
+<dl><dt><a name="HelpPageRepository-openPage"><strong>openPage</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Open&nbsp;the&nbsp;browser&nbsp;to&nbsp;the&nbsp;repository&nbsp;help&nbsp;page.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -1723,6 +1711,22 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.settings.h
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="LabelHelp">class <strong>LabelHelp</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;add&nbsp;help&nbsp;to&nbsp;a&nbsp;widget.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="LabelHelp-__init__"><strong>__init__</strong></a>(self, fileNameHelp, master, name, widget)</dt><dd><tt>Add&nbsp;menu&nbsp;to&nbsp;the&nbsp;widget.</tt></dd></dl>
+
+<dl><dt><a name="LabelHelp-displayPopupMenu"><strong>displayPopupMenu</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Display&nbsp;the&nbsp;popup&nbsp;menu&nbsp;when&nbsp;the&nbsp;button&nbsp;is&nbsp;right&nbsp;clicked.</tt></dd></dl>
+
+<dl><dt><a name="LabelHelp-unpostPopupMenu"><strong>unpostPopupMenu</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Unpost&nbsp;the&nbsp;popup&nbsp;menu.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="LabelSeparator">class <strong>LabelSeparator</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
@@ -1940,88 +1944,6 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.settings.h
 <dl><dt><a name="ProfileListboxSetting-setValueToSplitLine"><strong>setValueToSplitLine</strong></a>(self, lineIndex, lines, splitLine)</dt><dd><tt>Set&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;second&nbsp;word&nbsp;of&nbsp;a&nbsp;split&nbsp;line.</tt></dd></dl>
 
 <dl><dt><a name="ProfileListboxSetting-writeToArchiveWriter"><strong>writeToArchiveWriter</strong></a>(self, archiveWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;archive&nbsp;writer.</tt></dd></dl>
-
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ProfileMenuRadio">class <strong>ProfileMenuRadio</strong></a></font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;display&nbsp;a&nbsp;profile&nbsp;menu&nbsp;radio&nbsp;button.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ProfileMenuRadio-__init__"><strong>__init__</strong></a>(self, profilePluginFileName, menu, name, radioVar, value)</dt><dd><tt>Create&nbsp;a&nbsp;profile&nbsp;menu&nbsp;radio.</tt></dd></dl>
-
-<dl><dt><a name="ProfileMenuRadio-clickRadio"><strong>clickRadio</strong></a>(self)</dt><dd><tt>Workaround&nbsp;for&nbsp;Tkinter&nbsp;bug,&nbsp;invoke&nbsp;and&nbsp;set&nbsp;the&nbsp;value&nbsp;when&nbsp;clicked.</tt></dd></dl>
-
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ProfilePluginRadioButtonsSaveListener">class <strong>ProfilePluginRadioButtonsSaveListener</strong></a></font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;update&nbsp;the&nbsp;profile&nbsp;radio&nbsp;buttons.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ProfilePluginRadioButtonsSaveListener-addToDialog"><strong>addToDialog</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
-
-<dl><dt><a name="ProfilePluginRadioButtonsSaveListener-getFromRadioPlugins"><strong>getFromRadioPlugins</strong></a>(self, radioPlugins, repository)</dt><dd><tt>Initialize.</tt></dd></dl>
-
-<dl><dt><a name="ProfilePluginRadioButtonsSaveListener-save"><strong>save</strong></a>(self)</dt><dd><tt>Profile&nbsp;has&nbsp;been&nbsp;saved&nbsp;and&nbsp;profile&nbsp;radio&nbsp;plugins&nbsp;should&nbsp;be&nbsp;updated.</tt></dd></dl>
-
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ProfileRepository">class <strong>ProfileRepository</strong></a></font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;profile&nbsp;entities.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ProfileRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;entities,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;repository&nbsp;fileName.</tt></dd></dl>
-
-<dl><dt><a name="ProfileRepository-updateRelay"><strong>updateRelay</strong></a>(self)</dt><dd><tt>Update&nbsp;the&nbsp;plugin&nbsp;frame&nbsp;then&nbsp;the&nbsp;ProfileSaveListeners.</tt></dd></dl>
-
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ProfileSelectionMenuRadio">class <strong>ProfileSelectionMenuRadio</strong></a></font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;display&nbsp;a&nbsp;profile&nbsp;selection&nbsp;menu&nbsp;radio&nbsp;button.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ProfileSelectionMenuRadio-addToDialog"><strong>addToDialog</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
-
-<dl><dt><a name="ProfileSelectionMenuRadio-clickRadio"><strong>clickRadio</strong></a>(self)</dt><dd><tt>Workaround&nbsp;for&nbsp;Tkinter&nbsp;bug,&nbsp;invoke&nbsp;and&nbsp;set&nbsp;the&nbsp;value&nbsp;when&nbsp;clicked.</tt></dd></dl>
-
-<dl><dt><a name="ProfileSelectionMenuRadio-getFromMenuButtonDisplay"><strong>getFromMenuButtonDisplay</strong></a>(self, menuButtonDisplay, name, repository, value)</dt><dd><tt>Initialize.</tt></dd></dl>
-
-<dl><dt><a name="ProfileSelectionMenuRadio-setToMenuButtonDisplay"><strong>setToMenuButtonDisplay</strong></a>(self, menuButtonDisplay, name, repository, value)</dt><dd><tt>Initialize.</tt></dd></dl>
-
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ProfileTypeMenuRadio">class <strong>ProfileTypeMenuRadio</strong></a>(<a href="skeinforge_tools.skeinforge_utilities.settings.html#ProfileSelectionMenuRadio">ProfileSelectionMenuRadio</a>)</font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;display&nbsp;a&nbsp;profile&nbsp;type&nbsp;menu&nbsp;radio&nbsp;button.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="ProfileTypeMenuRadio-clickRadio"><strong>clickRadio</strong></a>(self)</dt><dd><tt>Workaround&nbsp;for&nbsp;Tkinter&nbsp;bug,&nbsp;invoke&nbsp;and&nbsp;set&nbsp;the&nbsp;value&nbsp;when&nbsp;clicked.</tt></dd></dl>
-
-<dl><dt><a name="ProfileTypeMenuRadio-getFromMenuButtonDisplay"><strong>getFromMenuButtonDisplay</strong></a>(self, menuButtonDisplay, name, repository, value)</dt><dd><tt>Initialize.</tt></dd></dl>
-
-<hr>
-Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.settings.html#ProfileSelectionMenuRadio">ProfileSelectionMenuRadio</a>:<br>
-<dl><dt><a name="ProfileTypeMenuRadio-addToDialog"><strong>addToDialog</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
-
-<dl><dt><a name="ProfileTypeMenuRadio-setToMenuButtonDisplay"><strong>setToMenuButtonDisplay</strong></a>(self, menuButtonDisplay, name, repository, value)</dt><dd><tt>Initialize.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -2534,7 +2456,6 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.settings.h
  <dl><dt><a name="-addElementToListTableIfNotThere"><strong>addElementToListTableIfNotThere</strong></a>(element, key, listTable)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;lists.</tt></dd></dl>
  <dl><dt><a name="-addEmptyRow"><strong>addEmptyRow</strong></a>(gridPosition)</dt><dd><tt>Add&nbsp;an&nbsp;empty&nbsp;row.</tt></dd></dl>
  <dl><dt><a name="-addListsSetCraftProfileArchive"><strong>addListsSetCraftProfileArchive</strong></a>(craftSequence, defaultProfile, repository, fileNameHelp)</dt><dd><tt>Set&nbsp;the&nbsp;craft&nbsp;profile&nbsp;archive.</tt></dd></dl>
- <dl><dt><a name="-addListsToCraftTypeRepository"><strong>addListsToCraftTypeRepository</strong></a>(fileNameHelp, repository)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;lists.</tt></dd></dl>
  <dl><dt><a name="-addListsToRepository"><strong>addListsToRepository</strong></a>(fileNameHelp, profileDirectory, repository)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;lists.</tt></dd></dl>
  <dl><dt><a name="-addMenuEntitiesToMenu"><strong>addMenuEntitiesToMenu</strong></a>(menu, menuEntities)</dt><dd><tt>Add&nbsp;the&nbsp;menu&nbsp;entities&nbsp;to&nbsp;the&nbsp;menu.</tt></dd></dl>
  <dl><dt><a name="-addMenuEntitiesToMenuFrameable"><strong>addMenuEntitiesToMenuFrameable</strong></a>(menu, menuEntities)</dt><dd><tt>Add&nbsp;the&nbsp;menu&nbsp;entities&nbsp;to&nbsp;the&nbsp;menu.</tt></dd></dl>
@@ -2546,8 +2467,6 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.settings.h
  <dl><dt><a name="-getAlongWayHexadecimalColor"><strong>getAlongWayHexadecimalColor</strong></a>(beginBrightness, colorWidth, difference, endColorTuple, wayLength)</dt><dd><tt>Get&nbsp;a&nbsp;color&nbsp;along&nbsp;the&nbsp;way&nbsp;from&nbsp;begin&nbsp;brightness&nbsp;to&nbsp;the&nbsp;end&nbsp;color.</tt></dd></dl>
  <dl><dt><a name="-getAlongWayHexadecimalPrimary"><strong>getAlongWayHexadecimalPrimary</strong></a>(beginBrightness, beginRatio, colorWidth, endBrightness, endRatio)</dt><dd><tt>Get&nbsp;a&nbsp;primary&nbsp;color&nbsp;along&nbsp;the&nbsp;way&nbsp;from&nbsp;grey&nbsp;to&nbsp;the&nbsp;end&nbsp;color.</tt></dd></dl>
  <dl><dt><a name="-getArchiveText"><strong>getArchiveText</strong></a>(repository)</dt><dd><tt>Get&nbsp;the&nbsp;text&nbsp;representation&nbsp;of&nbsp;the&nbsp;archive.</tt></dd></dl>
- <dl><dt><a name="-getCraftTypeName"><strong>getCraftTypeName</strong></a>(subName<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;craft&nbsp;type&nbsp;from&nbsp;the&nbsp;profile.</tt></dd></dl>
- <dl><dt><a name="-getCraftTypePluginModule"><strong>getCraftTypePluginModule</strong></a>(craftTypeName<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;craft&nbsp;type&nbsp;plugin&nbsp;module.</tt></dd></dl>
  <dl><dt><a name="-getDirectoryInAboveDirectory"><strong>getDirectoryInAboveDirectory</strong></a>(directory)</dt><dd><tt>Get&nbsp;the&nbsp;directory&nbsp;in&nbsp;the&nbsp;above&nbsp;directory.</tt></dd></dl>
  <dl><dt><a name="-getDisplayToolButtonsRepository"><strong>getDisplayToolButtonsRepository</strong></a>(directoryPath, importantFileNames, names, repository)</dt><dd><tt>Get&nbsp;the&nbsp;display&nbsp;tool&nbsp;buttons.</tt></dd></dl>
  <dl><dt><a name="-getDisplayedDialogFromConstructor"><strong>getDisplayedDialogFromConstructor</strong></a>(repository)</dt><dd><tt>Display&nbsp;the&nbsp;repository&nbsp;dialog.</tt></dd></dl>
@@ -2559,13 +2478,9 @@ Methods inherited from <a href="skeinforge_tools.skeinforge_utilities.settings.h
  <dl><dt><a name="-getFileTextGivenDirectoryFileName"><strong>getFileTextGivenDirectoryFileName</strong></a>(directory, fileName)</dt><dd><tt>Get&nbsp;the&nbsp;entire&nbsp;text&nbsp;of&nbsp;a&nbsp;file&nbsp;with&nbsp;the&nbsp;given&nbsp;file&nbsp;name&nbsp;in&nbsp;the&nbsp;given&nbsp;directory.</tt></dd></dl>
  <dl><dt><a name="-getFolders"><strong>getFolders</strong></a>(directory)</dt><dd><tt>Get&nbsp;the&nbsp;folder&nbsp;list&nbsp;in&nbsp;a&nbsp;directory.</tt></dd></dl>
  <dl><dt><a name="-getPathFromFileNameHelp"><strong>getPathFromFileNameHelp</strong></a>(fileNameHelp)</dt><dd><tt>Get&nbsp;the&nbsp;directory&nbsp;path&nbsp;from&nbsp;file&nbsp;name&nbsp;help.</tt></dd></dl>
- <dl><dt><a name="-getPluginFileNames"><strong>getPluginFileNames</strong></a>()</dt><dd><tt>Get&nbsp;analyze&nbsp;plugin&nbsp;fileNames.</tt></dd></dl>
- <dl><dt><a name="-getPluginsDirectoryPath"><strong>getPluginsDirectoryPath</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;plugins&nbsp;directory&nbsp;path.</tt></dd></dl>
- <dl><dt><a name="-getProfileName"><strong>getProfileName</strong></a>(craftTypeName)</dt><dd><tt>Get&nbsp;the&nbsp;profile&nbsp;name&nbsp;from&nbsp;the&nbsp;craft&nbsp;type&nbsp;name.</tt></dd></dl>
  <dl><dt><a name="-getProfilesDirectoryInAboveDirectory"><strong>getProfilesDirectoryInAboveDirectory</strong></a>(subName<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;profiles&nbsp;directory&nbsp;path&nbsp;in&nbsp;the&nbsp;above&nbsp;directory.</tt></dd></dl>
  <dl><dt><a name="-getProfilesDirectoryPath"><strong>getProfilesDirectoryPath</strong></a>(subfolder<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;profiles&nbsp;directory&nbsp;path,&nbsp;which&nbsp;is&nbsp;the&nbsp;settings&nbsp;directory&nbsp;joined&nbsp;with&nbsp;profiles.</tt></dd></dl>
  <dl><dt><a name="-getRadioPluginsAddPluginFrame"><strong>getRadioPluginsAddPluginFrame</strong></a>(directoryPath, importantFileNames, names, repository)</dt><dd><tt>Get&nbsp;the&nbsp;radio&nbsp;plugins&nbsp;and&nbsp;add&nbsp;the&nbsp;plugin&nbsp;frame.</tt></dd></dl>
- <dl><dt><a name="-getReadProfileRepository"><strong>getReadProfileRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;read&nbsp;profile&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getReadRepository"><strong>getReadRepository</strong></a>(repository)</dt><dd><tt>Read&nbsp;and&nbsp;return&nbsp;settings&nbsp;from&nbsp;a&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getSelectedPluginModuleFromPath"><strong>getSelectedPluginModuleFromPath</strong></a>(filePath, plugins)</dt><dd><tt>Get&nbsp;the&nbsp;selected&nbsp;plugin&nbsp;module.</tt></dd></dl>
  <dl><dt><a name="-getSelectedPluginName"><strong>getSelectedPluginName</strong></a>(plugins)</dt><dd><tt>Get&nbsp;the&nbsp;selected&nbsp;plugin&nbsp;name.</tt></dd></dl>

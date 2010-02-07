@@ -18,17 +18,101 @@ Speed is a script to set the feed rate, and flow rate.<br>
 The speed manual page is at:<br>
 <a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Speed">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Speed</a><br>
  <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Add Flow Rate">Add Flow Rate</a><br />
+&nbsp;&nbsp;<a href="#Bridge">Bridge</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Bridge Feed Rate Multiplier">Bridge Feed Rate Multiplier</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Bridge Flow Rate Multiplier">Bridge Flow Rate Multiplier</a><br />
+&nbsp;&nbsp;<a href="#Feed Rate">Feed Rate</a><br />
+&nbsp;&nbsp;<a href="#Flow Rate Setting">Flow Rate Setting</a><br />
+&nbsp;&nbsp;<a href="#Maximum Z Feed Rate">Maximum Z Feed Rate</a><br />
+&nbsp;&nbsp;<a href="#Orbital Feed Rate over Operating Feed Rate">Orbital Feed Rate over Operating Feed Rate</a><br />
+&nbsp;&nbsp;<a href="#Perimeter">Perimeter</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Perimeter Feed Rate over Operating Feed Rate">Perimeter Feed Rate over Operating Feed Rate</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Perimeter Flow Rate over Operating Feed Rate">Perimeter Flow Rate over Operating Feed Rate</a><br />
+&nbsp;&nbsp;<a href="#Travel Feed Rate">Travel Feed Rate</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Speed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The speed script sets the feed rate, and flow rate.<br>
  <br>
-The feed rate for the shape will be set to the 'Feed Rate" setting.  The 'Bridge Feed Rate Multiplier' is the ratio of the feed rate on the bridge layers over the feed rate of the typical non bridge layers, the default is 1.0.  The speed of the orbit compared to the operating extruder speed will be set to the "Orbital Feed Rate over Operating Feed Rate" setting.  If you want the orbit to be very short, set the "Orbital Feed Rate over Operating Feed Rate" setting to a low value like 0.1.  The 'Travel Feed Rate' is the feed rate when the extruder is off.  The default is 16 mm / s and it could be set as high as the extruder can be moved, it does not have to be limited by the maximum extrusion rate.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Add Flow Rate" id="Add Flow Rate"></a><h3>Add Flow Rate</h3>
+
+Default is on.<br>
  <br>
-The default 'Add Flow Rate' checkbox is on.  When it is on, the flow rate will be added to the gcode.  The 'Bridge Flow Rate Multiplier' is the ratio of the flow rate on the bridge layers over the flow rate of the typical non bridge layers, the default is 1.0.  The 'Flow Rate Setting' sets the operating flow rate, the default is 210.<br>
+When selected, the flow rate will be added to the gcode.<br>
  <br>
-The 'Maximum Z Feed Rate' is the maximum speed that the tool head will move in the z direction.  If your firmware limits the z feed rate, you do not need to set this setting.  The default of 8 millimeters per second is the maximum z speed of Nophead's direct drive z stage, the belt driven z stages have a lower maximum feed rate.<br>
+<a name="Bridge" id="Bridge"></a><h3>Bridge</h3>
+
+<a name="Bridge Feed Rate Multiplier" id="Bridge Feed Rate Multiplier"></a><h4>Bridge Feed Rate Multiplier</h4>
+
+Default is one.<br>
  <br>
-The 'Perimeter Feed Rate over Operating Feed Rate' is the ratio of the feed rate of the perimeter over the feed rate of the infill.  With the default of 1.0, the perimeter feed rate will be the same as the infill feed rate.  The 'Perimeter Flow Rate over Operating Flow Rate' is the ratio of the flow rate of the perimeter over the flow rate of the infill.  With the default of 1.0, the perimeter flow rate will be the same as the infill flow rate.  To have higher build quality on the outside at the expense of slower build speed, a typical setting for the 'Perimeter Feed Rate over Operating Feed Rate' would be 0.5.  To go along with that, if you are using a speed controlled extruder, the 'Perimeter Flow Rate over Operating Flow Rate' should also be 0.5.  If you are using Pulse Width Modulation to control the speed, then you'll probably need a slightly higher ratio because there is a minimum voltage 'Flow Rate PWM Setting' required for the extruder motor to turn.  The flow rate PWM ratio would be determined by trial and error, with the first trial being:<br>
+Defines the ratio of the feed rate on the bridge layers over the feed rate of the typical non bridge layers.<br>
+ <br>
+<a name="Bridge Flow Rate Multiplier" id="Bridge Flow Rate Multiplier"></a><h4>Bridge Flow Rate Multiplier</h4>
+
+Default is one.<br>
+ <br>
+Defines the ratio of the flow rate on the bridge layers over the flow rate of the typical non bridge layers.<br>
+ <br>
+<a name="Feed Rate" id="Feed Rate"></a><h3>Feed Rate</h3>
+
+Default is sixteen millimeters per second.<br>
+ <br>
+Defines the operating feed rate.<br>
+ <br>
+<a name="Flow Rate Setting" id="Flow Rate Setting"></a><h3>Flow Rate Setting</h3>
+
+Default is 210.<br>
+ <br>
+Defines the operating flow rate.<br>
+ <br>
+<a name="Maximum Z Feed Rate" id="Maximum Z Feed Rate"></a><h3>Maximum Z Feed Rate</h3>
+
+Default is eight millimeters per second.<br>
+ <br>
+Defines the maximum speed that the tool head will move in the z direction.  If your firmware limits the z feed rate, you do not need to set this setting.  The default of eight millimeters per second is the maximum z speed of Nophead's direct drive z stage, the belt driven z stages have a lower maximum feed rate.<br>
+ <br>
+<a name="Orbital Feed Rate over Operating Feed Rate" id="Orbital Feed Rate over Operating Feed Rate"></a><h3>Orbital Feed Rate over Operating Feed Rate</h3>
+
+Default is 0.5.<br>
+ <br>
+Defines the speed of the orbit compared to the operating extruder speed.  If you want the orbit to be very short, set the "Orbital Feed Rate over Operating Feed Rate" setting to a low value like 0.1.<br>
+ <br>
+<a name="Perimeter" id="Perimeter"></a><h3>Perimeter</h3>
+
+To have higher build quality on the outside at the expense of slower build speed, a typical setting for the 'Perimeter Feed Rate over Operating Feed Rate' would be 0.5.  To go along with that, if you are using a speed controlled extruder, the 'Perimeter Flow Rate over Operating Flow Rate' should also be 0.5.  If you are using Pulse Width Modulation to control the speed, then you'll probably need a slightly higher ratio because there is a minimum voltage 'Flow Rate PWM Setting' required for the extruder motor to turn.  The flow rate PWM ratio would be determined by trial and error, with the first trial being:<br>
 Perimeter Flow Rate over Operating Flow Rate ~ Perimeter Feed Rate over Operating Feed Rate * ( Flow Rate PWM Setting - Minimum Flow Rate PWM Setting ) + Minimum Flow Rate PWM Setting<br>
  <br>
+<a name="Perimeter Feed Rate over Operating Feed Rate" id="Perimeter Feed Rate over Operating Feed Rate"></a><h4>Perimeter Feed Rate over Operating Feed Rate</h4>
+
+Default is one.<br>
+ <br>
+Defines the ratio of the feed rate of the perimeter over the feed rate of the infill.<br>
+ <br>
+<a name="Perimeter Flow Rate over Operating Feed Rate" id="Perimeter Flow Rate over Operating Feed Rate"></a><h4>Perimeter Flow Rate over Operating Feed Rate</h4>
+
+Default is one.<br>
+ <br>
+Defines the ratio of the flow rate of the perimeter over the flow rate of the infill.<br>
+ <br>
+<a name="Travel Feed Rate" id="Travel Feed Rate"></a><h3>Travel Feed Rate</h3>
+
+Default is sixteen millimeters per second.<br>
+ <br>
+Defines the feed rate when the extruder is off.  The 'Travel Feed Rate' could be set as high as the extruder can be moved, it is not limited by the maximum extrusion rate.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples speed the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and speed.py.<br>
  <br>
  <br>
@@ -82,7 +166,8 @@ The speed tool has created the file:<br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 <a href="math.html">math</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

@@ -85,9 +85,9 @@ many lines of text<br>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="DistanceFeedRate-__init__"><strong>__init__</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="DistanceFeedRate-addExtrusionDistanceRatioLine"><strong>addExtrusionDistanceRatioLine</strong></a>(self, extrusionDistanceRatio)</dt><dd><tt>Add&nbsp;an&nbsp;extrusion&nbsp;distance&nbsp;ratio&nbsp;tag&nbsp;bracketed&nbsp;line.</tt></dd></dl>
-
 <dl><dt><a name="DistanceFeedRate-addGcodeFromFeedRateThreadZ"><strong>addGcodeFromFeedRateThreadZ</strong></a>(self, feedRateMinute, thread, z)</dt><dd><tt>Add&nbsp;a&nbsp;thread&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
+
+<dl><dt><a name="DistanceFeedRate-addGcodeFromLoop"><strong>addGcodeFromLoop</strong></a>(self, loop, z)</dt><dd><tt>Add&nbsp;the&nbsp;gcode&nbsp;loop.</tt></dd></dl>
 
 <dl><dt><a name="DistanceFeedRate-addGcodeFromThreadZ"><strong>addGcodeFromThreadZ</strong></a>(self, thread, z)</dt><dd><tt>Add&nbsp;a&nbsp;thread&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
 
@@ -105,15 +105,11 @@ many lines of text<br>
 
 <dl><dt><a name="DistanceFeedRate-addTagBracketedLine"><strong>addTagBracketedLine</strong></a>(self, tagName, value)</dt><dd><tt>Add&nbsp;a&nbsp;begin&nbsp;tag,&nbsp;balue&nbsp;and&nbsp;end&nbsp;tag.</tt></dd></dl>
 
-<dl><dt><a name="DistanceFeedRate-getArcFeedRateString"><strong>getArcFeedRateString</strong></a>(self, afterCenterDifferenceAngle, afterPointMinusBefore, centerMinusBefore, feedRateMinute)</dt><dd><tt>Get&nbsp;the&nbsp;start&nbsp;of&nbsp;the&nbsp;arc&nbsp;line.</tt></dd></dl>
-
 <dl><dt><a name="DistanceFeedRate-getBoundaryLine"><strong>getBoundaryLine</strong></a>(self, location)</dt><dd><tt>Get&nbsp;boundary&nbsp;gcode&nbsp;line.</tt></dd></dl>
 
-<dl><dt><a name="DistanceFeedRate-getExtrusionDistanceRatioLine"><strong>getExtrusionDistanceRatioLine</strong></a>(self, extrusionDistanceRatio)</dt><dd><tt>Add&nbsp;an&nbsp;extrusion&nbsp;distance&nbsp;ratio&nbsp;tag&nbsp;bracketed&nbsp;line.</tt></dd></dl>
-
-<dl><dt><a name="DistanceFeedRate-getExtrusionDistanceString"><strong>getExtrusionDistanceString</strong></a>(self, distance)</dt><dd><tt>Get&nbsp;a&nbsp;z&nbsp;limited&nbsp;gcode&nbsp;movement.</tt></dd></dl>
-
 <dl><dt><a name="DistanceFeedRate-getFirstWordMovement"><strong>getFirstWordMovement</strong></a>(self, firstWord, location)</dt><dd><tt>Get&nbsp;the&nbsp;start&nbsp;of&nbsp;the&nbsp;arc&nbsp;line.</tt></dd></dl>
+
+<dl><dt><a name="DistanceFeedRate-getLineWithFeedRate"><strong>getLineWithFeedRate</strong></a>(self, feedRateMinute, line, splitLine)</dt><dd><tt>Get&nbsp;the&nbsp;line&nbsp;with&nbsp;a&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
 <dl><dt><a name="DistanceFeedRate-getLineWithX"><strong>getLineWithX</strong></a>(self, line, splitLine, x)</dt><dd><tt>Get&nbsp;the&nbsp;line&nbsp;with&nbsp;an&nbsp;x.</tt></dd></dl>
 
@@ -136,8 +132,6 @@ many lines of text<br>
 <dl><dt><a name="DistanceFeedRate-getZLimitedFeedRate"><strong>getZLimitedFeedRate</strong></a>(self, deltaZ, distance, feedRateMinute)</dt><dd><tt>Get&nbsp;the&nbsp;z&nbsp;limited&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
 <dl><dt><a name="DistanceFeedRate-parseSplitLine"><strong>parseSplitLine</strong></a>(self, firstWord, splitLine)</dt><dd><tt>Parse&nbsp;gcode&nbsp;split&nbsp;line&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
-
-<dl><dt><a name="DistanceFeedRate-resetLocationOutput"><strong>resetLocationOutput</strong></a>(self)</dt><dd><tt>Reset&nbsp;the&nbsp;added&nbsp;location&nbsp;and&nbsp;the&nbsp;output.</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -179,7 +173,7 @@ many lines of text<br>
  <dl><dt><a name="-getTextIfEmpty"><strong>getTextIfEmpty</strong></a>(fileName, text)</dt><dd><tt>Get&nbsp;the&nbsp;text&nbsp;from&nbsp;a&nbsp;file&nbsp;if&nbsp;it&nbsp;the&nbsp;text&nbsp;is&nbsp;empty.</tt></dd></dl>
  <dl><dt><a name="-getTextLines"><strong>getTextLines</strong></a>(text)</dt><dd><tt>Get&nbsp;the&nbsp;all&nbsp;the&nbsp;lines&nbsp;of&nbsp;text&nbsp;of&nbsp;a&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getUnmodifiedGCodeFiles"><strong>getUnmodifiedGCodeFiles</strong></a>(fileInDirectory<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;gcode&nbsp;files&nbsp;which&nbsp;are&nbsp;not&nbsp;modified.</tt></dd></dl>
- <dl><dt><a name="-getUntilDot"><strong>getUntilDot</strong></a>(text)</dt><dd><tt>Get&nbsp;the&nbsp;text&nbsp;until&nbsp;the&nbsp;dot,&nbsp;if&nbsp;any.</tt></dd></dl>
+ <dl><dt><a name="-getUntilDot"><strong>getUntilDot</strong></a>(text)</dt><dd><tt>Get&nbsp;the&nbsp;text&nbsp;until&nbsp;the&nbsp;last&nbsp;dot,&nbsp;if&nbsp;any.</tt></dd></dl>
  <dl><dt><a name="-getVersionFileName"><strong>getVersionFileName</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;file&nbsp;name&nbsp;of&nbsp;the&nbsp;version&nbsp;date.</tt></dd></dl>
  <dl><dt><a name="-getWithoutBracketsEqualTab"><strong>getWithoutBracketsEqualTab</strong></a>(line)</dt><dd><tt>Get&nbsp;a&nbsp;string&nbsp;without&nbsp;the&nbsp;greater&nbsp;than&nbsp;sign,&nbsp;the&nbsp;bracket&nbsp;and&nbsp;less&nbsp;than&nbsp;sign,&nbsp;the&nbsp;equal&nbsp;sign&nbsp;or&nbsp;the&nbsp;tab.</tt></dd></dl>
  <dl><dt><a name="-indexOfStartingWithSecond"><strong>indexOfStartingWithSecond</strong></a>(letter, splitLine)</dt><dd><tt>Get&nbsp;index&nbsp;of&nbsp;the&nbsp;first&nbsp;occurence&nbsp;of&nbsp;the&nbsp;given&nbsp;letter&nbsp;in&nbsp;the&nbsp;split&nbsp;line,&nbsp;starting&nbsp;with&nbsp;the&nbsp;second&nbsp;word.&nbsp;&nbsp;Return&nbsp;-&nbsp;1&nbsp;if&nbsp;letter&nbsp;is&nbsp;not&nbsp;found</tt></dd></dl>

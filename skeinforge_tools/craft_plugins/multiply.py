@@ -5,14 +5,37 @@ Multiply is a script to multiply the shape into an array of copies arranged in a
 The multiply manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Multiply
 
+Besides using the multiply tool, another way of printing many copies of the model is to duplicate the model in Art of Illusion, however many times you want, with the appropriate offsets.  Then you can either use the Join Objects script in the scripts submenu to create a combined shape or you can export the whole scene as an xml file, which skeinforge can then slice.
+
+==Operation==
 The default 'Activate Multiply' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
+
+==Settings==
+===Center===
+Default is the origin.
 
 The center of the shape will be moved to the "Center X" and "Center Y" coordinates.
 
-The "Number of Columns" setting is the number of columns in the array table.  The "Number of Rows" is the number of rows in the table.  The "Separation over Extrusion Width" is the ratio of separation between the shape copies over the extrusion width.
+====Center X====
+====Center Y====
 
-Besides using the multiply tool, another way of printing many copies of the model is to duplicate the model in Art of Illusion, however many times you want, with the appropriate offsets.  Then you can either use the Join Objects script in the scripts submenu to create a combined shape or you can export the whole scene as an xml file, which skeinforge can then slice.
+===Number of Cells===
+====Number of Columns====
+Default is one.
 
+Defines the number of columns in the array table.
+
+====Number of Rows====
+Default is one.
+
+Defines the number of rows in the table.
+
+===Separation over Perimeter Width===
+Default is fifteen.
+
+Defines the ratio of separation between the shape copies over the extrusion width.
+
+==Examples==
 The following examples multiply the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and multiply.py.
 
 
@@ -102,11 +125,13 @@ class MultiplyRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Multiply', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Multiply' )
 		self.activateMultiply = settings.BooleanSetting().getFromValue( 'Activate Multiply:', self, False )
+		settings.LabelDisplay().getFromName( '- Center -', self )
 		self.centerX = settings.FloatSpin().getFromValue( - 100.0, 'Center X (mm):', self, 100.0, 0.0 )
 		self.centerY = settings.FloatSpin().getFromValue( -100.0, 'Center Y (mm):', self, 100.0, 0.0 )
+		settings.LabelDisplay().getFromName( '- Number of Cells -', self )
 		self.numberOfColumns = settings.IntSpin().getFromValue( 1, 'Number of Columns (integer):', self, 10, 1 )
 		self.numberOfRows = settings.IntSpin().getFromValue( 1, 'Number of Rows (integer):', self, 10, 1 )
-		self.separationOverExtrusionWidth = settings.FloatSpin().getFromValue( 5.0, 'Separation over Extrusion Width (ratio):', self, 25.0, 15.0 )
+		self.separationOverPerimeterWidth = settings.FloatSpin().getFromValue( 5.0, 'Separation over Perimeter Width (ratio):', self, 25.0, 15.0 )
 		self.executeTitle = 'Multiply'
 
 	def execute( self ):
@@ -237,7 +262,7 @@ class MultiplySkein:
 		cornerLowComplex = euclidean.getMinimumFromPoints( locationComplexes )
 		self.extent = cornerHighComplex - cornerLowComplex
 		self.shapeCenter = 0.5 * ( cornerHighComplex + cornerLowComplex )
-		self.separation = self.multiplyRepository.separationOverExtrusionWidth.value * self.absolutePerimeterWidth
+		self.separation = self.multiplyRepository.separationOverPerimeterWidth.value * self.absolutePerimeterWidth
 		self.extentPlusSeparation = self.extent + complex( self.separation, self.separation )
 		columnsMinusOne = self.numberOfColumns - 1
 		rowsMinusOne = self.numberOfRows - 1

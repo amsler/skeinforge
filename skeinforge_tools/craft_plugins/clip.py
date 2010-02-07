@@ -99,7 +99,7 @@ class ClipRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.clip.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Clipped', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Clip', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Clip' )
 		self.activateClip = settings.BooleanSetting().getFromValue( 'Activate Clip', self, True )
 		self.clipOverExtrusionWidth = settings.FloatSpin().getFromValue( 0.1, 'Clip Over Extrusion Width (ratio):', self, 0.8, 0.5 )

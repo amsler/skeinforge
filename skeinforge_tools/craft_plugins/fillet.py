@@ -1,16 +1,50 @@
 """
 This page is in the table of contents.
-Fillet is a script to fillet or bevel the corners on a gcode file.
+Fillet rounds the corners slightly in a variety of ways.  This is to reduce corner blobbing and sudden extruder acceleration.
 
 The fillet manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fillet
 
+==Operation==
 The default 'Activate Fillet' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-Fillet rounds the corners slightly in a variety of ways.  This is to reduce corner blobbing and sudden extruder acceleration.  The 'Arc Point' method fillets the corners with an arc using the gcode point form.  The 'Arc Radius' method fillets with an arc using the gcode radius form.  The 'Arc Segment' method fillets corners with an arc composed of several segments.  The 'Bevel' method bevels each corner.  The default radio button choice is 'Bevel'.
+==Settings==
+===Fillet Procedure Choice===
+Default is 'Bevel''.
 
-The 'Corner FeedRate over Operating FeedRate' is the ratio of the feedRate in corners over the operating feedRate.  With a high value the extruder will move quickly in corners, accelerating quickly and leaving a thin extrusion.  With a low value, the extruder will move slowly in corners, accelerating gently and leaving a thick extrusion.  The default value is 1.0.  The 'Fillet Radius over Perimeter Width' ratio determines how much wide the fillet will be, the default is 0.35.  The 'Reversal Slowdown over Perimeter Width' ratio determines how far before a path reversal the extruder will slow down.  Some tools, like nozzle wipe, double back the path of the extruder and this option will add a slowdown point in that path so there won't be a sudden jerk at the end of the path.  The default value is 0.5 and if the value is less than 0.1 a slowdown will not be added.  If 'Use Intermediate FeedRate in Corners' is chosen, the feedRate entering the corner will be the average of the old feedRate and the new feedRate, the default is true.
+====Arc Point====
+When selected, the corners will be filleted with an arc using the gcode point form.
 
+====Arc Radius====
+When selected, the corners will be filleted with an arc using the gcode radius form.
+
+====Arc Segment====
+When selected, the corners will be filleted with an arc composed of several segments.
+
+====Bevel====
+When selected, the corners will be beveled.
+
+===Corner Feed Rate over Operating Feed Rate===
+Default is one.
+
+Defines the ratio of the feed rate in corners over the operating feed rate.  With a high value the extruder will move quickly in corners, accelerating quickly and leaving a thin extrusion.  With a low value, the extruder will move slowly in corners, accelerating gently and leaving a thick extrusion.
+
+===Fillet Radius over Perimeter Width===
+Default is 0.35.
+
+Defines the width of the fillet.
+
+===Reversal Slowdown over Perimeter Width===
+Default is 0.5.
+
+Defines how far before a path reversal the extruder will slow down.  Some tools, like nozzle wipe, double back the path of the extruder and this option will add a slowdown point in that path so there won't be a sudden jerk at the end of the path.  If the value is less than 0.1 a slowdown will not be added.
+
+===Use Intermediate Feed Rate in Corners===
+Default is on.
+
+When selected, the feed rate entering the corner will be the average of the old feed rate and the new feed rate.
+
+==Examples==
 The following examples fillet the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and fillet.py.
 
 
@@ -116,7 +150,7 @@ class BevelSkein:
 		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, point.dropAxis( 2 ), point.z ) )
 
 	def getCornerFeedRate( self ):
-		"Get the corner feedRate, which may be based on the intermediate feedRate."
+		"Get the corner feed rate, which may be based on the intermediate feed rate."
 		feedRateMinute = self.feedRateMinute
 		if self.filletRepository.useIntermediateFeedRateInCorners.value:
 			if self.oldFeedRateMinute != None:
@@ -311,6 +345,8 @@ class ArcPointSkein( ArcSegmentSkein ):
 	"A class to arc point a skein of extrusions."
 	def addArc( self, afterCenterDifferenceAngle, afterPoint, beforeCenterSegment, beforePoint, center ):
 		"Add an arc point to the filleted skein."
+		if afterCenterDifferenceAngle == 0.0:
+			return
 		afterPointMinusBefore = afterPoint - beforePoint
 		centerMinusBefore = center - beforePoint
 		firstWord = 'G3'
@@ -319,9 +355,17 @@ class ArcPointSkein( ArcSegmentSkein ):
 		centerMinusBeforeComplex = centerMinusBefore.dropAxis( 2 )
 		if abs( centerMinusBeforeComplex ) <= 0.0:
 			return
-		self.distanceFeedRate.output.write( self.distanceFeedRate.getFirstWordMovement( firstWord, afterPointMinusBefore ) )
-		self.distanceFeedRate.output.write( self.getRelativeCenter( centerMinusBeforeComplex ) )
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getArcFeedRateString( afterCenterDifferenceAngle, afterPointMinusBefore, centerMinusBefore, self.getCornerFeedRate() ) )
+		deltaZ = abs( afterPointMinusBefore.z )
+		radius = abs( centerMinusBefore )
+		arcDistanceZ = complex( abs( afterCenterDifferenceAngle ) * radius, afterPointMinusBefore.z )
+		distance = abs( arcDistanceZ )
+		if distance <= 0.0:
+			return
+		line = self.distanceFeedRate.getFirstWordMovement( firstWord, afterPointMinusBefore ) + self.getRelativeCenter( centerMinusBeforeComplex )
+		cornerFeedRate = self.getCornerFeedRate()
+		if cornerFeedRate != None:
+			line += ' F' + self.distanceFeedRate.getRounded( self.distanceFeedRate.getZLimitedFeedRate( deltaZ, distance, cornerFeedRate ) )
+		self.distanceFeedRate.addLine( line )
 
 	def getRelativeCenter( self, centerMinusBeforeComplex ):
 		"Get the relative center."
@@ -350,10 +394,10 @@ class FilletRepository:
 		self.arcRadius = settings.Radio().getFromRadio( filletLatentStringVar, 'Arc Radius', self, False )
 		self.arcSegment = settings.Radio().getFromRadio( filletLatentStringVar, 'Arc Segment', self, False )
 		self.bevel = settings.Radio().getFromRadio( filletLatentStringVar, 'Bevel', self, True )
-		self.cornerFeedRateOverOperatingFeedRate = settings.FloatSpin().getFromValue( 0.8, 'Corner FeedRate over Operating Feed Rate (ratio):', self, 1.2, 1.0 )
+		self.cornerFeedRateOverOperatingFeedRate = settings.FloatSpin().getFromValue( 0.8, 'Corner Feed Rate over Operating Feed Rate (ratio):', self, 1.2, 1.0 )
 		self.filletRadiusOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.25, 'Fillet Radius over Perimeter Width (ratio):', self, 0.65, 0.35 )
 		self.reversalSlowdownDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.3, 'Reversal Slowdown Distance over Perimeter Width (ratio):', self, 0.7, 0.5 )
-		self.useIntermediateFeedRateInCorners = settings.BooleanSetting().getFromValue( 'Use Intermediate FeedRate in Corners', self, True )
+		self.useIntermediateFeedRateInCorners = settings.BooleanSetting().getFromValue( 'Use Intermediate Feed Rate in Corners', self, True )
 		self.executeTitle = 'Fillet'
 
 	def execute( self ):

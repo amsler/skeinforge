@@ -1,14 +1,20 @@
 """
 This page is in the table of contents.
-Jitter is a script to jitter the ends of the loops of a gcode file.
+Jitter jitters the loop end position to a different place on each layer to prevent the a ridge from forming.
 
 The jitter manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Jitter
 
+==Operation==
 The default 'Activate Jitter' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-Jitter jitters the loop end position to a different place on each layer to prevent the a ridge from forming.  The "Jitter Over Perimeter Width (ratio)" is the amount the loop ends will be jittered over the extrusion width.  A high value means the loops will start all over the place and a low value means loops will start at roughly the same place on each layer.
+==Settings==
+===Jitter Over Perimeter Width===
+Default is two.
 
+Defines the amount the loop ends will be jittered over the perimeter width.  A high value means the loops will start all over the place and a low value means loops will start at roughly the same place on each layer.
+
+==Examples==
 The following examples jitter the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and jitter.py.
 
 

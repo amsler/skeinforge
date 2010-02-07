@@ -107,7 +107,7 @@ class CombRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.comb.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Combed', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Comb', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb' )
 		self.activateComb = settings.BooleanSetting().getFromValue( 'Activate Comb', self, True )
 		self.minimumDepartureDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Minimum Departure Distance over Perimeter Width (ratio):', self, 50.0, 0.0 )
@@ -304,6 +304,7 @@ class CombSkein:
 				lineX.append( xIntersection )
 		points.append( end )
 		lineXIndex = 0
+		pathBetweenAdded = False
 		while lineXIndex < len( lineX ) - 1:
 			lineXFirst = lineX[ lineXIndex ]
 			lineXSecond = lineX[ lineXIndex + 1 ]
@@ -313,9 +314,12 @@ class CombSkein:
 				isLeavingPerimeter = True
 			pathBetween = self.getPathBetween( points[ lineXIndex + 1 ], points[ lineXIndex + 2 ], isLeavingPerimeter, loopFirst )
 			if isLeavingPerimeter:
-				self.addRunningJumpPath( points[ lineXIndex + 3 ], boundaries[ lineXSecond.index ], pathBetween )
+				if not pathBetweenAdded:
+					self.addRunningJumpPath( points[ lineXIndex + 3 ], boundaries[ lineXSecond.index ], pathBetween )
+				pathBetweenAdded = True
 			else:
 				pathBetween = self.getSimplifiedAroundPath( points[ lineXIndex ], points[ lineXIndex + 3 ], loopFirst, pathBetween )
+				pathBetweenAdded = True
 			aroundBetweenPath += pathBetween
 			lineXIndex += 2
 		return aroundBetweenPath

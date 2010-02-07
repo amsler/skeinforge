@@ -12,7 +12,6 @@ http://blog.thingiverse.com/2009/07/28/skeinforge-quicktip-cool/
 The default 'Activate Cool' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
 ==Settings==
-
 ===Cool Type===
 Default is 'Slow Down'.
 
@@ -48,11 +47,11 @@ Default is on.
 When selected, cool will turn the fan off at the ending of the fabrication.
 
 ==Alterations==
-Cool looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the skeinforge_tools folder.  The cool start and end text idea is from:
+Cool looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the craft_plugins folder.  The cool start and end text idea is from:
 http://makerhahn.blogspot.com/2008/10/yay-minimug.html
 
 ===cool_start.gcode===
-Before the orbits, if there is a file cool_start.gcode, cool will add that to the start of the orbits.
+Cool will add cool_start.gcode to the start of the orbits if it exists.
 
 ===cool_end.gcode===
 After it has added the orbits, it will add the file cool_end.gcode if it exists.
@@ -142,7 +141,7 @@ class CoolRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.cool.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Cooled', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Cool', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Cool' )
 		self.activateCool = settings.BooleanSetting().getFromValue( 'Activate Cool', self, True )
 		self.coolType = settings.MenuButtonDisplay().getFromName( 'Cool Type:', self )

@@ -2,14 +2,43 @@
 This page is in the table of contents.
 Mill is a script to mill the outlines.
 
+==Operation==
 The default 'Activate Mill' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-If the 'Add Inner Loops' checkbox is on, inner milling loops will be added, the default is on.  If the 'Add Outer Loops' checkbox is on, outer milling loops will be added, the default is on.  If the 'Cross Hatch' checkbox is on, there will be alternating horizontal and vertical milling paths, if it is off there will only be horizontal milling paths, the default is on.
+==Settings==
+===Add Loops===
+====Add Inner Loops====
+Default is on.
 
-The 'Loop Inner Outset over Perimeter Width' times the perimeter width is the amount the inner milling loop will be outset, the default is 0.5.  The 'Loop Outer Outset over Perimeter Width' times the perimeter width is the amount the outer milling loop will be outset, the default is 1.0.  The 'Loop Outer Outset over Perimeter Width' ratio should be greater than the 'Loop Inner Outset over Perimeter Width' ratio.
+When selected, the inner milling loops will be added.
 
-The 'Mill Width over Perimeter Width' times the perimeter width is the width of the mill lines, the default is 1.0.  If the ratio is one, all the material will be milled.  The greater the 'Mill Width over Perimeter Width' the farther apart the mill lines will be and so less of the material will be directly milled, the remaining material might still be removed in chips if the ratio is not much greater than one.
+====Add Outer Loops====
+Default is on.
 
+When selected, the outer milling loops will be added.
+
+===Cross Hatch===
+Default is on.
+
+When selected, there will be alternating horizontal and vertical milling paths, if it is off there will only be horizontal milling paths.
+
+===Loop Outset===
+====Loop Inner Outset over Perimeter Width====
+Default is 0.5.
+
+Defines the ratio of the amount the inner milling loop will be outset over the perimeter width.
+
+====Loop Outer Outset over Perimeter Width====
+Default is one.
+
+Defines the ratio of the amount the outer milling loop will be outset over the perimeter width.  The 'Loop Outer Outset over Perimeter Width' ratio should be greater than the 'Loop Inner Outset over Perimeter Width' ratio.
+
+===Mill Width over Perimeter Width===
+Default is one.
+
+Defines the ratio of the mill line width over the perimeter width.  If the ratio is one, all the material will be milled.  The greater the 'Mill Width over Perimeter Width' the farther apart the mill lines will be and so less of the material will be directly milled, the remaining material might still be removed in chips if the ratio is not much greater than one.
+
+==Examples==
 The following examples mill the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and mill.py.
 
 
@@ -83,16 +112,6 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 		return gcodeText
 	return MillSkein().getCraftedGcode( gcodeText, repository )
 
-def getDiagonalFlippedLoops( loops ):
-	"Get loops flipped over the dialogonal, in other words with the x and y swapped."
-	diagonalFlippedLoops = []
-	for loop in loops:
-		diagonalFlippedLoop = []
-		diagonalFlippedLoops.append( diagonalFlippedLoop )
-		for point in loop:
-			diagonalFlippedLoop.append( complex( point.imag, point.real ) )
-	return diagonalFlippedLoops
-
 def getNewRepository():
 	"Get the repository constructor."
 	return MillRepository()
@@ -150,9 +169,11 @@ class MillRepository:
 		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.mill.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Mill', self, '' )
 		self.activateMill = settings.BooleanSetting().getFromValue( 'Activate Mill', self, True )
+		settings.LabelDisplay().getFromName( '- Add Loops -', self )
 		self.addInnerLoops = settings.BooleanSetting().getFromValue( 'Add Inner Loops', self, True )
 		self.addOuterLoops = settings.BooleanSetting().getFromValue( 'Add Outer Loops', self, True )
 		self.crossHatch = settings.BooleanSetting().getFromValue( 'Cross Hatch', self, True )
+		settings.LabelDisplay().getFromName( '- Loop Outset -', self )
 		self.loopInnerOutsetOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.3, 'Loop Inner Outset over Perimeter Width (ratio):', self, 0.7, 0.5 )
 		self.loopOuterOutsetOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.8, 'Loop Outer Outset over Perimeter Width (ratio):', self, 1.4, 1.0 )
 		self.millWidthOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.8, 'Mill Width over Perimeter Width (ratio):', self, 1.8, 1.0 )
@@ -307,8 +328,8 @@ class MillSkein:
 			boundaryLayer.outerOutsetLoops = intercircle.getInsetSeparateLoopsFromLoops( - self.loopOuterOutset, boundaryLayer.loops )
 			boundaryLayer.innerHorizontalTable = self.getHorizontalXIntersectionsTable( boundaryLayer.innerOutsetLoops )
 			boundaryLayer.outerHorizontalTable = self.getHorizontalXIntersectionsTable( boundaryLayer.outerOutsetLoops )
-			boundaryLayer.innerVerticalTable = self.getHorizontalXIntersectionsTable( getDiagonalFlippedLoops( boundaryLayer.innerOutsetLoops ) )
-			boundaryLayer.outerVerticalTable = self.getHorizontalXIntersectionsTable( getDiagonalFlippedLoops( boundaryLayer.outerOutsetLoops ) )
+			boundaryLayer.innerVerticalTable = self.getHorizontalXIntersectionsTable( euclidean.getDiagonalFlippedLoops( boundaryLayer.innerOutsetLoops ) )
+			boundaryLayer.outerVerticalTable = self.getHorizontalXIntersectionsTable( euclidean.getDiagonalFlippedLoops( boundaryLayer.outerOutsetLoops ) )
 		for boundaryLayerIndex in xrange( len( self.boundaryLayers ) - 2, - 1, - 1 ):
 			boundaryLayer = self.boundaryLayers[ boundaryLayerIndex ]
 			boundaryLayerBelow = self.boundaryLayers[ boundaryLayerIndex + 1 ]

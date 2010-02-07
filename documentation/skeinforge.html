@@ -13,23 +13,34 @@
 <a href="contents.html">Previous</a> / <a href="skeinforge_tools.analyze.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Introduction<br>
- <br>
+<br />
+<a href="#Overview">Overview</a><br />
+&nbsp;&nbsp;<a href="#Introduction">Introduction</a><br />
+&nbsp;&nbsp;<a href="#Alternative">Alternative</a><br />
+&nbsp;&nbsp;<a href="#Contribute">Contribute</a><br />
+&nbsp;&nbsp;<a href="#Documentation">Documentation</a><br />
+&nbsp;&nbsp;<a href="#Fabrication">Fabrication</a><br />
+&nbsp;&nbsp;<a href="#File Formats">File Formats</a><br />
+&nbsp;&nbsp;<a href="#Getting Skeinforge">Getting Skeinforge</a><br />
+&nbsp;&nbsp;<a href="#Getting Started">Getting Started</a><br />
+&nbsp;&nbsp;<a href="#Motto">Motto</a><br />
+&nbsp;&nbsp;<a href="#Troubleshooting">Troubleshooting</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Overview" id="Overview"></a><h2>Overview</h2>
+<hr>
+
+<a name="Introduction" id="Introduction"></a><h3>Introduction</h3>
+
 Skeinforge is a GPL tool chain to forge a gcode skein for a model.<br>
  <br>
 The tool chain starts with carve, which carves the model into layers, then the layers are modified by other tools in turn like fill, comb, tower, raft, stretch, hop, wipe, oozebane, fillet &amp; export.  Each tool automatically gets the gcode from the previous tool.  So if you want a carved &amp; filled gcode, call the fill tool and it will call carve, then it will fill and output the gcode.  If you want to use all the tools, call export and it will call in turn all the other tools down the chain to produce the gcode file.<br>
  <br>
+If you do not want a tool after preface to modify the output, deselect the Activate checkbox for that tool.  When the Activate checkbox is off, the tool will just hand off the gcode to the next tool without modifying it.<br>
+ <br>
 The skeinforge module provides a single place to call up all the setting dialogs.  When the 'Skeinforge' button is clicked, skeinforge calls export, since that is the end of the chain.<br>
  <br>
 The plugin buttons which are commonly used are bolded and the ones which are rarely used have normal font weight.<br>
- <br>
-To run skeinforge, type in a shell in the same folder as skeinforge:<br>
-&gt; python skeinforge.py<br>
- <br>
-To run only fill for example, type in the skeinforge_tools folder which fill is in:<br>
-&gt; python fill.py<br>
- <br>
-If you do not want a tool after fill to modify the output, deselect the Activate checkbox for that tool.  When the Activate checkbox is off, the tool will just hand off the gcode to the next tool without modifying it.<br>
  <br>
 There are also tools which handle settings for the chain, like material &amp; polyfile.<br>
  <br>
@@ -39,53 +50,21 @@ The interpret tool accesses and displays the import plugins.<br>
  <br>
 The default settings are similar to those on Nophead's machine.  A setting which is often different is the 'Extrusion Diameter' in carve.<br>
  <br>
- <br>
-Alternative<br>
- <br>
+<a name="Alternative" id="Alternative"></a><h3>Alternative</h3>
+
 Another way to make gcode for a model is to use the Java RepRap host program, described at:<br>
 <a href="http://dev.www.reprap.org/bin/view/Main/DriverSoftware#Creating_GCode_files_from_STL_fi">http://dev.www.reprap.org/bin/view/Main/DriverSoftware#Creating_GCode_files_from_STL_fi</a><br>
  <br>
- <br>
-Contribute<br>
- <br>
+<a name="Contribute" id="Contribute"></a><h3>Contribute</h3>
+
 You can contribute by helping develop the manual at:<br>
 <a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge</a><br>
  <br>
+There is also a forum thread about how to contribute to skeinforge development at:<br>
+<a href="http://dev.forums.reprap.org/read.php?12,27562">http://dev.forums.reprap.org/read.php?12,27562</a><br>
  <br>
-Getting Started<br>
- <br>
-For skeinforge to run, install python 2.x on your machine, which is available from:<br>
-<a href="http://www.python.org/download/">http://www.python.org/download/</a><br>
- <br>
-To use the settings dialog you'll also need Tkinter, which probably came with the python installation.  If it did not, look for it at:<br>
-<a href="http://www.tcl.tk/software/tcltk/">http://www.tcl.tk/software/tcltk/</a><br>
- <br>
-If you want python and Tkinter together on MacOS, you can try:<br>
-<a href="http://www.astro.washington.edu/owen/PythonOnMacOSX.html">http://www.astro.washington.edu/owen/PythonOnMacOSX.html</a><br>
- <br>
-If you want python and Tkinter together on all platforms and don't mind filling out forms, you can try the ActivePython package from Active State at:<br>
-<a href="http://www.activestate.com/Products/activepython/feature_list.mhtml">http://www.activestate.com/Products/activepython/feature_list.mhtml</a><br>
- <br>
-The computation intensive python modules will use psyco if it is available and run about twice as fast.  Psyco is described at:<br>
-<a href="http://psyco.sourceforge.net/index.html">http://psyco.sourceforge.net/index.html</a><br>
- <br>
-The psyco download page is:<br>
-<a href="http://psyco.sourceforge.net/download.html">http://psyco.sourceforge.net/download.html</a><br>
- <br>
-Skeinforge imports Stereolithography (.stl) files or GNU Triangulated Surface (.gts) files.  If importing an STL file directly doesn't work, an indirect way to import an STL file is by turning it into a GTS file is by using the Export GNU Triangulated Surface script at:<br>
-<a href="http://members.axion.net/~enrique/Export%20GNU%20Triangulated%20Surface.bsh">http://members.axion.net/~enrique/Export%20GNU%20Triangulated%20Surface.bsh</a><br>
- <br>
-The Export GNU Triangulated Surface script is also in the Art of Illusion folder, which is in the same folder as skeinforge.py.  To bring the script into Art of Illusion, drop it into the folder ArtOfIllusion/Scripts/Tools/.  Then import the STL file using the STL import plugin in the import submenu of the Art of Illusion file menu.  Then from the Scripts submenu in the Tools menu, choose 'Export GNU Triangulated Surface' and select the imported STL shape.  Click the 'Export Selected' checkbox and click OK. Once you've created the GTS file, you can turn it into gcode by typing in a shell in the same folder as skeinforge:<br>
-&gt; python skeinforge.py<br>
- <br>
-When the skeinforge dialog pops up, click 'Skeinforge', choose the file which you exported in 'Export GNU Triangulated Surface' and the gcode file will be saved with the suffix '_export.gcode'.<br>
- <br>
-Or you can turn files into gcode by adding the file name, for example:<br>
-&gt; python skeinforge.py Screw Holder Bottom.stl<br>
- <br>
- <br>
-Documentation<br>
- <br>
+<a name="Documentation" id="Documentation"></a><h3>Documentation</h3>
+
 There is a manual at:<br>
 <a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge</a><br>
  <br>
@@ -94,10 +73,8 @@ There is also documentation is in the documentation folder, in the doc strings f
 A list of other tutorials is at:<br>
 <a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge#Tutorials">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge#Tutorials</a><br>
  <br>
- <br>
- <br>
-Fabrication<br>
- <br>
+<a name="Fabrication" id="Fabrication"></a><h3>Fabrication</h3>
+
 To fabricate a model with gcode and the Arduino you can use the send.py in the fabricate folder.  The documentation for it is in the folder as send.html and at:<br>
 <a href="http://reprap.org/bin/view/Main/ArduinoSend">http://reprap.org/bin/view/Main/ArduinoSend</a><br>
  <br>
@@ -131,10 +108,8 @@ You can buy the Rapman (an improved Darwin) from Bits from Bytes at:<br>
 You can buy the Makerbot from Makerbot Industries at:<br>
 <a href="http://www.makerbot.com/">http://www.makerbot.com/</a><br>
  <br>
- <br>
- <br>
-File Formats<br>
- <br>
+<a name="File Formats" id="File Formats"></a><h3>File Formats</h3>
+
 An explanation of the gcodes is at:<br>
 <a href="http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter">http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter</a><br>
  <br>
@@ -159,10 +134,8 @@ STL is an inferior triangle surface format, described at:<br>
  <br>
 If you're using an STL file and you can't even carve it, try converting it to a GNU Triangulated Surface file in Art of Illusion.  If it still doesn't carve, then follow the advice in the troubleshooting section.<br>
  <br>
- <br>
- <br>
-Getting Skeinforge<br>
- <br>
+<a name="Getting Skeinforge" id="Getting Skeinforge"></a><h3>Getting Skeinforge</h3>
+
 The latest version is at:<br>
 <a href="http://members.axion.net/~enrique/reprap_python_beanshell.zip">http://members.axion.net/~enrique/reprap_python_beanshell.zip</a><br>
  <br>
@@ -172,16 +145,43 @@ a sometimes out of date version is in the last reprap_python_beanshell.zip attac
 another sometimes out of date version is at:<br>
 https://reprap.svn.sourceforge.net/svnroot/reprap/trunk/reprap/miscellaneous/python-beanshell-scripts/<br>
  <br>
+<a name="Getting Started" id="Getting Started"></a><h3>Getting Started</h3>
+
+For skeinforge to run, install python 2.x on your machine, which is available from:<br>
+<a href="http://www.python.org/download/">http://www.python.org/download/</a><br>
  <br>
+To use the settings dialog you'll also need Tkinter, which probably came with the python installation.  If it did not, look for it at:<br>
+<a href="http://www.tcl.tk/software/tcltk/">http://www.tcl.tk/software/tcltk/</a><br>
  <br>
-Motto<br>
+If you want python and Tkinter together on MacOS, you can try:<br>
+<a href="http://www.astro.washington.edu/owen/PythonOnMacOSX.html">http://www.astro.washington.edu/owen/PythonOnMacOSX.html</a><br>
  <br>
+If you want python and Tkinter together on all platforms and don't mind filling out forms, you can try the ActivePython package from Active State at:<br>
+<a href="http://www.activestate.com/Products/activepython/feature_list.mhtml">http://www.activestate.com/Products/activepython/feature_list.mhtml</a><br>
+ <br>
+The computation intensive python modules will use psyco if it is available and run about twice as fast.  Psyco is described at:<br>
+<a href="http://psyco.sourceforge.net/index.html">http://psyco.sourceforge.net/index.html</a><br>
+ <br>
+The psyco download page is:<br>
+<a href="http://psyco.sourceforge.net/download.html">http://psyco.sourceforge.net/download.html</a><br>
+ <br>
+Skeinforge imports Stereolithography (.stl) files or GNU Triangulated Surface (.gts) files.  If importing an STL file directly doesn't work, an indirect way to import an STL file is by turning it into a GTS file is by using the Export GNU Triangulated Surface script at:<br>
+<a href="http://members.axion.net/~enrique/Export%20GNU%20Triangulated%20Surface.bsh">http://members.axion.net/~enrique/Export%20GNU%20Triangulated%20Surface.bsh</a><br>
+ <br>
+The Export GNU Triangulated Surface script is also in the Art of Illusion folder, which is in the same folder as skeinforge.py.  To bring the script into Art of Illusion, drop it into the folder ArtOfIllusion/Scripts/Tools/.  Then import the STL file using the STL import plugin in the import submenu of the Art of Illusion file menu.  Then from the Scripts submenu in the Tools menu, choose 'Export GNU Triangulated Surface' and select the imported STL shape.  Click the 'Export Selected' checkbox and click OK. Once you've created the GTS file, you can turn it into gcode by typing in a shell in the same folder as skeinforge:<br>
+&gt; python skeinforge.py<br>
+ <br>
+When the skeinforge dialog pops up, click 'Skeinforge', choose the file which you exported in 'Export GNU Triangulated Surface' and the gcode file will be saved with the suffix '_export.gcode'.<br>
+ <br>
+Or you can turn files into gcode by adding the file name, for example:<br>
+&gt; python skeinforge.py Screw Holder Bottom.stl<br>
+ <br>
+<a name="Motto" id="Motto"></a><h3>Motto</h3>
+
 I may be slow, but I get there in the end.<br>
  <br>
- <br>
- <br>
-Troubleshooting<br>
- <br>
+<a name="Troubleshooting" id="Troubleshooting"></a><h3>Troubleshooting</h3>
+
 If there's a bug, try downloading the very latest version because sometimes I update without posting.<br>
  <br>
 Then you can ask for skeinforge help by sending a private message through the forum software by going to my page at:<br>
@@ -199,12 +199,13 @@ If the dialog window is too big for the screen, on most Linux window managers yo
  <br>
 If you can't use the graphical interface, you can change the settings for skeinforge by using a text editor or spreadsheet to change the settings in the profiles folder in the .skeinforge folder in your home directory.<br>
  <br>
-Comments and suggestions are welcome, however, I usually won't reply because developing takes all my time and as of the time of this writing I have at least eight months of features to implement.<br>
+Comments and suggestions are welcome, however, I usually won't reply because developing takes all my time and as of the time of this writing I have at least one year of features to implement.<br>
  <br>
  <br>
-Examples<br>
- <br>
-The following examples carve and dice the STL file Screw Holder.stl.  The examples are run in a terminal in the folder which contains Screw Holder.gts and skeinforge.py.<br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
+The following examples forge the STL file Screw Holder.stl.  The examples are run in a terminal in the folder which contains Screw Holder.gts and skeinforge.py.<br>
  <br>
 &gt; python skeinforge.py<br>
 This brings up the dialog, after clicking 'Skeinforge', the following is printed:<br>
@@ -225,7 +226,11 @@ The exported file is saved as Screw Holder_export.gcode<br>
  <br>
  <br>
 &gt;&gt;&gt; skeinforge.<a href="#-main">main</a>()<br>
-This brings up the skeinforge dialog.</tt>
+This brings up the skeinforge dialog.<br>
+ <br>
+ <br>
+To run only fill for example, type in the skeinforge_tools folder which fill is in:<br>
+&gt; python fill.py</tt>
 <br />
 <br />
 <p>
@@ -242,13 +247,14 @@ This brings up the skeinforge dialog.</tt>
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="skeinforge_tools.craft.html">skeinforge_tools.craft</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.euclidean.html">skeinforge_tools.skeinforge_utilities.euclidean</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
-</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
+<a href="os.html">os</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>

@@ -191,12 +191,10 @@ class ViewpointRotate( MouseToolBase ):
 				tags = 'mouse_item',
 				width = motionWidth )
 		self.window.getDrawnLineText( motionCoordinate, 'mouse_item', 'Latitude: %s, Longitude: %s' % ( round( latitudeLongitude.latitude ), round( latitudeLongitude.longitude ) ) )
-		if self.repository.widthOfXAxis.value > 0:
-			self.window.getDrawnColoredLineMotion( self.window.xAxisLine, viewVectors, self.repository.widthOfXAxis.value )
-		if self.repository.widthOfYAxis.value > 0:
-			self.window.getDrawnColoredLineMotion( self.window.yAxisLine, viewVectors, self.repository.widthOfYAxis.value )
-		if self.repository.widthOfZAxis.value > 0:
-			self.window.getDrawnColoredLineMotion( self.window.zAxisLine, viewVectors, self.repository.widthOfZAxis.value )
+		if self.repository.widthOfAxisPositiveSide.value > 0:
+			self.window.getDrawnColoredLineMotion( self.window.positiveAxisLineX, viewVectors, self.repository.widthOfAxisPositiveSide.value )
+			self.window.getDrawnColoredLineMotion( self.window.positiveAxisLineY, viewVectors, self.repository.widthOfAxisPositiveSide.value )
+			self.window.getDrawnColoredLineMotion( self.window.positiveAxisLineZ, viewVectors, self.repository.widthOfAxisPositiveSide.value )
 
 	def moveViewpointGivenCoordinates( self, moveCoordinate, shift, startCoordinate ):
 		"Move the viewpoint given the move coordinates."

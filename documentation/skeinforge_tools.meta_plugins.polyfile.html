@@ -15,12 +15,36 @@
 <p><tt><br>
 Polyfile is a script to choose whether the skeinforge toolchain will operate on one file or all the files in a directory.<br>
  <br>
-Polyfile stores and lets the user change the setting of whether to operate on one file or all the files in a directory.  The default 'Polyfile Choice' radio button group choice is 'Execute File'.  With 'Execute File' chosen, the toolchain will operate on only the chosen file.  When the chosen choice is 'Execute All Unmodified Files in a Directory', the toolchain will operate on all the unmodifed files in the directory that the chosen file is in.<br>
+<br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Polyfile Choice">Polyfile Choice</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Execute File">Execute File</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Execute All Unmodified Files in a Directory'">Execute All Unmodified Files in a Directory'</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Polyfile Choice" id="Polyfile Choice"></a><h3>Polyfile Choice</h3>
+
+Default is 'Execute File',<br>
  <br>
-To use the dialog to change the polyfile settings, in a shell type:<br>
+<a name="Execute File" id="Execute File"></a><h4>Execute File</h4>
+
+When selected, the toolchain will operate on only the chosen file.<br>
+ <br>
+<a name="Execute All Unmodified Files in a Directory'" id="Execute All Unmodified Files in a Directory'"></a><h4>Execute All Unmodified Files in a Directory'</h4>
+
+When selected, the toolchain will operate on all the unmodifed files in the directory that the chosen file is in.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
+Examples of using polyfile follow below.<br>
+ <br>
+ <br>
 &gt; python polyfile.py<br>
- <br>
-Polyfile examples follow below.<br>
+This brings up the polyfile dialog.<br>
  <br>
  <br>
 &gt; python<br>
@@ -29,7 +53,7 @@ Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
 Type "help", "copyright", "credits" or "license" for more information.<br>
 &gt;&gt;&gt; import polyfile<br>
 &gt;&gt;&gt; polyfile.<a href="#-main">main</a>()<br>
-This brings up the polyfile setting dialog.<br>
+This brings up the polyfile dialog.<br>
  <br>
  <br>
 &gt;&gt;&gt; polyfile.<a href="#-isDirectorySetting">isDirectorySetting</a>()<br>

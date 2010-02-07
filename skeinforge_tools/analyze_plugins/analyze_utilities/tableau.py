@@ -9,8 +9,10 @@ import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities import zoom_in
 from skeinforge_tools.analyze_plugins.analyze_utilities import zoom_out
+from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import settings
+import math
 import os
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -18,12 +20,20 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
+def getGeometricDifference( first, second ):
+	"Get the geometric difference of the two numbers."
+	return max( first, second ) / min( first, second )
+
 def getGridHorizontalFrame( gridPosition ):
 	"Get the grid horizontal object with a frame from the grid position."
 	gridHorizontal = settings.GridHorizontal( 0, 0 )
 	gridHorizontal.master = settings.Tkinter.Frame( gridPosition.master, borderwidth = 1, padx = 3, relief = 'raised' )
 	gridHorizontal.master.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.E )
 	return gridHorizontal
+
+def getLengthMinusOneMinimumOne( elementList ):
+	"Get the length of the length minus one, minimum one."
+	return max( 1, len( elementList ) - 1 )
 
 def getScrollbarCanvasPortion( scrollbar ):
 	"Get the canvas portion of the scrollbar."
@@ -112,14 +122,16 @@ class TableauWindow:
 	def addCanvasMenuRootScrollSkein( self, repository, skein, suffix, title ):
 		"Add the canvas, menu bar, scroll bar, skein panes, tableau repository, root and skein."
 		self.imagesDirectoryPath = os.path.join( settings.getSkeinforgeDirectoryPath(), 'images' )
-		self.photoImages = {}
 		self.movementTextID = None
 		self.mouseInstantButtons = []
+		self.photoImages = {}
 		self.repository = repository
 		self.root = settings.Tkinter.Tk()
 		self.gridPosition = settings.GridVertical( 0, 1 )
 		self.gridPosition.master = self.root
 		self.root.title( os.path.basename( skein.fileName ) + ' - ' + title )
+		self.rulingExtent = 24
+		self.rulingTargetSeparation = 150.0
 		self.screenSize = skein.screenSize
 		self.skein = skein
 		self.skeinPanes = skein.skeinPanes
@@ -127,6 +139,11 @@ class TableauWindow:
 		self.timerID = None
 		repository.animationSlideShowRate.value = max( repository.animationSlideShowRate.value, 0.01 )
 		repository.animationSlideShowRate.value = min( repository.animationSlideShowRate.value, 85.0 )
+		repository.drawArrows.setUpdateFunction( self.setWindowToDisplaySaveUpdate )
+		repository.goAroundExtruderOffTravel.setUpdateFunction( self.setWindowToDisplaySavePhoenixUpdate )
+		repository.layerExtraSpan.setUpdateFunction( self.setWindowToDisplaySaveUpdate )
+		repository.widthOfSelectionThread.setUpdateFunction( self.setWindowToDisplaySaveUpdate )
+		repository.widthOfTravelThread.setUpdateFunction( self.setWindowToDisplaySaveUpdate )
 		repository.window = self
 		for menuRadio in repository.mouseMode.menuRadios:
 			fileName = menuRadio.name.lower()
@@ -161,7 +178,7 @@ class TableauWindow:
 		settings.Tkinter.Label( gridPosition.master, text = 'Layer:' ).grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 		gridPosition.increment()
 		self.limitIndex()
-		self.layerEntry = settings.Tkinter.Spinbox( gridPosition.master, command = self.layerEntryReturnPressed, from_ = 0, increment = 1, to = len( self.skeinPanes ) - 1 )
+		self.layerEntry = settings.Tkinter.Spinbox( gridPosition.master, command = self.layerEntryReturnPressed, from_ = 0, increment = 1, to = getLengthMinusOneMinimumOne( self.skeinPanes ) )
 		self.layerEntry.bind( '<Return>', self.layerEntryReturnPressed )
 		self.layerEntry.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 
@@ -172,7 +189,7 @@ class TableauWindow:
 		gridPosition.increment()
 		settings.Tkinter.Label( gridPosition.master, text = 'Line:' ).grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 		gridPosition.increment()
-		self.lineEntry = settings.Tkinter.Spinbox( gridPosition.master, command = self.lineEntryReturnPressed, from_ = 0, increment = 1, to = len( self.getColoredLines() ) - 1 )
+		self.lineEntry = settings.Tkinter.Spinbox( gridPosition.master, command = self.lineEntryReturnPressed, from_ = 0, increment = 1, to = getLengthMinusOneMinimumOne( self.getColoredLines() ) )
 		self.lineEntry.bind( '<Return>', self.lineEntryReturnPressed )
 		self.lineEntry.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 
@@ -227,6 +244,17 @@ class TableauWindow:
 		self.repository.animationSlideShowRate.setUpdateFunction( self.repository.setToDisplaySave )
 		self.repository.screenHorizontalInset.setUpdateFunction( self.redisplayWindowUpdate )
 		self.repository.screenVerticalInset.setUpdateFunction( self.redisplayWindowUpdate )
+		rankZeroSeperation = self.getRulingSeparationWidthPixels( 0 )
+		zoom = self.rulingTargetSeparation / rankZeroSeperation
+		self.rank = euclidean.getRank( zoom )
+		rankTop = self.rank + 1
+		seperationBottom = self.getRulingSeparationWidthPixels( self.rank )
+		seperationTop = self.getRulingSeparationWidthPixels( rankTop )
+		bottomDifference = getGeometricDifference( self.rulingTargetSeparation, seperationBottom )
+		topDifference = getGeometricDifference( self.rulingTargetSeparation, seperationTop )
+		if topDifference < bottomDifference:
+			self.rank = rankTop
+		self.rulingSeparationWidthMillimeters = euclidean.getIncrementFromRank( self.rank )
 		self.canvas.focus_set()
 
 	def addPhotoImage( self, fileName, gridPosition ):
@@ -385,6 +413,19 @@ class TableauWindow:
 		photoButton.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 		return photoButton
 
+	def getRoundedRulingText( self, extraDecimalPlaces, number ):
+		"Get the rounded ruling text."
+		rulingText = euclidean.getRoundedToDecimalPlacesString( extraDecimalPlaces - math.floor( math.log10( self.rulingSeparationWidthMillimeters ) ), number )
+		if self.rulingSeparationWidthMillimeters < .99:
+			return rulingText
+		if rulingText[ - len( '.0' ) : ] == '.0':
+			return rulingText[ : - len( '.0' ) ]
+		return rulingText
+
+	def getRulingSeparationWidthPixels( self, rank ):
+		"Get the separation width in pixels."
+		return euclidean.getIncrementFromRank( rank ) * self.skein.scale
+
 	def getScrollPaneCenter( self ):
 		"Get the center of the scroll pane."
 		return self.getScrollPaneFraction() + self.canvasScreenCenter
@@ -397,6 +438,13 @@ class TableauWindow:
 		"Get the slide show delay in milliseconds."
 		slideShowDelay = int( round( 1000.0 / self.repository.animationSlideShowRate.value ) )
 		return max( slideShowDelay, 1 )
+
+	def getUpdateSkeinPanes( self ):
+		"Get the update skein panes."
+		layerPlusExtraSpan = self.repository.layer.value + self.repository.layerExtraSpan.value
+		layersFrom = max( 0, min( self.repository.layer.value, layerPlusExtraSpan ) )
+		layersTo = min( len( self.skeinPanes ), max( self.repository.layer.value, layerPlusExtraSpan ) + 1 )
+		return self.skeinPanes[ layersFrom : layersTo ]
 
 	def isLineBelowZeroSetLayer( self ):
 		"Determine if the line index is below zero, and if so set the layer index."
@@ -588,16 +636,16 @@ class TableauWindow:
 		if self.root.state() != 'normal':
 			return
 		xScrollbarCanvasPortion = getScrollbarCanvasPortion( self.xScrollbar )
-#		if xScrollbarCanvasPortion < .99:
-		width = int( round( ( xScrollbarCanvasPortion ) * float( int( self.skein.screenSize.real ) ) ) )
-		newScreenHorizontalInset = self.root.winfo_screenwidth() - width
-		if abs( newScreenHorizontalInset - self.repository.screenHorizontalInset.value ) > 1:
+		newScreenHorizontalInset = int( self.root.winfo_screenwidth() - round( xScrollbarCanvasPortion * self.skein.screenSize.real ) )
+		if xScrollbarCanvasPortion < .99:
+			self.repository.screenHorizontalInset.value = newScreenHorizontalInset
+		else:
 			self.repository.screenHorizontalInset.value = min( self.repository.screenHorizontalInset.value, newScreenHorizontalInset )
 		yScrollbarCanvasPortion = getScrollbarCanvasPortion( self.yScrollbar )
-#		if yScrollbarCanvasPortion < .99:
-		height = int( round( ( yScrollbarCanvasPortion ) * float( int( self.skein.screenSize.imag ) ) ) )
-		newScreenVerticalInset = self.root.winfo_screenheight() - height
-		if abs( newScreenVerticalInset - self.repository.screenVerticalInset.value ) > 1:
+		newScreenVerticalInset = int( self.root.winfo_screenheight() - round( yScrollbarCanvasPortion * self.skein.screenSize.imag ) )
+		if yScrollbarCanvasPortion < .99:
+			self.repository.screenVerticalInset.value = newScreenVerticalInset
+		else:
 			self.repository.screenVerticalInset.value = min( self.repository.screenVerticalInset.value, newScreenVerticalInset )
 
 	def setLayerIndex( self, layerIndex ):
@@ -609,10 +657,10 @@ class TableauWindow:
 		coloredLines = self.getColoredLines()
 		if self.repository.layer.value < oldLayerIndex:
 			self.repository.line.value = len( coloredLines ) - 1
-			self.lineEntry[ 'to' ] = len( coloredLines ) - 1
+			self.lineEntry[ 'to' ] = getLengthMinusOneMinimumOne( coloredLines )
 		if self.repository.layer.value > oldLayerIndex:
 			self.repository.line.value = 0
-			self.lineEntry[ 'to' ] = len( coloredLines ) - 1
+			self.lineEntry[ 'to' ] = getLengthMinusOneMinimumOne( coloredLines )
 		self.update()
 
 	def setLineButtonsState( self ):

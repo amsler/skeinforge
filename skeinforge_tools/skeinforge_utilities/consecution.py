@@ -37,10 +37,11 @@ def getChainTextFromProcedures( fileName, procedures, text ):
 	lastProcedureTime = time.time()
 	for procedure in procedures:
 		craftModule = getCraftModule( procedure )
-		text = craftModule.getCraftedText( fileName, text )
-		if gcodec.isProcedureDone( text, procedure ):
-			print( '%s procedure took %s seconds.' % ( procedure.capitalize(), int( round( time.time() - lastProcedureTime ) ) ) )
-			lastProcedureTime = time.time()
+		if craftModule != None:
+			text = craftModule.getCraftedText( fileName, text )
+			if gcodec.isProcedureDone( text, procedure ):
+				print( '%s procedure took %s seconds.' % ( procedure.capitalize(), int( round( time.time() - lastProcedureTime ) ) ) )
+				lastProcedureTime = time.time()
 	return text
 
 def getLastModule():

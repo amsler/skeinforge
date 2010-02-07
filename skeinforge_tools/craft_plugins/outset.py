@@ -1,11 +1,11 @@
 """
 This page is in the table of contents.
-Outset is a script to outset the perimeters of a gcode file.
-
 Outset outsets the perimeters of the slices of a gcode file.  The outside perimeters will be outset by half the perimeter width, and the inside perimeters will be inset by half the perimeter width.  Outset is needed for subtractive machining, like cutting or milling.
 
+==Operation==
 The default 'Activate Outset' checkbox is on.  When it is on, the gcode will be outset, when it is off, the gcode will not be changed.
 
+==Examples==
 The following examples outset the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and outset.py.
 
 
@@ -65,19 +65,19 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
 
-def getCraftedText( fileName, text = '', outsetRepository = None ):
+def getCraftedText( fileName, text = '', repository = None ):
 	"Outset the preface file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), outsetRepository )
+	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
 
-def getCraftedTextFromText( gcodeText, outsetRepository = None ):
+def getCraftedTextFromText( gcodeText, repository = None ):
 	"Outset the preface gcode text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'outset' ):
 		return gcodeText
-	if outsetRepository == None:
-		outsetRepository = settings.getReadRepository( OutsetRepository() )
-	if not outsetRepository.activateOutset.value:
+	if repository == None:
+		repository = settings.getReadRepository( OutsetRepository() )
+	if not repository.activateOutset.value:
 		return gcodeText
-	return OutsetSkein().getCraftedGcode( outsetRepository, gcodeText )
+	return OutsetSkein().getCraftedGcode( gcodeText, repository )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -112,45 +112,30 @@ class OutsetSkein:
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.lineIndex = 0
-		self.rotatedBoundaryLayers = []
-		self.shutdownLines = None
+		self.rotatedBoundaryLayer = None
 
 	def addGcodeFromRemainingLoop( self, loop, radius, z ):
 		"Add the remainder of the loop."
 		boundary = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, radius )
-		euclidean.addSurroundingLoopBeginning( boundary, self, z )
+		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
 		self.distanceFeedRate.addPerimeterBlock( loop, z )
 		self.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )
 		self.distanceFeedRate.addLine( '(</surroundingLoop>)' )
 
 	def addOutset( self, rotatedBoundaryLayer ):
 		"Add outset to the layer."
-		self.distanceFeedRate.addLine( '(<layer> %s )' % rotatedBoundaryLayer.z ) # Indicate that a new layer is starting.
 		extrudateLoops = intercircle.getInsetLoopsFromLoops( - self.absoluteHalfPerimeterWidth, rotatedBoundaryLayer.loops )
 		sortedLoops = triangle_mesh.getLoopsInOrderOfArea( triangle_mesh.compareAreaAscending, extrudateLoops )
 		for sortedLoop in sortedLoops:
 			self.addGcodeFromRemainingLoop( sortedLoop, self.absoluteHalfPerimeterWidth, rotatedBoundaryLayer.z )
-		self.distanceFeedRate.addLine( '(</layer>)' )
 
-	def addRotatedLoopLayer( self, z ):
-		"Add rotated loop layer."
-		self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
-		self.rotatedBoundaryLayers.append( self.rotatedBoundaryLayer )
-
-	def addShutdownToOutput( self ):
-		"Add shutdown gcode to the output."
-		self.distanceFeedRate.addLines( self.shutdownLines )
-
-	def getCraftedGcode( self, outsetRepository, gcodeText ):
+	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the bevel gcode."
-		self.outsetRepository = outsetRepository
+		self.repository = repository
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.parseInitialization()
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			self.parseLine( lineIndex )
-		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
-			self.addOutset( rotatedBoundaryLayer )
-		self.addShutdownToOutput()
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self ):
@@ -180,14 +165,16 @@ class OutsetSkein:
 			location = gcodec.getLocationFromSplitLine( None, splitLine )
 			self.boundary.append( location.dropAxis( 2 ) )
 		elif firstWord == '(<layer>':
-			self.addRotatedLoopLayer( float( splitLine[ 1 ] ) )
+			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float( splitLine[ 1 ] ) )
+			self.distanceFeedRate.addLine( line )
+		elif firstWord == '(</layer>)':
+			self.addOutset( self.rotatedBoundaryLayer )
+			self.rotatedBoundaryLayer = None
 		elif firstWord == '(<surroundingLoop>)':
 			self.boundary = []
 			self.rotatedBoundaryLayer.loops.append( self.boundary )
-		elif firstWord == '(</extrusion>)':
-			self.shutdownLines = []
-		if self.shutdownLines != None:
-			self.shutdownLines.append( line )
+		if self.rotatedBoundaryLayer == None:
+			self.distanceFeedRate.addLine( line )
 
 
 def main():

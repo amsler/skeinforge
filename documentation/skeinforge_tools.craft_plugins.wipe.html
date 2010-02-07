@@ -10,19 +10,111 @@
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/wipe.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/wipe.py</a></font></td></tr></table>
     <p>
-<a href="skeinforge_tools.craft_plugins.whittle.html">Previous</a> / <a href="skeinforge_tools.help.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_tools.craft_plugins.widen.html">Previous</a> / <a href="skeinforge_tools.help.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Wipe is a script to wipe the nozzle.<br>
- <br>
 At the beginning of a layer, depending on the settings, wipe will move the nozzle with the extruder off to the arrival point, then to the wipe point, then to the departure point, then back to the layer.<br>
  <br>
-The default 'Activate Wipe' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
+The wipe path is machine specific, so you'll probably have to change all the default locations.<br>
  <br>
-The "Location Arrival X" setting, is the x coordinate of the arrival location.  The "Location Arrival Y" and "Location Arrival Z" settings are the y &amp; z coordinates of the location.  The equivalent "Location Wipe.." and "Location Departure.." settings are for the wipe and departure locations.<br>
+The wipe manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Wipe">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Wipe</a><br>
  <br>
-The "Wipe Period (layers)" setting is the number of layers between wipes.  Wipe will always wipe just before the first layer, afterwards it will wipe every "Wipe Period" layers.  With the default of three, wipe will wipe just before the zeroth layer, the third layer, sixth layer and so on.<br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Location Arrival">Location Arrival</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Arrival X">Location Arrival X</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Arrival Y">Location Arrival Y</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Arrival Z">Location Arrival Z</a><br />
+&nbsp;&nbsp;<a href="#Location Departure">Location Departure</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Departure X">Location Departure X</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Departure Y">Location Departure Y</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Departure Z">Location Departure Z</a><br />
+&nbsp;&nbsp;<a href="#Location Wipe">Location Wipe</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Wipe X">Location Wipe X</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Wipe Y">Location Wipe Y</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location Wipe Z">Location Wipe Z</a><br />
+&nbsp;&nbsp;<a href="#Wipe Period">Wipe Period</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
+The default 'Activate Wipe' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Location Arrival" id="Location Arrival"></a><h3>Location Arrival</h3>
+
+<a name="Location Arrival X" id="Location Arrival X"></a><h4>Location Arrival X</h4>
+
+Default is minus seventy millimeters.<br>
+ <br>
+Defines the x coordinate of the arrival location.<br>
+ <br>
+<a name="Location Arrival Y" id="Location Arrival Y"></a><h4>Location Arrival Y</h4>
+
+Default is minus fifty millimeters.<br>
+ <br>
+Defines the y coordinate of the arrival location.<br>
+ <br>
+<a name="Location Arrival Z" id="Location Arrival Z"></a><h4>Location Arrival Z</h4>
+
+Default is fifty millimeters.<br>
+ <br>
+Defines the z coordinate of the arrival location.<br>
+ <br>
+<a name="Location Departure" id="Location Departure"></a><h3>Location Departure</h3>
+
+<a name="Location Departure X" id="Location Departure X"></a><h4>Location Departure X</h4>
+
+Default is minus seventy millimeters.<br>
+ <br>
+Defines the x coordinate of the departure location.<br>
+ <br>
+<a name="Location Departure Y" id="Location Departure Y"></a><h4>Location Departure Y</h4>
+
+Default is minus forty millimeters.<br>
+ <br>
+Defines the y coordinate of the departure location.<br>
+ <br>
+<a name="Location Departure Z" id="Location Departure Z"></a><h4>Location Departure Z</h4>
+
+Default is fifty millimeters.<br>
+ <br>
+Defines the z coordinate of the departure location.<br>
+ <br>
+<a name="Location Wipe" id="Location Wipe"></a><h3>Location Wipe</h3>
+
+<a name="Location Wipe X" id="Location Wipe X"></a><h4>Location Wipe X</h4>
+
+Default is minus seventy millimeters.<br>
+ <br>
+Defines the x coordinate of the wipe location.<br>
+ <br>
+<a name="Location Wipe Y" id="Location Wipe Y"></a><h4>Location Wipe Y</h4>
+
+Default is minus seventy millimeters.<br>
+ <br>
+Defines the y coordinate of the wipe location.<br>
+ <br>
+<a name="Location Wipe Z" id="Location Wipe Z"></a><h4>Location Wipe Z</h4>
+
+Default is fifty millimeters.<br>
+ <br>
+Defines the z coordinate of the wipe location.<br>
+ <br>
+<a name="Wipe Period" id="Wipe Period"></a><h3>Wipe Period</h3>
+
+Default is three.<br>
+ <br>
+Defines the number of layers between wipes.  Wipe will always wipe just before layer zero, afterwards it will wipe every "Wipe Period" layers.  With the default of three, wipe will wipe just before layer zero, layer three, layer six and so on.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples wipe the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and wipe.py.<br>
  <br>
  <br>
@@ -56,7 +148,7 @@ The wipe tool has created the file:<br>
 <br />
 <br />
 <p>
-<a href="skeinforge_tools.craft_plugins.whittle.html">Previous</a> / <a href="skeinforge_tools.help.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_tools.craft_plugins.widen.html">Previous</a> / <a href="skeinforge_tools.help.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>
@@ -74,9 +166,10 @@ The wipe tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 <a href="math.html">math</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-<a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>

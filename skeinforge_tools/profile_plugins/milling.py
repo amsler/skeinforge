@@ -38,7 +38,7 @@ __license__ = "GPL 3.0"
 
 def getCraftSequence():
 	"Get the milling craft sequence."
-	return 'chop,preface,outset,mill,multiply,drill,lift,flow,feed,home,lash,fillet,unpause,export'.split( ',' )
+	return 'chop,preface,outset,mill,multiply,drill,lift,flow,feed,home,lash,fillet,dimension,unpause,export'.split( ',' )
 
 def getNewRepository():
 	"Get the repository constructor."

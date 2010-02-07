@@ -27,7 +27,7 @@ Default is gcode.
 
 Defines the file extension added to the name of the output file.
 
-===Save Penultimate Gcode'===
+===Save Penultimate Gcode===
 Default is off.
 
 When selected, export will save the gcode with the suffix '_penultimate.gcode' just before it is exported.  This is useful because the code after it is exported could be in a form which the viewers can not display.
@@ -194,7 +194,7 @@ class ExportRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.export.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Exported', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Export', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Export' )
 		self.activateExport = settings.BooleanSetting().getFromValue( 'Activate Export', self, True )
 		self.alsoSendOutputTo = settings.StringSetting().getFromValue( 'Also Send Output To:', self, '' )

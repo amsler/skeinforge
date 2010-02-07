@@ -18,12 +18,14 @@
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.euclidean.html">skeinforge_tools.skeinforge_utilities.euclidean</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
+<a href="math.html">math</a><br>
 </td><td width="25%" valign=top><a href="os.html">os</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.analyze_plugins.analyze_utilities.zoom_in.html">skeinforge_tools.analyze_plugins.analyze_utilities.zoom_in</a><br>
 <a href="skeinforge_tools.analyze_plugins.analyze_utilities.zoom_out.html">skeinforge_tools.analyze_plugins.analyze_utilities.zoom_out</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -134,11 +136,17 @@
 
 <dl><dt><a name="TableauWindow-getPhotoButtonGridIncrement"><strong>getPhotoButtonGridIncrement</strong></a>(self, commandFunction, fileName, gridPosition)</dt><dd><tt>Get&nbsp;a&nbsp;PhotoImage&nbsp;button,&nbsp;grid&nbsp;the&nbsp;button&nbsp;and&nbsp;increment&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
 
+<dl><dt><a name="TableauWindow-getRoundedRulingText"><strong>getRoundedRulingText</strong></a>(self, extraDecimalPlaces, number)</dt><dd><tt>Get&nbsp;the&nbsp;rounded&nbsp;ruling&nbsp;text.</tt></dd></dl>
+
+<dl><dt><a name="TableauWindow-getRulingSeparationWidthPixels"><strong>getRulingSeparationWidthPixels</strong></a>(self, rank)</dt><dd><tt>Get&nbsp;the&nbsp;separation&nbsp;width&nbsp;in&nbsp;pixels.</tt></dd></dl>
+
 <dl><dt><a name="TableauWindow-getScrollPaneCenter"><strong>getScrollPaneCenter</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;the&nbsp;scroll&nbsp;pane.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-getScrollPaneFraction"><strong>getScrollPaneFraction</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;the&nbsp;scroll&nbsp;pane.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-getSlideShowDelay"><strong>getSlideShowDelay</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;slide&nbsp;show&nbsp;delay&nbsp;in&nbsp;milliseconds.</tt></dd></dl>
+
+<dl><dt><a name="TableauWindow-getUpdateSkeinPanes"><strong>getUpdateSkeinPanes</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;update&nbsp;skein&nbsp;panes.</tt></dd></dl>
 
 <dl><dt><a name="TableauWindow-isLineBelowZeroSetLayer"><strong>isLineBelowZeroSetLayer</strong></a>(self)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;line&nbsp;index&nbsp;is&nbsp;below&nbsp;zero,&nbsp;and&nbsp;if&nbsp;so&nbsp;set&nbsp;the&nbsp;layer&nbsp;index.</tt></dd></dl>
 
@@ -223,7 +231,9 @@
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getGridHorizontalFrame"><strong>getGridHorizontalFrame</strong></a>(gridPosition)</dt><dd><tt>Get&nbsp;the&nbsp;grid&nbsp;horizontal&nbsp;object&nbsp;with&nbsp;a&nbsp;frame&nbsp;from&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getGeometricDifference"><strong>getGeometricDifference</strong></a>(first, second)</dt><dd><tt>Get&nbsp;the&nbsp;geometric&nbsp;difference&nbsp;of&nbsp;the&nbsp;two&nbsp;numbers.</tt></dd></dl>
+ <dl><dt><a name="-getGridHorizontalFrame"><strong>getGridHorizontalFrame</strong></a>(gridPosition)</dt><dd><tt>Get&nbsp;the&nbsp;grid&nbsp;horizontal&nbsp;object&nbsp;with&nbsp;a&nbsp;frame&nbsp;from&nbsp;the&nbsp;grid&nbsp;position.</tt></dd></dl>
+ <dl><dt><a name="-getLengthMinusOneMinimumOne"><strong>getLengthMinusOneMinimumOne</strong></a>(elementList)</dt><dd><tt>Get&nbsp;the&nbsp;length&nbsp;of&nbsp;the&nbsp;length&nbsp;minus&nbsp;one,&nbsp;minimum&nbsp;one.</tt></dd></dl>
  <dl><dt><a name="-getScrollbarCanvasPortion"><strong>getScrollbarCanvasPortion</strong></a>(scrollbar)</dt><dd><tt>Get&nbsp;the&nbsp;canvas&nbsp;portion&nbsp;of&nbsp;the&nbsp;scrollbar.</tt></dd></dl>
  <dl><dt><a name="-setStateNormalDisabled"><strong>setStateNormalDisabled</strong></a>(active, widget)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;of&nbsp;the&nbsp;widget&nbsp;to&nbsp;normal&nbsp;if&nbsp;active&nbsp;and&nbsp;disabled&nbsp;if&nbsp;inactive.</tt></dd></dl>
 </td></tr></table><p>

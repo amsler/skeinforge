@@ -1,15 +1,70 @@
 """
 This page is in the table of contents.
-Wipe is a script to wipe the nozzle.
-
 At the beginning of a layer, depending on the settings, wipe will move the nozzle with the extruder off to the arrival point, then to the wipe point, then to the departure point, then back to the layer.
 
-The default 'Activate Wipe' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
+The wipe path is machine specific, so you'll probably have to change all the default locations.
 
-The "Location Arrival X" setting, is the x coordinate of the arrival location.  The "Location Arrival Y" and "Location Arrival Z" settings are the y & z coordinates of the location.  The equivalent "Location Wipe.." and "Location Departure.." settings are for the wipe and departure locations.
+The wipe manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Wipe
 
-The "Wipe Period (layers)" setting is the number of layers between wipes.  Wipe will always wipe just before the first layer, afterwards it will wipe every "Wipe Period" layers.  With the default of three, wipe will wipe just before the zeroth layer, the third layer, sixth layer and so on.
+==Operation==
+The default 'Activate Wipe' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
+==Settings==
+===Location Arrival===
+====Location Arrival X====
+Default is minus seventy millimeters.
+
+Defines the x coordinate of the arrival location.
+
+====Location Arrival Y====
+Default is minus fifty millimeters.
+
+Defines the y coordinate of the arrival location.
+
+====Location Arrival Z====
+Default is fifty millimeters.
+
+Defines the z coordinate of the arrival location.
+
+===Location Departure===
+====Location Departure X====
+Default is minus seventy millimeters.
+
+Defines the x coordinate of the departure location.
+
+====Location Departure Y====
+Default is minus forty millimeters.
+
+Defines the y coordinate of the departure location.
+
+====Location Departure Z====
+Default is fifty millimeters.
+
+Defines the z coordinate of the departure location.
+
+===Location Wipe===
+====Location Wipe X====
+Default is minus seventy millimeters.
+
+Defines the x coordinate of the wipe location.
+
+====Location Wipe Y====
+Default is minus seventy millimeters.
+
+Defines the y coordinate of the wipe location.
+
+====Location Wipe Z====
+Default is fifty millimeters.
+
+Defines the z coordinate of the wipe location.
+
+===Wipe Period===
+Default is three.
+
+Defines the number of layers between wipes.  Wipe will always wipe just before layer zero, afterwards it will wipe every "Wipe Period" layers.  With the default of three, wipe will wipe just before layer zero, layer three, layer six and so on.
+
+==Examples==
 The following examples wipe the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and wipe.py.
 
 
@@ -95,13 +150,17 @@ class WipeRepository:
 		"Set the default settings, execute title & settings fileName."
 		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.wipe.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Wipe', self, '' )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Wipe' )
 		self.activateWipe = settings.BooleanSetting().getFromValue( 'Activate Wipe', self, False )
+		settings.LabelDisplay().getFromName( '- Location Arrival -', self )
 		self.locationArrivalX = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival X (mm):', self, 100.0, - 70.0 )
 		self.locationArrivalY = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival Y (mm):', self, 100.0, - 50.0 )
 		self.locationArrivalZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival Z (mm):', self, 100.0, 50.0 )
+		settings.LabelDisplay().getFromName( '- Location Departure -', self )
 		self.locationDepartureX = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure X (mm):', self, 100.0, - 70.0 )
 		self.locationDepartureY = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure Y (mm):', self, 100.0, - 40.0 )
 		self.locationDepartureZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure Z (mm):', self, 100.0, 50.0 )
+		settings.LabelDisplay().getFromName( '- Location Wipe -', self )
 		self.locationWipeX = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe X (mm):', self, 100.0, - 70.0 )
 		self.locationWipeY = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe Y (mm):', self, 100.0, - 70.0 )
 		self.locationWipeZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe Z (mm):', self, 100.0, 50.0 )

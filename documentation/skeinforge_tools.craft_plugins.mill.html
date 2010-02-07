@@ -15,14 +15,70 @@
 <p><tt><br>
 Mill is a script to mill the outlines.<br>
  <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Add Loops">Add Loops</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Add Inner Loops">Add Inner Loops</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Add Outer Loops">Add Outer Loops</a><br />
+&nbsp;&nbsp;<a href="#Cross Hatch">Cross Hatch</a><br />
+&nbsp;&nbsp;<a href="#Loop Outset">Loop Outset</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Loop Inner Outset over Perimeter Width">Loop Inner Outset over Perimeter Width</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Loop Outer Outset over Perimeter Width">Loop Outer Outset over Perimeter Width</a><br />
+&nbsp;&nbsp;<a href="#Mill Width over Perimeter Width">Mill Width over Perimeter Width</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Mill' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-If the 'Add Inner Loops' checkbox is on, inner milling loops will be added, the default is on.  If the 'Add Outer Loops' checkbox is on, outer milling loops will be added, the default is on.  If the 'Cross Hatch' checkbox is on, there will be alternating horizontal and vertical milling paths, if it is off there will only be horizontal milling paths, the default is on.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Add Loops" id="Add Loops"></a><h3>Add Loops</h3>
+
+<a name="Add Inner Loops" id="Add Inner Loops"></a><h4>Add Inner Loops</h4>
+
+Default is on.<br>
  <br>
-The 'Loop Inner Outset over Perimeter Width' times the perimeter width is the amount the inner milling loop will be outset, the default is 0.5.  The 'Loop Outer Outset over Perimeter Width' times the perimeter width is the amount the outer milling loop will be outset, the default is 1.0.  The 'Loop Outer Outset over Perimeter Width' ratio should be greater than the 'Loop Inner Outset over Perimeter Width' ratio.<br>
+When selected, the inner milling loops will be added.<br>
  <br>
-The 'Mill Width over Perimeter Width' times the perimeter width is the width of the mill lines, the default is 1.0.  If the ratio is one, all the material will be milled.  The greater the 'Mill Width over Perimeter Width' the farther apart the mill lines will be and so less of the material will be directly milled, the remaining material might still be removed in chips if the ratio is not much greater than one.<br>
+<a name="Add Outer Loops" id="Add Outer Loops"></a><h4>Add Outer Loops</h4>
+
+Default is on.<br>
  <br>
+When selected, the outer milling loops will be added.<br>
+ <br>
+<a name="Cross Hatch" id="Cross Hatch"></a><h3>Cross Hatch</h3>
+
+Default is on.<br>
+ <br>
+When selected, there will be alternating horizontal and vertical milling paths, if it is off there will only be horizontal milling paths.<br>
+ <br>
+<a name="Loop Outset" id="Loop Outset"></a><h3>Loop Outset</h3>
+
+<a name="Loop Inner Outset over Perimeter Width" id="Loop Inner Outset over Perimeter Width"></a><h4>Loop Inner Outset over Perimeter Width</h4>
+
+Default is 0.5.<br>
+ <br>
+Defines the ratio of the amount the inner milling loop will be outset over the perimeter width.<br>
+ <br>
+<a name="Loop Outer Outset over Perimeter Width" id="Loop Outer Outset over Perimeter Width"></a><h4>Loop Outer Outset over Perimeter Width</h4>
+
+Default is one.<br>
+ <br>
+Defines the ratio of the amount the outer milling loop will be outset over the perimeter width.  The 'Loop Outer Outset over Perimeter Width' ratio should be greater than the 'Loop Inner Outset over Perimeter Width' ratio.<br>
+ <br>
+<a name="Mill Width over Perimeter Width" id="Mill Width over Perimeter Width"></a><h3>Mill Width over Perimeter Width</h3>
+
+Default is one.<br>
+ <br>
+Defines the ratio of the mill line width over the perimeter width.  If the ratio is one, all the material will be milled.  The greater the 'Mill Width over Perimeter Width' the farther apart the mill lines will be and so less of the material will be directly milled, the remaining material might still be removed in chips if the ratio is not much greater than one.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples mill the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and mill.py.<br>
  <br>
  <br>
@@ -71,15 +127,16 @@ Screw Holder Bottom_mill.gcode</tt>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.consecution.html">skeinforge_tools.skeinforge_utilities.consecution</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.euclidean.html">skeinforge_tools.skeinforge_utilities.euclidean</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.intercircle.html">skeinforge_tools.skeinforge_utilities.intercircle</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.intercircle.html">skeinforge_tools.skeinforge_utilities.intercircle</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
-</td><td width="25%" valign=top><a href="math.html">math</a><br>
+<a href="math.html">math</a><br>
 <a href="os.html">os</a><br>
-<a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.triangle_mesh.html">skeinforge_tools.skeinforge_utilities.triangle_mesh</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.triangle_mesh.html">skeinforge_tools.skeinforge_utilities.triangle_mesh</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -167,7 +224,6 @@ Screw Holder Bottom_mill.gcode</tt>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText<font color="#909090">=''</font>, repository<font color="#909090">=None</font>)</dt><dd><tt>Mill&nbsp;the&nbsp;file&nbsp;or&nbsp;gcodeText.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Mill&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;gcodeText.</tt></dd></dl>
- <dl><dt><a name="-getDiagonalFlippedLoops"><strong>getDiagonalFlippedLoops</strong></a>(loops)</dt><dd><tt>Get&nbsp;loops&nbsp;flipped&nbsp;over&nbsp;the&nbsp;dialogonal,&nbsp;in&nbsp;other&nbsp;words&nbsp;with&nbsp;the&nbsp;x&nbsp;and&nbsp;y&nbsp;swapped.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getPointsFromSegmentTable"><strong>getPointsFromSegmentTable</strong></a>(segmentTable)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;from&nbsp;the&nbsp;segment&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-isPointOfTableInLoop"><strong>isPointOfTableInLoop</strong></a>(loop, pointTable)</dt><dd><tt>Determine&nbsp;if&nbsp;a&nbsp;point&nbsp;in&nbsp;the&nbsp;point&nbsp;table&nbsp;is&nbsp;in&nbsp;the&nbsp;loop.</tt></dd></dl>

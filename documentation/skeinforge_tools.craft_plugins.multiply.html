@@ -18,14 +18,62 @@ Multiply is a script to multiply the shape into an array of copies arranged in a
 The multiply manual page is at:<br>
 <a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Multiply">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Multiply</a><br>
  <br>
+Besides using the multiply tool, another way of printing many copies of the model is to duplicate the model in Art of Illusion, however many times you want, with the appropriate offsets.  Then you can either use the Join Objects script in the scripts submenu to create a combined shape or you can export the whole scene as an xml file, which skeinforge can then slice.<br>
+ <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Center">Center</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Center X">Center X</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Center Y">Center Y</a><br />
+&nbsp;&nbsp;<a href="#Number of Cells">Number of Cells</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Number of Columns">Number of Columns</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Number of Rows">Number of Rows</a><br />
+&nbsp;&nbsp;<a href="#Separation over Perimeter Width">Separation over Perimeter Width</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Multiply' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
+ <br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Center" id="Center"></a><h3>Center</h3>
+
+Default is the origin.<br>
  <br>
 The center of the shape will be moved to the "Center X" and "Center Y" coordinates.<br>
  <br>
-The "Number of Columns" setting is the number of columns in the array table.  The "Number of Rows" is the number of rows in the table.  The "Separation over Extrusion Width" is the ratio of separation between the shape copies over the extrusion width.<br>
+<a name="Center X" id="Center X"></a><h4>Center X</h4>
+
+<a name="Center Y" id="Center Y"></a><h4>Center Y</h4>
+
  <br>
-Besides using the multiply tool, another way of printing many copies of the model is to duplicate the model in Art of Illusion, however many times you want, with the appropriate offsets.  Then you can either use the Join Objects script in the scripts submenu to create a combined shape or you can export the whole scene as an xml file, which skeinforge can then slice.<br>
+<a name="Number of Cells" id="Number of Cells"></a><h3>Number of Cells</h3>
+
+<a name="Number of Columns" id="Number of Columns"></a><h4>Number of Columns</h4>
+
+Default is one.<br>
  <br>
+Defines the number of columns in the array table.<br>
+ <br>
+<a name="Number of Rows" id="Number of Rows"></a><h4>Number of Rows</h4>
+
+Default is one.<br>
+ <br>
+Defines the number of rows in the table.<br>
+ <br>
+<a name="Separation over Perimeter Width" id="Separation over Perimeter Width"></a><h3>Separation over Perimeter Width</h3>
+
+Default is fifteen.<br>
+ <br>
+Defines the ratio of separation between the shape copies over the extrusion width.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples multiply the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and multiply.py.<br>
  <br>
  <br>
@@ -78,8 +126,9 @@ The multiply tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+<a href="sys.html">sys</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">

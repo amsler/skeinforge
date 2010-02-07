@@ -71,7 +71,7 @@ def addPointsAtZ( edgePair, points, radius, vertices, z ):
 	"Add point complexes on the segment between the edge intersections with z."
 	carveIntersectionFirst = getCarveIntersectionFromEdge( edgePair.edges[ 0 ], vertices, z )
 	carveIntersectionSecond = getCarveIntersectionFromEdge( edgePair.edges[ 1 ], vertices, z )
-	intercircle.addPointsFromSegment( points, radius, carveIntersectionFirst, carveIntersectionSecond, 0.3 )
+	intercircle.addPointsFromSegment( carveIntersectionFirst, carveIntersectionSecond, points, radius, 0.3 )
 
 def addToZoneArray( point, z, zoneArray, zZoneInterval ):
 	"Add a height to the zone array."
@@ -256,6 +256,14 @@ def getLoopsFromCorrectMesh( edges, faces, vertices, z ):
 	loops = []
 	while isPathAdded( edges, faces, loops, remainingEdgeTable, vertices, z ):
 		pass
+	for loopIndex in xrange( len( loops ) - 1 ):
+		loop = loops[ loopIndex ]
+		if euclidean.isLoopIntersectingLoops( loop, loops[ loopIndex + 1 : ] ):
+			print( 'This should never happen, the triangle mesh slice intersects itself.' )
+			print( "Something will still be printed, but there is no guarantee that it will be the correct shape." )
+			print( 'Once the gcode is saved, you should check over the layer with a z of:' )
+			print( z )
+			return []
 	return loops
 #	untouchables = []
 #	for boundingLoop in boundingLoops:
@@ -334,7 +342,7 @@ def getNumberOfOddIntersectionsFromLoops( leftPoint, loops ):
 	"Get the number of odd intersections with the loops."
 	totalNumberOfOddIntersections = 0
 	for loop in loops:
-		totalNumberOfOddIntersections += ( euclidean.getNumberOfIntersectionsToLeft( loop, leftPoint ) % 2 )
+		totalNumberOfOddIntersections += int( euclidean.getNumberOfIntersectionsToLeft( loop, leftPoint ) % 2 )
 	return totalNumberOfOddIntersections
 
 def getOverhangDirection( belowOutsetLoops, segmentBegin, segmentEnd ):
@@ -379,9 +387,14 @@ def getPath( edges, pathIndexes, loop, z ):
 def getRemainingEdgeTable( edges, vertices, z ):
 	"Get the remaining edge hashtable."
 	remainingEdgeTable = {}
+	if len( edges ) > 0:
+		if edges[ 0 ].zMinimum == None:
+			for edge in edges:
+				edge.zMinimum = min( vertices[ edge.vertexIndexes[ 0 ] ].z, vertices[ edge.vertexIndexes[ 1 ] ].z )
+				edge.zMaximum = max( vertices[ edge.vertexIndexes[ 0 ] ].z, vertices[ edge.vertexIndexes[ 1 ] ].z )
 	for edgeIndex in xrange( len( edges ) ):
 		edge = edges[ edgeIndex ]
-		if isZInEdge( edge, vertices, z ):
+		if ( edge.zMinimum < z ) and ( edge.zMaximum > z ):
 			remainingEdgeTable[ edgeIndex ] = edge
 	return remainingEdgeTable
 
@@ -462,12 +475,6 @@ def isPathAdded( edges, faces, loops, remainingEdgeTable, vertices, z ):
 	loops.append( getPath( edges, pathIndexes, vertices, z ) )
 	return True
 
-def isZInEdge( edge, vertices, z ):
-	"Determine if z is inside the edge."
-	vertex1ZHigher = vertices[ edge.vertexIndexes[ 0 ] ].z > z
-	vertex2ZHigher = vertices[ edge.vertexIndexes[ 1 ] ].z > z
-	return vertex1ZHigher != vertex2ZHigher
-
 
 class Edge:
 	"An edge of a triangle mesh."
@@ -475,6 +482,8 @@ class Edge:
 		"Set the face indexes to None."
 		self.faceIndexes = []
 		self.vertexIndexes = []
+		self.zMaximum = None
+		self.zMinimum = None
 	
 	def __repr__( self ):
 		"Get the string representation of this Edge."

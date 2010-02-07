@@ -162,7 +162,7 @@ def getInBetweenPointsFromLoops( importRadius, loops ):
 		for pointIndex in xrange( len( loop ) ):
 			pointBegin = loop[ pointIndex ]
 			pointEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
-			intercircle.addPointsFromSegment( inBetweenPoints, importRadius, pointBegin, pointEnd, 0.2123 )
+			intercircle.addPointsFromSegment( pointBegin, pointEnd, inBetweenPoints, importRadius, 0.2123 )
 	return inBetweenPoints
 
 def getInBetweenPointsFromLoopsBoundarySideOtherLoops( inside, importRadius, loops, otherLoops, radiusSide ):
@@ -173,7 +173,7 @@ def getInBetweenPointsFromLoopsBoundarySideOtherLoops( inside, importRadius, loo
 			pointBegin = loop[ pointIndex ]
 			pointEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
 			inBetweenSegmentPoints = []
-			intercircle.addPointsFromSegment( inBetweenSegmentPoints, importRadius, pointBegin, pointEnd, 0.2123 )
+			intercircle.addPointsFromSegment( pointBegin, pointEnd, inBetweenSegmentPoints, importRadius, 0.2123 )
 			for inBetweenSegmentPoint in inBetweenSegmentPoints:
 				if isPointOrEitherLineBoundarySideInsideLoops( inside, otherLoops, pointBegin, inBetweenSegmentPoint, pointEnd, radiusSide ):
 					inBetweenPoints.append( inBetweenSegmentPoint )
@@ -579,18 +579,18 @@ class CSGObjectObjectInfo( TriangleMeshObjectInfo ):
 		if len( self.subObjectInfos ) < 1:
 			return []
 		operationString = self.object.attributeTable[ 'operation' ]
-#		operationString = '1'#
 		subObjectInfoLoopsList = getSubObjectInfoLoopsList( importRadius, self.subObjectInfos, z )
+		loops = []
 		if operationString == '0':
-			return self.getJoinedLoops( importRadius, subObjectInfoLoopsList )
-		if operationString == '1':
-			return self.getIntersectedLoops( importRadius, subObjectInfoLoopsList )
-		if operationString == '2':
-			return self.getSubtractedLoops( importRadius, subObjectInfoLoopsList )
-		if operationString == '3':
+			loops = self.getJoinedLoops( importRadius, subObjectInfoLoopsList )
+		elif operationString == '1':
+			loops = self.getIntersectedLoops( importRadius, subObjectInfoLoopsList )
+		elif operationString == '2':
+			loops = self.getSubtractedLoops( importRadius, subObjectInfoLoopsList )
+		elif operationString == '3':
 			subObjectInfoLoopsList.reverse()
-			return self.getSubtractedLoops( importRadius, subObjectInfoLoopsList )
-		return []
+			loops = self.getSubtractedLoops( importRadius, subObjectInfoLoopsList )
+		return euclidean.getSimplifiedLoops( loops, importRadius )
 
 	def getSubtractedLoops( self, importRadius, subObjectInfoLoopsList ):
 		"Get subtracted loops sliced through shape."

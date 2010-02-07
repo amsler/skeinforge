@@ -1,13 +1,17 @@
 """
 This page is in the table of contents.
-Whittle is a script to turn each polygon of a gcode file into a helix.
-
 Whittle will convert each polygon of a gcode file into a helix which has a vertical step down on each rotation.
 
+==Operation==
 The default 'Activate Whittle' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  If the cutting tool can cut the slab in one cut, the 'Activate Whittle' checkbox should be off, the default is off.
 
-The 'Maximum Vertical Step' is the maximum distance that the helix will step down on each rotation.  The number of steps in the helix will be the layer thickness divided by the 'Maximum Vertical Step', rounded up.  The amount the helix will step down is the layer thickness divided by the number of steps.  The default is 0.1 mm, the thinner the 'Maximum Vertical Step', the more times the cutting tool will circle around on its way to the bottom of the slab.
+==Settings==
+===Maximum Vertical Step'===
+Default is 0.1 mm.
 
+Defines the maximum distance that the helix will step down on each rotation.  The number of steps in the helix will be the layer thickness divided by the 'Maximum Vertical Step', rounded up.  The amount the helix will step down is the layer thickness divided by the number of steps.  The thinner the 'Maximum Vertical Step', the more times the cutting tool will circle around on its way to the bottom of the slab.
+
+==Examples==
 The following examples whittle the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and whittle.py.
 
 

@@ -10,7 +10,7 @@
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/cool.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/cool.py</a></font></td></tr></table>
     <p>
-<a href="skeinforge_tools.craft_plugins.comb.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.drill.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_tools.craft_plugins.comb.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.dimension.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
 Cool is a script to cool the shape.<br>
@@ -45,7 +45,6 @@ The default 'Activate Cool' checkbox is on.  When it is on, the functions descri
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
- <br>
 <a name="Cool Type" id="Cool Type"></a><h3>Cool Type</h3>
 
 Default is 'Slow Down'.<br>
@@ -91,12 +90,12 @@ When selected, cool will turn the fan off at the ending of the fabrication.<br>
 <a name="Alterations" id="Alterations"></a><h2>Alterations</h2>
 <hr>
 
-Cool looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the skeinforge_tools folder.  The cool start and end text idea is from:<br>
+Cool looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the craft_plugins folder.  The cool start and end text idea is from:<br>
 <a href="http://makerhahn.blogspot.com/2008/10/yay-minimug.html">http://makerhahn.blogspot.com/2008/10/yay-minimug.html</a><br>
  <br>
 <a name="cool_start.gcode" id="cool_start.gcode"></a><h3>cool_start.gcode</h3>
 
-Before the orbits, if there is a file cool_start.gcode, cool will add that to the start of the orbits.<br>
+Cool will add cool_start.gcode to the start of the orbits if it exists.<br>
  <br>
 <a name="cool_end.gcode" id="cool_end.gcode"></a><h3>cool_end.gcode</h3>
 
@@ -138,7 +137,7 @@ The cool tool has created the file:<br>
 <br />
 <br />
 <p>
-<a href="skeinforge_tools.craft_plugins.comb.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.drill.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_tools.craft_plugins.comb.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.dimension.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>
@@ -157,8 +156,9 @@ The cool tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 </td><td width="25%" valign=top><a href="os.html">os</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+<a href="sys.html">sys</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">

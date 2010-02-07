@@ -599,6 +599,7 @@ class StringSetting:
 		self.setStateToValue()
 		self.entry.grid( row = gridPosition.row, column = 3, columnspan = 2, sticky = Tkinter.W )
 		self.bindEntry()
+		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
 
 	def addToMenu( self, repositoryMenu ):
 		"Do nothing because this should only be added to a frameable repository menu."
@@ -690,6 +691,7 @@ class BooleanSetting( StringSetting ):
 #toggleCheckbutton is being used instead of a Tkinter IntVar because there is a weird bug where it doesn't work properly if this setting is not on the first window.
 		self.checkbutton.grid( row = gridPosition.row, columnspan = 5, sticky = Tkinter.W )
 		self.setStateToValue()
+		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.checkbutton )
 
 	def addToMenu( self, repositoryMenu ):
 		"Add this to the repository menu."
@@ -1333,6 +1335,7 @@ class LabelDisplay:
 		gridPosition.increment()
 		self.label = Tkinter.Label( gridPosition.master, text = self.name )
 		self.label.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
+		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
 
 	def getFromName( self, name, repository ):
 		"Initialize."
@@ -1340,6 +1343,31 @@ class LabelDisplay:
 		self.repository = repository
 		repository.displayEntities.append( self )
 		return self
+
+
+class LabelHelp:
+	"A class to add help to a widget."
+	def __init__( self, fileNameHelp, master, name, widget ):
+		"Add menu to the widget."
+		if len( name ) < 1:
+			return
+		self.popupMenu = Tkinter.Menu( master, tearoff = 0 )
+		titleFromName = getTitleFromName( name.replace( '- ', '' ).replace( ' -', '' ) )
+		self.popupMenu.add_command( label = 'Help', command = HelpPage().getOpenFromDocumentationSubName( fileNameHelp + '#' + titleFromName ) )
+		widget.bind( '<Button-1>', self.unpostPopupMenu )
+		widget.bind( '<Button-2>', self.unpostPopupMenu )
+		widget.bind( '<Button-3>', self.displayPopupMenu )
+
+	def unpostPopupMenu( self, event = None ):
+		'Unpost the popup menu.'
+		self.popupMenu.unpost()
+
+	def displayPopupMenu( self, event = None ):
+		'Display the popup menu when the button is right clicked.'
+		try:
+			self.popupMenu.tk_popup( event.x_root + 30, event.y_root, 0 )
+		finally:
+			self.popupMenu.grab_release()
 
 
 class LabelSeparator:
@@ -1384,7 +1412,7 @@ class LatentStringVar:
 
 	def setString( self, word ):
 		"Set the string."
-		return self.getVar().set( word )
+		self.getVar().set( word )
 
 
 class MenuButtonDisplay:
@@ -1444,6 +1472,7 @@ class MenuButtonDisplay:
 		self.menuButton.menu = Tkinter.Menu( self.menuButton, tearoff = 0 )
 		self.menu = self.menuButton.menu
 		self.menuButton[ 'menu' ]  =  self.menu
+		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
 
 
 class MenuRadio( BooleanSetting ):
@@ -1592,13 +1621,13 @@ class PluginFrame:
 
 	def update( self ):
 		"Update the frame."
+		if self.oldLatentString == self.latentStringVar.getString():
+			return
+		self.oldLatentString = self.latentStringVar.getString()
 		self.repository.archive.remove( self )
 		for setting in self.repository.archive:
 			setting.setToDisplay()
 		writeSettingsPrintMessage( self.repository )
-		if self.oldLatentString != self.latentStringVar.getString():
-			for saveListener in self.repository.saveListenerTable.values():
-				saveListener()
 		self.repository.archive.append( self )
 		if self.latentStringVar.getString() in self.gridTable:
 			gridPosition = self.gridTable[ self.latentStringVar.getString() ]
@@ -1641,17 +1670,15 @@ class ProfileListboxSetting( StringSetting ):
 		"Add this to the dialog."
 #http://www.pythonware.com/library/tkinter/introduction/x5453-patterns.htm
 		self.root = gridPosition.master
-		frame = Tkinter.Frame( gridPosition.master )
 		gridPosition.increment()
-		scrollbar = HiddenScrollbar( frame )
-		self.listbox = Tkinter.Listbox( frame, selectmode = Tkinter.SINGLE, yscrollcommand = scrollbar.set )
+		scrollbar = HiddenScrollbar( gridPosition.master )
+		self.listbox = Tkinter.Listbox( gridPosition.master, selectmode = Tkinter.SINGLE, yscrollcommand = scrollbar.set )
 		self.listbox.bind( '<ButtonRelease-1>', self.buttonReleaseOne )
 		gridPosition.master.bind( '<FocusIn>', self.focusIn )
 		scrollbar.config( command = self.listbox.yview )
-		scrollbar.pack( side = Tkinter.RIGHT, fill = Tkinter.Y )
-		self.listbox.pack( side = Tkinter.LEFT, fill = Tkinter.BOTH, expand = 1 )
+		self.listbox.grid( row = gridPosition.row, column = 0, sticky = Tkinter.N + Tkinter.S )
+		scrollbar.grid( row = gridPosition.row, column = 1, sticky = Tkinter.N + Tkinter.S )
 		self.setStateToValue()
-		frame.grid( row = gridPosition.row, columnspan = 5, sticky = Tkinter.W )
 		self.repository.saveListenerTable[ 'updateProfileSaveListeners' ] = updateProfileSaveListeners
 
 	def buttonReleaseOne( self, event ):
@@ -1726,6 +1753,7 @@ class Radio( BooleanSetting ):
 	def createRadioButton( self, gridPosition ):
 		"Create the radio button."
 		self.radiobutton = Tkinter.Radiobutton( gridPosition.master, command = self.clickRadio, text = self.name, value = self.name, variable = self.latentStringVar.getVar() )
+		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.radiobutton )
 
 	def getFromRadio( self, latentStringVar, name, repository, value ):
 		"Initialize."
@@ -1829,6 +1857,7 @@ class TextSetting( StringSetting ):
 		self.entry = Tkinter.Text( gridPosition.master )
 		self.setStateToValue()
 		self.entry.grid( row = gridPosition.row, column = 0, columnspan = 5, sticky = Tkinter.W )
+		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
 
 	def getFromValue( self, name, repository, value ):
 		"Initialize."

@@ -21,35 +21,204 @@ The fill manual page is at:<br>
 Allan Ecker aka The Masked Retriever has written the "Skeinforge Quicktip: Fill" at:<br>
 <a href="http://blog.thingiverse.com/2009/07/21/mysteries-of-skeinforge-fill/">http://blog.thingiverse.com/2009/07/21/mysteries-of-skeinforge-fill/</a><br>
  <br>
-The diaphragm is a solid group of layers, at regular intervals.  It can be used with a sparse infill to give the object watertight, horizontal compartments and/or a higher shear strength.  The "Diaphragm Period" is the number of layers between diaphrams.  The "Diaphragm Thickness" is the number of layers the diaphram is composed of.  The default diaphragm is zero, because the diaphragm feature is rarely used.<br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Diaphragm">Diaphragm</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Diaphragm Period">Diaphragm Period</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Diaphragm Thickness">Diaphragm Thickness</a><br />
+&nbsp;&nbsp;<a href="#Extra Shells">Extra Shells</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Extra Shells on Alternating Solid Layers">Extra Shells on Alternating Solid Layers</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Extra Shells on Base">Extra Shells on Base</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Extra Shells on Sparse Layer">Extra Shells on Sparse Layer</a><br />
+&nbsp;&nbsp;<a href="#Grid">Grid</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Extra Overlap">Grid Extra Overlap</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Junction Separation over Octogon Radius At End">Grid Junction Separation over Octogon Radius At End</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Junction Separation over Octogon Radius At Middle">Grid Junction Separation over Octogon Radius At Middle</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Junction Separation Band Height">Grid Junction Separation Band Height</a><br />
+&nbsp;&nbsp;<a href="#Infill">Infill</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Pattern">Infill Pattern</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Hexagonal">Grid Hexagonal</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Rectangular">Grid Rectangular</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Line">Line</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Begin Rotation">Infill Begin Rotation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Odd Layer Extra Rotation">Infill Odd Layer Extra Rotation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Begin Rotation Repeat">Infill Begin Rotation Repeat</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Perimeter Overlap">Infill Perimeter Overlap</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Solidity">Infill Solidity</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interior Infill Density over Exterior Density">Interior Infill Density over Exterior Density</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Width over Thickness">Infill Width over Thickness</a><br />
+&nbsp;&nbsp;<a href="#Solid Surface Thickness">Solid Surface Thickness</a><br />
+&nbsp;&nbsp;<a href="#Thread Sequence Choice">Thread Sequence Choice</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill &gt; Loops &gt; Perimeter">Infill &gt; Loops &gt; Perimeter</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill &gt; Perimeter &gt; Loops">Infill &gt; Perimeter &gt; Loops</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Loops &gt; Infill &gt; Perimeter">Loops &gt; Infill &gt; Perimeter</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Loops &gt; Perimeter &gt; Infill">Loops &gt; Perimeter &gt; Infill</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Perimeter &gt; Infill &gt; Loops">Perimeter &gt; Infill &gt; Loops</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Perimeter &gt; Loops &gt; Infill">Perimeter &gt; Loops &gt; Infill</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
+The default 'Activate Fill' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-The "Extra Shells on Alternating Solid Layers" setting is the number of extra shells, which are interior perimeter loops, on the alternating solid layers.  The "Extra Shells on Base" setting is the number of extra shells on the bottom, base layer and every even solid layer after that.  Setting this to a different value than the "Extra Shells on Alternating Solid Layers" means the infill pattern will alternate, creating a strong interleaved bond even if the perimeter loop shrinks.  The "Extra Shells on Sparse Layer" setting is the number of extra shells on the sparse layers.  The solid layers are those at the top &amp; bottom, and wherever the object has a plateau or overhang, the sparse layers are the layers in between.  Adding extra shells makes the object stronger &amp; heavier.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Diaphragm" id="Diaphragm"></a><h3>Diaphragm</h3>
+
+The diaphragm is a solid group of layers, at regular intervals.  It can be used with a sparse infill to give the object watertight, horizontal compartments and/or a higher shear strength.<br>
  <br>
-The "Infill Pattern" can be set to "Grid Hexagonal", "Grid Rectangular" or "Line".  The grid rectangular option makes a funky octogon square honeycomb like pattern which gives the object extra strength.  However, the  grid pattern means extra turns for the extruder and therefore extra wear &amp; tear, also it takes longer to generate, so the default is line.  The grid has extra diagonal lines, so when choosing the grid option, set the infill solidity to 0.2 or less so that there is not too much plastic and the grid generation time, which increases with the third power of solidity, will be reasonable.  The grid hexagonal option makes a hexagonal grid, but because it is made with threads rather than with molding or milling, only a partial hexagon is possible, so the rectangular grid pattern is generally better.  The "Grid Extra Overlap" setting is the amount of extra overlap added when extruding the grid to compensate for the fact that when the first thread going through a grid point is extruded, since there is nothing there yet for it to connect to it will shrink extra.  The "Grid Junction Separation over Octogon Radius At End" setting is the ratio of the amount the grid square is increased in each direction over the extrusion width at the end, the default is zero.  With a value of one or so the grid pattern will have large squares to go with the octogons.  The "Grid Junction Separation over Octogon Radius At Middle" setting is the increase at the middle, the default is zero.  If this value is different than the value at the end, the grid would have an accordion pattern, which would give it a higher shear strength.  The "Grid Junction Separation Band Height" is the height of the bands of the accordion pattern.<br>
+<a name="Diaphragm Period" id="Diaphragm Period"></a><h4>Diaphragm Period</h4>
+
+Default is one hundred.<br>
  <br>
-The "Infill Begin Rotation" setting is the amount the infill direction of the base and every second layer thereafter is rotated.  The default value of forty five degrees gives a diagonal infill.  The "Infill Odd Layer Extra Rotation" setting is the extra amount the infill direction of the odd layers is rotated compared to the base layer.  With the default value of ninety degrees the odd layer infill will be perpendicular to the base layer.  The "Infill Begin Rotation Repeat" setting is the number of layers that the infill begin rotation will repeat.  With the default of one, the object will have alternating cross hatching.  With a value higher than one, the infill will go in one direction more often, giving the object more strength in one direction and less in the other, this is useful for beams and cantilevers.<br>
+Defines the number of layers between diaphrams.<br>
  <br>
-The 'Infill Perimeter Overlap' ratio is the amount the infill overlaps the perimeter over the average of the perimeter and infill width.  The higher the value the more the infill will overlap the perimeter, and the thicker join between the infill and the perimeter.  If the value is too high, the join will be so thick that the nozzle will run plow through the join below making a mess, also when it is above 0.7 fill may not be able to create infill correctly, the default is 0.15.  If you want to stretch the infill a lot, set 'Path Stretch over Perimeter Width' in stretch to a high value.<br>
+<a name="Diaphragm Thickness" id="Diaphragm Thickness"></a><h4>Diaphragm Thickness</h4>
+
+Default is zero, because the diaphragm feature is rarely used.<br>
  <br>
-The most important setting in fill is the "Infill Solidity".  A value of one means the infill lines will be right beside each other, resulting in a solid, strong, heavy shape which takes a long time to extrude.  A low value means the infill will be sparse, the interior will be mosty empty space, the object will be weak, light and quick to build.  The default is 0.2.<br>
+Defines the number of layers the diaphram is composed of.<br>
  <br>
-The "Interior Infill Density over Exterior Density" setting is the ratio of the infill density of the interior over the infill density of the exterior surfaces, the default is 0.9.  The exterior should have a high infill density, so that the surface will be strong and watertight.  With the interior infill density a bit lower than the exterior, the plastic will not fill up higher than the extruder nozzle.  If the interior density is too high that could happen, as Nophead described in the Hydraraptor "Bearing Fruit" post at:<br>
+<a name="Extra Shells" id="Extra Shells"></a><h3>Extra Shells</h3>
+
+The shells interior perimeter loops.  Adding extra shells makes the object stronger &amp; heavier.<br>
+ <br>
+<a name="Extra Shells on Alternating Solid Layers" id="Extra Shells on Alternating Solid Layers"></a><h4>Extra Shells on Alternating Solid Layers</h4>
+
+Default is two.<br>
+ <br>
+Defines the number of extra shells, on the alternating solid layers.<br>
+ <br>
+<a name="Extra Shells on Base" id="Extra Shells on Base"></a><h4>Extra Shells on Base</h4>
+
+Default is one.<br>
+ <br>
+Defines the number of extra shells on the bottom, base layer and every even solid layer after that.  Setting this to a different value than the "Extra Shells on Alternating Solid Layers" means the infill pattern will alternate, creating a strong interleaved bond even if the perimeter loop shrinks.<br>
+ <br>
+<a name="Extra Shells on Sparse Layer" id="Extra Shells on Sparse Layer"></a><h4>Extra Shells on Sparse Layer</h4>
+
+Default is one.<br>
+ <br>
+Defines the number of extra shells on the sparse layers.  The solid layers are those at the top &amp; bottom, and wherever the object has a plateau or overhang, the sparse layers are the layers in between.<br>
+ <br>
+<a name="Grid" id="Grid"></a><h3>Grid</h3>
+
+<a name="Grid Extra Overlap" id="Grid Extra Overlap"></a><h4>Grid Extra Overlap</h4>
+
+Default is 0.1.<br>
+ <br>
+Defines the amount of extra overlap added when extruding the grid to compensate for the fact that when the first thread going through a grid point is extruded, since there is nothing there yet for it to connect to it will shrink extra.<br>
+ <br>
+<a name="Grid Junction Separation over Octogon Radius At End" id="Grid Junction Separation over Octogon Radius At End"></a><h4>Grid Junction Separation over Octogon Radius At End</h4>
+
+Default is zero.<br>
+ <br>
+Defines the ratio of the amount the grid square is increased in each direction over the extrusion width at the end, the default is zero.  With a value of one or so the grid pattern will have large squares to go with the octogons.<br>
+ <br>
+<a name="Grid Junction Separation over Octogon Radius At Middle" id="Grid Junction Separation over Octogon Radius At Middle"></a><h4>Grid Junction Separation over Octogon Radius At Middle</h4>
+
+Default is zero.<br>
+ <br>
+Defines the increase at the middle.  If this value is different than the value at the end, the grid would have an accordion pattern, which would give it a higher shear strength.<br>
+ <br>
+<a name="Grid Junction Separation Band Height" id="Grid Junction Separation Band Height"></a><h4>Grid Junction Separation Band Height</h4>
+
+Default is ten.<br>
+ <br>
+Defines the height of the bands of the accordion pattern.<br>
+ <br>
+<a name="Infill" id="Infill"></a><h3>Infill</h3>
+
+<a name="Infill Pattern" id="Infill Pattern"></a><h4>Infill Pattern</h4>
+
+Default is 'Line', since it is quicker to generate and does not add extra movements for the extruder.  The grid pattern has extra diagonal lines, so when choosing a grid option, set the infill solidity to 0.2 or less so that there is not too much plastic and the grid generation time, which increases with the third power of solidity, will be reasonable.<br>
+ <br>
+<a name="Grid Hexagonal" id="Grid Hexagonal"></a><h5>Grid Hexagonal</h5>
+
+When selected, the infill will be a hexagonal grid.  Because the grid is made with threads rather than with molding or milling, only a partial hexagon is possible, so the rectangular grid pattern is stronger.<br>
+ <br>
+<a name="Grid Rectangular" id="Grid Rectangular"></a><h5>Grid Rectangular</h5>
+
+When selected, the infill will be a funky octogon square honeycomb like pattern which gives the object extra strength.<br>
+ <br>
+<a name="Line" id="Line"></a><h5>Line</h5>
+
+When selected, the infill will be made up of lines.<br>
+ <br>
+<a name="Infill Begin Rotation" id="Infill Begin Rotation"></a><h4>Infill Begin Rotation</h4>
+
+Default is forty five degrees, giving a diagonal infill.<br>
+ <br>
+Defines the amount the infill direction of the base and every second layer thereafter is rotated.<br>
+ <br>
+<a name="Infill Odd Layer Extra Rotation" id="Infill Odd Layer Extra Rotation"></a><h4>Infill Odd Layer Extra Rotation</h4>
+
+Default is ninety degrees, making the odd layer infill perpendicular to the base layer.<br>
+ <br>
+Defines the extra amount the infill direction of the odd layers is rotated compared to the base layer.<br>
+ <br>
+<a name="Infill Begin Rotation Repeat" id="Infill Begin Rotation Repeat"></a><h4>Infill Begin Rotation Repeat</h4>
+
+Default is one, giving alternating cross hatching.<br>
+ <br>
+Defines the number of layers that the infill begin rotation will repeat.  With a value higher than one, the infill will go in one direction more often, giving the object more strength in one direction and less in the other, this is useful for beams and cantilevers.<br>
+ <br>
+<a name="Infill Perimeter Overlap" id="Infill Perimeter Overlap"></a><h4>Infill Perimeter Overlap</h4>
+
+Default is 0.15.<br>
+ <br>
+Defines the amount the infill overlaps the perimeter over the average of the perimeter and infill width.  The higher the value the more the infill will overlap the perimeter, and the thicker join between the infill and the perimeter.  If the value is too high, the join will be so thick that the nozzle will run plow through the join below making a mess, also when it is above 0.7 fill may not be able to create infill correctly.  If you want to stretch the infill a lot, set 'Path Stretch over Perimeter Width' in stretch to a high value.<br>
+ <br>
+<a name="Infill Solidity" id="Infill Solidity"></a><h4>Infill Solidity</h4>
+
+Default is 0.2.<br>
+ <br>
+Defines the solidity of the infill, this is the most important setting in fill.  A value of one means the infill lines will be right beside each other, resulting in a solid, strong, heavy shape which takes a long time to extrude.  A low value means the infill will be sparse, the interior will be mosty empty space, the object will be weak, light and quick to build.<br>
+ <br>
+<a name="Interior Infill Density over Exterior Density" id="Interior Infill Density over Exterior Density"></a><h4>Interior Infill Density over Exterior Density</h4>
+
+Default is 0.9.<br>
+ <br>
+Defines the ratio of the infill density of the interior over the infill density of the exterior surfaces.  The exterior should have a high infill density, so that the surface will be strong and watertight.  With the interior infill density a bit lower than the exterior, the plastic will not fill up higher than the extruder nozzle.  If the interior density is too high that could happen, as Nophead described in the Hydraraptor "Bearing Fruit" post at:<br>
 <a href="http://hydraraptor.blogspot.com/2008/08/bearing-fruit.html">http://hydraraptor.blogspot.com/2008/08/bearing-fruit.html</a><br>
  <br>
-The 'Infill Width over Thickness' is the ratio of the infill width over the layer thickness.  The higher the value the wider apart the infill will be and therefore the sparser the infill will be, the default is 1.5.<br>
+<a name="Infill Width over Thickness" id="Infill Width over Thickness"></a><h4>Infill Width over Thickness</h4>
+
+Default is 1.5.<br>
  <br>
-The "Solid Surface Thickness" setting is the number of solid layers that are at the bottom, top, plateaus and overhang.  With a value of zero, the entire object will be composed of a sparse infill, and water could flow right through it.  With a value of one, water will leak slowly through the surface and with a value of three, the object could be watertight.  The higher the solid surface thickness, the stronger and heavier the object will be.  The default is three.<br>
+Defines the ratio of the infill width over the layer thickness.  The higher the value the wider apart the infill will be and therefore the sparser the infill will be.<br>
  <br>
-The 'Thread Sequence Choice' is the sequence in which the threads will be extruded.  There are three kinds of thread, the perimeter threads on the outside of the object, the loop threads aka inner shell threads, and the interior infill threads.  This gives the following six sequence combinations:<br>
-'Infill &gt; Loops &gt; Perimeter'<br>
-'Infill &gt; Perimeter &gt; Loops'<br>
-'Loops &gt; Infill &gt; Perimeter'<br>
-'Loops &gt; Perimeter &gt; Infill'<br>
-'Perimeter &gt; Infill &gt; Loops'<br>
-'Perimeter &gt; Loops &gt; Infill'<br>
+<a name="Solid Surface Thickness" id="Solid Surface Thickness"></a><h3>Solid Surface Thickness</h3>
+
+Default is three.<br>
  <br>
-The default choice is 'Perimeter &gt; Loops &gt; Infill', which the default stretch parameters are based on.  If you change from the default sequence choice setting of perimeter, then loops, then infill, the optimal stretch thread parameters would also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.<br>
+Defines the number of solid layers that are at the bottom, top, plateaus and overhang.  With a value of zero, the entire object will be composed of a sparse infill, and water could flow right through it.  With a value of one, water will leak slowly through the surface and with a value of three, the object could be watertight.  The higher the solid surface thickness, the stronger and heavier the object will be.<br>
  <br>
+<a name="Thread Sequence Choice" id="Thread Sequence Choice"></a><h3>Thread Sequence Choice</h3>
+
+The 'Thread Sequence Choice' is the sequence in which the threads will be extruded.  There are three kinds of thread, the perimeter threads on the outside of the object, the loop threads aka inner shell threads, and the interior infill threads.<br>
+ <br>
+The default choice is 'Perimeter &gt; Loops &gt; Infill', which the default stretch parameters are based on.  If you change from the default sequence choice setting of perimeter, then loops, then infill, the optimal stretch thread parameters would also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.  The six sequence combinations follow below.<br>
+ <br>
+<a name="Infill &gt; Loops &gt; Perimeter" id="Infill &gt; Loops &gt; Perimeter"></a><h4>Infill &gt; Loops &gt; Perimeter</h4>
+
+<a name="Infill &gt; Perimeter &gt; Loops" id="Infill &gt; Perimeter &gt; Loops"></a><h4>Infill &gt; Perimeter &gt; Loops</h4>
+
+<a name="Loops &gt; Infill &gt; Perimeter" id="Loops &gt; Infill &gt; Perimeter"></a><h4>Loops &gt; Infill &gt; Perimeter</h4>
+
+<a name="Loops &gt; Perimeter &gt; Infill" id="Loops &gt; Perimeter &gt; Infill"></a><h4>Loops &gt; Perimeter &gt; Infill</h4>
+
+<a name="Perimeter &gt; Infill &gt; Loops" id="Perimeter &gt; Infill &gt; Loops"></a><h4>Perimeter &gt; Infill &gt; Loops</h4>
+
+<a name="Perimeter &gt; Loops &gt; Infill" id="Perimeter &gt; Loops &gt; Infill"></a><h4>Perimeter &gt; Loops &gt; Infill</h4>
+
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples fill the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and fill.py.<br>
  <br>
  <br>
@@ -102,8 +271,9 @@ The fill tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+<a href="sys.html">sys</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -238,10 +408,9 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-createFillForSurroundings"><strong>createFillForSurroundings</strong></a>(radius, surroundingLoops)</dt><dd><tt>Create&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;for&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getAdditionalLength"><strong>getAdditionalLength</strong></a>(path, point, pointIndex)</dt><dd><tt>Get&nbsp;the&nbsp;additional&nbsp;length&nbsp;added&nbsp;by&nbsp;inserting&nbsp;a&nbsp;point&nbsp;into&nbsp;a&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getClosestOppositeIntersectionPaths"><strong>getClosestOppositeIntersectionPaths</strong></a>(yIntersectionPaths)</dt><dd><tt>Get&nbsp;the&nbsp;close&nbsp;to&nbsp;center&nbsp;paths,&nbsp;starting&nbsp;with&nbsp;the&nbsp;first&nbsp;and&nbsp;an&nbsp;additional&nbsp;opposite&nbsp;if&nbsp;it&nbsp;exists.</tt></dd></dl>
- <dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, fillRepository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, fillRepository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;text.self.</tt></dd></dl>
+ <dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText<font color="#909090">=''</font>, fillRepository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;file&nbsp;or&nbsp;gcode&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, fillRepository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;gcode&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getExtraFillLoops"><strong>getExtraFillLoops</strong></a>(insideLoops, outsideLoop, radius)</dt><dd><tt>Get&nbsp;extra&nbsp;loops&nbsp;between&nbsp;inside&nbsp;and&nbsp;outside&nbsp;loops.</tt></dd></dl>
- <dl><dt><a name="-getIntersectionOfXIntersectionIndexes"><strong>getIntersectionOfXIntersectionIndexes</strong></a>(totalSolidSurfaceThickness, xIntersectionIndexList)</dt><dd><tt>Get&nbsp;x&nbsp;intersections&nbsp;from&nbsp;surrounding&nbsp;layers.</tt></dd></dl>
  <dl><dt><a name="-getKeyIsInPixelTableAddValue"><strong>getKeyIsInPixelTableAddValue</strong></a>(key, pathIndexTable, pixelTable)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;key&nbsp;is&nbsp;in&nbsp;the&nbsp;pixel&nbsp;table,&nbsp;and&nbsp;if&nbsp;it&nbsp;is&nbsp;and&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;None&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;path&nbsp;index&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getNonIntersectingGridPointLine"><strong>getNonIntersectingGridPointLine</strong></a>(gridPointInsetX, isJunctionWide, paths, pixelTable, yIntersectionPath, width)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;around&nbsp;the&nbsp;grid&nbsp;point&nbsp;that&nbsp;is&nbsp;junction&nbsp;wide&nbsp;that&nbsp;do&nbsp;not&nbsp;intersect.</tt></dd></dl>

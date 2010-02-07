@@ -2,12 +2,22 @@
 This page is in the table of contents.
 Polyfile is a script to choose whether the skeinforge toolchain will operate on one file or all the files in a directory.
 
-Polyfile stores and lets the user change the setting of whether to operate on one file or all the files in a directory.  The default 'Polyfile Choice' radio button group choice is 'Execute File'.  With 'Execute File' chosen, the toolchain will operate on only the chosen file.  When the chosen choice is 'Execute All Unmodified Files in a Directory', the toolchain will operate on all the unmodifed files in the directory that the chosen file is in.
+==Settings==
+===Polyfile Choice===
+Default is 'Execute File',
 
-To use the dialog to change the polyfile settings, in a shell type:
+====Execute File====
+When selected, the toolchain will operate on only the chosen file.
+
+====Execute All Unmodified Files in a Directory'====
+When selected, the toolchain will operate on all the unmodifed files in the directory that the chosen file is in.
+
+==Examples==
+Examples of using polyfile follow below.
+
+
 > python polyfile.py
-
-Polyfile examples follow below.
+This brings up the polyfile dialog.
 
 
 > python
@@ -16,7 +26,7 @@ Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import polyfile
 >>> polyfile.main()
-This brings up the polyfile setting dialog.
+This brings up the polyfile dialog.
 
 
 >>> polyfile.isDirectorySetting()

@@ -1,27 +1,57 @@
 #! /usr/bin/env python
 """
 This page is in the table of contents.
-Preface is a script to convert an svg file into a prefaced gcode file.
+Preface converts the svg slices into gcode extrusion layers, optionally prefaced with some gcode commands.
 
 The preface manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Preface
 
-Preface converts the svg slices into gcode extrusion layers, optionally prefaced with some gcode commands.
-
-If "Set Positioning to Absolute" is chosen, preface will add the G90 command to set positioning to absolute, the default is on.  If "Set Units to Millimeters" is chosen, preface will add the G21 command to set the units to millimeters, the default is on.  If the "Start at Home" setting is selected, the G28 go to home gcode will be added at the beginning of the file, the default is off.  If the "Turn Extruder Off at Shut Down" setting is selected, the M103 turn extruder off gcode will be added at the end of the file, the default is on.  If the "Turn Extruder Off at Start Up" setting is selected, the M103 turn extruder off gcode will be added at the beginning of the file, the default is on.
-
-Preface also gives the option of using Adrian's extruder distance E value in the gcode lines, as described at:
-http://blog.reprap.org/2009/05/4d-printing.html
-
-and in Erik de Bruijn's conversion script page at:
-http://objects.reprap.org/wiki/3D-to-5D-Gcode.php
-
-The extrusion distance format is either "Do Not Add Extrusion Distance", which gives standard XYZ & Feed Rate gcode, this is the default choice.  If "Extrusion Distance Absolute" is chosen, the extrusion distance output will be the total extrusion distance to that gcode line.  If "Extrusion Distance Relative" is chosen, the extrusion distance output will be the extrusion distance from the last gcode line.
+==Settings==
+===Meta===
+Default is empty.
 
 The 'Meta' field is to add meta tags or a note to all your files.  Whatever is in that field will be added in a meta tagged line to the output.
 
-When preface is generating the code, if there is a file with the name of the "Name of Start File" setting, the default being start.gcode, it will be added that to the very beginning of the gcode.  If there is a file with the name of the "Name of End File" setting, the default being end.gcode, it will be added to the very end.  Preface does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  Preface looks for those files in the alterations folder in the .skeinforge folder in the home directory. If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder.  If it doesn't find anything there it looks in the craft_plugins folder.
+===Name of Alteration Files===
+Preface looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Preface does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the craft_plugins folder.
 
+====Name of End File====
+Default is end.gcode.
+
+If there is a file with the name of the "Name of End File" setting, it will be added to the very end.
+
+====Name of Start File====
+Default is end.gcode.
+
+If there is a file with the name of the "Name of Start File" setting, it will be added to the very beginning of the gcode.
+
+===Set Positioning to Absolute===
+Default is on.
+
+When selected, preface will add the G90 command to set positioning to absolute.
+
+===Set Units to Millimeters===
+Default is on.
+
+When selected, preface will add the G21 command to set the units to millimeters.
+
+===Start at Home===
+Default is off.
+
+When selected, the G28 go to home gcode will be added at the beginning of the file.
+
+===Turn Extruder Off===
+====Turn Extruder Off at Shut Down====
+Default is on.
+
+When selected, the M103 turn extruder off gcode will be added at the end of the file.
+
+====Turn Extruder Off at Start Up====
+Default is on.
+
+When selected, the M103 turn extruder off gcode will be added at the beginning of the file.
+
+==Examples==
 The following examples preface the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and preface.py.
 
 
@@ -73,7 +103,6 @@ from skeinforge_tools.skeinforge_utilities import gcodec
 from skeinforge_tools.skeinforge_utilities import intercircle
 from skeinforge_tools.skeinforge_utilities import interpret
 from skeinforge_tools.skeinforge_utilities import settings
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 import os
 import sys
 
@@ -112,19 +141,16 @@ class PrefaceRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.preface.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Prefaced', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Preface', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Preface' )
-		extrusionDistanceFormatLatentStringVar = settings.LatentStringVar()
-		self.extrusionDistanceFormatChoiceLabel = settings.LabelDisplay().getFromName( 'Extrusion Distance Format Choice: ', self )
-		self.extrusionDistanceDoNotAddSetting = settings.Radio().getFromRadio( extrusionDistanceFormatLatentStringVar, 'Do Not Add Extrusion Distance', self, True )
-		self.extrusionDistanceAbsoluteSetting = settings.Radio().getFromRadio( extrusionDistanceFormatLatentStringVar, 'Extrusion Distance Absolute', self, False )
-		self.extrusionDistanceRelativeSetting = settings.Radio().getFromRadio( extrusionDistanceFormatLatentStringVar, 'Extrusion Distance Relative', self, False )
 		self.meta = settings.StringSetting().getFromValue( 'Meta:', self, '' )
+		settings.LabelDisplay().getFromName( '- Name of Alteration Files -', self )
 		self.nameOfEndFile = settings.StringSetting().getFromValue( 'Name of End File:', self, 'end.gcode' )
 		self.nameOfStartFile = settings.StringSetting().getFromValue( 'Name of Start File:', self, 'start.gcode' )
 		self.setPositioningToAbsolute = settings.BooleanSetting().getFromValue( 'Set Positioning to Absolute', self, True )
 		self.setUnitsToMillimeters = settings.BooleanSetting().getFromValue( 'Set Units to Millimeters', self, True )
 		self.startAtHome = settings.BooleanSetting().getFromValue( 'Start at Home', self, False )
+		settings.LabelDisplay().getFromName( '- Turn Extruder Off -', self )
 		self.turnExtruderOffAtShutDown = settings.BooleanSetting().getFromValue( 'Turn Extruder Off at Shut Down', self, True )
 		self.turnExtruderOffAtStartUp = settings.BooleanSetting().getFromValue( 'Turn Extruder Off at Start Up', self, True )
 		self.executeTitle = 'Preface'
@@ -151,13 +177,6 @@ class PrefaceSkein:
 		fileLines = gcodec.getTextLines( fileText )
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode( fileLines )
 
-	def addGcodeFromLoop( self, loop, z ):
-		"Add the gcode loop."
-		euclidean.addSurroundingLoopBeginning( loop, self, z )
-		self.distanceFeedRate.addPerimeterBlock( loop, z )
-		self.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )
-		self.distanceFeedRate.addLine( '(</surroundingLoop>)' )
-
 	def addInitializationToOutput( self ):
 		"Add initialization gcode to the output."
 		self.addFromUpperLowerFile( self.prefaceRepository.nameOfStartFile.value ) # Add a start file if it exists.
@@ -179,12 +198,6 @@ class PrefaceSkein:
 		craftTypeName = profile.getCraftTypeName()
 		self.distanceFeedRate.addTagBracketedLine( 'craftTypeName', craftTypeName )
 		self.distanceFeedRate.addTagBracketedLine( 'decimalPlacesCarried', self.distanceFeedRate.decimalPlacesCarried )
-		if self.prefaceRepository.extrusionDistanceAbsoluteSetting.value:
-			self.distanceFeedRate.extrusionDistanceFormat = 'absolute'
-		if self.prefaceRepository.extrusionDistanceRelativeSetting.value:
-			self.distanceFeedRate.extrusionDistanceFormat = 'relative'
-		if self.distanceFeedRate.extrusionDistanceFormat != '':
-			self.distanceFeedRate.addTagBracketedLine( 'extrusionDistanceFormat', self.distanceFeedRate.extrusionDistanceFormat )
 		self.distanceFeedRate.addTagBracketedLine( 'layerThickness', self.distanceFeedRate.getRounded( self.layerThickness ) )
 		if self.prefaceRepository.meta.value:
 			self.distanceFeedRate.addTagBracketedLine( 'meta', self.prefaceRepository.meta.value )
@@ -227,7 +240,7 @@ class PrefaceSkein:
 		if rotatedBoundaryLayer.rotation != None:
 			self.distanceFeedRate.addTagBracketedLine( 'bridgeRotation', str( rotatedBoundaryLayer.rotation ) ) # Indicate the bridge rotation.
 		for loop in rotatedBoundaryLayer.loops:
-			self.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
+			self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
 		self.distanceFeedRate.addLine( '(</layer>)' )
 
 	def addRotatedLoopLayer( self, z ):

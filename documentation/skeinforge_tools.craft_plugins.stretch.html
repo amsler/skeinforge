@@ -18,14 +18,62 @@ Stretch is a script to stretch the threads to partially compensate for filament 
 The stretch manual page is at:<br>
 <a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch</a><br>
  <br>
+All the defaults assume that the thread sequence choice setting in fill is the perimeter being extruded first, then the loops, then the infill.  If the thread sequence choice is different, the optimal thread parameters will also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.<br>
+ <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Loop Stretch Over Perimeter Width">Loop Stretch Over Perimeter Width</a><br />
+&nbsp;&nbsp;<a href="#Path Stretch Over Perimeter Width">Path Stretch Over Perimeter Width</a><br />
+&nbsp;&nbsp;<a href="#Perimeter">Perimeter</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Perimeter Inside Stretch Over Perimeter Width">Perimeter Inside Stretch Over Perimeter Width</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Perimeter Outside Stretch Over Perimeter Width">Perimeter Outside Stretch Over Perimeter Width</a><br />
+&nbsp;&nbsp;<a href="#Stretch from Distance over Perimeter Width">Stretch from Distance over Perimeter Width</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Stretch' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-The important value for the stretch settings is "Perimeter Inside Stretch Over Perimeter Width" which is the ratio of the maximum amount the inside perimeter thread will be stretched compared to the perimeter width, the default is 0.32.  The higher the value the more it will stretch the perimeter and the wider holes will be.  If the value is too small, the holes could be drilled out after fabrication, if the value is too high, the holes would be too wide and the part would have to junked.  The 'Perimeter Outside Stretch Over Perimeter Width' is the ratio of the maximum amount the outside perimeter thread will be stretched compared to the perimeter width, in general this value should be around a third of the 'Perimeter Inside Stretch Over Perimeter Width' setting.  The 'Loop Stretch Over Perimeter Width' is the ratio of the maximum amount the loop aka inner shell threads will be stretched compared to the perimeter width, in general this value should be the same as the 'Perimeter Outside Stretch Over Perimeter Width' setting.  The 'Path Stretch Over Perimeter Width' is the ratio of the maximum amount the threads which are not loops, like the infill threads, will be stretched compared to the perimeter width, the default is 0.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Loop Stretch Over Perimeter Width" id="Loop Stretch Over Perimeter Width"></a><h3>Loop Stretch Over Perimeter Width</h3>
+
+Default is 0.1.<br>
  <br>
-All these defaults assume that the thread sequence choice setting in fill is the perimeter being extruded first, then the loops, then the infill.  If the thread sequence choice is different, the optimal thread parameters will also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.<br>
+Defines the ratio of the maximum amount the loop aka inner shell threads will be stretched compared to the perimeter width, in general this value should be the same as the 'Perimeter Outside Stretch Over Perimeter Width' setting.<br>
  <br>
-In general, stretch will widen holes and push corners out.  The algorithm works by checking at each turning point on the extrusion path what the direction of the thread is at a distance of "Stretch from Distance over Perimeter Width (ratio)" times the perimeter width, on both sides, and moves the thread in the opposite direction.  The magnitude of the stretch increases with the amount that the direction of the two threads is similar and by the Stretch Over Perimeter Width ratio.  The script then also stretches the thread at two locations on the path on close to the turning points.  In practice the filament contraction will be similar but different from the algorithm, so even once the optimal parameters are determined, the stretch script will not be able to eliminate the inaccuracies caused by contraction, but it should reduce them.<br>
+<a name="Path Stretch Over Perimeter Width" id="Path Stretch Over Perimeter Width"></a><h3>Path Stretch Over Perimeter Width</h3>
+
+Default is zero.<br>
  <br>
+Defines the ratio of the maximum amount the threads which are not loops, like the infill threads, will be stretched compared to the perimeter width.<br>
+ <br>
+<a name="Perimeter" id="Perimeter"></a><h3>Perimeter</h3>
+
+<a name="Perimeter Inside Stretch Over Perimeter Width" id="Perimeter Inside Stretch Over Perimeter Width"></a><h4>Perimeter Inside Stretch Over Perimeter Width</h4>
+
+Default is 0.32.<br>
+ <br>
+Defines the ratio of the maximum amount the inside perimeter thread will be stretched compared to the perimeter width, this is the most important setting in stretch.  The higher the value the more it will stretch the perimeter and the wider holes will be.  If the value is too small, the holes could be drilled out after fabrication, if the value is too high, the holes would be too wide and the part would have to junked.<br>
+ <br>
+<a name="Perimeter Outside Stretch Over Perimeter Width" id="Perimeter Outside Stretch Over Perimeter Width"></a><h4>Perimeter Outside Stretch Over Perimeter Width</h4>
+
+Default is 0.1.<br>
+ <br>
+Defines the ratio of the maximum amount the outside perimeter thread will be stretched compared to the perimeter width, in general this value should be around a third of the 'Perimeter Inside Stretch Over Perimeter Width' setting.<br>
+ <br>
+<a name="Stretch from Distance over Perimeter Width" id="Stretch from Distance over Perimeter Width"></a><h3>Stretch from Distance over Perimeter Width</h3>
+
+Default is two.<br>
+ <br>
+In general, stretch will widen holes and push corners out.  The algorithm works by checking at each turning point on the extrusion path what the direction of the thread is at a distance of 'Stretch from Distance over Perimeter Width' times the perimeter width, on both sides, and moves the thread in the opposite direction.  The magnitude of the stretch increases with the amount that the direction of the two threads is similar and by the '..Stretch Over Perimeter Width' ratio.  The script then also stretches the thread at two locations on the path on close to the turning points.  In practice the filament contraction will be similar but different from the algorithm, so even once the optimal parameters are determined, the stretch script will not be able to eliminate the inaccuracies caused by contraction, but it should reduce them.<br>
+ <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples stretch the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and stretch.py.<br>
  <br>
  <br>
@@ -77,9 +125,10 @@ The stretch tool has created the file:<br>
 <a href="skeinforge_tools.skeinforge_utilities.intercircle.html">skeinforge_tools.skeinforge_utilities.intercircle</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
+<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
 <a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-<a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
