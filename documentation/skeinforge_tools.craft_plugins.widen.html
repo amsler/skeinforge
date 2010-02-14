@@ -13,62 +13,23 @@
 <a href="skeinforge_tools.craft_plugins.whittle.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.wipe.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Widen will widen the outside outlines by half the perimeter width, and outset the inside outlines by the same amount.<br>
+Widen will widen the outside perimeters away from the inside perimeters, so that the outsides will be at least two perimeter widths away from the insides and therefore the outside filaments will not overlap the inside filaments.<br>
+ <br>
+For example, if a mug has a very thin wall, widen would widen the outside of the mug so that the wall of the mug would be two perimeter widths wide, and the outside wall filament would not overlap the inside filament.<br>
+ <br>
+For another example, if the outside of the object runs right next to a hole, widen would widen the wall around the hole so that the wall would bulge out around the hole, and the outside filament would not overlap the hole filament.<br>
  <br>
 The widen manual page is at:<br>
 <a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Widen">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Widen</a><br>
  <br>
 <br />
-<a href="#Settings">Settings</a><br />
-&nbsp;&nbsp;<a href="#Add Custom Code for Temperature Reading">Add Custom Code for Temperature Reading</a><br />
-&nbsp;&nbsp;<a href="#Bridge Width Multiplier">Bridge Width Multiplier</a><br />
-&nbsp;&nbsp;<a href="#Loop Order Choice">Loop Order Choice</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Ascending Area">Ascending Area</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Descending Area">Descending Area</a><br />
-&nbsp;&nbsp;<a href="#Overlap Removal Width over Perimeter Width">Overlap Removal Width over Perimeter Width</a><br />
-&nbsp;&nbsp;<a href="#Turn Extruder Heater Off at Shut Down">Turn Extruder Heater Off at Shut Down</a><br />
+<a href="#Operation">Operation</a><br />
 <a href="#Examples">Examples</a><br />
 <br />
-<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
 <hr>
 
-<a name="Add Custom Code for Temperature Reading" id="Add Custom Code for Temperature Reading"></a><h3>Add Custom Code for Temperature Reading</h3>
-
-Default is on.<br>
- <br>
-When selected, the M105 custom code for temperature reading will be added at the beginning of the file.<br>
- <br>
-<a name="Bridge Width Multiplier" id="Bridge Width Multiplier"></a><h3>Bridge Width Multiplier</h3>
-
-Default is one.<br>
- <br>
-Defines the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers.<br>
- <br>
-<a name="Loop Order Choice" id="Loop Order Choice"></a><h3>Loop Order Choice</h3>
-
-When overlap is to be removed, for each loop, the overlap is checked against the list of loops already extruded.  If the latest loop overlaps an already extruded loop, the overlap is removed from the latest loop.  The loops are ordered according to their areas.<br>
- <br>
-The default loop order choice is 'Ascending Area'.<br>
- <br>
-<a name="Ascending Area" id="Ascending Area"></a><h4>Ascending Area</h4>
-
-When selected, the loops will be ordered in ascending area.  With thin walled parts, if overlap is being removed the outside of the container will not be extruded.  Holes will be the correct size.<br>
- <br>
-<a name="Descending Area" id="Descending Area"></a><h4>Descending Area</h4>
-
-When selected, the loops will be ordered in descending area.  With thin walled parts, if overlap is being removed the inside of the container will not be extruded.  Holes will be missing the interior wall so they will be slightly wider than model size.<br>
- <br>
-<a name="Overlap Removal Width over Perimeter Width" id="Overlap Removal Width over Perimeter Width"></a><h3>Overlap Removal Width over Perimeter Width</h3>
-
-Default is 0.6.<br>
- <br>
-Defines the ratio of the overlap removal width over the perimeter width.  Any part of the extrusion that comes within the overlap removal width of another is removed.  This is to prevent the extruder from depositing two extrusions right beside each other.  If the 'Overlap Removal Width over Perimeter Width' is less than 0.2, the overlap will not be removed.<br>
- <br>
-<a name="Turn Extruder Heater Off at Shut Down" id="Turn Extruder Heater Off at Shut Down"></a><h3>Turn Extruder Heater Off at Shut Down</h3>
-
-Default is on.<br>
- <br>
-When selected, the M104 S0 gcode line will be added to the end of the file to turn the extruder heater off by setting the extruder heater temperature to 0.<br>
+The default 'Activate Widen' checkbox is off.  When it is on, widen will work, when it is off, widen will not be called.<br>
  <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>

@@ -1,28 +1,29 @@
 """
 This page is in the table of contents.
-The py.py script is an import translator plugin to get a carving from a python script.
+Circular wave is an example of a skeinforge python procedural script to make a carving.  This script will be imported by the py.py import plugin.
 
-An explanation of the SLC format can be found at:
-http://rapid.lpt.fi/archives/rp-ml-1999/0713.html
+The required function for a skeinforge python procedural script is 'def getLoopLayers( layerThickness ):'.  This function must return a LoopLayer list.  The LoopLayer z values in the list must increase by the layer thickness.  The required part of the LoopLayer class is reprinted below.
 
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+class LoopLayer:
+ "Loops with a z."
+ def __init__( self, z ):
+  self.loops = []
+  self.z = z
 
-The getCarving function takes the file name of a python script and returns the carving.
+The skeinforge procedural script is similar in concept, although different in execution, to the Masked Retriever's parametric scripts at:
+http://blog.thingiverse.com/2009/10/20/parametric-objects-again/
+http://blog.thingiverse.com/2009/10/19/parametric-object-party-day-1-the-power-of-standard-custom/
 
-This example gets a carving for the python script circular_wave.py.  This example is run in a terminal in the folder which contains circular_wave.py and py.py.
+The circular wave root parameters are set in the setRootParameters function, which is reprinted below.
 
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import py
->>> py.getCarving()
-0.20000000298, 999999999.0, -999999999.0, [8.72782748851e-17, None
-..
-many more lines of the carving
-..
-
+def setRootParameters( self ):
+ "Set the root parameters."
+ self.height = 10.0
+ self.innerRadiusRatio = 0.5
+ self.numberOfPoints = 40
+ self.numberOfWaves = 3
+ self.radius = 10.0
+ self.twist = math.radians( 30.0 )
 
 """
 
@@ -111,12 +112,3 @@ class CircularWave:
 		self.numberOfWaves = 3
 		self.radius = 10.0
 		self.twist = math.radians( 30.0 )
-
-
-def main():
-	"Display the inset dialog."
-	if len( sys.argv ) > 1:
-		getCarving( ' '.join( sys.argv[ 1 : ] ) )
-
-if __name__ == "__main__":
-	main()

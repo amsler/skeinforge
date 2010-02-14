@@ -11,9 +11,7 @@ The default 'Activate Behold' checkbox is on.  When it is on, the functions desc
 The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.  The layers will be displayed starting at the "Layers From" index up until the "Layers To" index.  All of the settings can be set in the initial "Behold Settings" window and some can be changed after the viewer is running in the "Behold Dynamic Settings" window.  In the viewer, dragging the mouse will change the viewpoint.
 
 ==Settings==
-
 ===Animation===
-
 ====Animation Line Quickening====
 Default is one.
 
@@ -24,8 +22,12 @@ Default is two layers per second.
 
 The rate, in layers per second, at which the layer changes when the soar or dive button is pressed..
 
-===Banding===
+===Axis Rulings===
+Default is on.
 
+When selected, rulings will be drawn on the axis lines.
+
+===Banding===
 ====Band Height====
 Default is five layers.
 
@@ -69,21 +71,15 @@ Default is off.
 When selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.
 
 ===Layers===
-
 ====Layer====
-Default is a huge number, which will be limited to the highest index layer.
+Default is zero.
 
 On the display window, the Up button increases the 'Layer' by one, and the Down button decreases the layer by one.  When the layer displayed in the layer spin box is changed then <Return> is hit, the layer shown will be set to the spin box, to a mimimum of zero and to a maximum of the highest index layer.The Soar button increases the layer at the 'Animation Slide Show Rate', and the Dive (double left arrow button beside the layer field) button decreases the layer at the slide show rate.
 
-====Layers From====
-Default is zero.
+====Layer Extra Span====
+Default is a huge number.
 
-The layers displayed will start from the minimum of the "Layers From" setting and the layer.
-
-====Layers To====
-Default is zero.
-
-The layers displayed will go until the maximum of the 'Layers To' setting and the layer.  If the layer to setting is a huge number like the 912345678, the display will go to the top of the model.
+The viewer will draw the layers in the range including the 'Layer' index and the 'Layer' index plus the 'Layer Extra Span'.  If the 'Layer Extra Span' is negative, the layers viewed will start at the 'Layer' index, plus the 'Layer Extra Span', and go up to and include the 'Layer' index.  If the 'Layer Extra Span' is zero, only the 'Layer' index layer will be displayed.  If the 'Layer Extra Span' is positive, the layers viewed will start at the 'Layer' index, and go up to and include the 'Layer' index plus the 'Layer Extra Span'.
 
 ===Line===
 Default is zero.
@@ -122,7 +118,6 @@ The scale setting is the scale of the image in pixels per millimeter, the higher
 The zoom in mouse tool will zoom in the display at the point where the mouse was clicked, increasing the scale by a factor of two.  The zoom out tool will zoom out the display at the point where the mouse was clicked, decreasing the scale by a factor of two.
 
 ===Screen Inset===
-
 ====Screen Horizontal Inset====
 Default is one hundred.
 
@@ -131,7 +126,7 @@ The "Screen Horizontal Inset" determines how much the canvas will be inset in th
 ====Screen Vertical Inset====
 Default is two hundred.
 
-The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen.
+The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be..
 
 ===Viewpoint Latitude===
 Default is fifteen degrees.
@@ -145,6 +140,16 @@ The "Viewpoint Longitude" is the longitude of the viewpoint.
 
 ===Width===
 The width of each type of thread and of each axis can be changed.  If the width is set to zero, the thread will not be visible.
+
+====Width of Axis Negative Side====
+Default is two.
+
+Defines the width of the negative side of the axis.
+
+====Width of Axis Positive Side====
+Default is six.
+
+Defines the width of the positive side of the axis.
 
 ====Width of Infill Thread====
 Default is one.
@@ -191,28 +196,11 @@ Default is zero.
 
 The "Width of Travel Thread" sets the width of the grey extruder off travel threads.
 
-====Width of X Axis====
-Default is five.
-
-The "Width of X Axis" setting sets the width of the dark orange X Axis.
-
-====Width of Y Axis====
-Default is five.
-
-The "Width of Y Axis" sets the width of the gold Y Axis.
-
-====Width of Z Axis====
-Default is five.
-
-The "Width of Z Axis" sets the width of the sky blue Z Axis.
-
 ==Icons==
-
 The dive, soar and zoom icons are from Mark James' soarSilk icon set 1.3 at:
 http://www.famfamfam.com/lab/icons/silk/
 
 ==Gcodes==
-
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
 
@@ -223,7 +211,6 @@ A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
 
 ==Examples==
-
 Below are examples of behold being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and behold.py.
 
 
@@ -319,7 +306,7 @@ class BeholdRepository( tableau.TableauRepository ):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository( 'skeinforge_tools.analyze_plugins.behold.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Behold', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold' )
+#		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold' )
 		self.activateBehold = settings.BooleanSetting().getFromValue( 'Activate Behold', self, True )
 		self.addAnimation()
 		self.axisRulings = settings.BooleanSetting().getFromValue( 'Axis Rulings', self, True )
@@ -331,7 +318,7 @@ class BeholdRepository( tableau.TableauRepository ):
 		self.fromTheTop = settings.MenuRadio().getFromMenuButtonDisplay( self.brightBandStart, 'From the Top', self, True )
 		self.drawArrows = settings.BooleanSetting().getFromValue( 'Draw Arrows', self, False )
 		self.goAroundExtruderOffTravel = settings.BooleanSetting().getFromValue( 'Go Around Extruder Off Travel', self, False )
-		self.layer = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 912345678 )
+		self.layer = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
 		self.layerExtraSpan = settings.IntSpinUpdate().getSingleIncrementFromValue( - 912345678, 'Layer Extra Span (integer):', self, 912345678, 912345678 )
 		self.line = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
 		self.mouseMode = settings.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )

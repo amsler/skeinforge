@@ -13,16 +13,31 @@
 <a href="skeinforge_tools.craft_plugins.clip.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.comb.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Coil is a script to coil the outlines.<br>
+Coil is a script to coil wire or filament around an object.<br>
  <br>
+<br />
+<a href="#Operation">Operation</a><br />
+<a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Minimum Tool Distance">Minimum Tool Distance</a><br />
+<a href="#Examples">Examples</a><br />
+<br />
+<a name="Operation" id="Operation"></a><h2>Operation</h2>
+<hr>
+
 The default 'Activate Coil' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
  <br>
-If the 'Add Inner Loops' checkbox is on, inner coiling loops will be added, the default is on.  If the 'Add Outer Loops' checkbox is on, outer coiling loops will be added, the default is on.  If the 'Cross Hatch' checkbox is on, there will be alternating horizontal and vertical coiling paths, if it is off there will only be horizontal coiling paths, the default is on.<br>
+<a name="Settings" id="Settings"></a><h2>Settings</h2>
+<hr>
+
+<a name="Minimum Tool Distance" id="Minimum Tool Distance"></a><h3>Minimum Tool Distance</h3>
+
+Default is twenty millimeters.<br>
  <br>
-The 'Loop Inner Outset over Perimeter Width' times the perimeter width is the amount the inner coiling loop will be outset, the default is 0.5.  The 'Loop Outer Outset over Perimeter Width' times the perimeter width is the amount the outer coiling loop will be outset, the default is 1.0.  The 'Loop Outer Outset over Perimeter Width' ratio should be greater than the 'Loop Inner Outset over Perimeter Width' ratio.<br>
+Defines the minimum distance between the wire dispenser and the object.  The 'Minimum Tool Distance' should be set to the maximum radius of the wire dispenser, times at least 1.3 to get a reasonable safety margin.<br>
  <br>
-The 'Coil Width over Perimeter Width' times the perimeter width is the width of the coil lines, the default is 1.0.  If the ratio is one, all the material will be coiled.  The greater the 'Coil Width over Perimeter Width' the farther apart the coil lines will be and so less of the material will be directly coiled, the remaining material might still be removed in chips if the ratio is not much greater than one.<br>
- <br>
+<a name="Examples" id="Examples"></a><h2>Examples</h2>
+<hr>
+
 The following examples coil the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and coil.py.<br>
  <br>
  <br>

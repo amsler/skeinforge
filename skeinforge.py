@@ -5,7 +5,7 @@ This page is in the table of contents.
 ===Introduction===
 Skeinforge is a GPL tool chain to forge a gcode skein for a model.
 
-The tool chain starts with carve, which carves the model into layers, then the layers are modified by other tools in turn like fill, comb, tower, raft, stretch, hop, wipe, oozebane, fillet & export.  Each tool automatically gets the gcode from the previous tool.  So if you want a carved & filled gcode, call the fill tool and it will call carve, then it will fill and output the gcode.  If you want to use all the tools, call export and it will call in turn all the other tools down the chain to produce the gcode file.
+The tool chain starts with carve, which carves the model into layers, then the layers are modified by other tools in turn like fill, comb, tower, raft, stretch, hop, wipe, fillet & export.  Each tool automatically gets the gcode from the previous tool.  So if you want a carved & filled gcode, call the fill tool and it will call carve, then it will fill and output the gcode.  If you want to use all the tools, call export and it will call in turn all the other tools down the chain to produce the gcode file.
 
 If you do not want a tool after preface to modify the output, deselect the Activate checkbox for that tool.  When the Activate checkbox is off, the tool will just hand off the gcode to the next tool without modifying it.
 
@@ -19,7 +19,7 @@ The analyze tool calls plugins in the analyze_plugins folder, which will analyze
 
 The interpret tool accesses and displays the import plugins.
 
-The default settings are similar to those on Nophead's machine.  A setting which is often different is the 'Extrusion Diameter' in carve.
+The default settings are similar to those on Nophead's machine.  A setting which is often different is the 'Layer Thickness' in carve.
 
 ===Alternative===
 Another way to make gcode for a model is to use the Java RepRap host program, described at:

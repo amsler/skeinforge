@@ -11,9 +11,7 @@ Skeinview is derived from Nophead's preview script.  The extruded lines are in t
 The default 'Activate Skeinview' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeinview' checkbox is on, when skeinview is run directly.  Skeinview has trouble separating the layers when it reads gcode without comments.
 
 ==Settings==
-
 ===Animation===
-
 ====Animation Line Quickening====
 Default is one.
 
@@ -38,10 +36,16 @@ Default is off.
 
 When selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.
 
-===Layer===
+===Layers===
+====Layer====
 Default is zero.
 
 On the display window, the Up button increases the 'Layer' by one, and the Down button decreases the layer by one.  When the layer displayed in the layer spin box is changed then <Return> is hit, the layer shown will be set to the spin box, to a mimimum of zero and to a maximum of the highest index layer.The Soar button increases the layer at the 'Animation Slide Show Rate', and the Dive (double left arrow button beside the layer field) button decreases the layer at the slide show rate.
+
+====Layer Extra Span====
+Default is zero.
+
+The viewer will draw the layers in the range including the 'Layer' index and the 'Layer' index plus the 'Layer Extra Span'.  If the 'Layer Extra Span' is negative, the layers viewed will start at the 'Layer' index, plus the 'Layer Extra Span', and go up to and include the 'Layer' index.  If the 'Layer Extra Span' is zero, only the 'Layer' index layer will be displayed.  If the 'Layer Extra Span' is positive, the layers viewed will start at the 'Layer' index, and go up to and include the 'Layer' index plus the 'Layer Extra Span'.
 
 ===Line===
 Default is zero.
@@ -59,6 +63,11 @@ The 'Display Line' tool will display the highlight the selected line, and displa
 ====Viewpoint Move====
 The 'Viewpoint Move' tool will move the viewpoint in the xy plane when the mouse is clicked and dragged on the canvas.
 
+===Numeric Pointer===
+Default is on.
+
+When selected, the distance along the ruler of the arrow pointers will be drawn next to the pointers.
+
 ===Scale===
 Default is ten.
 
@@ -67,7 +76,6 @@ The scale setting is the scale of the image in pixels per millimeter, the higher
 The zoom in mouse tool will zoom in the display at the point where the mouse was clicked, increasing the scale by a factor of two.  The zoom out tool will zoom out the display at the point where the mouse was clicked, decreasing the scale by a factor of two.
 
 ===Screen Inset===
-
 ====Screen Horizontal Inset====
 Default is one hundred.
 
@@ -76,7 +84,7 @@ The "Screen Horizontal Inset" determines how much the canvas will be inset in th
 ====Screen Vertical Inset====
 Default is two hundred.
 
-The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen.
+The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be.
 
 ===Width===
 The width of each type of thread and of each axis can be changed.  If the width is set to zero, the thread will not be visible.
@@ -97,12 +105,10 @@ Default is one.
 The "Width of Travel Thread" sets the width of the grey extruder off travel threads.
 
 ==Icons==
-
 The dive, soar and zoom icons are from Mark James' soarSilk icon set 1.3 at:
 http://www.famfamfam.com/lab/icons/silk/
 
 ==Gcodes==
-
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
 
@@ -113,7 +119,6 @@ A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
 
 ==Examples==
-
 Below are examples of skeinview being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeinview.py.
 
 
@@ -201,7 +206,7 @@ class SkeinviewRepository( tableau.TableauRepository ):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository( 'skeinforge_tools.analyze_plugins.skeinview.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Skeinview', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview' )
+#		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview' )
 		self.activateSkeinview = settings.BooleanSetting().getFromValue( 'Activate Skeinview', self, True )
 		self.addAnimation()
 		self.drawArrows = settings.BooleanSetting().getFromValue( 'Draw Arrows', self, True )

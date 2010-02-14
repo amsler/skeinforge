@@ -35,17 +35,17 @@ Default is 0.4 mm.
 Defines the thickness of the extrusion layer at default extruder speed, this is the most important carve setting.
 
 ===Layers===
-Carve slices from bottom to top.  To get a single layer, set the "Layers From" to zero and the "Layers To" to one.  The layer from until layer to range is a python slice.
+Carve slices from bottom to top.  To get a single layer, set the "Layers From" to zero and the "Layers To" to one.  The 'Layers From' until 'Layers To' range is a python slice.
 
 ====Layers From====
 Default is zero.
 
-Defines the index of the bottom layer that will be carved.  If the layer from is the default zero, the carving will start from the lowest layer.  If the the layer from index is negative, then the carving will start from the layer from index below the top layer.
+Defines the index of the bottom layer that will be carved.  If the 'Layers From' is the default zero, the carving will start from the lowest layer.  If the 'Layers From' index is negative, then the carving will start from the 'Layers From' index below the top layer.
 
 ====Layers To====
 Default is a huge number, which will be limited to the highest index layer.
 
-Defines the index of the top layer that will be carved.  If the layer to index is a huge number like the default, the carving will go to the top of the model.  If the layer to index is negative, then the carving will go to the layer to index below the top layer.
+Defines the index of the top layer that will be carved.  If the 'Layers To' index is a huge number like the default, the carving will go to the top of the model.  If the 'Layers To' index is negative, then the carving will go to the 'Layers To' index below the top layer.
 
 ===Mesh Type===
 Default is 'Correct Mesh'.

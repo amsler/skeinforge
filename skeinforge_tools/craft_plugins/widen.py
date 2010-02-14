@@ -1,42 +1,17 @@
 #! /usr/bin/env python
 """
 This page is in the table of contents.
-Widen will widen the outside outlines by half the perimeter width, and outset the inside outlines by the same amount.
+Widen will widen the outside perimeters away from the inside perimeters, so that the outsides will be at least two perimeter widths away from the insides and therefore the outside filaments will not overlap the inside filaments.
+
+For example, if a mug has a very thin wall, widen would widen the outside of the mug so that the wall of the mug would be two perimeter widths wide, and the outside wall filament would not overlap the inside filament.
+
+For another example, if the outside of the object runs right next to a hole, widen would widen the wall around the hole so that the wall would bulge out around the hole, and the outside filament would not overlap the hole filament.
 
 The widen manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Widen
 
-==Settings==
-===Add Custom Code for Temperature Reading===
-Default is on.
-
-When selected, the M105 custom code for temperature reading will be added at the beginning of the file.
-
-===Bridge Width Multiplier===
-Default is one.
-
-Defines the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers.
-
-===Loop Order Choice===
-When overlap is to be removed, for each loop, the overlap is checked against the list of loops already extruded.  If the latest loop overlaps an already extruded loop, the overlap is removed from the latest loop.  The loops are ordered according to their areas.
-
-The default loop order choice is 'Ascending Area'.
-
-====Ascending Area====
-When selected, the loops will be ordered in ascending area.  With thin walled parts, if overlap is being removed the outside of the container will not be extruded.  Holes will be the correct size.
-
-====Descending Area====
-When selected, the loops will be ordered in descending area.  With thin walled parts, if overlap is being removed the inside of the container will not be extruded.  Holes will be missing the interior wall so they will be slightly wider than model size.
-
-===Overlap Removal Width over Perimeter Width===
-Default is 0.6.
-
-Defines the ratio of the overlap removal width over the perimeter width.  Any part of the extrusion that comes within the overlap removal width of another is removed.  This is to prevent the extruder from depositing two extrusions right beside each other.  If the 'Overlap Removal Width over Perimeter Width' is less than 0.2, the overlap will not be removed.
-
-===Turn Extruder Heater Off at Shut Down===
-Default is on.
-
-When selected, the M104 S0 gcode line will be added to the end of the file to turn the extruder heater off by setting the extruder heater temperature to 0.
+==Operation==
+The default 'Activate Widen' checkbox is off.  When it is on, widen will work, when it is off, widen will not be called.
 
 ==Examples==
 The following examples widen the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and widen.py.

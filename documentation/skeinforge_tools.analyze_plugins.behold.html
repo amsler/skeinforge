@@ -24,6 +24,7 @@ The behold manual page is at:<br>
 &nbsp;&nbsp;<a href="#Animation">Animation</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Animation Line Quickening">Animation Line Quickening</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Animation Slide Show Rate">Animation Slide Show Rate</a><br />
+&nbsp;&nbsp;<a href="#Axis Rulings">Axis Rulings</a><br />
 &nbsp;&nbsp;<a href="#Banding">Banding</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Band Height">Band Height</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Bottom Band Brightness">Bottom Band Brightness</a><br />
@@ -36,8 +37,7 @@ The behold manual page is at:<br>
 &nbsp;&nbsp;<a href="#Go Around Extruder Off Travel">Go Around Extruder Off Travel</a><br />
 &nbsp;&nbsp;<a href="#Layers">Layers</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Layer">Layer</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Layers From">Layers From</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Layers To">Layers To</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Layer Extra Span">Layer Extra Span</a><br />
 &nbsp;&nbsp;<a href="#Line">Line</a><br />
 &nbsp;&nbsp;<a href="#Mouse Mode">Mouse Mode</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Display Line">Display Line</a><br />
@@ -52,6 +52,8 @@ The behold manual page is at:<br>
 &nbsp;&nbsp;<a href="#Viewpoint Latitude">Viewpoint Latitude</a><br />
 &nbsp;&nbsp;<a href="#Viewpoint Longitude">Viewpoint Longitude</a><br />
 &nbsp;&nbsp;<a href="#Width">Width</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Axis Negative Side">Width of Axis Negative Side</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Axis Positive Side">Width of Axis Positive Side</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Infill Thread">Width of Infill Thread</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Fill Bottom Thread">Width of Fill Bottom Thread</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Fill Top Thread">Width of Fill Top Thread</a><br />
@@ -61,9 +63,6 @@ The behold manual page is at:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Raft Thread">Width of Raft Thread</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Selection Thread">Width of Selection Thread</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Travel Thread">Width of Travel Thread</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of X Axis">Width of X Axis</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Y Axis">Width of Y Axis</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Z Axis">Width of Z Axis</a><br />
 <a href="#Icons">Icons</a><br />
 <a href="#Gcodes">Gcodes</a><br />
 <a href="#Examples">Examples</a><br />
@@ -78,10 +77,8 @@ The viewer is simple, the viewpoint can only be moved in a sphere around the cen
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
- <br>
 <a name="Animation" id="Animation"></a><h3>Animation</h3>
 
- <br>
 <a name="Animation Line Quickening" id="Animation Line Quickening"></a><h4>Animation Line Quickening</h4>
 
 Default is one.<br>
@@ -94,9 +91,14 @@ Default is two layers per second.<br>
  <br>
 The rate, in layers per second, at which the layer changes when the soar or dive button is pressed..<br>
  <br>
+<a name="Axis Rulings" id="Axis Rulings"></a><h3>Axis Rulings</h3>
+
+Default is on.<br>
+ <br>
+When selected, rulings will be drawn on the axis lines.<br>
+ <br>
 <a name="Banding" id="Banding"></a><h3>Banding</h3>
 
- <br>
 <a name="Band Height" id="Band Height"></a><h4>Band Height</h4>
 
 Default is five layers.<br>
@@ -150,24 +152,17 @@ When selected, the display will include the travel when the extruder is off, whi
  <br>
 <a name="Layers" id="Layers"></a><h3>Layers</h3>
 
- <br>
 <a name="Layer" id="Layer"></a><h4>Layer</h4>
 
-Default is a huge number, which will be limited to the highest index layer.<br>
+Default is zero.<br>
  <br>
 On the display window, the Up button increases the 'Layer' by one, and the Down button decreases the layer by one.  When the layer displayed in the layer spin box is changed then &lt;Return&gt; is hit, the layer shown will be set to the spin box, to a mimimum of zero and to a maximum of the highest index layer.The Soar button increases the layer at the 'Animation Slide Show Rate', and the Dive (double left arrow button beside the layer field) button decreases the layer at the slide show rate.<br>
  <br>
-<a name="Layers From" id="Layers From"></a><h4>Layers From</h4>
+<a name="Layer Extra Span" id="Layer Extra Span"></a><h4>Layer Extra Span</h4>
 
-Default is zero.<br>
+Default is a huge number.<br>
  <br>
-The layers displayed will start from the minimum of the "Layers From" setting and the layer.<br>
- <br>
-<a name="Layers To" id="Layers To"></a><h4>Layers To</h4>
-
-Default is zero.<br>
- <br>
-The layers displayed will go until the maximum of the 'Layers To' setting and the layer.  If the layer to setting is a huge number like the 912345678, the display will go to the top of the model.<br>
+The viewer will draw the layers in the range including the 'Layer' index and the 'Layer' index plus the 'Layer Extra Span'.  If the 'Layer Extra Span' is negative, the layers viewed will start at the 'Layer' index, plus the 'Layer Extra Span', and go up to and include the 'Layer' index.  If the 'Layer Extra Span' is zero, only the 'Layer' index layer will be displayed.  If the 'Layer Extra Span' is positive, the layers viewed will start at the 'Layer' index, and go up to and include the 'Layer' index plus the 'Layer Extra Span'.<br>
  <br>
 <a name="Line" id="Line"></a><h3>Line</h3>
 
@@ -215,7 +210,6 @@ The zoom in mouse tool will zoom in the display at the point where the mouse was
  <br>
 <a name="Screen Inset" id="Screen Inset"></a><h3>Screen Inset</h3>
 
- <br>
 <a name="Screen Horizontal Inset" id="Screen Horizontal Inset"></a><h4>Screen Horizontal Inset</h4>
 
 Default is one hundred.<br>
@@ -226,7 +220,7 @@ The "Screen Horizontal Inset" determines how much the canvas will be inset in th
 
 Default is two hundred.<br>
  <br>
-The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen.<br>
+The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be..<br>
  <br>
 <a name="Viewpoint Latitude" id="Viewpoint Latitude"></a><h3>Viewpoint Latitude</h3>
 
@@ -243,6 +237,18 @@ The "Viewpoint Longitude" is the longitude of the viewpoint.<br>
 <a name="Width" id="Width"></a><h3>Width</h3>
 
 The width of each type of thread and of each axis can be changed.  If the width is set to zero, the thread will not be visible.<br>
+ <br>
+<a name="Width of Axis Negative Side" id="Width of Axis Negative Side"></a><h4>Width of Axis Negative Side</h4>
+
+Default is two.<br>
+ <br>
+Defines the width of the negative side of the axis.<br>
+ <br>
+<a name="Width of Axis Positive Side" id="Width of Axis Positive Side"></a><h4>Width of Axis Positive Side</h4>
+
+Default is six.<br>
+ <br>
+Defines the width of the positive side of the axis.<br>
  <br>
 <a name="Width of Infill Thread" id="Width of Infill Thread"></a><h4>Width of Infill Thread</h4>
 
@@ -298,35 +304,15 @@ Default is zero.<br>
  <br>
 The "Width of Travel Thread" sets the width of the grey extruder off travel threads.<br>
  <br>
-<a name="Width of X Axis" id="Width of X Axis"></a><h4>Width of X Axis</h4>
-
-Default is five.<br>
- <br>
-The "Width of X Axis" setting sets the width of the dark orange X Axis.<br>
- <br>
-<a name="Width of Y Axis" id="Width of Y Axis"></a><h4>Width of Y Axis</h4>
-
-Default is five.<br>
- <br>
-The "Width of Y Axis" sets the width of the gold Y Axis.<br>
- <br>
-<a name="Width of Z Axis" id="Width of Z Axis"></a><h4>Width of Z Axis</h4>
-
-Default is five.<br>
- <br>
-The "Width of Z Axis" sets the width of the sky blue Z Axis.<br>
- <br>
 <a name="Icons" id="Icons"></a><h2>Icons</h2>
 <hr>
 
- <br>
 The dive, soar and zoom icons are from Mark James' soarSilk icon set 1.3 at:<br>
 <a href="http://www.famfamfam.com/lab/icons/silk/">http://www.famfamfam.com/lab/icons/silk/</a><br>
  <br>
 <a name="Gcodes" id="Gcodes"></a><h2>Gcodes</h2>
 <hr>
 
- <br>
 An explanation of the gcodes is at:<br>
 <a href="http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter">http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter</a><br>
  <br>
@@ -339,7 +325,6 @@ A gode example is at:<br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
- <br>
 Below are examples of behold being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and behold.py.<br>
  <br>
  <br>

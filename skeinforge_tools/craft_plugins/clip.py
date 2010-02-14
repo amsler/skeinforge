@@ -9,12 +9,17 @@ http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Clip
 The default 'Activate Clip' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
 ==Settings==
+===Clip Over Perimeter Width===
+Default is 0.2.
 
-===Clip Over Extrusion Width===
-Defines the ratio of the amount each end of the loop is clipped over the extrusion width, the default is 0.2.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.
+Defines the ratio of the amount each end of the loop is clipped over the perimeter width.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.
+
+===Connect Loops===
+Default is on.
+
+When selected, clip will connect nearby loops, combining them into a spiral.
 
 ==Examples==
-
 The following examples clip the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and clip.py.
 
 
@@ -102,7 +107,7 @@ class ClipRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Clip', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Clip' )
 		self.activateClip = settings.BooleanSetting().getFromValue( 'Activate Clip', self, True )
-		self.clipOverExtrusionWidth = settings.FloatSpin().getFromValue( 0.1, 'Clip Over Extrusion Width (ratio):', self, 0.8, 0.5 )
+		self.clipOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.1, 'Clip Over Perimeter Width (ratio):', self, 0.8, 0.5 )
 		self.connectLoops = settings.BooleanSetting().getFromValue( 'Connect Loops', self, True )
 		self.executeTitle = 'Clip'
 
@@ -141,23 +146,29 @@ class ClipSkein:
 
 	def addSegmentToPixelTables( self, location, maskPixelTable, oldLocation ):
 		"Add the segment to the layer and mask table."
-		segmentTable = {}
-		euclidean.addValueSegmentToPixelTable( oldLocation.dropAxis( 2 ), location.dropAxis( 2 ), segmentTable, None, self.layerPixelWidth )
-		euclidean.addPixelTableToPixelTable( segmentTable, self.layerPixelTable )
-		euclidean.addPixelTableToPixelTable( segmentTable, maskPixelTable )
-		self.maskPixelTableTable[ location ] = maskPixelTable
-		self.maskPixelTableTable[ oldLocation ] = maskPixelTable
+#		segmentTable = {}
+		euclidean.addValueSegmentToPixelTable( oldLocation.dropAxis( 2 ), location.dropAxis( 2 ), self.layerPixelTable, None, self.layerPixelWidth )
+#		euclidean.addValueSegmentToPixelTable( oldLocation.dropAxis( 2 ), location.dropAxis( 2 ), segmentTable, None, self.layerPixelWidth )
+#		euclidean.addPixelTableToPixelTable( segmentTable, self.layerPixelTable )
+#		euclidean.addPixelTableToPixelTable( segmentTable, maskPixelTable )
+#		self.maskPixelTableTable[ location ] = maskPixelTable
+#		self.maskPixelTableTable[ oldLocation ] = maskPixelTable
 
 	def addTailoredLoopPath( self, line ):
-		"Add a clipped and jittered loop path."
+		"Add a clipped loop path."
 		if self.clipLength > 0.0:
+			removeTable = {}
+			euclidean.addLoopToPixelTable( self.loopPath.path, removeTable, self.layerPixelWidth )
+			euclidean.removePixelTableFromPixelTable( removeTable, self.layerPixelTable )
 			self.loopPath.path = euclidean.getClippedLoopPath( self.clipLength, self.loopPath.path )
 			self.loopPath.path = euclidean.getSimplifiedPath( self.loopPath.path, self.perimeterWidth )
+			euclidean.addLoopToPixelTable( self.loopPath.path, self.layerPixelTable, self.layerPixelWidth )
 		if self.oldWiddershins == None:
 			self.addGcodeFromThreadZ( self.loopPath.path, self.loopPath.z )
 		else:
 			if self.oldWiddershins != euclidean.isWiddershins( self.loopPath.path ):
 				self.loopPath.path.reverse()
+#			self.addGcodeFromThreadZ( self.loopPath.path, self.loopPath.z )
 			for point in self.loopPath.path:
 				self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.feedRateMinute, point, self.loopPath.z )
 		if self.getNextThreadIsACloseLoop( self.loopPath.path ):
@@ -184,18 +195,22 @@ class ClipSkein:
 			if not euclidean.isPointInsideLoops( self.boundaryLoops, alongPoint ):
 				return False
 			distance += self.connectingStepLength
-		removedLayerPixelTable = self.layerPixelTable.copy()
-		if self.oldLocation in self.maskPixelTableTable:
-			euclidean.removePixelTableFromPixelTable( self.maskPixelTableTable[ self.oldLocation ], removedLayerPixelTable )
-		euclidean.addPathToPixelTable( path[ : - 2 ], removedLayerPixelTable, None, self.layerPixelWidth )
+#		removedLayerPixelTable = self.layerPixelTable.copy()
+#		if self.oldLocation in self.maskPixelTableTable:
+#			euclidean.removePixelTableFromPixelTable( self.maskPixelTableTable[ self.oldLocation ], removedLayerPixelTable )
+#		euclidean.addPathToPixelTable( path[ : - 2 ], removedLayerPixelTable, None, self.layerPixelWidth )
 		segmentTable = {}
-		euclidean.addValueSegmentToPixelTable( path[ - 1 ], locationComplex, segmentTable, None, self.layerPixelWidth )
-		maskPixelTable = {}
-		if location in self.maskPixelTableTable:
-			maskPixelTable = self.maskPixelTableTable[ location ]
-		if euclidean.isPixelTableIntersecting( removedLayerPixelTable, segmentTable, maskPixelTable ):
+		euclidean.addSegmentToPixelTable( path[ - 1 ], locationComplex, segmentTable, 2.0, 2.0, self.layerPixelWidth )
+#		euclidean.addValueSegmentToPixelTable( path[ - 1 ], locationComplex, segmentTable, None, self.layerPixelWidth )
+#		euclidean.addValueSegmentToPixelTable( path[ - 1 ], locationComplex, segmentTable, None, self.layerPixelWidth )
+#		maskPixelTable = {}
+#		if location in self.maskPixelTableTable:
+#			maskPixelTable = self.maskPixelTableTable[ location ]
+		if euclidean.isPixelTableIntersecting( self.layerPixelTable, segmentTable, {} ):
+#		if euclidean.isPixelTableIntersecting( removedLayerPixelTable, segmentTable, {} ):
 			return False
-		euclidean.addPixelTableToPixelTable( segmentTable, self.layerPixelTable )
+		euclidean.addValueSegmentToPixelTable( path[ - 1 ], locationComplex, self.layerPixelTable, None, self.layerPixelWidth )
+#		euclidean.addPixelTableToPixelTable( segmentTable, self.layerPixelTable )
 		return True
 
 	def getCraftedGcode( self, clipRepository, gcodeText ):
@@ -225,6 +240,8 @@ class ClipSkein:
 				if not isLoop:
 					return False
 				return self.getConnectionIsCloseWithoutOverlap( location, path )
+			elif firstWord == '(<layer>':
+				return False
 		return False
 
 	def isNextExtruderOn( self ):
@@ -265,8 +282,8 @@ class ClipSkein:
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float( splitLine[ 1 ] )
-				self.clipLength = clipRepository.clipOverExtrusionWidth.value * self.perimeterWidth
-				self.layerPixelWidth = 0.5 * self.perimeterWidth
+				self.clipLength = clipRepository.clipOverPerimeterWidth.value * self.perimeterWidth
+				self.layerPixelWidth = 0.1 * self.perimeterWidth
 				self.connectingStepLength = 0.5 * self.perimeterWidth
 			elif firstWord == '(<travelFeedRatePerSecond>':
 				self.travelFeedRatePerMinute = 60.0 * float( splitLine[ 1 ] )
@@ -296,12 +313,13 @@ class ClipSkein:
 			self.distanceFeedRate.addLine( line )
 
 	def setLayerPixelTable( self ):
-		"Parse a gcode line and add it to the clip skein."
+		"Set the layer pixel table."
 		boundaryLoop = None
 		extruderActive = False
 		maskPixelTable = {}
 		self.boundaryLoops = []
 		self.maskPixelTableTable = {}
+		self.lastInactiveLocation = None
 		self.layerPixelTable = {}
 		oldLocation = self.oldLocation
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
@@ -312,10 +330,14 @@ class ClipSkein:
 				location = gcodec.getLocationFromSplitLine( oldLocation, splitLine )
 				if extruderActive and oldLocation != None:
 					self.addSegmentToPixelTables( location, maskPixelTable, oldLocation )
+				if not extruderActive:
+					self.lastInactiveLocation = location
 				oldLocation = location
 			elif firstWord == 'M101':
 				extruderActive = True
 			elif firstWord == 'M103':
+				if extruderActive and self.lastInactiveLocation != None:
+					self.addSegmentToPixelTables( self.lastInactiveLocation, maskPixelTable, oldLocation )
 				extruderActive = False
 				maskPixelTable = {}
 			elif firstWord == '(</boundaryPerimeter>)':

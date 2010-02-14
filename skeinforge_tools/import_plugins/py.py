@@ -1,13 +1,14 @@
 """
 This page is in the table of contents.
-The py.py script is an import translator plugin to get a carving from a python script.
+The py.py script is an import plugin to get a carving from a skeinforge python procedural script, in order to make procedural objects.
 
-An explanation of the SLC format can be found at:
-http://rapid.lpt.fi/archives/rp-ml-1999/0713.html
+This is similar in concept, although different in execution, to the Masked Retriever's parametric scripts at:
+http://blog.thingiverse.com/2009/10/20/parametric-objects-again/
+http://blog.thingiverse.com/2009/10/19/parametric-object-party-day-1-the-power-of-standard-custom/
 
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An example procedural script is circular_wave.py in the model folder.
 
-The getCarving function takes the file name of a python script and returns the carving.
+An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.  The getCarving function takes the file name of a python script and returns the carving.
 
 This example gets a carving for the python script circular_wave.py.  This example is run in a terminal in the folder which contains circular_wave.py and py.py.
 

@@ -224,6 +224,7 @@ class DimensionSkein:
 				self.operatingFeedRate = 60.0 * float( splitLine[ 1 ] )
 			elif firstWord == '(<operatingFlowRate>':
 				self.operatingFlowRate = float( splitLine[ 1 ] )
+				self.flowRate = self.operatingFlowRate
 			self.distanceFeedRate.addLine( line )
 
 	def parseLine( self, lineIndex ):

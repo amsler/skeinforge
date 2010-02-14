@@ -29,11 +29,14 @@ Skeinview is derived from Nophead's preview script.  The extruded lines are in t
 &nbsp;&nbsp;<a href="#Draw Arrows">Draw Arrows</a><br />
 &nbsp;&nbsp;<a href="#Export Menu">Export Menu</a><br />
 &nbsp;&nbsp;<a href="#Go Around Extruder Off Travel">Go Around Extruder Off Travel</a><br />
-&nbsp;&nbsp;<a href="#Layer">Layer</a><br />
+&nbsp;&nbsp;<a href="#Layers">Layers</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Layer">Layer</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Layer Extra Span">Layer Extra Span</a><br />
 &nbsp;&nbsp;<a href="#Line">Line</a><br />
 &nbsp;&nbsp;<a href="#Mouse Mode">Mouse Mode</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Display Line">Display Line</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Viewpoint Move">Viewpoint Move</a><br />
+&nbsp;&nbsp;<a href="#Numeric Pointer">Numeric Pointer</a><br />
 &nbsp;&nbsp;<a href="#Scale">Scale</a><br />
 &nbsp;&nbsp;<a href="#Screen Inset">Screen Inset</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Screen Horizontal Inset">Screen Horizontal Inset</a><br />
@@ -54,10 +57,8 @@ The default 'Activate Skeinview' checkbox is on.  When it is on, the functions d
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
- <br>
 <a name="Animation" id="Animation"></a><h3>Animation</h3>
 
- <br>
 <a name="Animation Line Quickening" id="Animation Line Quickening"></a><h4>Animation Line Quickening</h4>
 
 Default is one.<br>
@@ -87,11 +88,19 @@ Default is off.<br>
  <br>
 When selected, the display will include the travel when the extruder is off, which means it will include the nozzle wipe path if any.<br>
  <br>
-<a name="Layer" id="Layer"></a><h3>Layer</h3>
+<a name="Layers" id="Layers"></a><h3>Layers</h3>
+
+<a name="Layer" id="Layer"></a><h4>Layer</h4>
 
 Default is zero.<br>
  <br>
 On the display window, the Up button increases the 'Layer' by one, and the Down button decreases the layer by one.  When the layer displayed in the layer spin box is changed then &lt;Return&gt; is hit, the layer shown will be set to the spin box, to a mimimum of zero and to a maximum of the highest index layer.The Soar button increases the layer at the 'Animation Slide Show Rate', and the Dive (double left arrow button beside the layer field) button decreases the layer at the slide show rate.<br>
+ <br>
+<a name="Layer Extra Span" id="Layer Extra Span"></a><h4>Layer Extra Span</h4>
+
+Default is zero.<br>
+ <br>
+The viewer will draw the layers in the range including the 'Layer' index and the 'Layer' index plus the 'Layer Extra Span'.  If the 'Layer Extra Span' is negative, the layers viewed will start at the 'Layer' index, plus the 'Layer Extra Span', and go up to and include the 'Layer' index.  If the 'Layer Extra Span' is zero, only the 'Layer' index layer will be displayed.  If the 'Layer Extra Span' is positive, the layers viewed will start at the 'Layer' index, and go up to and include the 'Layer' index plus the 'Layer Extra Span'.<br>
  <br>
 <a name="Line" id="Line"></a><h3>Line</h3>
 
@@ -113,6 +122,12 @@ The 'Display Line' tool will display the highlight the selected line, and displa
 
 The 'Viewpoint Move' tool will move the viewpoint in the xy plane when the mouse is clicked and dragged on the canvas.<br>
  <br>
+<a name="Numeric Pointer" id="Numeric Pointer"></a><h3>Numeric Pointer</h3>
+
+Default is on.<br>
+ <br>
+When selected, the distance along the ruler of the arrow pointers will be drawn next to the pointers.<br>
+ <br>
 <a name="Scale" id="Scale"></a><h3>Scale</h3>
 
 Default is ten.<br>
@@ -123,7 +138,6 @@ The zoom in mouse tool will zoom in the display at the point where the mouse was
  <br>
 <a name="Screen Inset" id="Screen Inset"></a><h3>Screen Inset</h3>
 
- <br>
 <a name="Screen Horizontal Inset" id="Screen Horizontal Inset"></a><h4>Screen Horizontal Inset</h4>
 
 Default is one hundred.<br>
@@ -134,7 +148,7 @@ The "Screen Horizontal Inset" determines how much the canvas will be inset in th
 
 Default is two hundred.<br>
  <br>
-The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen.<br>
+The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be.<br>
  <br>
 <a name="Width" id="Width"></a><h3>Width</h3>
 
@@ -161,14 +175,12 @@ The "Width of Travel Thread" sets the width of the grey extruder off travel thre
 <a name="Icons" id="Icons"></a><h2>Icons</h2>
 <hr>
 
- <br>
 The dive, soar and zoom icons are from Mark James' soarSilk icon set 1.3 at:<br>
 <a href="http://www.famfamfam.com/lab/icons/silk/">http://www.famfamfam.com/lab/icons/silk/</a><br>
  <br>
 <a name="Gcodes" id="Gcodes"></a><h2>Gcodes</h2>
 <hr>
 
- <br>
 An explanation of the gcodes is at:<br>
 <a href="http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter">http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter</a><br>
  <br>
@@ -181,7 +193,6 @@ A gode example is at:<br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
- <br>
 Below are examples of skeinview being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeinview.py.<br>
  <br>
  <br>

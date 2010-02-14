@@ -23,6 +23,7 @@ The chamber manual page is at:<br>
 <a href="#Settings">Settings</a><br />
 &nbsp;&nbsp;<a href="#Bed Temperature">Bed Temperature</a><br />
 &nbsp;&nbsp;<a href="#Chamber Temperature">Chamber Temperature</a><br />
+&nbsp;&nbsp;<a href="#Holding Force">Holding Force</a><br />
 <a href="#Heated Beds">Heated Beds</a><br />
 &nbsp;&nbsp;<a href="#Bothacker">Bothacker</a><br />
 &nbsp;&nbsp;<a href="#Domingo">Domingo</a><br />
@@ -48,13 +49,19 @@ The default 'Activate Chamber' checkbox is on.  When it is on, the functions des
 
 Default is 60C.<br>
  <br>
-Defines the print_bed temperature in Celcius by adding an M110 command.<br>
+Defines the print_bed temperature in Celcius by adding an M115 command.<br>
  <br>
 <a name="Chamber Temperature" id="Chamber Temperature"></a><h3>Chamber Temperature</h3>
 
 Default is 30C.<br>
  <br>
-Defines the chamber temperature in Celcius by adding an M111 command.<br>
+Defines the chamber temperature in Celcius by adding an M116 command.<br>
+ <br>
+<a name="Holding Force" id="Holding Force"></a><h3>Holding Force</h3>
+
+Default is zero.<br>
+ <br>
+Defines the holding force of a mechanism, like a vacuum table or electromagnet, to hold the bed surface or object, by adding an M117 command.<br>
  <br>
 <a name="Heated Beds" id="Heated Beds"></a><h2>Heated Beds</h2>
 <hr>

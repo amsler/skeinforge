@@ -21,7 +21,8 @@ The clip manual page is at:<br>
 <br />
 <a href="#Operation">Operation</a><br />
 <a href="#Settings">Settings</a><br />
-&nbsp;&nbsp;<a href="#Clip Over Extrusion Width">Clip Over Extrusion Width</a><br />
+&nbsp;&nbsp;<a href="#Clip Over Perimeter Width">Clip Over Perimeter Width</a><br />
+&nbsp;&nbsp;<a href="#Connect Loops">Connect Loops</a><br />
 <a href="#Examples">Examples</a><br />
 <br />
 <a name="Operation" id="Operation"></a><h2>Operation</h2>
@@ -32,15 +33,21 @@ The default 'Activate Clip' checkbox is on.  When it is on, the functions descri
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
- <br>
-<a name="Clip Over Extrusion Width" id="Clip Over Extrusion Width"></a><h3>Clip Over Extrusion Width</h3>
+<a name="Clip Over Perimeter Width" id="Clip Over Perimeter Width"></a><h3>Clip Over Perimeter Width</h3>
 
-Defines the ratio of the amount each end of the loop is clipped over the extrusion width, the default is 0.2.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.<br>
+Default is 0.2.<br>
+ <br>
+Defines the ratio of the amount each end of the loop is clipped over the perimeter width.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.<br>
+ <br>
+<a name="Connect Loops" id="Connect Loops"></a><h3>Connect Loops</h3>
+
+Default is on.<br>
+ <br>
+When selected, clip will connect nearby loops, combining them into a spiral.<br>
  <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
- <br>
 The following examples clip the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and clip.py.<br>
  <br>
  <br>
@@ -137,7 +144,7 @@ The clip tool has created the file:<br>
 
 <dl><dt><a name="ClipSkein-addSegmentToPixelTables"><strong>addSegmentToPixelTables</strong></a>(self, location, maskPixelTable, oldLocation)</dt><dd><tt>Add&nbsp;the&nbsp;segment&nbsp;to&nbsp;the&nbsp;layer&nbsp;and&nbsp;mask&nbsp;table.</tt></dd></dl>
 
-<dl><dt><a name="ClipSkein-addTailoredLoopPath"><strong>addTailoredLoopPath</strong></a>(self, line)</dt><dd><tt>Add&nbsp;a&nbsp;clipped&nbsp;and&nbsp;jittered&nbsp;loop&nbsp;path.</tt></dd></dl>
+<dl><dt><a name="ClipSkein-addTailoredLoopPath"><strong>addTailoredLoopPath</strong></a>(self, line)</dt><dd><tt>Add&nbsp;a&nbsp;clipped&nbsp;loop&nbsp;path.</tt></dd></dl>
 
 <dl><dt><a name="ClipSkein-getConnectionIsCloseWithoutOverlap"><strong>getConnectionIsCloseWithoutOverlap</strong></a>(self, location, path)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;connection&nbsp;is&nbsp;close&nbsp;enough&nbsp;and&nbsp;does&nbsp;not&nbsp;overlap&nbsp;another&nbsp;thread.</tt></dd></dl>
 
@@ -153,7 +160,7 @@ The clip tool has created the file:<br>
 
 <dl><dt><a name="ClipSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;clip&nbsp;skein.</tt></dd></dl>
 
-<dl><dt><a name="ClipSkein-setLayerPixelTable"><strong>setLayerPixelTable</strong></a>(self)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;clip&nbsp;skein.</tt></dd></dl>
+<dl><dt><a name="ClipSkein-setLayerPixelTable"><strong>setLayerPixelTable</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;layer&nbsp;pixel&nbsp;table.</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

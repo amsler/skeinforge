@@ -18,9 +18,9 @@ Default is one.
 Defines the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers.
 
 ===Loop Order Choice===
-When overlap is to be removed, for each loop, the overlap is checked against the list of loops already extruded.  If the latest loop overlaps an already extruded loop, the overlap is removed from the latest loop.  The loops are ordered according to their areas.
+Default loop order choice is 'Ascending Area'.
 
-The default loop order choice is 'Ascending Area'.
+When overlap is to be removed, for each loop, the overlap is checked against the list of loops already extruded.  If the latest loop overlaps an already extruded loop, the overlap is removed from the latest loop.  The loops are ordered according to their areas.
 
 ====Ascending Area====
 When selected, the loops will be ordered in ascending area.  With thin walled parts, if overlap is being removed the outside of the container will not be extruded.  Holes will be the correct size.

@@ -10,7 +10,7 @@
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/stretch.py">/home/enrique/Desktop/backup/babbleold/script/reprap/pyRepRap/skeinforge_tools/craft_plugins/stretch.py</a></font></td></tr></table>
     <p>
-<a href="skeinforge_tools.craft_plugins.splodge.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.tower.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_tools.craft_plugins.splodge.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.temperature.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
 Stretch is a script to stretch the threads to partially compensate for filament shrinkage when extruded.<br>
@@ -69,7 +69,7 @@ Defines the ratio of the maximum amount the outside perimeter thread will be str
 
 Default is two.<br>
  <br>
-In general, stretch will widen holes and push corners out.  The algorithm works by checking at each turning point on the extrusion path what the direction of the thread is at a distance of 'Stretch from Distance over Perimeter Width' times the perimeter width, on both sides, and moves the thread in the opposite direction.  The magnitude of the stretch increases with the amount that the direction of the two threads is similar and by the '..Stretch Over Perimeter Width' ratio.  The script then also stretches the thread at two locations on the path on close to the turning points.  In practice the filament contraction will be similar but different from the algorithm, so even once the optimal parameters are determined, the stretch script will not be able to eliminate the inaccuracies caused by contraction, but it should reduce them.<br>
+In general, stretch will widen holes and push corners out.  The algorithm works by checking at each turning point on the extrusion path what the direction of the thread is at a distance of 'Stretch from Distance over Perimeter Width' times the perimeter width, on both sides, and moves the thread in the opposite direction.  The magnitude of the stretch increases with the amount that the direction of the two threads is similar and by the '..Stretch Over Perimeter Width' ratio.  In practice the filament contraction will be similar but different from the algorithm, so even once the optimal parameters are determined, the stretch script will not be able to eliminate the inaccuracies caused by contraction, but it should reduce them.<br>
  <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
@@ -107,7 +107,7 @@ The stretch tool has created the file:<br>
 <br />
 <br />
 <p>
-<a href="skeinforge_tools.craft_plugins.splodge.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.tower.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_tools.craft_plugins.splodge.html">Previous</a> / <a href="skeinforge_tools.craft_plugins.temperature.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>

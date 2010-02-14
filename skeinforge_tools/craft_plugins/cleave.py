@@ -3,7 +3,6 @@ This page is in the table of contents.
 Cleave is a script to cleave a shape into svg slice layers.
 
 ==Settings==
-
 ===Extra Decimal Places===
 Default is one.
 
@@ -20,17 +19,17 @@ Default is 0.4 mm.
 Defines the thickness of the layer, this is the most important cleave setting.
 
 ===Layers===
-Cleave slices from top to bottom.  To get only the bottom layer, set the "Layers From" to minus one.  The layer from until layer to range is a python slice.
+Cleave slices from bottom to top.  To get a single layer, set the "Layers From" to zero and the "Layers To" to one.  The layer from until layer to range is a python slice.
 
 ====Layers From====
 Default is zero.
 
-Defines the index of the top layer that will be cleaved.  If the layer from is the default zero, the carving will start from the top layer.  If the the layer from index is negative, then the carving will start from the layer from index above the bottom layer.
+Defines the index of the bottom layer that will be cleaved.  If the layer from is the default zero, the carving will start from the lowest layer.  If the 'Layers From' index is negative, then the carving will start from the 'Layers From' index below the top layer.
 
 ====Layers To====
-Default is a huge number, which will be limited to the highest index number.
+Default is a huge number, which will be limited to the highest index layer.
 
-Defines the index of the bottom layer that will be carved.  If the layer to index is a huge number like the default, the carving will go to the bottom of the model.  If the layer to index is negative, then the carving will go to the layer to index above the bottom layer.
+Defines the index of the top layer that will be cleaved.  If the 'Layers To' index is a huge number like the default, the carving will go to the top of the model.  If the 'Layers To' index is negative, then the carving will go to the 'Layers To' index below the top layer.
 
 ===Mesh Type===
 Default is 'Correct Mesh'.
@@ -47,7 +46,6 @@ Default is two millimeters.
 Defines the width of the perimeter.
 
 ==Examples==
-
 The following examples cleave the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and cleave.py.
 
 

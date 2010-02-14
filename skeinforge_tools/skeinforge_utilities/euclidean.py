@@ -124,7 +124,7 @@ def addSegmentToPixelTable( beginComplex, endComplex, pixelTable, shortenDistanc
 	if shortenDistanceEnd > 0.0:
 		beginMinusEndComplex = beginComplex - endComplex
 		beginMinusEndComplexLength = abs( beginMinusEndComplex )
-		if beginMinusEndComplexLength < shortenDistanceEnd:
+		if beginMinusEndComplexLength < 0.0:
 			return
 		endComplex = endComplex + beginMinusEndComplex * shortenDistanceEnd / beginMinusEndComplexLength
 	deltaX = endComplex.real - beginComplex.real
@@ -701,13 +701,6 @@ def getLargestLoop( loops ):
 			largestArea = loopArea
 			largestLoop = loop
 	return largestLoop
-
-def getLastExistingFillOfSurroundings( surroundingLoops ):
-	"Get extra fill loops of surrounding loops."
-	lastExistingFillOfSurroundings = []
-	for surroundingLoop in surroundingLoops:
-		lastExistingFillOfSurroundings += surroundingLoop.getLastExistingFillLoops()
-	return lastExistingFillOfSurroundings
 
 def getLeftPoint( points ):
 	"Get the leftmost complex point in the points."
@@ -1696,7 +1689,7 @@ class SurroundingLoop:
 		self.extraLoops = []
 		self.infillPaths = []
 		self.innerSurroundings = None
-		self.lastExistingFillLoops = None
+#		self.lastExistingFillLoops = None
 		self.lastFillLoops = None
 		self.loop = None
 		self.perimeterPaths = []
@@ -1750,6 +1743,7 @@ class SurroundingLoop:
 		"Get last fill loops from the outside loop and the loops inside the inside loops."
 		fillLoops = self.getLoopsToBeFilled()[ : ]
 		for surroundingLoop in self.innerSurroundings:
+#			fillLoops += surroundingLoop.getFillLoops()
 			fillLoops += getFillOfSurroundings( surroundingLoop.innerSurroundings )
 		return fillLoops
 
@@ -1760,21 +1754,24 @@ class SurroundingLoop:
 		transferredSurroundings = getTransferredSurroundingLoops( inputSurroundingInsides, self.boundary )
 		self.innerSurroundings = getOrderedSurroundingLoops( perimeterWidth, transferredSurroundings )
 		return self
-
-	def getLastExistingFillLoops( self ):
-		"Get last existing fill loops."
-		lastExistingFillLoops = self.lastExistingFillLoops[ : ]
-		for surroundingLoop in self.innerSurroundings:
-			lastExistingFillLoops += getLastExistingFillOfSurroundings( surroundingLoop.innerSurroundings )
-		return lastExistingFillLoops
+#
+#	def getLastExistingFillLoops( self ):
+#		"Get last existing fill loops."
+#		lastExistingFillLoops = self.lastExistingFillLoops[ : ]
+#		for surroundingLoop in self.innerSurroundings:
+#			lastExistingFillLoops += surroundingLoop.getLastExistingFillLoops()
+#		return lastExistingFillLoops
 
 	def getLoopsToBeFilled( self ):
 		"Get last fill loops from the outside loop and the loops inside the inside loops."
 		if self.lastFillLoops != None:
 			return self.lastFillLoops
-		loopsToBeFilled = self.fillBoundaries
+#		return [ self.boundary ]
+		loopsToBeFilled = [ self.boundary ]
+#		loopsToBeFilled = self.fillBoundaries
 		for surroundingLoop in self.innerSurroundings:
-			loopsToBeFilled += surroundingLoop.fillBoundaries
+			loopsToBeFilled.append( surroundingLoop.boundary )
+#			loopsToBeFilled += surroundingLoop.fillBoundaries
 		return loopsToBeFilled
 
 	def transferClosestFillLoops( self, oldOrderedLocation, skein ):

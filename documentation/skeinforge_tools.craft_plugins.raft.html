@@ -34,8 +34,10 @@ The important values for the raft settings are the temperatures of the raft, the
 <br />
 <a href="#Operation">Operation</a><br />
 <a href="#Settings">Settings</a><br />
-&nbsp;&nbsp;<a href="#Activate Raft, Elevate Nozzle, Orbit and Set Altitude">Activate Raft, Elevate Nozzle, Orbit and Set Altitude</a><br />
+&nbsp;&nbsp;<a href="#Add Raft, Elevate Nozzle, Orbit and Set Altitude">Add Raft, Elevate Nozzle, Orbit and Set Altitude</a><br />
 &nbsp;&nbsp;<a href="#Base">Base</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Feed Rate Multiplier">Base Feed Rate Multiplier</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Flow Rate Multiplier">Base Flow Rate Multiplier</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Infill Density">Base Infill Density</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Layer Height over Layer Thickness">Base Layer Height over Layer Thickness</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Layers">Base Layers</a><br />
@@ -43,34 +45,29 @@ The important values for the raft settings are the temperatures of the raft, the
 &nbsp;&nbsp;<a href="#Bottom Altitude">Bottom Altitude</a><br />
 &nbsp;&nbsp;<a href="#Infill Overhang over Extrusion Width">Infill Overhang over Extrusion Width</a><br />
 &nbsp;&nbsp;<a href="#Interface">Interface</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Feed Rate Multiplier">Interface Feed Rate Multiplier</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Flow Rate Multiplier">Interface Flow Rate Multiplier</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Infill Density">Interface Infill Density</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Layer Thickness over Extrusion Height">Interface Layer Thickness over Extrusion Height</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Layers">Interface Layers</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Nozzle Lift over Interface Layer Thickness">Interface Nozzle Lift over Interface Layer Thickness</a><br />
+&nbsp;&nbsp;<a href="#Object First Layer Feed Rate Infill Multiplier">Object First Layer Feed Rate Infill Multiplier</a><br />
+&nbsp;&nbsp;<a href="#Object First Layer Feed Rate Perimeter Multiplier">Object First Layer Feed Rate Perimeter Multiplier</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Object First Layer Flow Rate Multiplier">Object First Layer Flow Rate Multiplier</a><br />
 &nbsp;&nbsp;<a href="#Operating Nozzle Lift over Layer Thickness">Operating Nozzle Lift over Layer Thickness</a><br />
 &nbsp;&nbsp;<a href="#Raft Size">Raft Size</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Raft Margin">Raft Margin</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Raft Additional Margin over Length">Raft Additional Margin over Length</a><br />
 &nbsp;&nbsp;<a href="#Support">Support</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Support Cross Hatch">Support Cross Hatch</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Support Flow Rate over Operating Flow Rate">Support Flow Rate over Operating Flow Rate</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Support Gap over Perimeter Extrusion Width">Support Gap over Perimeter Extrusion Width</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Support Material Choice">Support Material Choice</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Empty Layers Only">Empty Layers Only</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Everywhere">Everywhere</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Exterior Only">Exterior Only</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#None">None</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Support Minimum Angle">Support Minimum Angle</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Support Flow Rate over Operating Flow Rate">Support Flow Rate over Operating Flow Rate</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Support Gap over Perimeter Extrusion Width">Support Gap over Perimeter Extrusion Width</a><br />
-&nbsp;&nbsp;<a href="#Temperature">Temperature</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature Change Time Before Raft">Temperature Change Time Before Raft</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature Change Time Before First Layer Outline">Temperature Change Time Before First Layer Outline</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature Change Time Before First Next Threads">Temperature Change Time Before First Next Threads</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature Change Time Before Support Layers">Temperature Change Time Before Support Layers</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature Change Time Before Supported Layers">Temperature Change Time Before Supported Layers</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature of Raft">Temperature of Raft</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature of Shape First Layer Outline">Temperature of Shape First Layer Outline</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature of Shape First Layer Within">Temperature of Shape First Layer Within</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature of Shape Next Layers">Temperature of Shape Next Layers</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature of Support Layers">Temperature of Support Layers</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Temperature of Supported Layers">Temperature of Supported Layers</a><br />
 <a href="#Alterations">Alterations</a><br />
 &nbsp;&nbsp;<a href="#support_start.gcode">support_start.gcode</a><br />
 &nbsp;&nbsp;<a href="#support_end.gcode">support_end.gcode</a><br />
@@ -84,12 +81,24 @@ The default 'Activate Raft' checkbox is on.  When it is on, the functions descri
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
-<a name="Activate Raft, Elevate Nozzle, Orbit and Set Altitude" id="Activate Raft, Elevate Nozzle, Orbit and Set Altitude"></a><h3>Activate Raft, Elevate Nozzle, Orbit and Set Altitude</h3>
+<a name="Add Raft, Elevate Nozzle, Orbit and Set Altitude" id="Add Raft, Elevate Nozzle, Orbit and Set Altitude"></a><h3>Add Raft, Elevate Nozzle, Orbit and Set Altitude</h3>
 
 When selected, the script will also create a raft, elevate the nozzle, orbit and set the altitude of the bottom of the raft.<br>
  <br>
 <a name="Base" id="Base"></a><h3>Base</h3>
 
+<a name="Base Feed Rate Multiplier" id="Base Feed Rate Multiplier"></a><h4>Base Feed Rate Multiplier</h4>
+
+Default is one.<br>
+ <br>
+Defines the base feed rate multiplier.  The greater the 'Base Feed Rate Multiplier', the thinner the base, the lower the 'Base Feed Rate Multiplier', the thicker the base.<br>
+ <br>
+<a name="Base Flow Rate Multiplier" id="Base Flow Rate Multiplier"></a><h4>Base Flow Rate Multiplier</h4>
+
+Default is one.<br>
+ <br>
+Defines the base flow rate multiplier.  The greater the 'Base Flow Rate Multiplier', the thicker the base, the lower the 'Base Flow Rate Multiplier', the thinner the base.<br>
+ <br>
 <a name="Base Infill Density" id="Base Infill Density"></a><h4>Base Infill Density</h4>
 
 Default is 0.5.<br>
@@ -100,7 +109,7 @@ Defines the infill density ratio of the base of the raft.<br>
 
 Default is two.<br>
  <br>
-Defines the ratio of the height &amp; width of the base layer compared to the height and width of the shape infill.  The feed rate will be slower for raft layers which have thicker extrusions than the shape infill.<br>
+Defines the ratio of the height &amp; width of the base layer compared to the height and width of the object infill.  The feed rate will be slower for raft layers which have thicker extrusions than the object infill.<br>
  <br>
 <a name="Base Layers" id="Base Layers"></a><h4>Base Layers</h4>
 
@@ -122,12 +131,24 @@ Defines the altitude of the bottom of the raft.<br>
  <br>
 <a name="Infill Overhang over Extrusion Width" id="Infill Overhang over Extrusion Width"></a><h3>Infill Overhang over Extrusion Width</h3>
 
-Default is 0.1.<br>
+Default is 0.05.<br>
  <br>
 Defines the ratio of the infill overhang over the the extrusion width of the raft.<br>
  <br>
 <a name="Interface" id="Interface"></a><h3>Interface</h3>
 
+<a name="Interface Feed Rate Multiplier" id="Interface Feed Rate Multiplier"></a><h4>Interface Feed Rate Multiplier</h4>
+
+Default is one.<br>
+ <br>
+Defines the interface feed rate multiplier.  The greater the 'Interface Feed Rate Multiplier', the thinner the interface, the lower the 'Interface Feed Rate Multiplier', the thicker the interface.<br>
+ <br>
+<a name="Interface Flow Rate Multiplier" id="Interface Flow Rate Multiplier"></a><h4>Interface Flow Rate Multiplier</h4>
+
+Default is one.<br>
+ <br>
+Defines the interface flow rate multiplier.  The greater the 'Interface Flow Rate Multiplier', the thicker the interface, the lower the 'Interface Flow Rate Multiplier', the thinner the interface.<br>
+ <br>
 <a name="Interface Infill Density" id="Interface Infill Density"></a><h4>Interface Infill Density</h4>
 
 Default is 0.5.<br>
@@ -138,7 +159,7 @@ Defines the infill density ratio of the interface of the raft.<br>
 
 Default is one.<br>
  <br>
-Defines the ratio of the height &amp; width of the interface layer compared to the height and width of the shape infill.  The feed rate will be slower for raft layers which have thicker extrusions than the shape infill.<br>
+Defines the ratio of the height &amp; width of the interface layer compared to the height and width of the object infill.  The feed rate will be slower for raft layers which have thicker extrusions than the object infill.<br>
  <br>
 <a name="Interface Layers" id="Interface Layers"></a><h4>Interface Layers</h4>
 
@@ -152,6 +173,24 @@ Default is 0.45.<br>
  <br>
 Defines the amount the nozzle is above the center of the interface extrusion divided by the interface layer thickness.<br>
  <br>
+<a name="Object First Layer Feed Rate Infill Multiplier" id="Object First Layer Feed Rate Infill Multiplier"></a><h3>Object First Layer Feed Rate Infill Multiplier</h3>
+
+Default is one.<br>
+ <br>
+Defines the object first layer infill feed rate multiplier.  The greater the 'Object First Layer Feed Rate Infill Multiplier, the thinner the infill, the lower the 'Object First Layer Feed Rate Infill Multiplier', the thicker the infill.<br>
+ <br>
+<a name="Object First Layer Feed Rate Perimeter Multiplier" id="Object First Layer Feed Rate Perimeter Multiplier"></a><h3>Object First Layer Feed Rate Perimeter Multiplier</h3>
+
+Default is one.<br>
+ <br>
+Defines the object first layer perimeter feed rate multiplier.  The greater the 'Object First Layer Feed Rate Perimeter Multiplier, the thinner the perimeter, the lower the 'Object First Layer Feed Rate Perimeter Multiplier', the thicker the perimeter.<br>
+ <br>
+<a name="Object First Layer Flow Rate Multiplier" id="Object First Layer Flow Rate Multiplier"></a><h4>Object First Layer Flow Rate Multiplier</h4>
+
+Default is one.<br>
+ <br>
+Defines the object first layer flow rate multiplier.  The greater the 'Object First Layer Flow Rate Multiplier', the thicker the first layer, the lower the 'Object First Layer Flow Rate Multiplier, the thinner the first layer.<br>
+ <br>
 <a name="Operating Nozzle Lift over Layer Thickness" id="Operating Nozzle Lift over Layer Thickness"></a><h3>Operating Nozzle Lift over Layer Thickness</h3>
 
 Default is 0.5.<br>
@@ -160,7 +199,7 @@ Defines the amount the nozzle is above the center of the operating extrusion div
  <br>
 <a name="Raft Size" id="Raft Size"></a><h3>Raft Size</h3>
 
-The raft fills a rectangle whose base size is the rectangle around the bottom layer of the shape expanded on each side by the 'Raft Margin' plus the 'Raft Additional Margin over Length (%)' percentage times the length of the side.<br>
+The raft fills a rectangle whose base size is the rectangle around the bottom layer of the object expanded on each side by the 'Raft Margin' plus the 'Raft Additional Margin over Length (%)' percentage times the length of the side.<br>
  <br>
 <a name="Raft Margin" id="Raft Margin"></a><h4>Raft Margin</h4>
 
@@ -172,13 +211,35 @@ Default is 1 percent.<br>
  <br>
 <a name="Support" id="Support"></a><h3>Support</h3>
 
+<a name="Support Cross Hatch" id="Support Cross Hatch"></a><h4>Support Cross Hatch</h4>
+
+Default is off.<br>
+ <br>
+When selected, the support material will cross hatched.<br>
+ <br>
+<a name="Support Flow Rate over Operating Flow Rate" id="Support Flow Rate over Operating Flow Rate"></a><h4>Support Flow Rate over Operating Flow Rate</h4>
+
+Default is 0.9.<br>
+ <br>
+Defines the ratio of the flow rate when the support is extruded over the operating flow rate.  With a number less than one, the support flow rate will be smaller so the support will be thinner and easier to remove.<br>
+ <br>
+<a name="Support Gap over Perimeter Extrusion Width" id="Support Gap over Perimeter Extrusion Width"></a><h4>Support Gap over Perimeter Extrusion Width</h4>
+
+Default is 0.5.<br>
+ <br>
+Defines the gap between the support material and the object over the perimeter extrusion width.<br>
+ <br>
 <a name="Support Material Choice" id="Support Material Choice"></a><h4>Support Material Choice</h4>
 
 Default is 'None' because the raft takes time to generate.<br>
  <br>
+<a name="Empty Layers Only" id="Empty Layers Only"></a><h5>Empty Layers Only</h5>
+
+When selected, support material will be only on the empty layers.  This is useful when making identical objects in a stack.<br>
+ <br>
 <a name="Everywhere" id="Everywhere"></a><h5>Everywhere</h5>
 
-When selected, support material will be added wherever there are overhangs, even inside the object.  Because support material inside objects is hard or impossible to remove, this option should only be chosen if the shape has a cavity that needs support and there is some way to extract the support material.<br>
+When selected, support material will be added wherever there are overhangs, even inside the object.  Because support material inside objects is hard or impossible to remove, this option should only be chosen if the object has a cavity that needs support and there is some way to extract the support material.<br>
  <br>
 <a name="Exterior Only" id="Exterior Only"></a><h5>Exterior Only</h5>
 
@@ -193,88 +254,6 @@ When selected, raft will not add support material.<br>
 Default is sixty degrees.<br>
  <br>
 Defines the minimum angle that a surface overhangs before support material is added.<br>
- <br>
-<a name="Support Flow Rate over Operating Flow Rate" id="Support Flow Rate over Operating Flow Rate"></a><h4>Support Flow Rate over Operating Flow Rate</h4>
-
-Default is 0.9.<br>
- <br>
-Defines the ratio of the flow rate when the support is extruded over the operating flow rate.  With a number less than one, the support flow rate will be smaller so the support will be thinner and easier to remove.<br>
- <br>
-<a name="Support Gap over Perimeter Extrusion Width" id="Support Gap over Perimeter Extrusion Width"></a><h4>Support Gap over Perimeter Extrusion Width</h4>
-
-Default is 0.5.<br>
- <br>
-Defines the gap between the support material and the object over the perimeter extrusion width.<br>
- <br>
-<a name="Temperature" id="Temperature"></a><h3>Temperature</h3>
-
-If a temperature change time is zero, raft will not add orbits.  The temperature defaults are for ABS.<br>
- <br>
-<a name="Temperature Change Time Before Raft" id="Temperature Change Time Before Raft"></a><h4>Temperature Change Time Before Raft</h4>
-
-Default is 150 seconds.<br>
- <br>
-Defines the minimum time the extruder will orbit before extruding the raft.<br>
- <br>
-<a name="Temperature Change Time Before First Layer Outline" id="Temperature Change Time Before First Layer Outline"></a><h4>Temperature Change Time Before First Layer Outline</h4>
-
-Default is thirty seconds.<br>
- <br>
-Defines the minimum time the extruder will orbit before extruding the outline of the first layer of the shape.<br>
- <br>
-<a name="Temperature Change Time Before First Next Threads" id="Temperature Change Time Before First Next Threads"></a><h4>Temperature Change Time Before First Next Threads</h4>
-
-Default is thirty seconds.<br>
- <br>
-Defines the minimum time the extruder will orbit before extruding within the outline of the first layer of the shape and before extruding the next layers of the shape.<br>
- <br>
-<a name="Temperature Change Time Before Support Layers" id="Temperature Change Time Before Support Layers"></a><h4>Temperature Change Time Before Support Layers</h4>
-
-Default is thirty seconds.<br>
- <br>
-Defines the minimum time the extruder will orbit before extruding the support layers.<br>
- <br>
-<a name="Temperature Change Time Before Supported Layers" id="Temperature Change Time Before Supported Layers"></a><h4>Temperature Change Time Before Supported Layers</h4>
-
-Default is thirty seconds.<br>
- <br>
-Defines the minimum time the extruder will orbit before extruding the layer of the shape above the support layer.<br>
- <br>
-<a name="Temperature of Raft" id="Temperature of Raft"></a><h4>Temperature of Raft</h4>
-
-Default is two hundred degrees Celcius.<br>
- <br>
-Defines the temperature of the raft.<br>
- <br>
-<a name="Temperature of Shape First Layer Outline" id="Temperature of Shape First Layer Outline"></a><h4>Temperature of Shape First Layer Outline</h4>
-
-Default is 220 degrees Celcius.<br>
- <br>
-Defines the temperature of the outline of the first layer of the shape.<br>
- <br>
-<a name="Temperature of Shape First Layer Within" id="Temperature of Shape First Layer Within"></a><h4>Temperature of Shape First Layer Within</h4>
-
-Default is 195 degrees Celcius.<br>
- <br>
-Defines the temperature within the outline of the first layer of the shape.<br>
- <br>
-<a name="Temperature of Shape Next Layers" id="Temperature of Shape Next Layers"></a><h4>Temperature of Shape Next Layers</h4>
-
-Default is 230 degrees Celcius.<br>
- <br>
-Defines the temperature of the next layers of the shape.<br>
- <br>
-<a name="Temperature of Support Layers" id="Temperature of Support Layers"></a><h4>Temperature of Support Layers</h4>
-
-Default is two hundred degrees Celcius.<br>
- <br>
-Defines the temperature of the support layer.<br>
- <br>
-<a name="Temperature of Supported Layers" id="Temperature of Supported Layers"></a><h4>Temperature of Supported Layers</h4>
-
-Default is 230 degrees Celcius.<br>
- <br>
-Defines the temperature of the layer of the shape above the support layer.<br>
  <br>
 <a name="Alterations" id="Alterations"></a><h2>Alterations</h2>
 <hr>
@@ -417,7 +396,7 @@ Screw Holder Bottom_raft.gcode</tt>
 
 <dl><dt><a name="RaftSkein-addTemperatureLineIfDifferent"><strong>addTemperatureLineIfDifferent</strong></a>(self, temperature)</dt><dd><tt>Add&nbsp;a&nbsp;line&nbsp;of&nbsp;temperature&nbsp;if&nbsp;different.</tt></dd></dl>
 
-<dl><dt><a name="RaftSkein-addTemperatureOrbits"><strong>addTemperatureOrbits</strong></a>(self, endpoints, temperatureSetting, temperatureTimeChangeSetting, z)</dt><dd><tt>Add&nbsp;the&nbsp;temperature&nbsp;and&nbsp;orbits&nbsp;around&nbsp;the&nbsp;support&nbsp;layer.</tt></dd></dl>
+<dl><dt><a name="RaftSkein-addTemperatureOrbits"><strong>addTemperatureOrbits</strong></a>(self, endpoints, temperature, z)</dt><dd><tt>Add&nbsp;the&nbsp;temperature&nbsp;and&nbsp;orbits&nbsp;around&nbsp;the&nbsp;support&nbsp;layer.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addToFillXIntersectionIndexTables"><strong>addToFillXIntersectionIndexTables</strong></a>(self, supportLayer)</dt><dd><tt>Add&nbsp;fill&nbsp;segments&nbsp;from&nbsp;the&nbsp;boundary&nbsp;layers.</tt></dd></dl>
 
@@ -438,6 +417,8 @@ Screw Holder Bottom_raft.gcode</tt>
 <dl><dt><a name="RaftSkein-getStepsUntilEnd"><strong>getStepsUntilEnd</strong></a>(self, begin, end, stepSize)</dt><dd><tt>Get&nbsp;steps&nbsp;from&nbsp;the&nbsp;beginning&nbsp;until&nbsp;the&nbsp;end.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-getSupportEndpoints"><strong>getSupportEndpoints</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;support&nbsp;layer&nbsp;segments.</tt></dd></dl>
+
+<dl><dt><a name="RaftSkein-getTemperatureChangeTime"><strong>getTemperatureChangeTime</strong></a>(self, temperature)</dt><dd><tt>Get&nbsp;the&nbsp;temperature&nbsp;change&nbsp;time.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 

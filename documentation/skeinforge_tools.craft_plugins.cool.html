@@ -47,7 +47,7 @@ The default 'Activate Cool' checkbox is on.  When it is on, the functions descri
 
 <a name="Cool Type" id="Cool Type"></a><h3>Cool Type</h3>
 
-Default is 'Slow Down'.<br>
+Default is 'Orbit', because many extruders do not operate properly at very slow flow rates.<br>
  <br>
 <a name="Orbit" id="Orbit"></a><h4>Orbit</h4>
 
@@ -200,7 +200,7 @@ The cool tool has created the file:<br>
 
 <dl><dt><a name="CoolSkein-addCoolTemperature"><strong>addCoolTemperature</strong></a>(self, remainingOrbitTime)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;cool&nbsp;skein.</tt></dd></dl>
 
-<dl><dt><a name="CoolSkein-addFlowRateLineIfNecessary"><strong>addFlowRateLineIfNecessary</strong></a>(self, flowRateString)</dt><dd><tt>Add&nbsp;a&nbsp;line&nbsp;of&nbsp;flow&nbsp;rate&nbsp;if&nbsp;different.</tt></dd></dl>
+<dl><dt><a name="CoolSkein-addFlowRateLineIfNecessary"><strong>addFlowRateLineIfNecessary</strong></a>(self, flowRate)</dt><dd><tt>Add&nbsp;a&nbsp;line&nbsp;of&nbsp;flow&nbsp;rate&nbsp;if&nbsp;different.</tt></dd></dl>
 
 <dl><dt><a name="CoolSkein-addGcodeFromFeedRateMovementZ"><strong>addGcodeFromFeedRateMovementZ</strong></a>(self, feedRateMinute, point, z)</dt><dd><tt>Add&nbsp;a&nbsp;movement&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
 

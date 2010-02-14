@@ -13,7 +13,7 @@ The default 'Activate Cool' checkbox is on.  When it is on, the functions descri
 
 ==Settings==
 ===Cool Type===
-Default is 'Slow Down'.
+Default is 'Orbit', because many extruders do not operate properly at very slow flow rates.
 
 ====Orbit====
 When selected, cool will add orbits with the extruder off to give the layer time to cool, so that the next layer is not extruded on a molten base.  The orbits will be around the largest island on that layer.
@@ -145,8 +145,8 @@ class CoolRepository:
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Cool' )
 		self.activateCool = settings.BooleanSetting().getFromValue( 'Activate Cool', self, True )
 		self.coolType = settings.MenuButtonDisplay().getFromName( 'Cool Type:', self )
-		self.orbit = settings.MenuRadio().getFromMenuButtonDisplay( self.coolType, 'Orbit', self, False )
-		self.slowDown = settings.MenuRadio().getFromMenuButtonDisplay( self.coolType, 'Slow Down', self, True )
+		self.orbit = settings.MenuRadio().getFromMenuButtonDisplay( self.coolType, 'Orbit', self, True )
+		self.slowDown = settings.MenuRadio().getFromMenuButtonDisplay( self.coolType, 'Slow Down', self, False )
 		self.maximumCool = settings.FloatSpin().getFromValue( 0.0, 'Maximum Cool (Celcius):', self, 10.0, 2.0 )
 		self.minimumLayerTime = settings.FloatSpin().getFromValue( 0.0, 'Minimum Layer Time (seconds):', self, 120.0, 60.0 )
 		self.minimumOrbitalRadius = settings.FloatSpin().getFromValue( 0.0, 'Minimum Orbital Radius (millimeters):', self, 20.0, 10.0 )
@@ -171,7 +171,8 @@ class CoolSkein:
 		self.highestZ = 1.0
 		self.lineIndex = 0
 		self.lines = None
-		self.multiplier = None
+		self.multiplier = 1.0
+		self.oldFlowRateString = None
 		self.oldLocation = None
 		self.oldTemperature = None
 
@@ -206,9 +207,9 @@ class CoolSkein:
 			self.coolTemperature = self.oldTemperature - layerCool
 			self.addTemperature( self.coolTemperature )
 
-	def addFlowRateLineIfNecessary( self, flowRateString ):
+	def addFlowRateLineIfNecessary( self, flowRate ):
 		"Add a line of flow rate if different."
-		flowRateString = euclidean.getFourSignificantFigures( float( flowRateString ) )
+		flowRateString = euclidean.getFourSignificantFigures( flowRate )
 		if flowRateString == self.oldFlowRateString:
 			return
 		if flowRateString != None:
@@ -230,10 +231,9 @@ class CoolSkein:
 
 	def getCoolMove( self, line, location, splitLine ):
 		"Add line to time spent on layer."
+		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		self.highestZ = max( location.z, self.highestZ )
-		if self.multiplier == None:
-			return line
-		self.addFlowRateLineIfNecessary( str( self.multiplier * self.oldFlowRate ) )
+		self.addFlowRateLineIfNecessary( self.multiplier * self.oldFlowRate )
 		return self.distanceFeedRate.getLineWithZLimitedFeedRate( self.multiplier * self.feedRateMinute, line, location, splitLine )
 
 	def getCraftedGcode( self, gcodeText, coolRepository ):
@@ -327,18 +327,17 @@ class CoolSkein:
 			self.distanceFeedRate.addLinesSetAbsoluteDistanceMode( self.coolEndLines )
 			return
 		elif firstWord == '(</layer>)':
-			self.multiplier = None
+			self.multiplier = 1.0
 			if self.coolTemperature != None:
 				self.addTemperature( self.oldTemperature )
 				self.coolTemperature = None
-			self.addFlowRateLineIfNecessary( self.oldFlowRateString )
+			self.addFlowRateLineIfNecessary( self.oldFlowRate )
 		elif firstWord == 'M104':
 			self.oldTemperature = gcodec.getDoubleAfterFirstLetter( splitLine[ 1 ] )
 		elif firstWord == 'M108':
 			self.setOperatingFlowString( splitLine )
-			if self.multiplier != None:
-				self.addFlowRateLineIfNecessary( str( self.multiplier * self.oldFlowRate ) )
-				return
+			self.addFlowRateLineIfNecessary( self.multiplier * self.oldFlowRate )
+			return
 		elif firstWord == '(<surroundingLoop>)':
 			self.boundaryLoop = []
 			self.boundaryLayer.loops.append( self.boundaryLoop )
@@ -346,14 +345,11 @@ class CoolSkein:
 
 	def setMultiplier( self, layerTime ):
 		"Set the feed and flow rate multiplier."
-		self.multiplier = layerTime / self.coolRepository.minimumLayerTime.value
-		if self.multiplier >= 1.0:
-			self.multiplier = None
+		self.multiplier = min( 1.0, layerTime / self.coolRepository.minimumLayerTime.value )
 
 	def setOperatingFlowString( self, splitLine ):
 		"Set the operating flow string from the split line."
-		self.oldFlowRateString = splitLine[ 1 ][ 1 : ]
-		self.oldFlowRate = float( self.oldFlowRateString )
+		self.oldFlowRate = float( splitLine[ 1 ][ 1 : ] )
 
 
 def main():

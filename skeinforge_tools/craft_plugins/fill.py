@@ -192,37 +192,29 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
 
-# make fillBoundaries, getLastExistingLoops, try setting def getExtraFillLoops( insideLoops, outsideLoop, radius ):	greaterThanRadius to 1.2 * radius
-# save just before printing
-# create skeinforge_profile, skeinforge_help, etc..
-#
 # documentation
-# chop add extra layers documentation
-# coil documentation
-# winding documentation
-# stretch cross documentation
-# clip 'Connect Loops' documentation
-# coil, cleave documentation
-# circular wave, py documentation
-# inset loop order documentation
-# raft base interface temperature documentation
-# update plugin documentation
-# behold negative positive axis, remove xyz axis documentation
-# widen documentation
-# skeinview numeric pointer documentation
-# raft infill overhang.. values should be halved, raft in general has been changed, stretch cross, clip connect announce
+# write/send announce, raft infill overhang.. values should be halved, raft in general has been changed, chamber announce, stretch cross, clip connect & extrusion to perimeter, dimension announce
 # update wiki how to page
-# move alterations and profiles to top level
-# fill_only
 #
 #
 #
 #
+# search page, search items, search links, choice entry field
+# add label separators
+# in dimension check for flow rate
+# remove comments from clip
+# remove cool set at end of layer
+# save bug when switching from profile to profile
+# check for last existing then remove unneeded fill code from euclidean
+# save just before printing
+# remove pointer from skeinview when getting a selected line
+# create skeinforge_profile, skeinforge_help, etc..
 # make frame for plugin groups, add plugin help menu, add craft below menu
+# maybe measuring rod
+# comb simplify path, option of only combing around inside loops
 # veer
 # add hook _extrusion
  # implement acceleration & collinear removal in viewers _extrusion
-# maybe measuring rod
 # add polish, has perimeter, has cut first layer (False)
 # probably not set addedLocation in distanceFeedRate after arc move
 # maybe horizontal bridging and/or check to see if the ends are standing on anything
@@ -231,7 +223,7 @@ __license__ = "GPL 3.0"
 # maybe later remove isPerimeterPathInSurroundLoops, once there are no weird fill bugs, also change getHorizontalSegmentListsFromLoopLists
 # save all analyze viewers of the same name except itself, update help menu self.wikiManualPrimary.setUpdateFunction
 # check alterations folder first, if there is something copy it to the home directory, if not check the home directory
-# raft to temperature, raft
+# move alterations and profiles to top level
 #
 #
 #
@@ -296,7 +288,7 @@ __license__ = "GPL 3.0"
 #12,3304
 #1,4960
 #2, 7077
-#85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30
+#85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?
 #stepper motor
@@ -510,10 +502,10 @@ def comparePointIndexDescending( self, other ):
 		return 1
 	return 0
 
-def createExtraFillLoops( radius, surroundingLoop ):
+def createExtraFillLoops( radius, shouldExtraLoopsBeAdded, surroundingLoop ):
 	"Create extra fill loops."
 	for innerSurrounding in surroundingLoop.innerSurroundings:
-		createFillForSurroundings( radius, innerSurrounding.innerSurroundings )
+		createFillForSurroundings( radius, shouldExtraLoopsBeAdded, innerSurrounding.innerSurroundings )
 	outsides = []
 	insides = euclidean.getInsidesAddToOutsides( surroundingLoop.getFillLoops(), outsides )
 	allFillLoops = []
@@ -521,14 +513,15 @@ def createExtraFillLoops( radius, surroundingLoop ):
 		transferredLoops = euclidean.getTransferredPaths( insides, outside )
 		allFillLoops += getExtraFillLoops( transferredLoops, outside, radius )
 	surroundingLoop.lastFillLoops = allFillLoops
-	surroundingLoop.extraLoops += allFillLoops
+	if shouldExtraLoopsBeAdded:
+		surroundingLoop.extraLoops += allFillLoops
 	if len( allFillLoops ) > 0:
 		surroundingLoop.lastExistingFillLoops = allFillLoops
 
-def createFillForSurroundings( radius, surroundingLoops ):
+def createFillForSurroundings( radius, shouldExtraLoopsBeAdded, surroundingLoops ):
 	"Create extra fill loops for surrounding loops."
 	for surroundingLoop in surroundingLoops:
-		createExtraFillLoops( radius, surroundingLoop )
+		createExtraFillLoops( radius, shouldExtraLoopsBeAdded, surroundingLoop )
 
 def getAdditionalLength( path, point, pointIndex ):
 	"Get the additional length added by inserting a point into a path."
@@ -797,12 +790,12 @@ def isPathAlwaysOutsideLoops( loops, path ):
 				return False
 	return True
 
-def isPerimeterPathInSurroundLoops( surroundingLoops ):
-	"Determine if there is a perimeter path in the surrounding loops."
-	for surroundingLoop in surroundingLoops:
-		if len( surroundingLoop.perimeterPaths ) > 0:
-			return True
-	return False
+#def isPerimeterPathInSurroundLoops( surroundingLoops ):
+#	"Determine if there is a perimeter path in the surrounding loops."
+#	for surroundingLoop in surroundingLoops:
+#		if len( surroundingLoop.perimeterPaths ) > 0:
+#			return True
+#	return False
 
 def isPointAddedAroundClosest( aroundPixelTable, layerExtrusionWidth, paths, removedEndpointPoint, width ):
 	"Add the closest removed endpoint to the path, with minimal twisting."
@@ -1061,15 +1054,16 @@ class FillSkein:
 			else:
 				self.isJunctionWide = False
 		rotatedExtruderLoops = []
-		for surroundingLoop in rotatedLayer.surroundingLoops:
-			surroundingLoop.fillBoundaries = intercircle.getInsetLoopsFromLoop( betweenWidth, surroundingLoop.boundary )
-			surroundingLoop.lastExistingFillLoops = surroundingLoop.fillBoundaries
+#		for surroundingLoop in rotatedLayer.surroundingLoops:
+#			surroundingLoop.fillBoundaries = intercircle.getInsetLoopsFromLoop( betweenWidth, surroundingLoop.boundary )
+#			surroundingLoop.lastExistingFillLoops = surroundingLoop.fillBoundaries
 		surroundingLoops = euclidean.getOrderedSurroundingLoops( self.layerExtrusionWidth, rotatedLayer.surroundingLoops )
-		if isPerimeterPathInSurroundLoops( surroundingLoops ):
-			extraShells = 0
+#		if isPerimeterPathInSurroundLoops( surroundingLoops ):
+#			extraShells = 0
+		createFillForSurroundings( betweenWidth, False, surroundingLoops )
 		for extraShellIndex in xrange( extraShells ):
-			createFillForSurroundings( self.layerExtrusionWidth, surroundingLoops )
-		fillLoops = euclidean.getLastExistingFillOfSurroundings( surroundingLoops )
+			createFillForSurroundings( self.layerExtrusionWidth, True, surroundingLoops )
+		fillLoops = euclidean.getFillOfSurroundings( surroundingLoops )
 		slightlyGreaterThanFill = 1.01 * layerFillInset
 		for loop in fillLoops:
 			alreadyFilledLoop = []

@@ -3,6 +3,10 @@ This page is in the table of contents.
 Chop is a script to chop a shape into svg slice layers.
 
 ==Settings==
+===Add Extra Top Layer if Necessary===
+Default is on.
+
+When selected, chop will add an extra layer at the very top of the object if the top of the object is more than half the layer thickness above the first slice.  This is so the cutting tool doesn't cut too deeply through the top of the object on its first pass.
 
 ===Extra Decimal Places===
 Default is one.
@@ -20,17 +24,17 @@ Default is 0.4 mm.
 Defines the thickness of the layer, this is the most important chop setting.
 
 ===Layers===
-Chop slices from top to bottom.  To get only the bottom layer, set the "Layers From" to minus one.  The layer from until layer to range is a python slice.
+Chop slices from top to bottom.  To get only the bottom layer, set the "Layers From" to minus one.  The 'Layers From' until 'Layers To' range is a python slice.
 
 ====Layers From====
 Default is zero.
 
-Defines the index of the top layer that will be chopped.  If the layer from is the default zero, the carving will start from the top layer.  If the the layer from index is negative, then the carving will start from the layer from index above the bottom layer.
+Defines the index of the top layer that will be chopped.  If the 'Layers From' is the default zero, the carving will start from the top layer.  If the 'Layers From' index is negative, then the carving will start from the 'Layers From' index above the bottom layer.
 
 ====Layers To====
 Default is a huge number, which will be limited to the highest index number.
 
-Defines the index of the bottom layer that will be carved.  If the layer to index is a huge number like the default, the carving will go to the bottom of the model.  If the layer to index is negative, then the carving will go to the layer to index above the bottom layer.
+Defines the index of the bottom layer that will be chopped.  If the 'Layers To' index is a huge number like the default, the carving will go to the bottom of the model.  If the 'Layers To' index is negative, then the carving will go to the 'Layers To' index above the bottom layer.
 
 ===Mesh Type===
 Default is 'Correct Mesh'.
@@ -47,7 +51,6 @@ Default is 2 mm.
 Defines the width of the perimeter.
 
 ==Examples==
-
 The following examples chop the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and chop.py.
 
 
@@ -158,8 +161,8 @@ class ChopRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.chop.html', self )
-		self.addExtraTopLayerIfNecessary = settings.BooleanSetting().getFromValue( 'Add Extra Top Layer if Necessary', self, True )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '' )
+		self.addExtraTopLayerIfNecessary = settings.BooleanSetting().getFromValue( 'Add Extra Top Layer if Necessary', self, True )
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )

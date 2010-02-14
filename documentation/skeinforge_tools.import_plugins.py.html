@@ -13,14 +13,15 @@
 <a href="skeinforge_tools.import_plugins.obj.html">Previous</a> / <a href="skeinforge_tools.import_plugins.slc.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-The py.py script is an import translator plugin to get a carving from a python script.<br>
+The py.py script is an import plugin to get a carving from a skeinforge python procedural script, in order to make procedural objects.<br>
  <br>
-An explanation of the SLC format can be found at:<br>
-<a href="http://rapid.lpt.fi/archives/rp-ml-1999/0713.html">http://rapid.lpt.fi/archives/rp-ml-1999/0713.html</a><br>
+This is similar in concept, although different in execution, to the Masked Retriever's parametric scripts at:<br>
+<a href="http://blog.thingiverse.com/2009/10/20/parametric-objects-again/">http://blog.thingiverse.com/2009/10/20/parametric-objects-again/</a><br>
+<a href="http://blog.thingiverse.com/2009/10/19/parametric-object-party-day-1-the-power-of-standard-custom/">http://blog.thingiverse.com/2009/10/19/parametric-object-party-day-1-the-power-of-standard-custom/</a><br>
  <br>
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.<br>
+An example procedural script is circular_wave.py in the model folder.<br>
  <br>
-The getCarving function takes the file name of a python script and returns the carving.<br>
+An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.  The getCarving function takes the file name of a python script and returns the carving.<br>
  <br>
 This example gets a carving for the python script circular_wave.py.  This example is run in a terminal in the folder which contains circular_wave.py and py.py.<br>
  <br>

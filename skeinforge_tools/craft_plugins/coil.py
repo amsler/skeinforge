@@ -1,15 +1,17 @@
 """
 This page is in the table of contents.
-Coil is a script to coil the outlines.
+Coil is a script to coil wire or filament around an object.
 
+==Operation==
 The default 'Activate Coil' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
-If the 'Add Inner Loops' checkbox is on, inner coiling loops will be added, the default is on.  If the 'Add Outer Loops' checkbox is on, outer coiling loops will be added, the default is on.  If the 'Cross Hatch' checkbox is on, there will be alternating horizontal and vertical coiling paths, if it is off there will only be horizontal coiling paths, the default is on.
+==Settings==
+===Minimum Tool Distance===
+Default is twenty millimeters.
 
-The 'Loop Inner Outset over Perimeter Width' times the perimeter width is the amount the inner coiling loop will be outset, the default is 0.5.  The 'Loop Outer Outset over Perimeter Width' times the perimeter width is the amount the outer coiling loop will be outset, the default is 1.0.  The 'Loop Outer Outset over Perimeter Width' ratio should be greater than the 'Loop Inner Outset over Perimeter Width' ratio.
+Defines the minimum distance between the wire dispenser and the object.  The 'Minimum Tool Distance' should be set to the maximum radius of the wire dispenser, times at least 1.3 to get a reasonable safety margin.
 
-The 'Coil Width over Perimeter Width' times the perimeter width is the width of the coil lines, the default is 1.0.  If the ratio is one, all the material will be coiled.  The greater the 'Coil Width over Perimeter Width' the farther apart the coil lines will be and so less of the material will be directly coiled, the remaining material might still be removed in chips if the ratio is not much greater than one.
-
+==Examples==
 The following examples coil the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and coil.py.
 
 
