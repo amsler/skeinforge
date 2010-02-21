@@ -14,7 +14,6 @@ The default 'Activate Vectorwrite' checkbox is on.  When it is on, the functions
 ==Settings==
 
 ===Layers===
-
 ====Layers From====
 Default is zero.
 
@@ -57,11 +56,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
-from skeinforge_tools.skeinforge_utilities import svg_codec
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import svg_codec
 from skeinforge_tools.meta_plugins import polyfile
 import cStringIO
 import os
@@ -135,9 +134,11 @@ class VectorwriteRepository:
 		self.activateVectorwrite = settings.BooleanSetting().getFromValue( 'Activate Vectorwrite', self, False )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Write Vector Graphics for', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Vectorwrite' )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Layers -', self )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
 		self.layersTo = settings.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
-		#Create the archive, title of the execute button, title of the dialog & settings fileName.
+		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Vectorwrite'
 
 	def execute( self ):

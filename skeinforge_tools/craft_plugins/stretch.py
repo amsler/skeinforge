@@ -76,15 +76,15 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import intercircle
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import intercircle
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import sys
 
 
@@ -116,7 +116,7 @@ def writeOutput( fileName = '' ):
 	"Stretch a gcode linear move file.  Chain stretch the gcode if it is not already stretched.  If no fileName is specified, stretch the first unmodified gcode file in this folder."
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		consecution.writeChainTextWithNounMessage( fileName, 'stretch' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'stretch' )
 
 
 class LineIteratorBackward:
@@ -228,16 +228,18 @@ class StretchRepository:
 	"A class to handle the stretch settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.stretch.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.stretch.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Stretch', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch' )
 		self.activateStretch = settings.BooleanSetting().getFromValue( 'Activate Stretch', self, False )
 		self.crossLimitDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 3.0, 'Cross Limit Distance Over Perimeter Width (ratio):', self, 10.0, 5.0 )
 		self.loopStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.05, 'Loop Stretch Over Perimeter Width (ratio):', self, 0.25, 0.11 )
 		self.pathStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Path Stretch Over Perimeter Width (ratio):', self, 0.2, 0.0 )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Perimeter -', self )
 		self.perimeterInsideStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.12, 'Perimeter Inside Stretch Over Perimeter Width (ratio):', self, 0.52, 0.32 )
 		self.perimeterOutsideStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.05, 'Perimeter Outside Stretch Over Perimeter Width (ratio):', self, 0.25, 0.1 )
+		settings.LabelSeparator().getFromRepository( self )
 		self.stretchFromDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Stretch From Distance Over Perimeter Width (ratio):', self, 3.0, 2.0 )
 		self.executeTitle = 'Stretch'
 

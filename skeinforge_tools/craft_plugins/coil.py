@@ -51,16 +51,16 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import intercircle
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
-from skeinforge_tools.skeinforge_utilities import triangle_mesh
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import intercircle
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import triangle_mesh
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import os
 import sys
 
@@ -93,14 +93,14 @@ def writeOutput( fileName = '' ):
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
-	consecution.writeChainTextWithNounMessage( fileName, 'coil' )
+	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'coil' )
 
 
 class CoilRepository:
 	"A class to handle the coil settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.coil.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.coil.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Coil', self, '' )
 		self.activateCoil = settings.BooleanSetting().getFromValue( 'Activate Coil', self, True )
 		self.minimumToolDistance = settings.FloatSpin().getFromValue( 10.0, 'Minimum Tool Distance (millimeters):', self, 50.0, 20.0 )

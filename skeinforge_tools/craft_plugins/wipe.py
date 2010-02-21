@@ -102,14 +102,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import math
 import sys
 
@@ -141,29 +141,33 @@ def writeOutput( fileName = '' ):
 	"Wipe a gcode linear move file."
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		consecution.writeChainTextWithNounMessage( fileName, 'wipe' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'wipe' )
 
 
 class WipeRepository:
 	"A class to handle the wipe settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.wipe.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.wipe.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Wipe', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Wipe' )
 		self.activateWipe = settings.BooleanSetting().getFromValue( 'Activate Wipe', self, False )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Location Arrival -', self )
 		self.locationArrivalX = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival X (mm):', self, 100.0, - 70.0 )
 		self.locationArrivalY = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival Y (mm):', self, 100.0, - 50.0 )
 		self.locationArrivalZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival Z (mm):', self, 100.0, 50.0 )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Location Departure -', self )
 		self.locationDepartureX = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure X (mm):', self, 100.0, - 70.0 )
 		self.locationDepartureY = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure Y (mm):', self, 100.0, - 40.0 )
 		self.locationDepartureZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure Z (mm):', self, 100.0, 50.0 )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Location Wipe -', self )
 		self.locationWipeX = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe X (mm):', self, 100.0, - 70.0 )
 		self.locationWipeY = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe Y (mm):', self, 100.0, - 70.0 )
 		self.locationWipeZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe Z (mm):', self, 100.0, 50.0 )
+		settings.LabelSeparator().getFromRepository( self )
 		self.wipePeriod = settings.IntSpin().getFromValue( 1, 'Wipe Period (layers):', self, 5, 3 )
 		self.executeTitle = 'Wipe'
 

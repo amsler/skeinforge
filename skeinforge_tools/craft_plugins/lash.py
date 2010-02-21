@@ -63,12 +63,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_craft
 import sys
 
 
@@ -99,7 +98,7 @@ def writeOutput( fileName = '' ):
 	"Lash a gcode linear move file."
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		consecution.writeChainTextWithNounMessage( fileName, 'lash' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'lash' )
 
 
 class LashRepository:

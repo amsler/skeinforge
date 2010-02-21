@@ -28,7 +28,6 @@ Default is on.
 When selected, arrows will be drawn at the end of each line segment.
 
 ===Export Menu===
-
 When the submenu in the export menu item in the file menu is clicked, an export canvas dialog will be displayed, which can export the canvas to a file.
 
 ===Go Around Extruder Off Travel===
@@ -151,10 +150,10 @@ import __init__
 from skeinforge_tools.analyze_plugins.analyze_utilities import display_line
 from skeinforge_tools.analyze_plugins.analyze_utilities import tableau
 from skeinforge_tools.analyze_plugins.analyze_utilities import view_move
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.meta_plugins import polyfile
 import os
 import sys
@@ -205,20 +204,25 @@ class SkeinviewRepository( tableau.TableauRepository ):
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository( 'skeinforge_tools.analyze_plugins.skeinview.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Skeinview', self, '' )
-#		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Skeinview', self, '' )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview' )
 		self.activateSkeinview = settings.BooleanSetting().getFromValue( 'Activate Skeinview', self, True )
 		self.addAnimation()
 		self.drawArrows = settings.BooleanSetting().getFromValue( 'Draw Arrows', self, True )
 		self.goAroundExtruderOffTravel = settings.BooleanSetting().getFromValue( 'Go Around Extruder Off Travel', self, False )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Layers -', self )
 		self.layer = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
 		self.layerExtraSpan = settings.IntSpinUpdate().getSingleIncrementFromValue( - 3, 'Layer Extra Span (integer):', self, 3, 0 )
+		settings.LabelSeparator().getFromRepository( self )
 		self.line = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
 		self.mouseMode = settings.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )
 		self.displayLine = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
 		self.viewMove = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Move', self, False )
 		self.numericPointer = settings.BooleanSetting().getFromValue( 'Numeric Pointer', self, True )
 		self.addScaleScreenSlide()
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Width -', self )
 		self.widthOfExtrusionThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Extrusion Thread (pixels):', self, 5, 2 )
 		self.widthOfSelectionThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Selection Thread (pixels):', self, 10, 6 )
 		self.widthOfTravelThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Travel Thread (pixels):', self, 5, 1 )

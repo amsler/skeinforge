@@ -9,9 +9,9 @@ import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities import zoom_in
 from skeinforge_tools.analyze_plugins.analyze_utilities import zoom_out
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
 import math
 import os
 
@@ -94,14 +94,20 @@ class TableauRepository:
 	def addAnimation( self ):
 		"Add the animation settings."
 		self.frameList = settings.FrameList().getFromValue( 'Frame List', self, [] )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Animation -', self )
 		self.animationLineQuickening = settings.FloatSpinUpdate().getFromValue( 0.5, 'Animation Line Quickening (ratio):', self, 4.5, 1.0 )
 		self.animationSlideShowRate = settings.FloatSpinUpdate().getFromValue( 1.0, 'Animation Slide Show Rate (layers/second):', self, 5.0, 2.0 )
+		settings.LabelSeparator().getFromRepository( self )
 
 	def addScaleScreenSlide( self ):
 		"Add the scale, screen and slide show settings."
 		self.scale = settings.FloatSpinNotOnMenu().getFromValue( 10.0, 'Scale (pixels per millimeter):', self, 50.0, 15.0 )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Screen Inset -', self )
 		self.screenHorizontalInset = settings.IntSpin().getFromValue( 80, 'Screen Horizontal Inset (pixels):', self, 1000, 100 )
 		self.screenVerticalInset = settings.IntSpin().getFromValue( 120, 'Screen Vertical Inset (pixels):', self, 1000, 200 )
+		settings.LabelSeparator().getFromRepository( self )
 
 	def setToDisplaySave( self, event = None ):
 		"Set the setting values to the display, save the new values."

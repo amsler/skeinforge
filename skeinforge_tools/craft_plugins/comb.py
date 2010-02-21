@@ -61,14 +61,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import intercircle
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import intercircle
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import sys
 
 
@@ -99,14 +99,14 @@ def writeOutput( fileName = '' ):
 	"Comb a gcode linear move file."
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		consecution.writeChainTextWithNounMessage( fileName, 'comb' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'comb' )
 
 
 class CombRepository:
 	"A class to handle the comb settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.comb.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.comb.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Comb', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb' )
 		self.activateComb = settings.BooleanSetting().getFromValue( 'Activate Comb', self, True )

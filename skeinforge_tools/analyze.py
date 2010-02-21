@@ -20,10 +20,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
-from skeinforge_tools.meta_plugins import polyfile
-import os
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_analyze
 import sys
 
 
@@ -34,46 +32,11 @@ __license__ = "GPL 3.0"
 
 def addToMenu( master, menu, repository, window ):
 	"Add a tool plugin menu."
-	settings.addPluginsParentToMenu( getPluginsDirectoryPath(), menu, __file__, getPluginFileNames() )
-
-def getPluginFileNames():
-	"Get analyze plugin fileNames."
-	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
-
-def getPluginsDirectoryPath():
-	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'analyze_plugins' )
+	settings.addPluginsParentToMenu( skeinforge_analyze.getPluginsDirectoryPath(), menu, __file__, skeinforge_analyze.getPluginFileNames() )
 
 def getNewRepository():
 	"Get the repository constructor."
-	return AnalyzeRepository()
-
-def writeOutput( fileName, gcodeText = '' ):
-	"Analyze a gcode file."
-	gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
-	pluginFileNames = getPluginFileNames()
-	for pluginFileName in pluginFileNames:
-		analyzePluginsDirectoryPath = getPluginsDirectoryPath()
-		pluginModule = gcodec.getModuleWithDirectoryPath( analyzePluginsDirectoryPath, pluginFileName )
-		if pluginModule != None:
-			pluginModule.writeOutput( fileName, gcodeText )
-
-
-class AnalyzeRepository:
-	"A class to handle the analyze settings."
-	def __init__( self ):
-		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_tools.analyze.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Analyze', self, '' )
-		importantFileNames = [ 'skeinview', 'behold', 'statistic' ]
-		settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
-		self.executeTitle = 'Analyze'
-
-	def execute( self ):
-		"Analyze button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
-		for fileName in fileNames:
-			writeOutput( fileName )
+	return skeinforge_analyze.AnalyzeRepository()
 
 
 def main():

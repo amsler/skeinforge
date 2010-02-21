@@ -42,11 +42,11 @@ class RepRapArduinoSerialSender:
 		returns an unexpected response. Usually caused by sending invalid
 		g-code.
 	"""
-	
+
 	_verbose = False
 	block = "empty"
-	
-	def __init__(self, port, verbose=False):
+
+	def __init__(self, port, baud, verbose=False):
 		"""
 			Opens the serial port and prepares for writing.
 			port MUST be set, and values are operating system dependant.
@@ -55,14 +55,14 @@ class RepRapArduinoSerialSender:
 
 		if self._verbose:
 			print >> sys.stdout, "Opening serial port: " + port
-	
+
 		#Timeout value 10" max travel, 1RPM, 20 threads/in = 200 seconds
-		self.ser = serial.Serial(port, 19200, timeout=200)
+		self.ser = serial.Serial(port, baud, timeout=200)
 
 		if self._verbose:
 			print >> sys.stdout, "Serial Open?: " + str(self.ser.isOpen())
 			print >> sys.stdout, "Baud Rate: " + str(self.ser.baudrate)
-		
+
 	def reset(self):
 		"""
 			Resets the arduino by droping DTR for 1 second
@@ -70,13 +70,13 @@ class RepRapArduinoSerialSender:
 		"""
 		#Reboot the arduino, and wait for it's response
 		if self._verbose:
-			print "reseting arduino..."
+			print "Resetting arduino..."
 
 		self.ser.setDTR(0)
 		# There is presumably some latency required.
 		time.sleep(1)
 		self.ser.setDTR(1)
-		self.read("start")
+		self.read("Start")
 
 	def write(self, block):
 		"""
@@ -88,8 +88,8 @@ class RepRapArduinoSerialSender:
 			which is handy for gcode, but will screw up if you try to do binary communications.
 		"""
 		if self._verbose:
-			print block
-		
+			print "> " + block
+
 		# The arduino GCode interperter firmware doesn't like whitespace
 		# and if there's anything other than space and tab, we have other problems.
 		block=block.strip()
@@ -99,8 +99,8 @@ class RepRapArduinoSerialSender:
 		if len(block) == 0:
 			return
 
-		self.ser.write(block)
-		self.read("ok")
+		self.ser.write(block + "\n")
+		self.read("OK")
 
 	def read(self, expect=None):
 		"""
@@ -114,17 +114,17 @@ class RepRapArduinoSerialSender:
 		#Unless it is M104, M105 or other code that returns info!!
 		#It WILL return "ok" once the command has finished sending and completed.
 		while True:
-			response = self.ser.readline().strip() 
+			response = self.ser.readline().strip()
 			if expect is None:
 				return
 
-			if expect in response:
+			if expect.lower() in response.lower():
 				if self._verbose:
-					print response
+					print "< " + response
 				return
 			else:
 				#Just print the response since it is useful data or an error message
-				print response
+				print "< " + response
 
 
 	def close():

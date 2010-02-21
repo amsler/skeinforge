@@ -73,7 +73,7 @@ Export looks for alteration files in the alterations folder in the .skeinforge f
  <br>
 <a name="replace.csv" id="replace.csv"></a><h3>replace.csv</h3>
 
-When export is exporting the code, if there is a file replace.csv, it will replace the word in the first column by its replacement in the second column.  There is an example file replace_example.csv to demonstrate the comma separated format, which can be edited in a text editor or a spreadsheet.<br>
+When export is exporting the code, if there is a tab separated file replace.csv, it will replace the string in the first column by its replacement in the second column.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.<br>
  <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
@@ -123,19 +123,18 @@ The export tool has created the file:<br>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
-<a href="skeinforge_tools.analyze.html">skeinforge_tools.analyze</a><br>
 <a href="cStringIO.html">cStringIO</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.consecution.html">skeinforge_tools.skeinforge_utilities.consecution</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.euclidean.html">skeinforge_tools.skeinforge_utilities.euclidean</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.intercircle.html">skeinforge_tools.skeinforge_utilities.intercircle</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.interpret.html">skeinforge_tools.skeinforge_utilities.interpret</a><br>
-</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="skeinforge_tools.fabmetheus_utilities.euclidean.html">skeinforge_tools.fabmetheus_utilities.euclidean</a><br>
+<a href="skeinforge_tools.fabmetheus_utilities.gcodec.html">skeinforge_tools.fabmetheus_utilities.gcodec</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.fabmetheus_utilities.intercircle.html">skeinforge_tools.fabmetheus_utilities.intercircle</a><br>
+<a href="skeinforge_tools.fabmetheus_utilities.interpret.html">skeinforge_tools.fabmetheus_utilities.interpret</a><br>
+<a href="os.html">os</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-<a href="skeinforge_tools.profile.html">skeinforge_tools.profile</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
-</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
-<a href="time.html">time</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.fabmetheus_utilities.settings.html">skeinforge_tools.fabmetheus_utilities.settings</a><br>
+<a href="skeinforge_utilities.skeinforge_analyze.html">skeinforge_utilities.skeinforge_analyze</a><br>
+<a href="skeinforge_utilities.skeinforge_craft.html">skeinforge_utilities.skeinforge_craft</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -191,7 +190,7 @@ The export tool has created the file:<br>
 <td width="100%"><dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, exportRepository<font color="#909090">=None</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getDistanceGcode"><strong>getDistanceGcode</strong></a>(exportText)</dt><dd><tt>Get&nbsp;gcode&nbsp;lines&nbsp;with&nbsp;distance&nbsp;variable&nbsp;added.G2&nbsp;X-0.148&nbsp;Y-0.062&nbsp;Z0.0&nbsp;I-0.148&nbsp;J0.148G2&nbsp;X-0.148&nbsp;Y-0.062&nbsp;Z0.0&nbsp;R0.21</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
- <dl><dt><a name="-getReplaced"><strong>getReplaced</strong></a>(exportText)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;words&nbsp;replaced&nbsp;according&nbsp;to&nbsp;replace.csv&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-getReplaced"><strong>getReplaced</strong></a>(exportText)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;strings&nbsp;replaced&nbsp;according&nbsp;to&nbsp;replace.csv&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getSelectedPluginModule"><strong>getSelectedPluginModule</strong></a>(plugins)</dt><dd><tt>Get&nbsp;the&nbsp;selected&nbsp;plugin&nbsp;module.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;export&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>

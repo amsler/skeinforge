@@ -20,8 +20,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
-from skeinforge_tools.skeinforge_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
 import cStringIO
 import os
 import sys
@@ -522,6 +522,10 @@ class DistanceFeedRate:
 		"Add lines of text to the output."
 		self.addLines( lines )
 		self.absoluteDistanceMode = True
+
+	def addParameter( self, firstWord, parameter ):
+		"Add the parameter."
+		self.addLine( firstWord + ' S' + euclidean.getRoundedToThreePlaces( parameter ) )
 
 	def addPerimeterBlock( self, loop, z ):
 		"Add the perimeter gcode block for the loop."

@@ -13,8 +13,8 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base import MouseToolBase
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __date__ = "$Date: 2008/21/04 $"
@@ -34,6 +34,9 @@ class DisplayLine( MouseToolBase ):
 		x = self.canvas.canvasx( event.x )
 		y = self.canvas.canvasy( event.y )
 		tags = self.getTagsGivenXY( x, y )
+		if tags == 'pointer':
+			self.canvas.delete( 'pointer' )
+			tags = self.getTagsGivenXY( x, y )
 		if tags == '':
 			return
 		if gcodec.getHasPrefix( tags, 'colored_line_index:' ):

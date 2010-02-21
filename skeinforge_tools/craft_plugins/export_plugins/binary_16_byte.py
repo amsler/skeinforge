@@ -94,9 +94,9 @@ Byte 14 is worth a few extra notes, this byte is used to define which of the axe
 
 from __future__ import absolute_import
 import __init__
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
-from skeinforge_tools.skeinforge_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.meta_plugins import polyfile
 from struct import Struct
 import cStringIO

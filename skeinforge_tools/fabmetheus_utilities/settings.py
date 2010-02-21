@@ -7,8 +7,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
 import cStringIO
 import os
 import shutil
@@ -1388,6 +1388,7 @@ class LabelSeparator:
 
 	def getFromRepository( self, repository ):
 		"Initialize."
+		self.name = ''
 		self.repository = repository
 		repository.displayEntities.append( self )
 		repository.menuEntities.append( self )
@@ -1587,6 +1588,7 @@ class PluginFrame:
 		gridVertical.frameGridVertical.master = Tkinter.Frame( gridVertical.canvas )
 		for setting in gridVertical.repository.displayEntities:
 			setting.addToDialog( gridVertical.frameGridVertical )
+		addEmptyRow( gridVertical.frameGridVertical )
 		gridVertical.frameGridVertical.master.update_idletasks()
 		gridVertical.xScrollbar.config( command = gridVertical.canvas.xview )
 		gridVertical.canvas[ 'xscrollcommand' ] = gridVertical.xScrollbar.set

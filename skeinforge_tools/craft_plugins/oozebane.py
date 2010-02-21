@@ -89,13 +89,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import math
 import sys
 
@@ -127,14 +127,14 @@ def writeOutput( fileName = '' ):
 	"Oozebane a gcode linear move file."
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		consecution.writeChainTextWithNounMessage( fileName, 'oozebane' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'oozebane' )
 
 
 class OozebaneRepository:
 	"A class to handle the oozebane settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.oozebane.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.oozebane.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Oozebane', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Oozebane' )
 		self.activateOozebane = settings.BooleanSetting().getFromValue( 'Activate Oozebane', self, False )

@@ -27,7 +27,7 @@ This brings up the extrusion setting dialog.
 
 from __future__ import absolute_import
 import __init__
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import settings
 import sys
 
 

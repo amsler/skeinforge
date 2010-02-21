@@ -43,8 +43,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
 import os
 
 
@@ -101,6 +101,14 @@ class HelpRepository:
 		settings.HelpPage().getFromNameAfterHTTP( 'dev.forums.reprap.org/read.php?12,27562', 'Skeinforge Contributions Thread', self )
 		settings.LabelDisplay().getFromName( 'Skeinforge Settings Thread:', self )
 		settings.HelpPage().getFromNameAfterHTTP( 'dev.forums.reprap.org/read.php?12,27434', 'Skeinforge Settings Thread', self )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Search -', self )
+		settings.LabelDisplay().getFromName( 'Reprap Search:', self )
+		settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_reprap.html', 'Reprap Search', self )
+		settings.LabelDisplay().getFromName( 'Skeinforge Search:', self )
+		settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_skeinforge.html', 'Skeinforge Search', self )
+		settings.LabelDisplay().getFromName( 'Web Search:', self )
+		settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_web.html', 'Web Search', self )
 		settings.LabelSeparator().getFromRepository( self )
 		self.wikiManualPrimary = settings.BooleanSetting().getFromValue( 'Wiki Manual Primary', self, True )
 		self.wikiManualPrimary.setUpdateFunction( self.save )

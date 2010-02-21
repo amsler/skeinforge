@@ -13,9 +13,9 @@ from __future__ import absolute_import
 import __init__
 
 from skeinforge_tools.analyze_plugins.analyze_utilities.mouse_tool_base import MouseToolBase
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import settings
 import math
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"

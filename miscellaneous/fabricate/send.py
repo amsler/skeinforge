@@ -26,7 +26,7 @@ import getopt
 import RepRapArduinoSerialSender
 
 help_message = '''
-Usage:	send [options] <filename or gcode> [<filename or gcode>...] 
+Usage:	send [options] <filename or gcode> [<filename or gcode>...]
 	--verbose : Verbose - print ALL communication, not just comments.
 	       -v : prints responses from the arduino, and every command sent.
 
@@ -38,6 +38,9 @@ Usage:	send [options] <filename or gcode> [<filename or gcode>...]
 
 	--port    : Set the port to write to
 	       -p : default is "/dev/ttyUSB0" for posix, "COM3" for windows.
+
+	--baud    : Set the baud rate to use
+	       -b : defaults to 19200
 
 You may call this with either a single statement of g-code
 to be sent to the arduino, or with the name of a g-code file.
@@ -70,6 +73,7 @@ def main(argv=None):
 
 	# Set resonable defaults for port, verbosity, and reset.
 	verbose = 1
+	baud = 19200
 	reset = True
 	if os.name == "posix":
 		port = "/dev/ttyUSB0"
@@ -80,10 +84,10 @@ def main(argv=None):
 
 	if argv is None:
 		argv = sys.argv
-		
+
 	try:
 		try:
-			opts, argv = getopt.getopt(argv[1:], "vqnhp:", ["verbose","quiet","noreset","help","port="])
+			opts, argv = getopt.getopt(argv[1:], "vqnhb:p:", ["verbose","quiet","noreset","help","baud=","port="])
 		except getopt.error, msg:
 			raise Usage(msg)
 
@@ -104,21 +108,23 @@ def main(argv=None):
 				port = value
 			elif option in ("-h", "--help" ):
 				raise Usage(help_message)
+			elif option in ("-b", "--baud" ):
+					baud = int(value)
 
 		if verbose:
-			print "Arduino port set to "+port
+			print "Arduino port set to " + port
 
 	except Usage, err:
 		#print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
 		print >> sys.stderr, str(err.msg)
 		print >> sys.stderr, "For help use --help"
 		return 2
-	
-	
-	sender = RepRapArduinoSerialSender.RepRapArduinoSerialSender(port,verbose>1)
+
+
+	sender = RepRapArduinoSerialSender.RepRapArduinoSerialSender(port, baud, verbose>1)
 	if reset:
 		sender.reset()
-	
+
 	for filename in argv:
 		processfile(filename,sender,verbose)
 
@@ -155,7 +161,7 @@ def processfile(filename,sender,verbose):
 			sender.write(line)
 	finally:
 		datafile.close()
-	
+
 	return 0
 
 if __name__ == "__main__":

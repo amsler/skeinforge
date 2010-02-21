@@ -10,13 +10,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
-from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import os
 import sys
 
@@ -40,9 +37,9 @@ def addToCraftMenu( menu ):
 	"Add a craft plugin menu."
 	settings.ToolDialog().addPluginToMenu( menu, gcodec.getUntilDot( os.path.abspath( __file__ ) ) )
 	menu.add_separator()
-	directoryPath = getPluginsDirectoryPath()
+	directoryPath = skeinforge_craft.getPluginsDirectoryPath()
 	directoryFolders = settings.getFolders( directoryPath )
-	pluginFileNames = getPluginFileNames()
+	pluginFileNames = skeinforge_craft.getPluginFileNames()
 	for pluginFileName in pluginFileNames:
 		pluginFolderName = pluginFileName + '_plugins'
 		pluginPath = os.path.join( directoryPath, pluginFileName )
@@ -55,25 +52,13 @@ def addToMenu( master, menu, repository, window ):
 	"Add a tool plugin menu."
 	CraftMenuSaveListener( menu, window )
 
-def getPluginsDirectoryPath():
-	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'craft_plugins' )
-
-def getPluginFileNames():
-	"Get craft plugin fileNames."
-	craftSequence = consecution.getReadCraftSequence()
-	craftSequence.sort()
-	return craftSequence
-
 def getNewRepository():
 	"Get the repository constructor."
-	return CraftRepository()
+	return skeinforge_craft.CraftRepository()
 
 def writeOutput( fileName = '' ):
-	"Craft a gcode file.  If no fileName is specified, comment the first gcode file in this folder that is not modified."
-	pluginModule = consecution.getLastModule()
-	if pluginModule != None:
-		pluginModule.writeOutput( fileName )
+	"Craft a gcode file."
+	skeinforge_craft.writeOutput( fileName )
 
 
 class CraftMenuSaveListener:
@@ -114,7 +99,7 @@ class CraftRadioButtonsSaveListener:
 
 	def setRadioButtons( self ):
 		"Profile has been saved and craft radio plugins should be updated."
-		craftSequence = profile.getCraftTypePluginModule().getCraftSequence()
+		craftSequence = skeinforge_profile.getCraftTypePluginModule().getCraftSequence()
 		gridPosition = self.gridPosition.getCopy()
 		maximumValue = False
 		activeRadioPlugins = []
@@ -128,25 +113,6 @@ class CraftRadioButtonsSaveListener:
 		if not maximumValue:
 			selectedRadioPlugin = settings.getSelectedRadioPlugin( self.repository.importantFileNames + [ activeRadioPlugins[ 0 ].name ], activeRadioPlugins ).setSelect()
 		self.repository.pluginFrame.update()
-
-
-class CraftRepository:
-	"A class to handle the craft settings."
-	def __init__( self ):
-		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_tools.craft.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Craft', self, '' )
-		self.importantFileNames = [ 'carve', 'chop', 'feed', 'flow', 'lift', 'raft', 'speed' ]
-		allCraftNames = gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
-		radioPlugins = settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), self.importantFileNames, allCraftNames, self )
-		CraftRadioButtonsSaveListener().getFromRadioPlugins( radioPlugins, self )
-		self.executeTitle = 'Craft'
-
-	def execute( self ):
-		"Craft button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
-		for fileName in fileNames:
-			writeOutput( fileName )
 
 
 def main():

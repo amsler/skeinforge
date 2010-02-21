@@ -14,8 +14,8 @@ An export canvas plugin is a script in the export_canvas_plugins folder which ha
 
 from __future__ import absolute_import
 import __init__
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
 import cStringIO
 import os
 import sys

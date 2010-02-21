@@ -79,13 +79,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import math
 import sys
 
@@ -117,25 +117,28 @@ def writeOutput( fileName = '' ):
 	"Splodge a gcode linear move file."
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		consecution.writeChainTextWithNounMessage( fileName, 'splodge' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'splodge' )
 
 
 class SplodgeRepository:
 	"A class to handle the splodge settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.splodge.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.splodge.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Splodge', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Splodge' )
 		self.activateSplodge = settings.BooleanSetting().getFromValue( 'Activate Splodge', self, False )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Initial -', self )
 		self.initialLiftOverExtraThickness = settings.FloatSpin().getFromValue( 0.5, 'Initial Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
 		self.initialSplodgeFeedRate = settings.FloatSpin().getFromValue( 0.4, 'Initial Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
 		self.initialSplodgeQuantityLength = settings.FloatSpin().getFromValue( 10.0, 'Initial Splodge Quantity Length (millimeters):', self, 90.0, 30.0 )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Operating -', self )
 		self.operatingLiftOverExtraThickness = settings.FloatSpin().getFromValue( 0.5, 'Operating Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
 		self.operatingSplodgeFeedRate = settings.FloatSpin().getFromValue( 0.4, 'Operating Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
 		self.operatingSplodgeQuantityLength = settings.FloatSpin().getFromValue( 0.4, 'Operating Splodge Quantity Length (millimeters):', self, 2.4, 1.0 )
+		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Splodge'
 
 	def execute( self ):

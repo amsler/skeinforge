@@ -38,10 +38,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import intercircle
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import intercircle
 import cmath
 import cStringIO
 import math
@@ -72,15 +72,6 @@ def addPointsAtZ( edgePair, points, radius, vertices, z ):
 	carveIntersectionFirst = getCarveIntersectionFromEdge( edgePair.edges[ 0 ], vertices, z )
 	carveIntersectionSecond = getCarveIntersectionFromEdge( edgePair.edges[ 1 ], vertices, z )
 	intercircle.addPointsFromSegment( carveIntersectionFirst, carveIntersectionSecond, points, radius, 0.3 )
-
-def addToZoneArray( point, z, zoneArray, zZoneInterval ):
-	"Add a height to the zone array."
-	zoneLayer = int( round( ( point.z - z ) / zZoneInterval ) )
-	zoneAround = 2 * int( abs( zoneLayer ) )
-	if zoneLayer < 0:
-		zoneAround -= 1
-	if zoneAround < len( zoneArray ):
-		zoneArray[ zoneAround ] += 1
 
 def addWithLeastLength( loops, point, shortestAdditionalLength ):
 	"Insert a point into a loop, at the index at which the loop would be shortest."
@@ -318,17 +309,6 @@ def getLoopsWithCorners( corners, importRadius, loops, pointTable ):
 			addWithLeastLength( loops, corner, shortestAdditionalLength )
 	return loops
 
-def getLowestZoneIndex( zoneArray, z ):
-	"Get the lowest zone index."
-	lowestZoneIndex = 0
-	lowestZone = 99999999.0
-	for zoneIndex in xrange( len( zoneArray ) ):
-		zone = zoneArray[ zoneIndex ]
-		if zone < lowestZone:
-			lowestZone = zone
-			lowestZoneIndex = zoneIndex
-	return lowestZoneIndex
-
 def getNextEdgeIndexAroundZ( edge, faces, remainingEdgeTable ):
 	"Get the next edge index in the mesh carve."
 	for faceIndex in edge.faceIndexes:
@@ -437,11 +417,6 @@ def getWideAnglePointIndex( loop ):
 			dotProductMinimum = dotProduct
 			widestPointIndex = pointIndex
 	return widestPointIndex
-
-def getZoneInterval( layerThickness ):
-	"Get the zone interval around the slice height."
-	zZoneLayers = 99
-	return layerThickness / zZoneLayers / 100.0
 
 def isInline( beginComplex, centerComplex, endComplex ):
 	"Determine if the three complex points form a line."
@@ -610,6 +585,12 @@ class TriangleMesh:
 		"Get the string representation of this TriangleMesh."
 		return str( self.vertices ) + '\n' + str( self.edges ) + '\n' + str( self.faces )
 
+	def addToZoneTable( self, point ):
+		"Add point to the zone table."
+		zoneIndexFloat = point.z / self.zoneInterval
+		self.zZoneTable[ math.floor( zoneIndexFloat ) ] = None
+		self.zZoneTable[ math.ceil( zoneIndexFloat ) ] = None
+
 	def getCarveCornerMaximum( self ):
 		"Get the corner maximum of the vertices."
 		return self.cornerMaximum
@@ -630,12 +611,30 @@ class TriangleMesh:
 			self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, point )
 			self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, point )
 		halfHeight = 0.5 * self.layerThickness
-		self.zZoneInterval = getZoneInterval( self.layerThickness )
+		self.zoneInterval = self.layerThickness / math.sqrt( len( self.vertices ) ) / 1000.0
+		self.zZoneTable = {}
+		for point in self.vertices:
+			self.addToZoneTable( point )
 		layerTop = self.cornerMaximum.z - halfHeight * 0.5
 		z = self.cornerMinimum.z + halfHeight
 		while z < layerTop:
 			z = self.getZAddExtruderPaths( z )
 		return self.rotatedBoundaryLayers
+
+	def getEmptyZ( self, z ):
+		"Get the first z which is not in the zone table."
+		zoneIndex = round( z / self.zoneInterval )
+		if zoneIndex not in self.zZoneTable:
+			return z
+		zoneAround = 1
+		while 1:
+			zoneDown = zoneIndex - zoneAround
+			if zoneDown not in self.zZoneTable:
+				return zoneDown * self.zoneInterval
+			zoneUp = zoneIndex + zoneAround
+			if zoneUp not in self.zZoneTable:
+				return zoneUp * self.zoneInterval
+			zoneAround += 1
 
 	def getGNUTriangulatedSurfaceText( self ):
 		"Get this mesh in the GNU Triangulated Surface (.gts) format."
@@ -670,18 +669,9 @@ class TriangleMesh:
 
 	def getZAddExtruderPaths( self, z ):
 		"Get next z and add extruder loops."
-		zoneArray = []
-		for point in self.vertices:
-			addToZoneArray( point, z, zoneArray, self.zZoneInterval )
-		lowestZoneIndex = getLowestZoneIndex( zoneArray, z )
-		halfAround = int( math.ceil( float( lowestZoneIndex ) / 2.0 ) )
-		zAround = float( halfAround ) * self.zZoneInterval
-		if lowestZoneIndex % 2 == 1:
-			zAround = - zAround
-		zPlusAround = z + zAround
-		rotatedBoundaryLayer = euclidean.RotatedLoopLayer( zPlusAround )
+		rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
 		self.rotatedBoundaryLayers.append( rotatedBoundaryLayer )
-		rotatedBoundaryLayer.loops = self.getLoopsFromMesh( zPlusAround )
+		rotatedBoundaryLayer.loops = self.getLoopsFromMesh( self.getEmptyZ( z ) )
 		if self.bridgeLayerThickness == None:
 			return z + self.layerThickness
 		allExtrudateLoops = []

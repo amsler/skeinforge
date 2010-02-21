@@ -30,7 +30,7 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 import math
 
 
@@ -694,7 +694,7 @@ def getLargestLoop( loops ):
 	if len( loops ) == 1:
 		return loops[ 0 ]
 	largestArea = - 999999999.0
-	largestLoop = None
+	largestLoop = []
 	for loop in loops:
 		loopArea = abs( getPolygonArea( loop ) )
 		if loopArea > largestArea:

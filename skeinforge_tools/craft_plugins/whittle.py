@@ -55,12 +55,12 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import math
 import sys
 
@@ -93,14 +93,14 @@ def writeOutput( fileName = '' ):
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
-	consecution.writeChainTextWithNounMessage( fileName, 'whittle' )
+	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'whittle' )
 
 
 class WhittleRepository:
 	"A class to handle the whittle settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.whittle.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.whittle.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Whittled', self, '' )
 		self.activateWhittle = settings.BooleanSetting().getFromValue( 'Activate Whittle:', self, False )
 		self.maximumVerticalStep = settings.FloatSpin().getFromValue( 0.02, 'Maximum Vertical Step (mm):', self, 0.42, 0.1 )

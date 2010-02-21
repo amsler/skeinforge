@@ -12,8 +12,8 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
-from skeinforge_tools.skeinforge_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
 import math
 
 
@@ -290,16 +290,16 @@ def getLargestInsetLoopFromLoop( loop, radius ):
 def getLargestInsetLoopFromLoopNoMatterWhat( loop, radius ):
 	"Get the largest inset loop from the loop, even if the radius has to be shrunk and even if there is still no inset loop."
 	largestInsetLoop = getLargestInsetLoopFromLoop( loop, radius )
-	if largestInsetLoop != None:
+	if len( largestInsetLoop ) > 0:
 		return largestInsetLoop
 	largestInsetLoop = getLargestInsetLoopFromLoop( loop, 0.55 * radius )
-	if largestInsetLoop != None:
+	if len( largestInsetLoop ) > 0:
 		return largestInsetLoop
 	largestInsetLoop = getLargestInsetLoopFromLoop( loop, 0.35 * radius )
-	if largestInsetLoop != None:
+	if len( largestInsetLoop ) > 0:
 		return largestInsetLoop
 	largestInsetLoop = getLargestInsetLoopFromLoop( loop, 0.2 * radius )
-	if largestInsetLoop != None:
+	if len( largestInsetLoop ) > 0:
 		return largestInsetLoop
 	print( 'This should never happen, there should always be a largestInsetLoop in getLargestInsetLoopFromLoopNoMatterWhat in intercircle.' )
 	print( loop )

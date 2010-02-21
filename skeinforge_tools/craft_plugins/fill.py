@@ -174,15 +174,15 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import intercircle
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import intercircle
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import math
 import sys
 
@@ -192,33 +192,32 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
 
-# documentation
-# write/send announce, raft infill overhang.. values should be halved, raft in general has been changed, chamber announce, stretch cross, clip connect & extrusion to perimeter, dimension announce
-# update wiki how to page
-#
-#
-#
-#
-# search page, search items, search links, choice entry field
-# add label separators
+# skeinforge_help, etc..
+# sphere_simple_format.xml
 # in dimension check for flow rate
-# remove comments from clip
-# remove cool set at end of layer
-# save bug when switching from profile to profile
-# check for last existing then remove unneeded fill code from euclidean
-# save just before printing
-# remove pointer from skeinview when getting a selected line
-# create skeinforge_profile, skeinforge_help, etc..
 # make frame for plugin groups, add plugin help menu, add craft below menu
+# check for last existing then remove unneeded fill code from euclidean
+# search page in skeinforge,
+# remove cool set at end of layer
+# remove comments from clip
+# save bug when switching from profile to profile
+# save just before printing
 # maybe measuring rod
 # comb simplify path, option of only combing around inside loops
 # veer
 # add hook _extrusion
- # implement acceleration & collinear removal in viewers _extrusion
+# winding into coiling, coil into wind & weave
+# speed into speed and limit
+# documentation
+# setting for skeinforge
+#
+#
+#
+#
+#  implement acceleration & collinear removal in viewers _extrusion
 # add polish, has perimeter, has cut first layer (False)
 # probably not set addedLocation in distanceFeedRate after arc move
 # maybe horizontal bridging and/or check to see if the ends are standing on anything
-# maybe add cached zones on first carving
 # thin self? check when removing intersecting paths in inset
 # maybe later remove isPerimeterPathInSurroundLoops, once there are no weird fill bugs, also change getHorizontalSegmentListsFromLoopLists
 # save all analyze viewers of the same name except itself, update help menu self.wikiManualPrimary.setUpdateFunction
@@ -250,10 +249,15 @@ __license__ = "GPL 3.0"
 # maybe make setting backups
 # maybe settings in gcode or saved versions
 # move skeinforge_utilities to fabmetheus_utilities
+# maybe lathe cutting
+# maybe lathe extrusion
+# maybe lathe millng
+# maybe lathe winding & weaving
 #
 #
 #
 # pick and place
+# search items, search links, choice entry field
 # simulate
 #document gear script
 #transform
@@ -934,29 +938,33 @@ def writeOutput( fileName = '' ):
 	"Fill an inset gcode file."
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		consecution.writeChainTextWithNounMessage( fileName, 'fill' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'fill' )
 
 
 class FillRepository:
 	"A class to handle the fill settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.fill.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.fill.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Fill', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fill' )
 		self.activateFill = settings.BooleanSetting().getFromValue( 'Activate Fill:', self, True )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Diaphragm -', self )
 		self.diaphragmPeriod = settings.IntSpin().getFromValue( 20, 'Diaphragm Period (layers):', self, 200, 100 )
 		self.diaphragmThickness = settings.IntSpin().getFromValue( 0, 'Diaphragm Thickness (layers):', self, 5, 0 )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Extra Shells -', self )
 		self.extraShellsAlternatingSolidLayer = settings.IntSpin().getFromValue( 0, 'Extra Shells on Alternating Solid Layer (layers):', self, 3, 2 )
 		self.extraShellsBase = settings.IntSpin().getFromValue( 0, 'Extra Shells on Base (layers):', self, 3, 1 )
 		self.extraShellsSparseLayer = settings.IntSpin().getFromValue( 0, 'Extra Shells on Sparse Layer (layers):', self, 3, 1 )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Grid -', self )
 		self.gridExtraOverlap = settings.FloatSpin().getFromValue( 0.0, 'Grid Extra Overlap (ratio):', self, 0.5, 0.1 )
 		self.gridJunctionSeparationBandHeight = settings.IntSpin().getFromValue( 0, 'Grid Junction Separation Band Height (layers):', self, 20, 10 )
 		self.gridJunctionSeparationOverOctogonRadiusAtEnd = settings.FloatSpin().getFromValue( 0.0, 'Grid Junction Separation over Octogon Radius At End (ratio):', self, 0.8, 0.0 )
 		self.gridJunctionSeparationOverOctogonRadiusAtMiddle = settings.FloatSpin().getFromValue( 0.0, 'Grid Junction Separation over Octogon Radius At Middle (ratio):', self, 0.8, 0.0 )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Infill -', self )
 		self.infillBeginRotation = settings.FloatSpin().getFromValue( 0.0, 'Infill Begin Rotation (degrees):', self, 90.0, 45.0 )
 		self.infillBeginRotationRepeat = settings.IntSpin().getFromValue( 0, 'Infill Begin Rotation Repeat (layers):', self, 3, 1 )
@@ -970,6 +978,7 @@ class FillRepository:
 		self.infillPerimeterOverlap = settings.FloatSpin().getFromValue( 0.0, 'Infill Perimeter Overlap (ratio):', self, 0.4, 0.15 )
 		self.infillSolidity = settings.FloatSpin().getFromValue( 0.04, 'Infill Solidity (ratio):', self, 0.3, 0.2 )
 		self.infillWidthOverThickness = settings.FloatSpin().getFromValue( 1.3, 'Infill Width over Thickness (ratio):', self, 1.7, 1.5 )
+		settings.LabelSeparator().getFromRepository( self )
 		self.solidSurfaceThickness = settings.IntSpin().getFromValue( 0, 'Solid Surface Thickness (layers):', self, 5, 3 )
 		self.threadSequenceChoice = settings.MenuButtonDisplay().getFromName( 'Thread Sequence Choice:', self )
 		self.threadSequenceInfillLoops = settings.MenuRadio().getFromMenuButtonDisplay( self.threadSequenceChoice, 'Infill > Loops > Perimeter', self, False )

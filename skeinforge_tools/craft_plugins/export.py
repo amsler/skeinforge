@@ -36,7 +36,7 @@ When selected, export will save the gcode with the suffix '_penultimate.gcode' j
 Export looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Export does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_tools folder. If it doesn't find anything there it looks in the skeinforge_tools folder.
 
 ===replace.csv===
-When export is exporting the code, if there is a file replace.csv, it will replace the word in the first column by its replacement in the second column.  There is an example file replace_example.csv to demonstrate the comma separated format, which can be edited in a text editor or a spreadsheet.
+When export is exporting the code, if there is a tab separated file replace.csv, it will replace the string in the first column by its replacement in the second column.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.
 
 ==Examples==
 The following examples export the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and export.py.
@@ -76,15 +76,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools import analyze
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import intercircle
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import intercircle
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_analyze
+from skeinforge_utilities import skeinforge_craft
 import cStringIO
 import os
 import sys
@@ -128,15 +127,13 @@ def getNewRepository():
 	return ExportRepository()
 
 def getReplaced( exportText ):
-	"Get text with words replaced according to replace.csv file."
+	"Get text with strings replaced according to replace.csv file."
 	replaceText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Replace.csv' )
 	if replaceText == '':
 		return exportText
 	lines = gcodec.getTextLines( replaceText )
 	for line in lines:
-		replacedLine = line.replace( ',', ' ' )
-		replacedLine = replacedLine.replace( '\t', ' ' )
-		splitLine = replacedLine.split()
+		splitLine = line.split( '\t' )
 		if len( splitLine ) > 1:
 			exportText = exportText.replace( splitLine[ 0 ], splitLine[ 1 ] )
 	return exportText
@@ -159,11 +156,11 @@ def writeOutput( fileName = '' ):
 	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being chain exported.' )
 	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_export.' + exportRepository.fileExtension.value
 	gcodeText = gcodec.getGcodeFileText( fileName, '' )
-	procedures = consecution.getProcedures( 'export', gcodeText )
-	gcodeText = consecution.getChainTextFromProcedures( fileName, procedures[ : - 1 ], gcodeText )
+	procedures = skeinforge_craft.getProcedures( 'export', gcodeText )
+	gcodeText = skeinforge_craft.getChainTextFromProcedures( fileName, procedures[ : - 1 ], gcodeText )
 	if gcodeText == '':
 		return
-	analyze.writeOutput( suffixFileName, gcodeText )
+	skeinforge_analyze.writeOutput( suffixFileName, gcodeText )
 	if exportRepository.savePenultimateGcode.value:
 		penultimateFileName = fileName[ : fileName.rfind( '.' ) ] + '_penultimate.gcode'
 		gcodec.writeFileText( penultimateFileName, gcodeText )

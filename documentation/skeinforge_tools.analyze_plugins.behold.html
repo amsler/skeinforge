@@ -43,14 +43,16 @@ The behold manual page is at:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Display Line">Display Line</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Viewpoint Move">Viewpoint Move</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Viewpoint Rotate">Viewpoint Rotate</a><br />
-&nbsp;&nbsp;<a href="#Number of Fill Bottom Layers">Number of Fill Bottom Layers</a><br />
+&nbsp;&nbsp;<a href="#Number of Fill Layers">Number of Fill Layers</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Number of Fill Bottom Layers">Number of Fill Bottom Layers</a><br />
 &nbsp;&nbsp;<a href="#Number of Fill Top Layers">Number of Fill Top Layers</a><br />
 &nbsp;&nbsp;<a href="#Scale">Scale</a><br />
 &nbsp;&nbsp;<a href="#Screen Inset">Screen Inset</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Screen Horizontal Inset">Screen Horizontal Inset</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Screen Vertical Inset">Screen Vertical Inset</a><br />
-&nbsp;&nbsp;<a href="#Viewpoint Latitude">Viewpoint Latitude</a><br />
-&nbsp;&nbsp;<a href="#Viewpoint Longitude">Viewpoint Longitude</a><br />
+&nbsp;&nbsp;<a href="#Viewpoint">Viewpoint</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Viewpoint Latitude">Viewpoint Latitude</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Viewpoint Longitude">Viewpoint Longitude</a><br />
 &nbsp;&nbsp;<a href="#Width">Width</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Axis Negative Side">Width of Axis Negative Side</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Width of Axis Positive Side">Width of Axis Positive Side</a><br />
@@ -72,7 +74,7 @@ The behold manual page is at:<br>
 
 The default 'Activate Behold' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Behold' checkbox is on, when behold is run directly.  Behold can not separate the layers when it reads gcode without comments.<br>
  <br>
-The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.  The layers will be displayed starting at the "Layers From" index up until the "Layers To" index.  All of the settings can be set in the initial "Behold Settings" window and some can be changed after the viewer is running in the "Behold Dynamic Settings" window.  In the viewer, dragging the mouse will change the viewpoint.<br>
+The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.<br>
  <br>
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
@@ -125,12 +127,10 @@ The button group that determines where the bright band starts from.<br>
  <br>
 <a name="From the Bottom" id="From the Bottom"></a><h5>From the Bottom</h5>
 
- <br>
 When selected, the bright bands will start from the bottom.<br>
  <br>
 <a name="From the Top" id="From the Top"></a><h5>From the Top</h5>
 
- <br>
 When selected, the bright bands will start from the top.<br>
  <br>
 <a name="Draw Arrows" id="Draw Arrows"></a><h3>Draw Arrows</h3>
@@ -141,7 +141,6 @@ When selected, arrows will be drawn at the end of each line segment.<br>
  <br>
 <a name="Export Menu" id="Export Menu"></a><h3>Export Menu</h3>
 
- <br>
 When the submenu in the export menu item in the file menu is clicked, an export canvas dialog will be displayed, which can export the canvas to a file.<br>
  <br>
 <a name="Go Around Extruder Off Travel" id="Go Around Extruder Off Travel"></a><h3>Go Around Extruder Off Travel</h3>
@@ -188,7 +187,9 @@ The 'Viewpoint Move' tool will move the viewpoint in the xy plane when the mouse
 
 The 'Viewpoint Rotate' tool will rotate the viewpoint around the origin, when the mouse is clicked and dragged on the canvas, or the arrow keys have been used and &lt;Return&gt; is pressed.  The viewpoint can also be moved by dragging the mouse.  The viewpoint latitude will be increased when the mouse is dragged from the center towards the edge.  The viewpoint longitude will be changed by the amount around the center the mouse is dragged.  This is not very intuitive, but I don't know how to do this the intuitive way and I have other stuff to develop.  If the shift key is pressed; if the latitude is changed more than the longitude, only the latitude will be changed, if the longitude is changed more only the longitude will be changed.<br>
  <br>
-<a name="Number of Fill Bottom Layers" id="Number of Fill Bottom Layers"></a><h3>Number of Fill Bottom Layers</h3>
+<a name="Number of Fill Layers" id="Number of Fill Layers"></a><h3>Number of Fill Layers</h3>
+
+<a name="Number of Fill Bottom Layers" id="Number of Fill Bottom Layers"></a><h4>Number of Fill Bottom Layers</h4>
 
 Default is one.<br>
  <br>
@@ -222,13 +223,15 @@ Default is two hundred.<br>
  <br>
 The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be..<br>
  <br>
-<a name="Viewpoint Latitude" id="Viewpoint Latitude"></a><h3>Viewpoint Latitude</h3>
+<a name="Viewpoint" id="Viewpoint"></a><h3>Viewpoint</h3>
+
+<a name="Viewpoint Latitude" id="Viewpoint Latitude"></a><h4>Viewpoint Latitude</h4>
 
 Default is fifteen degrees.<br>
  <br>
 The "Viewpoint Latitude" is the latitude of the viewpoint, a latitude of zero is the top pole giving a top view, a latitude of ninety gives a side view and a latitude of 180 gives a bottom view.<br>
  <br>
-<a name="Viewpoint Longitude" id="Viewpoint Longitude"></a><h3>Viewpoint Longitude</h3>
+<a name="Viewpoint Longitude" id="Viewpoint Longitude"></a><h4>Viewpoint Longitude</h4>
 
 Default is 210 degrees.<br>
  <br>
@@ -363,11 +366,11 @@ This brings up the behold viewer to view the gcode file.</tt>
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
 <a href="skeinforge_tools.analyze_plugins.analyze_utilities.display_line.html">skeinforge_tools.analyze_plugins.analyze_utilities.display_line</a><br>
-<a href="skeinforge_tools.skeinforge_utilities.euclidean.html">skeinforge_tools.skeinforge_utilities.euclidean</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.gcodec.html">skeinforge_tools.skeinforge_utilities.gcodec</a><br>
+<a href="skeinforge_tools.fabmetheus_utilities.euclidean.html">skeinforge_tools.fabmetheus_utilities.euclidean</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.fabmetheus_utilities.gcodec.html">skeinforge_tools.fabmetheus_utilities.gcodec</a><br>
 <a href="math.html">math</a><br>
 <a href="skeinforge_tools.meta_plugins.polyfile.html">skeinforge_tools.meta_plugins.polyfile</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.skeinforge_utilities.settings.html">skeinforge_tools.skeinforge_utilities.settings</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.fabmetheus_utilities.settings.html">skeinforge_tools.fabmetheus_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
 <a href="skeinforge_tools.analyze_plugins.analyze_utilities.tableau.html">skeinforge_tools.analyze_plugins.analyze_utilities.tableau</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.analyze_plugins.analyze_utilities.view_move.html">skeinforge_tools.analyze_plugins.analyze_utilities.view_move</a><br>

@@ -95,14 +95,14 @@ except:
 import __init__
 
 from datetime import date
-from skeinforge_tools import profile
 from skeinforge_tools.meta_plugins import polyfile
-from skeinforge_tools.skeinforge_utilities import consecution
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import intercircle
-from skeinforge_tools.skeinforge_utilities import interpret
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import intercircle
+from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_profile
 import os
 import sys
 
@@ -133,23 +133,26 @@ def writeOutput( fileName = '' ):
 	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
-	consecution.writeChainTextWithNounMessage( fileName, 'preface' )
+	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'preface' )
 
 
 class PrefaceRepository:
 	"A class to handle the preface settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.preface.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.preface.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Preface', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Preface' )
 		self.meta = settings.StringSetting().getFromValue( 'Meta:', self, '' )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Name of Alteration Files -', self )
 		self.nameOfEndFile = settings.StringSetting().getFromValue( 'Name of End File:', self, 'end.gcode' )
 		self.nameOfStartFile = settings.StringSetting().getFromValue( 'Name of Start File:', self, 'start.gcode' )
+		settings.LabelSeparator().getFromRepository( self )
 		self.setPositioningToAbsolute = settings.BooleanSetting().getFromValue( 'Set Positioning to Absolute', self, True )
 		self.setUnitsToMillimeters = settings.BooleanSetting().getFromValue( 'Set Units to Millimeters', self, True )
 		self.startAtHome = settings.BooleanSetting().getFromValue( 'Start at Home', self, False )
+		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Turn Extruder Off -', self )
 		self.turnExtruderOffAtShutDown = settings.BooleanSetting().getFromValue( 'Turn Extruder Off at Shut Down', self, True )
 		self.turnExtruderOffAtStartUp = settings.BooleanSetting().getFromValue( 'Turn Extruder Off at Start Up', self, True )
@@ -195,14 +198,14 @@ class PrefaceSkein:
 			self.distanceFeedRate.addLine( 'G28' ) # Start at home.
 		if self.prefaceRepository.turnExtruderOffAtStartUp.value:
 			self.distanceFeedRate.addLine( 'M103' ) # Turn extruder off.
-		craftTypeName = profile.getCraftTypeName()
+		craftTypeName = skeinforge_profile.getCraftTypeName()
 		self.distanceFeedRate.addTagBracketedLine( 'craftTypeName', craftTypeName )
 		self.distanceFeedRate.addTagBracketedLine( 'decimalPlacesCarried', self.distanceFeedRate.decimalPlacesCarried )
 		self.distanceFeedRate.addTagBracketedLine( 'layerThickness', self.distanceFeedRate.getRounded( self.layerThickness ) )
 		if self.prefaceRepository.meta.value:
 			self.distanceFeedRate.addTagBracketedLine( 'meta', self.prefaceRepository.meta.value )
 		self.distanceFeedRate.addTagBracketedLine( 'perimeterWidth', self.distanceFeedRate.getRounded( self.perimeterWidth ) )
-		self.distanceFeedRate.addTagBracketedLine( 'profileName', profile.getProfileName( craftTypeName ) )
+		self.distanceFeedRate.addTagBracketedLine( 'profileName', skeinforge_profile.getProfileName( craftTypeName ) )
 		self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'carve' )
 		self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'preface' )
 		self.distanceFeedRate.addLine( '(</extruderInitialization>)' ) # Initialization is finished, extrusion is starting.

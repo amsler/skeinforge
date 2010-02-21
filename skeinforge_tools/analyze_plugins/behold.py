@@ -8,7 +8,7 @@ http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold
 ==Operation==
 The default 'Activate Behold' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Behold' checkbox is on, when behold is run directly.  Behold can not separate the layers when it reads gcode without comments.
 
-The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.  The layers will be displayed starting at the "Layers From" index up until the "Layers To" index.  All of the settings can be set in the initial "Behold Settings" window and some can be changed after the viewer is running in the "Behold Dynamic Settings" window.  In the viewer, dragging the mouse will change the viewpoint.
+The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.
 
 ==Settings==
 ===Animation===
@@ -49,11 +49,9 @@ Default choice is 'From the Top'.
 The button group that determines where the bright band starts from.
 
 =====From the Bottom=====
-
 When selected, the bright bands will start from the bottom.
 
 =====From the Top=====
-
 When selected, the bright bands will start from the top.
 
 ===Draw Arrows===
@@ -62,7 +60,6 @@ Default is on.
 When selected, arrows will be drawn at the end of each line segment.
 
 ===Export Menu===
-
 When the submenu in the export menu item in the file menu is clicked, an export canvas dialog will be displayed, which can export the canvas to a file.
 
 ===Go Around Extruder Off Travel===
@@ -100,7 +97,8 @@ The 'Viewpoint Move' tool will move the viewpoint in the xy plane when the mouse
 ====Viewpoint Rotate====
 The 'Viewpoint Rotate' tool will rotate the viewpoint around the origin, when the mouse is clicked and dragged on the canvas, or the arrow keys have been used and <Return> is pressed.  The viewpoint can also be moved by dragging the mouse.  The viewpoint latitude will be increased when the mouse is dragged from the center towards the edge.  The viewpoint longitude will be changed by the amount around the center the mouse is dragged.  This is not very intuitive, but I don't know how to do this the intuitive way and I have other stuff to develop.  If the shift key is pressed; if the latitude is changed more than the longitude, only the latitude will be changed, if the longitude is changed more only the longitude will be changed.
 
-===Number of Fill Bottom Layers===
+===Number of Fill Layers===
+====Number of Fill Bottom Layers====
 Default is one.
 
 The "Number of Fill Bottom Layers" is the number of layers at the bottom which will be colored olive.
@@ -128,12 +126,13 @@ Default is two hundred.
 
 The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be..
 
-===Viewpoint Latitude===
+===Viewpoint===
+====Viewpoint Latitude====
 Default is fifteen degrees.
 
 The "Viewpoint Latitude" is the latitude of the viewpoint, a latitude of zero is the top pole giving a top view, a latitude of ninety gives a side view and a latitude of 180 gives a bottom view.
 
-===Viewpoint Longitude===
+====Viewpoint Longitude====
 Default is 210 degrees.
 
 The "Viewpoint Longitude" is the longitude of the viewpoint.
@@ -244,10 +243,10 @@ from skeinforge_tools.analyze_plugins.analyze_utilities import display_line
 from skeinforge_tools.analyze_plugins.analyze_utilities import tableau
 from skeinforge_tools.analyze_plugins.analyze_utilities import view_move
 from skeinforge_tools.analyze_plugins.analyze_utilities import view_rotate
-from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
-from skeinforge_tools.skeinforge_utilities import euclidean
-from skeinforge_tools.skeinforge_utilities import gcodec
-from skeinforge_tools.skeinforge_utilities import settings
+from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
+from skeinforge_tools.fabmetheus_utilities import euclidean
+from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.meta_plugins import polyfile
 import math
 import sys
@@ -305,31 +304,44 @@ class BeholdRepository( tableau.TableauRepository ):
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository( 'skeinforge_tools.analyze_plugins.behold.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Behold', self, '' )
-#		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Behold', self, '' )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold' )
 		self.activateBehold = settings.BooleanSetting().getFromValue( 'Activate Behold', self, True )
 		self.addAnimation()
 		self.axisRulings = settings.BooleanSetting().getFromValue( 'Axis Rulings', self, True )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Banding -', self )
 		self.bandHeight = settings.IntSpinUpdate().getFromValue( 0, 'Band Height (layers):', self, 10, 5 )
 		self.bottomBandBrightness = settings.FloatSpinUpdate().getFromValue( 0.0, 'Bottom Band Brightness (ratio):', self, 1.0, 0.7 )
 		self.bottomLayerBrightness = settings.FloatSpinUpdate().getFromValue( 0.0, 'Bottom Layer Brightness (ratio):', self, 1.0, 1.0 )
 		self.brightBandStart = settings.MenuButtonDisplay().getFromName( 'Bright Band Start:', self )
 		self.fromTheBottom = settings.MenuRadio().getFromMenuButtonDisplay( self.brightBandStart, 'From the Bottom', self, False )
 		self.fromTheTop = settings.MenuRadio().getFromMenuButtonDisplay( self.brightBandStart, 'From the Top', self, True )
+		settings.LabelSeparator().getFromRepository( self )
 		self.drawArrows = settings.BooleanSetting().getFromValue( 'Draw Arrows', self, False )
 		self.goAroundExtruderOffTravel = settings.BooleanSetting().getFromValue( 'Go Around Extruder Off Travel', self, False )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Layers -', self )
 		self.layer = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
 		self.layerExtraSpan = settings.IntSpinUpdate().getSingleIncrementFromValue( - 912345678, 'Layer Extra Span (integer):', self, 912345678, 912345678 )
+		settings.LabelSeparator().getFromRepository( self )
 		self.line = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
 		self.mouseMode = settings.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )
 		self.displayLine = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
 		self.viewMove = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Move', self, False )
 		self.viewRotate = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Rotate', self, False )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Number of Fill Layers -', self )
 		self.numberOfFillBottomLayers = settings.IntSpinUpdate().getFromValue( 0, 'Number of Fill Bottom Layers (integer):', self, 5, 1 )
 		self.numberOfFillTopLayers = settings.IntSpinUpdate().getFromValue( 0, 'Number of Fill Top Layers (integer):', self, 5, 1 )
+		settings.LabelSeparator().getFromRepository( self )
 		self.addScaleScreenSlide()
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Viewpoint -', self )
 		self.viewpointLatitude = settings.FloatSpin().getFromValue( 0.0, 'Viewpoint Latitude (degrees):', self, 180.0, 15.0 )
 		self.viewpointLongitude = settings.FloatSpin().getFromValue( 0.0, 'Viewpoint Longitude (degrees):', self, 360.0, 210.0 )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Width -', self )
 		self.widthOfAxisNegativeSide = settings.IntSpinUpdate().getFromValue( 0, 'Width of Axis Negative Side (pixels):', self, 10, 2 )
 		self.widthOfAxisPositiveSide = settings.IntSpinUpdate().getFromValue( 0, 'Width of Axis Positive Side (pixels):', self, 10, 6 )
 		self.widthOfFillBottomThread = settings.IntSpinUpdate().getFromValue( 0, 'Width of Fill Bottom Thread (pixels):', self, 10, 2 )
