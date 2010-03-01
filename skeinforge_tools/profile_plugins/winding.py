@@ -28,6 +28,7 @@ This brings up the winding setting dialog.
 from __future__ import absolute_import
 import __init__
 from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_profile
 import sys
 
 
@@ -38,7 +39,7 @@ __license__ = "GPL 3.0"
 
 def getCraftSequence():
 	"Get the winding craft sequence."
-	return 'cleave,preface,coil,flow,feed,home,lash,fillet,dimension,unpause,export'.split( ',' )
+	return 'cleave,preface,coil,flow,feed,home,lash,fillet,limit,dimension,unpause,export'.split( ',' )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -49,7 +50,7 @@ class WindingRepository:
 	"A class to handle the winding settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsSetCraftProfileArchive( getCraftSequence(), 'free_wire', self, 'skeinforge_tools.profile_plugins.winding.html' )
+		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'free_wire', self, 'skeinforge_tools.profile_plugins.winding.html' )
 
 
 def main():

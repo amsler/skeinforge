@@ -28,6 +28,7 @@ This brings up the extrusion setting dialog.
 from __future__ import absolute_import
 import __init__
 from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_profile
 import sys
 
 
@@ -38,7 +39,7 @@ __license__ = "GPL 3.0"
 
 def getCraftSequence():
 	"Get the extrusion craft sequence."
-	return 'carve,preface,widen,inset,fill,multiply,speed,temperature,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,splodge,home,lash,fillet,dimension,unpause,export'.split( ',' )
+	return 'carve,preface,widen,inset,fill,multiply,speed,temperature,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,splodge,home,lash,fillet,limit,dimension,unpause,export'.split( ',' )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -49,7 +50,7 @@ class ExtrusionRepository:
 	"A class to handle the export settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsSetCraftProfileArchive( getCraftSequence(), 'ABS', self, 'skeinforge_tools.profile_plugins.extrusion.html' )
+		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'ABS', self, 'skeinforge_tools.profile_plugins.extrusion.html' )
 
 
 def main():

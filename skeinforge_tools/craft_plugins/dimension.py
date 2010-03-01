@@ -15,13 +15,28 @@ The default 'Activate Dimension' checkbox is off.  When it is on, the functions 
 
 ==Settings==
 ===Extrusion Distance Format Choice===
-Default is 'Relative Extrusion Distance'.  In Adrian's description the distance is absolute, but since the relative distances are smaller than the cumulative absolute distances, I chose to make the default relative.
+Default is 'Absolute Extrusion Distance' because in Adrian's description the distance is absolute.  In future, because the relative distances are smaller than the cumulative absolute distances, hopefully the firmaware will be able to use relative distance.
 
 ====Absolute Extrusion Distance====
 When selected, the extrusion distance output will be the total extrusion distance to that gcode line.
 
 ====Relative Extrusion Distance====
 When selected, the extrusion distance output will be the extrusion distance from the last gcode line.
+
+===Extruder Retraction Speed===
+Default is 13.3 mm/s.
+
+Defines the extruder retraction feed rate.
+
+===Retraction Distance===
+Default is zero.
+
+Defines the retraction distance when the thread ends.
+
+===Restart Extra Distance===
+Default is zero.
+
+Defines the restart extra distance when the thread restarts.  The restart distance will be the retraction distance plus the restart extra distance.
 
 ==Examples==
 The following examples dimension the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and dimension.py.
@@ -67,13 +82,13 @@ except:
 import __init__
 
 from datetime import date
-from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
 from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import math
 import os
@@ -120,13 +135,16 @@ class DimensionRepository:
 		self.activateDimension = settings.BooleanSetting().getFromValue( 'Activate Dimension', self, False )
 		extrusionDistanceFormatLatentStringVar = settings.LatentStringVar()
 		self.extrusionDistanceFormatChoiceLabel = settings.LabelDisplay().getFromName( 'Extrusion Distance Format Choice: ', self )
-		settings.Radio().getFromRadio( extrusionDistanceFormatLatentStringVar, 'Absolute Extrusion Distance', self, False )
-		self.relativeExtrusionDistance = settings.Radio().getFromRadio( extrusionDistanceFormatLatentStringVar, 'Relative Extrusion Distance', self, True )
+		settings.Radio().getFromRadio( extrusionDistanceFormatLatentStringVar, 'Absolute Extrusion Distance', self, True )
+		self.relativeExtrusionDistance = settings.Radio().getFromRadio( extrusionDistanceFormatLatentStringVar, 'Relative Extrusion Distance', self, False )
+		self.extruderRetractionSpeed = settings.FloatSpin().getFromValue( 4.0, 'Extruder Retraction Speed (mm/s):', self, 34.0, 13.3 )
+		self.retractionDistance = settings.FloatSpin().getFromValue( 0.0, 'Retraction Distance (millimeters):', self, 100.0, 0.0 )
+		self.restartExtraDistance = settings.FloatSpin().getFromValue( 0.0, 'Restart Extra Distance (millimeters):', self, 100.0, 0.0 )
 		self.executeTitle = 'Dimension'
 
 	def execute( self ):
 		"Dimension button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -135,13 +153,18 @@ class DimensionSkein:
 	"A class to dimension a skein of extrusions."
 	def __init__( self ):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
-		self.feedRateMinute = 958.0
+		self.feedRateMinute = None
 		self.isExtruderActive = False
 		self.lineIndex = 0
 		self.oldLocation = None
-		self.operatingFeedRate = None
 		self.operatingFlowRate = None
 		self.totalExtrusionDistance = 0.0
+
+	def addLinearMoveExtrusionDistanceLine( self, extrusionDistance ):
+		"Get the extrusion distance string from the extrusion distance."
+		self.distanceFeedRate.output.write( 'G1 F%s\n' % self.extruderRetractionSpeedMinuteString )
+		self.distanceFeedRate.output.write( 'G1%s\n' % self.getExtrusionDistanceStringFromExtrusionDistance( extrusionDistance ) )
+		self.distanceFeedRate.output.write( 'G1 F%s\n' % self.distanceFeedRate.getRounded( self.feedRateMinute ) )
 
 	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the dimension gcode."
@@ -151,13 +174,14 @@ class DimensionSkein:
 		if self.operatingFlowRate == None:
 			print( 'There is no operatingFlowRate so dimension will do nothing.' )
 			return gcodeText
-		self.feedOverFlow = self.operatingFeedRate / self.operatingFlowRate
+		self.restartDistance = self.repository.retractionDistance.value + self.repository.restartExtraDistance.value
+		self.extruderRetractionSpeedMinuteString = self.distanceFeedRate.getRounded( 60.0 * self.repository.extruderRetractionSpeed.value )
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			self.parseLine( lineIndex )
 		return self.distanceFeedRate.output.getvalue()
 
 	def getDimensionedArcMovement( self, line, splitLine ):
-		"Get an dimensioned arc movement."
+		"Get a dimensioned arc movement."
 		if self.oldLocation == None:
 			return line
 		relativeLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
@@ -181,7 +205,7 @@ class DimensionSkein:
 		return line + self.getExtrusionDistanceString( distance, splitLine )
 
 	def getDimensionedLinearMovement( self, line, splitLine ):
-		"Get an dimensioned linear movement."
+		"Get a dimensioned linear movement."
 		distance = 0.0
 		if self.distanceFeedRate.absoluteDistanceMode:
 			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
@@ -204,7 +228,10 @@ class DimensionSkein:
 			return ''
 		if distance <= 0.0:
 			return ''
-		extrusionDistance = self.feedOverFlow * self.flowRate / self.feedRateMinute * distance
+		return self.getExtrusionDistanceStringFromExtrusionDistance( self.flowRate * 60.0 / self.feedRateMinute * distance )
+
+	def getExtrusionDistanceStringFromExtrusionDistance( self, extrusionDistance ):
+		"Get the extrusion distance string from the extrusion distance."
 		if self.repository.relativeExtrusionDistance.value:
 			return ' E' + self.distanceFeedRate.getRounded( extrusionDistance )
 		self.totalExtrusionDistance += extrusionDistance
@@ -221,7 +248,7 @@ class DimensionSkein:
 				self.distanceFeedRate.addLine( '(<procedureDone> dimension </procedureDone>)' )
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
-				self.operatingFeedRate = 60.0 * float( splitLine[ 1 ] )
+				self.feedRateMinute = 60.0 * float( splitLine[ 1 ] )
 			elif firstWord == '(<operatingFlowRate>':
 				self.operatingFlowRate = float( splitLine[ 1 ] )
 				self.flowRate = self.operatingFlowRate
@@ -239,8 +266,13 @@ class DimensionSkein:
 		if firstWord == 'G1':
 			line = self.getDimensionedLinearMovement( line, splitLine )
 		elif firstWord == 'M101':
+			self.addLinearMoveExtrusionDistanceLine( self.restartDistance )
+			if not self.repository.relativeExtrusionDistance.value:
+				self.distanceFeedRate.addLine( 'G92 E0' )
+				self.totalExtrusionDistance = 0.0
 			self.isExtruderActive = True
 		elif firstWord == 'M103':
+			self.addLinearMoveExtrusionDistanceLine( - self.repository.retractionDistance.value )
 			self.isExtruderActive = False
 		elif firstWord == 'M108':
 			self.flowRate = float( splitLine[ 1 ][ 1 : ] )

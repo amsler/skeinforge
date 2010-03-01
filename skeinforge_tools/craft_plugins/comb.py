@@ -61,13 +61,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
 from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import sys
 
@@ -116,7 +116,7 @@ class CombRepository:
 
 	def execute( self ):
 		"Comb button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -137,6 +137,8 @@ class CombSkein:
 		self.nextLayerZ = None
 		self.oldLocation = None
 		self.oldZ = None
+		self.operatingFeedRatePerMinute = None
+		self.travelFeedRatePerMinute = None
 
 	def addGcodePathZ( self, feedRateMinute, path, z ):
 		"Add a gcode path, without modifying the extruder, to the output."

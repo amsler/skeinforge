@@ -55,6 +55,15 @@ def addElementToListTable( element, key, listTable ):
 	else:
 		listTable[ key ] = [ element ]
 
+def addElementToListTableIfNotThere( element, key, listTable ):
+	"Add the value to the lists."
+	if key in listTable:
+		elements = listTable[ key ]
+		if element not in elements:
+			elements.append( element )
+	else:
+		listTable[ key ] = [ element ]
+
 def addElementToPixelList( element, pixelTable, x, y ):
 	"Add an element to the pixel list."
 	stepKey = getStepKey( x, y )
@@ -545,6 +554,8 @@ def getFillOfSurroundings( surroundingLoops ):
 
 def getFourSignificantFigures( number ):
 	"Get number rounded to four significant figures as a string."
+	if number == None:
+		return None
 	absoluteNumber = abs( number )
 	if absoluteNumber >= 100.0:
 		return getRoundedToDecimalPlacesString( 2, number )

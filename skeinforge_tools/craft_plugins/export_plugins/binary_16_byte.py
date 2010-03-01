@@ -97,7 +97,7 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities import interpret
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_utilities import skeinforge_polyfile
 from struct import Struct
 import cStringIO
 import os
@@ -173,7 +173,7 @@ class Binary16ByteRepository:
 
 	def execute( self ):
 		"Convert to binary 16 byte button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [ '.gcode' ], self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [ '.gcode' ], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

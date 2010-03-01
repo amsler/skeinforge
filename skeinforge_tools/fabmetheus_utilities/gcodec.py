@@ -263,10 +263,13 @@ def getPythonFileNamesExceptInitRecursively( directoryName = '' ):
 
 def getSplitLineBeforeBracketSemicolon( line ):
 	"Get the split line before a bracket or semicolon."
-	bracketSemicolonIndex = min( line.find( ';' ), line.find( '(' ) )
-	if bracketSemicolonIndex < 0:
-		return line.split()
-	return line[ : bracketSemicolonIndex ].split()
+	semicolonIndex = line.find( ';' )
+	if semicolonIndex >= 0:
+		line = line[ : semicolonIndex ]
+	bracketIndex = line.find( '(' )
+	if bracketIndex > 0:
+		return line[ : bracketIndex ].split()
+	return line.split()
 
 def getStringFromCharacterSplitLine( character, splitLine ):
 	"Get the string after the first occurence of the character in the split line."

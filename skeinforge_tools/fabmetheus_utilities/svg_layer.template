@@ -34,7 +34,7 @@ sliceDimensionY = null;
 sliceDimensionZ = null;
 svgMinWidth = javascriptControlBoxX + 2 * margin; //Width of control box and margins
 textHeight = 22.5;
-unitScale = 3.7; //mm = 1; inch = 25.4
+unitScale = 3.7;
 zoomScale = 1; //Default 1:1 may need smaller scale for large objects
 
 //No javascript control var
@@ -42,184 +42,200 @@ noJavascriptControlBoxY = 110;
 
 var layers = [];
 
-function changeScale(newScale){
+function changeScale( newScale ) {
 	zoomScale = newScale
 	scale = unitScale * zoomScale
 	viewSingle()
-	setText('scaleNum','1 : ' + 1/zoomScale);
-	if(zoomScale >=1 ) //dont scale line thickness for large display scale 
-		document.getElementById('layerData').setAttributeNS(null,'stroke-width',2/(scale))
+	setText( 'scaleNum' ,'1 : ' + 1.0 / zoomScale );
+	if ( zoomScale >=1 ) //dont scale line thickness for large display scale
+		document.getElementById( 'layerData' ).setAttributeNS( null, 'stroke-width', 2.0 / ( scale ) )
 }
 
-function displayLayer(layerNum){
-	if (layerNum >= 0 && layerNum < layers.length) {
-		layers[currentLayer].setAttributeNS(null,'visibility','hidden');
-		layers[layerNum].setAttributeNS(null,'visibility','visible');
+function displayLayer( layerNum ) {
+	if ( layerNum >= 0 && layerNum < layers.length ) {
+		layers[ currentLayer ].setAttributeNS( null, 'visibility', 'hidden' );
+		layers[ layerNum ].setAttributeNS( null, 'visibility', 'visible' );
 		currentLayer = layerNum;
-		setText('layerNum',currentLayer);
+		setText( 'layerNum', currentLayer );
+
 		//Slider
-		if (!sliding) {
+		if ( !sliding ) {
 			// 150 = width of sliderbar 14 = width circle
-			x = (150 - 14) / (layers.length - 1) * currentLayer
-			document.getElementById('thumb').setAttributeNS(null,'cx',x + 17)
+			x = ( 150 - 14 ) / ( layers.length - 1 ) * currentLayer
+			document.getElementById( 'thumb' ).setAttributeNS( null, 'cx', x + 17 )
 		}
 	}
 }
 
-function init(){
+function getRoundedToThreePlaces( number ) {
+	//Get number rounded to three places.
+	return Math.round( number * 1000.0 ) / 1000.0;
+}
+
+function init() {
 	//Hide no javascript control box
-	document.getElementById('noJavascriptControls').setAttributeNS(null,'visibility','hidden')
-	
+	document.getElementById( 'noJavascriptControls' ).setAttributeNS( null, 'visibility', 'hidden' )
+
 	//Get meta data
-	mD = document.getElementsByTagNameNS('http://www.reprap.org/slice','layers')[0];
-	units = mD.getAttributeNS(null,'units');
-	sliceMinX = mD.getAttribute('minX') * 1;
-	sliceMaxX = mD.getAttribute('maxX') * 1;
-	sliceMinY = mD.getAttribute('minY') * 1;
-	sliceMaxY = mD.getAttribute('maxY') * 1;
-	sliceMinZ = mD.getAttribute('minZ') * 1;
-	sliceMaxZ = mD.getAttribute('maxZ') * 1;
-	
+	mD = document.getElementsByTagNameNS( 'http://www.reprap.org/slice', 'layers' )[ 0 ];
+	sliceMinX = mD.getAttribute( 'minX' ) * 1;
+	sliceMaxX = mD.getAttribute( 'maxX' ) * 1;
+	sliceMinY = mD.getAttribute( 'minY' ) * 1;
+	sliceMaxY = mD.getAttribute( 'maxY' ) * 1;
+	sliceMinZ = mD.getAttribute( 'minZ' ) * 1;
+	sliceMaxZ = mD.getAttribute( 'maxZ' ) * 1;
+
 	//Set Display variables
-	unitScale = units == 'in' ? 96 : 3.7;
 	scale = unitScale * zoomScale;
-	sliceDimensionX = Math.round((sliceMaxX - sliceMinX) * 1000) /1000; //Rounding to 3 decimal places
-	sliceDimensionY = Math.round((sliceMaxY - sliceMinY) * 1000) /1000;
-	sliceDimensionZ = Math.round((sliceMaxZ - sliceMinZ) * 1000) /1000;
-	
+	sliceDimensionX = getRoundedToThreePlaces( sliceMaxX - sliceMinX );
+	sliceDimensionY = getRoundedToThreePlaces( sliceMaxY - sliceMinY );
+	sliceDimensionZ = getRoundedToThreePlaces( sliceMaxZ - sliceMinZ );
+
 	//Find all groups
-	var allGroups = document.getElementsByTagName('g');
-	
+	var allGroups = document.getElementsByTagName( 'g' );
+
 	//Find only layer groups
-	for ( var i = 0;i<allGroups.length;i++){
-		if ( allGroups[i].id.indexOf('z') == 0 ){
-			layers.push(allGroups[i] );
+	for ( var i = 0; i < allGroups.length; i++ ) {
+		if ( allGroups[ i ].id.indexOf( 'z' ) == 0 ) {
+			layers.push( allGroups[ i ] );
 		}
 	}
-	
+
 	//Slider
-	thumb = document.getElementById('thumb');
-	thumb.addEventListener("mousedown", SliderDown, false);
-	thumb.addEventListener("mouseup", SliderUp, false);
-	thumb.addEventListener("mousemove", SliderMove, false);
-	
+	slider = document.getElementById( 'slider' );
+	thumb = document.getElementById( 'thumb' );
+	document.getElementById( 'javascriptControls' ).addEventListener( 'mouseup', sliderUp, false );
+	slider.addEventListener( 'mousedown', sliderDownMove, false );
+	slider.addEventListener( 'mouseup', sliderUp, false );
+	slider.addEventListener( 'mousemove', sliderMove, false );
+	thumb.addEventListener( 'mousedown', sliderDown, false );
+	thumb.addEventListener( 'mouseup', sliderUp, false );
+	thumb.addEventListener( 'mousemove', sliderMove, false );
+
 	//Control box data
-	setText('layerMax', layers.length - 1)
-	setText('minX', sliceMinX)
-	setText('minX', sliceMinX)
-	setText('minY', sliceMinY)
-	setText('minZ', sliceMinZ)
-	setText('maxX', sliceMaxX)
-	setText('maxY', sliceMaxY)
-	setText('maxZ', sliceMaxZ)
-	setText('dimX', sliceDimensionX)
-	setText('dimY', sliceDimensionY)
-	setText('dimZ', sliceDimensionZ)
-	setText('scaleNum','1 : ' + 1/zoomScale);
-	setText('layerThickness', 'Layer Thickness: ' + mD.getAttribute('layerThickness') + units);
-	
-	changeScale(zoomScale);
+	setText( 'layerMax', layers.length - 1 );
+	setText( 'minX', sliceMinX );
+	setText( 'minX', sliceMinX );
+	setText( 'minY', sliceMinY );
+	setText( 'minZ', sliceMinZ );
+	setText( 'maxX', sliceMaxX );
+	setText( 'maxY', sliceMaxY );
+	setText( 'maxZ', sliceMaxZ );
+	setText( 'dimX', sliceDimensionX );
+	setText( 'dimY', sliceDimensionY );
+	setText( 'dimZ', sliceDimensionZ );
+	setText( 'scaleNum', '1 : ' + 1.0 / zoomScale );
+	setText( 'layerThickness', 'Layer Thickness: ' + mD.getAttribute( 'layerThickness' ) + units );
+
+	changeScale( zoomScale );
 }
 
-function setSVG(width, height) {
-	svgObjs = document.getElementsByTagName('svg');
-	rootSVG = svgObjs[0];
-	rootSVG.setAttributeNS(null,'width',width + 'px')
-	rootSVG.setAttributeNS(null,'height',height + 'px')
+function setSVG( width, height ) {
+	rootSVG = document.getElementsByTagName( 'svg' )[ 0 ];
+	rootSVG.setAttributeNS( null, 'width', width + 'px' )
+	rootSVG.setAttributeNS( null, 'height', height + 'px' )
 }
 
-function setText(id, str ){
-	e = document.getElementById(id)
+function setText( id, str ) {
+	e = document.getElementById( id )
 	if ( e != null )
 		e.firstChild.nodeValue = str;
 }
 
-function SliderDown(event){sliding = true;}
+function sliderDown( event ) {
+	sliding = true;
+}
 
-function SliderUp(event){sliding = false;}
+function sliderDownMove( event ) {
+	sliding = true;
+	sliderMove( event );
+}
 
-function SliderMove(event){
-	value = event.clientX - 130
-	thumb = document.getElementById("thumb");
-	if (sliding && value > 6 && value < 144){
-		thumb.setAttribute("cx", 10 + value);
-		zoneWidth = (150 - 14) / (layers.length)
-		newLayer = Math.round((value - 7 - 0.5 * zoneWidth) / zoneWidth)
-		if(newLayer != currentLayer){
-			displayLayer(newLayer)
+function sliderUp( event ) {
+	sliding = false;
+}
+
+function sliderMove( event ) {
+	if ( !sliding ) {
+		return;
+	}
+	value = event.clientX - 130;
+	thumb = document.getElementById( 'thumb' );
+	if ( value > 6 && value < 144 ) {
+		thumb.setAttribute( 'cx', 10 + value );
+		zoneWidth = ( 150 - 14 ) / ( layers.length )
+		newLayer = Math.round( ( value - 7 - 0.5 * zoneWidth ) / zoneWidth )
+		if ( newLayer != currentLayer ) {
+			displayLayer( newLayer )
 		}
 	}
 }
 
-function viewAll(){
+function viewAll() {
 	//Set svg size and view port
-	width = margin + (sliceDimensionX * unitScale) + margin;
+	width = margin + ( sliceDimensionX * unitScale ) + margin;
 	width = Math.max( width, svgMinWidth );
-	height = layers.length * (margin + sliceDimensionY * unitScale + textHeight) + 3 * margin + textHeight + noJavascriptControlBoxY
-	setSVG(width,height);
-	
+	height = layers.length * ( margin + sliceDimensionY * unitScale + textHeight ) + 3 * margin + textHeight + noJavascriptControlBoxY;
+	setSVG( width,height );
+
 	//move and show all layers 
-	for (var i in layers) {
-		x = margin
-		//y = margin + sliceDimensionY * scale
-		y = (1 * i + 1) * ( margin + sliceDimensionY * unitScale) + i * textHeight
-		layers[i].setAttributeNS(null,'transform','translate(' + x + ', ' + y + ')')
-		transform = 'scale(' + unitScale + ' ' + (unitScale * -1) + ') translate(' + (sliceMinX * -1) + ' ' + (sliceMinY * -1) + ')'
-		pathElements = layers[i].getElementsByTagName('path')
-		for (var pathElementIndex = 0; pathElementIndex<pathElements.length; pathElementIndex++){
-			pathElements[pathElementIndex].setAttributeNS(null,'transform',transform)
+	for ( var i in layers ) {
+		x = margin;
+		y = ( 1 * i + 1 ) * ( margin + sliceDimensionY * unitScale ) + i * textHeight;
+		layers[ i ].setAttributeNS( null, 'transform', 'translate(' + x + ', ' + y + ')' );
+		transform = 'scale(' + unitScale + ' ' + ( unitScale * - 1 ) + ') translate(' + ( sliceMinX * - 1 ) + ' ' + ( sliceMinY * - 1 ) + ')';
+		pathElements = layers[ i ].getElementsByTagName( 'path' );
+		for ( var pathElementIndex = 0; pathElementIndex < pathElements.length; pathElementIndex++ ) {
+			pathElements[ pathElementIndex ].setAttributeNS( null, 'transform', transform );
 		}
-		layers[i].setAttributeNS(null,'visibility','visible')
-		layers[i].getElementsByTagName('text')[0].setAttributeNS(null,'visibility','visible')
+		layers[ i ].setAttributeNS( null, 'visibility', 'visible' );
+		layers[ i ].getElementsByTagName( 'text' )[ 0 ].setAttributeNS( null, 'visibility', 'visible' );
 	}
-	
+
 	//show control box
-	document.getElementById('javascriptControls').setAttributeNS(null,'visibility','hidden')
-	document.getElementById('noJavascriptControls').setAttributeNS(null,'visibility','visible')
-	x = margin
-	y = layers.length * (margin + sliceDimensionY * unitScale + textHeight) + margin
-	document.getElementById('buttonSingle').setAttributeNS(null,'visibility','visible')
-	document.getElementById('buttonSingle').setAttributeNS(null,'transform','translate('+x+' '+y+')')
+	document.getElementById( 'javascriptControls' ).setAttributeNS( null, 'visibility', 'hidden' );
+	document.getElementById( 'noJavascriptControls' ).setAttributeNS( null, 'visibility', 'visible' );
+	y = layers.length * ( margin + sliceDimensionY * unitScale + textHeight ) + margin;
+	document.getElementById( 'buttonSingle' ).setAttributeNS( null, 'visibility', 'visible' );
+	document.getElementById( 'buttonSingle' ).setAttributeNS( null, 'transform', 'translate(' + margin + ' ' + y + ')' );
 }
 
-function viewSingle(){
+function viewSingle() {
 	//Set svg size and view port
-	width = margin + (sliceDimensionX * scale) + margin;
+	width = margin + ( sliceDimensionX * scale ) + margin;
 	width = Math.max( width, svgMinWidth );
-	height = margin + (sliceDimensionY * scale) + margin + javascriptControlBoxY + margin 
-	setSVG(width,height);
-	
+	height = margin + ( sliceDimensionY * scale ) + margin + javascriptControlBoxY + margin;
+	setSVG( width,height );
+
 	//move and hide all layers 
-	for (var i in layers) {
-		x = margin
+	for ( var i in layers ) {
 		y = margin + sliceDimensionY * scale
-		layers[i].setAttributeNS(null,'transform','translate(' + x + ' ' + y + ')')
-		layers[i].setAttributeNS(null,'visibility','hidden')
-		layers[i].getElementsByTagName('text')[0].setAttributeNS(null,'visibility','hidden')
-		transform = 'scale(' + scale + ' ' + (scale * -1) + ') translate(' + (sliceMinX * -1) + ' ' + (sliceMinY * -1) + ')'
-		pathElements = layers[i].getElementsByTagName('path')
-		for (var pathElementIndex = 0; pathElementIndex<pathElements.length; pathElementIndex++){
-			pathElements[pathElementIndex].setAttributeNS(null,'transform',transform)
+		layers[ i ].setAttributeNS( null, 'transform', 'translate(' + margin + ' ' + y + ')' );
+		layers[ i ].setAttributeNS( null, 'visibility', 'hidden' );
+		layers[ i ].getElementsByTagName( 'text' )[ 0 ].setAttributeNS( null, 'visibility', 'hidden' );
+		transform = 'scale(' + scale + ' ' + ( scale * - 1 ) + ') translate(' + ( sliceMinX * - 1 ) + ' ' + ( sliceMinY * - 1 ) + ')';
+		pathElements = layers[ i ].getElementsByTagName( 'path' );
+		for ( var pathElementIndex = 0; pathElementIndex < pathElements.length; pathElementIndex++ ) {
+			pathElements[ pathElementIndex ].setAttributeNS( null, 'transform', transform );
 		}
 	}
-	
+
 	//show control box
-	document.getElementById('javascriptControls').setAttributeNS(null,'visibility','visible')
-	document.getElementById('noJavascriptControls').setAttributeNS(null,'visibility','hidden')
-	x = margin
-	y = margin + sliceDimensionY * scale + margin
-	document.getElementById('javascriptControls').setAttributeNS(null,'transform','translate('+x+' '+y+')')
-	document.getElementById('buttonSingle').setAttributeNS(null,'visibility','hidden')
-	
+	document.getElementById( 'javascriptControls' ).setAttributeNS( null, 'visibility', 'visible' );
+	document.getElementById( 'noJavascriptControls' ).setAttributeNS( null, 'visibility', 'hidden' );
+	y = margin + sliceDimensionY * scale + margin;
+	document.getElementById( 'javascriptControls' ).setAttributeNS( null, 'transform', 'translate(' + margin + ' ' + y + ')' );
+	document.getElementById( 'buttonSingle' ).setAttributeNS( null, 'visibility', 'hidden' );
+
 	//show current layer
-	displayLayer(currentLayer);
+	displayLayer( currentLayer );
 }
 	]]></script>
-	
+
 	<title>replaceWith_Title</title>
 	<desc></desc>
 	<metadata>
-		<slice:layers id="sliceData" version="0.1" units="mm" layerThickness="0.2" minX="0" maxX="61" minY="-5" maxY="50" minZ="0" maxZ="1"/>
+		<slice:layers id="sliceData" template = "svg_layer" version="0.1" layerThickness="0.2" minX="0" maxX="61" minY="-5" maxY="50" minZ="0" maxZ="1"/>
 	</metadata>
 	<!--Begin Layer Data   -->
 	<g id="layerData" fill="#556B2F" stroke="#00F" stroke-width="0.54px" font-weight="bold" font-family="Arial" font-size="15px">
@@ -231,11 +247,11 @@ function viewSingle(){
 <!--End of path section-->
 	</g>
 	<!--End Layer Data-->
-	
+
 	<!--Button to change from all to single-->
 	<g font-weight="bold" font-family="Arial" font-size="15px">
 		<text id="buttonSingle" fill="darkslateblue" visibility="hidden" onclick="viewSingle()">[Single View]</text>
-		
+
 	<!--Control box for single slice layout-->
 		<g id="javascriptControls" visibility="hidden" fill="#000">
 			<rect width="510" height="90" stroke="gray" stroke-width="4px" fill="silver"/>	
@@ -279,7 +295,7 @@ function viewSingle(){
 			</g>
 		</g>
 	</g>
-	
+
 	<!--No Javascript Control box   -->
 <!--replaceLineWith_noJavascriptControls--> <g id="noJavascriptControls" fill="#000" transform="translate(20, 1400)">
 		<rect width="300" height="110" stroke="gray" stroke-width="4px" fill="silver"/>
@@ -314,5 +330,4 @@ function viewSingle(){
 		</g>
 	</g>
 	<!--End Controls-->
-	
 </svg>

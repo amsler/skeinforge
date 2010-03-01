@@ -28,6 +28,7 @@ This brings up the milling setting dialog.
 from __future__ import absolute_import
 import __init__
 from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_profile
 import sys
 
 
@@ -38,7 +39,7 @@ __license__ = "GPL 3.0"
 
 def getCraftSequence():
 	"Get the milling craft sequence."
-	return 'chop,preface,outset,mill,multiply,drill,lift,flow,feed,home,lash,fillet,dimension,unpause,export'.split( ',' )
+	return 'chop,preface,outset,mill,multiply,drill,lift,flow,feed,home,lash,fillet,limit,dimension,unpause,export'.split( ',' )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -49,7 +50,7 @@ class MillingRepository:
 	"A class to handle the milling settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsSetCraftProfileArchive( getCraftSequence(), 'end_mill', self, 'skeinforge_tools.profile_plugins.milling.html' )
+		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'end_mill', self, 'skeinforge_tools.profile_plugins.milling.html' )
 
 
 def main():

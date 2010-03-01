@@ -144,24 +144,28 @@ Or you can turn files into gcode by adding the file name, for example:
 I may be slow, but I get there in the end.
 
 ===Troubleshooting===
-If there's a bug, try downloading the very latest version because sometimes I update without posting.
+If there's a bug, try downloading the very latest version because skeinforge is often updated without an announcement.
 
-Then you can ask for skeinforge help by sending a private message through the forum software by going to my page at:
-http://forums.reprap.org/profile.php?12,488
+If there is still a bug, then first prepare the following files:
 
-or posting in the last post of the Fabmetheus blog at:
-http://fabmetheus.blogspot.com/
+1. stl file
+2. pictures explaining the problem
+3. your settings (pack the whole .skeinforge directory with all your settings) 
 
-or you can email me at:
-perez_enrique@yahoo.com
+Then zip all the files.
 
-When asking for help please include your object and your zipped skeinforge settings.  The skeinforge settings are in the .skeinforge folder in your home directory.  If you include your object and zipped settings, I will give your bug a high priority.  If you do not I will give it a low priority since without the object and zipped settings I often can not reproduce the bug.
+Second, write a description of the error, send the description and the archive to the developer, enrique ( perez_enrique AT yahoo.com.removethispart ). After a bug fix is released, test the new version and report the results to enrique, whether the fix was successful or not.
 
 If the dialog window is too big for the screen, on most Linux window managers you can move a window by holding down the Alt key and then drag the window with the left mouse button to get to the off screen widgets.
 
 If you can't use the graphical interface, you can change the settings for skeinforge by using a text editor or spreadsheet to change the settings in the profiles folder in the .skeinforge folder in your home directory.
 
 Comments and suggestions are welcome, however, I usually won't reply because developing takes all my time and as of the time of this writing I have at least one year of features to implement.
+
+I will only answer your questions if you contribute to skeinforge in some way.  Some ways of contributing to skeinforge are in the contributions thread at:
+http://dev.forums.reprap.org/read.php?12,27562
+
+I reserve the right to make any correspondence public.  Do not send me any correspondence marked confidential.  If you do I will delete it.
 
 
 ==Examples==
@@ -196,12 +200,12 @@ To run only fill for example, type in the skeinforge_tools folder which fill is 
 
 from __future__ import absolute_import
 
-from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import os
 import sys
@@ -278,7 +282,7 @@ class SkeinforgeRepository:
 
 	def execute( self ):
 		"Skeinforge button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

@@ -10,6 +10,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
@@ -67,7 +68,7 @@ class CraftMenuSaveListener:
 		"Set the menu."
 		self.menu = menu
 		addToCraftMenu( menu )
-		settings.addElementToListTableIfNotThere( self, window, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListTableIfNotThere( self, window, settings.globalProfileSaveListenerListTable )
 
 	def save( self ):
 		"Profile has been saved and profile menu should be updated."
@@ -79,7 +80,7 @@ class CraftRadioButtonsSaveListener:
 	"A class to update the craft radio buttons."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		settings.addElementToListTableIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListTableIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
 		self.gridPosition = gridPosition.getCopy()
 		self.gridPosition.increment()
 		self.gridPosition.row = gridPosition.rowStart

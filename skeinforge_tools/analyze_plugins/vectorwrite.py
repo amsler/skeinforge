@@ -61,7 +61,7 @@ from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities import svg_codec
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_utilities import skeinforge_polyfile
 import cStringIO
 import os
 import sys
@@ -143,7 +143,7 @@ class VectorwriteRepository:
 
 	def execute( self ):
 		"Write button has been clicked."
-		fileNames = polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			analyzeFile( fileName )
 

@@ -94,13 +94,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
 from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import os
 import sys
@@ -156,7 +156,7 @@ class CoolRepository:
 
 	def execute( self ):
 		"Cool button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -172,6 +172,7 @@ class CoolSkein:
 		self.lineIndex = 0
 		self.lines = None
 		self.multiplier = 1.0
+		self.oldFlowRate = None
 		self.oldFlowRateString = None
 		self.oldLocation = None
 		self.oldTemperature = None
@@ -216,6 +217,11 @@ class CoolSkein:
 			self.distanceFeedRate.addLine( 'M108 S' + flowRateString )
 		self.oldFlowRateString = flowRateString
 
+	def addFlowRateMultipliedLineIfNecessary( self, flowRate ):
+		"Add a multipled line of flow rate if different."
+		if flowRate != None:
+			self.addFlowRateLineIfNecessary( self.multiplier * flowRate )
+
 	def addGcodeFromFeedRateMovementZ( self, feedRateMinute, point, z ):
 		"Add a movement to the output."
 		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, point, z ) )
@@ -233,7 +239,7 @@ class CoolSkein:
 		"Add line to time spent on layer."
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		self.highestZ = max( location.z, self.highestZ )
-		self.addFlowRateLineIfNecessary( self.multiplier * self.oldFlowRate )
+		self.addFlowRateMultipliedLineIfNecessary( self.oldFlowRate )
 		return self.distanceFeedRate.getLineWithZLimitedFeedRate( self.multiplier * self.feedRateMinute, line, location, splitLine )
 
 	def getCraftedGcode( self, gcodeText, coolRepository ):
@@ -336,7 +342,7 @@ class CoolSkein:
 			self.oldTemperature = gcodec.getDoubleAfterFirstLetter( splitLine[ 1 ] )
 		elif firstWord == 'M108':
 			self.setOperatingFlowString( splitLine )
-			self.addFlowRateLineIfNecessary( self.multiplier * self.oldFlowRate )
+			self.addFlowRateMultipliedLineIfNecessary( self.oldFlowRate )
 			return
 		elif firstWord == '(<surroundingLoop>)':
 			self.boundaryLoop = []

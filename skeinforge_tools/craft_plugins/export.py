@@ -76,7 +76,6 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
@@ -84,6 +83,8 @@ from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_analyze
 from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_polyfile
+from skeinforge_utilities import skeinforge_profile
 import cStringIO
 import os
 import sys
@@ -190,7 +191,7 @@ class ExportRepository:
 	"A class to handle the export settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.export.html', '', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.export.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Export', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Export' )
 		self.activateExport = settings.BooleanSetting().getFromValue( 'Activate Export', self, True )
@@ -222,7 +223,7 @@ class ExportRepository:
 
 	def execute( self ):
 		"Export button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

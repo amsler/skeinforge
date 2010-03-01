@@ -26,6 +26,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_profile
 import os
@@ -100,7 +101,7 @@ class ProfileMenuRadio:
 		for plugin in plugins:
 			plugin.value = ( plugin.name == self.profilePluginFileName )
 		settings.writeSettings( profileSettings )
-		settings.updateProfileSaveListeners()
+		skeinforge_profile.updateProfileSaveListeners()
 
 
 class ProfileMenuSaveListener:
@@ -109,7 +110,7 @@ class ProfileMenuSaveListener:
 		"Set the menu."
 		self.menu = menu
 		addToProfileMenu( menu )
-		settings.addElementToListTableIfNotThere( self, window, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListTableIfNotThere( self, window, settings.globalProfileSaveListenerListTable )
 
 	def save( self ):
 		"Profile has been saved and profile menu should be updated."

@@ -71,7 +71,7 @@ from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_utilities import skeinforge_polyfile
 import cStringIO
 import math
 import sys
@@ -129,7 +129,7 @@ class StatisticRepository:
 
 	def execute( self ):
 		"Write button has been clicked."
-		fileNames = polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
+		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
 		for fileName in fileNames:
 			analyzeFile( fileName )
 
@@ -235,6 +235,7 @@ class StatisticSkein:
 		return self.output.getvalue()
 
 	def getLocationSetFeedRateToSplitLine( self, splitLine ):
+		"Get location ans set feed rate to the plsit line."
 		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		indexOfF = gcodec.indexOfStartingWithSecond( "F", splitLine )
 		if indexOfF > 0:
@@ -273,7 +274,7 @@ class StatisticSkein:
 		afterCenterDifferenceAngle = euclidean.getAngleAroundZAxisDifference( afterCenterSegment, beforeCenterSegment )
 		absoluteDifferenceAngle = abs( afterCenterDifferenceAngle )
 		steps = int( round( 0.5 + max( absoluteDifferenceAngle * 2.4, absoluteDifferenceAngle * beforeCenterSegment.magnitude() / curveSection ) ) )
-		stepPlaneAngle = euclidean.getUnitPolar( afterCenterDifferenceAngle / steps, 1.0 )
+		stepPlaneAngle = euclidean.getUnitPolar( afterCenterDifferenceAngle / steps )
 		zIncrement = ( afterCenterSegment.z - beforeCenterSegment.z ) / float( steps )
 		for step in xrange( 1, steps ):
 			beforeCenterSegment = euclidean.getRoundZAxisByPlaneAngle( stepPlaneAngle, beforeCenterSegment )

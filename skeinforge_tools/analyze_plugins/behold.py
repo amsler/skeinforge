@@ -247,7 +247,7 @@ from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_utilities import skeinforge_polyfile
 import math
 import sys
 
@@ -357,7 +357,7 @@ class BeholdRepository( tableau.TableauRepository ):
 
 	def execute( self ):
 		"Write button has been clicked."
-		fileNames = polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			analyzeFile( fileName )
 

@@ -51,7 +51,7 @@ import __init__
 
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_utilities import skeinforge_polyfile
 import cStringIO
 import sys
 
@@ -98,7 +98,7 @@ class CommentRepository:
 
 	def execute( self ):
 		"Write button has been clicked."
-		fileNames = polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
+		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
 		for fileName in fileNames:
 			analyzeFile( fileName )
 

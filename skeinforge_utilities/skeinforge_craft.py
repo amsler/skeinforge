@@ -9,11 +9,12 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.meta_plugins import polyfile
+from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_analyze
+from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import os
 import time
@@ -110,7 +111,7 @@ def writeChainTextWithNounMessage( fileName, procedure ):
 	print( 'The %s tool has created the file:' % procedure )
 	print( suffixFileName )
 	print( '' )
-	print( 'It took % seconds to craft the file.' % int( round( time.time() - startTime ) ) )
+	print( 'It took %s seconds to craft the file.' % int( time.time() - startTime ) )
 	skeinforge_analyze.writeOutput( suffixFileName, craftText )
 
 def writeOutput( fileName ):
@@ -124,7 +125,7 @@ class CraftRadioButtonsSaveListener:
 	"A class to update the craft radio buttons."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		settings.addElementToListTableIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListTableIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
 		self.gridPosition = gridPosition.getCopy()
 		self.gridPosition.increment()
 		self.gridPosition.row = gridPosition.rowStart
@@ -174,6 +175,6 @@ class CraftRepository:
 
 	def execute( self ):
 		"Craft button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )

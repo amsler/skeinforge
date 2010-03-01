@@ -8,8 +8,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
+from skeinforge_utilities import skeinforge_meta
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -19,28 +19,11 @@ __license__ = "GPL 3.0"
 
 def addToMenu( master, menu, repository, window ):
 	"Add a tool plugin menu."
-	settings.addPluginsParentToMenu( getPluginsDirectoryPath(), menu, __file__, getPluginFileNames() )
-
-def getPluginFileNames():
-	"Get meta plugin file names."
-	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
-
-def getPluginsDirectoryPath():
-	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'meta_plugins' )
+	settings.addPluginsParentToMenu( skeinforge_meta.getPluginsDirectoryPath(), menu, __file__, skeinforge_meta.getPluginFileNames() )
 
 def getNewRepository():
 	"Get the repository constructor."
-	return MetaRepository()
-
-
-class MetaRepository:
-	"A class to handle the meta settings."
-	def __init__( self ):
-		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_tools.meta.html', '', self )
-		importantFileNames = [ 'polyfile' ]
-		settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
+	return skeinforge_meta.MetaRepository()
 
 
 def main():

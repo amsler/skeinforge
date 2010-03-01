@@ -174,7 +174,6 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_tools.meta_plugins import polyfile
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
@@ -182,6 +181,7 @@ from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import math
 import sys
@@ -192,19 +192,16 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
 
-# skeinforge_help, etc..
 # sphere_simple_format.xml
-# in dimension check for flow rate
 # make frame for plugin groups, add plugin help menu, add craft below menu
-# check for last existing then remove unneeded fill code from euclidean
 # search page in skeinforge,
+# check for last existing then remove unneeded fill code from euclidean
 # remove cool set at end of layer
-# remove comments from clip
 # save bug when switching from profile to profile
 # save just before printing
 # maybe measuring rod
 # comb simplify path, option of only combing around inside loops
-# veer
+# remove comments from clip, bend
 # add hook _extrusion
 # winding into coiling, coil into wind & weave
 # speed into speed and limit
@@ -240,6 +237,8 @@ __license__ = "GPL 3.0"
 # move & rotate model
 # comb improve running jump
 # trial, meta in a grid settings
+# maybe svg slice format
+# maybe interpret svg_convex_mesh
 #laminate tool head
 #maybe use 5x5 radius search in circle node
 #maybe add layer updates in behold, skeinview and maybe others
@@ -258,6 +257,7 @@ __license__ = "GPL 3.0"
 #
 # pick and place
 # search items, search links, choice entry field
+# svg triangle mesh, svg polygon mesh
 # simulate
 #document gear script
 #transform
@@ -991,7 +991,7 @@ class FillRepository:
 
 	def execute( self ):
 		"Fill button has been clicked."
-		fileNames = polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
