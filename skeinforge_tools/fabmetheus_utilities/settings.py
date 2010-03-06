@@ -56,10 +56,11 @@ def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	repository.fileNameHelp = fileNameHelp
 	repository.fileNameInput = None
 	repository.lowerName = fileNameHelp.split( '.' )[ - 2 ]
-	repository.baseName = os.path.join( profileDirectory, repository.lowerName + '.csv' )
+	repository.baseName = repository.lowerName + '.csv'
 	repository.capitalizedName = getEachWordCapitalized( repository.lowerName )
 	repository.openLocalHelpPage = HelpPage().getOpenFromDocumentationSubName( repository.fileNameHelp )
 	repository.openWikiManualHelpPage = None
+	repository.profileDirectory = profileDirectory
 	repository.repositoryDialog = None
 	repository.saveListenerTable = {}
 	repository.title = repository.capitalizedName + ' Settings'
@@ -233,6 +234,11 @@ def getFolders( directory ):
 			folders.append( fileName )
 	return folders
 
+def getGlobalRepositoryDialogValues():
+	"Get the global repository dialog values."
+	global globalRepositoryDialogListTable
+	return euclidean.getListTableElements( globalRepositoryDialogListTable )
+
 def getPathFromFileNameHelp( fileNameHelp ):
 	"Get the directory path from file name help."
 	skeinforgePath = getSkeinforgeDirectoryPath()
@@ -242,17 +248,11 @@ def getPathFromFileNameHelp( fileNameHelp ):
 		skeinforgePath = os.path.join( skeinforgePath, splitFileNameDirectoryName )
 	return skeinforgePath
 
-def getRadioPluginsAddPluginFrame( directoryPath, importantFileNames, names, repository ):
-	"Get the radio plugins and add the plugin frame."
-	repository.pluginFrame = PluginFrame()
-	radioPlugins = []
-	for name in names:
-		radioPlugin = RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginFrame.latentStringVar, name, repository, name == importantFileNames[ 0 ] )
-		radioPlugin.updateFunction = repository.pluginFrame.update
-		radioPlugins.append( radioPlugin )
-	defaultRadioButton = getSelectedRadioPlugin( importantFileNames + [ radioPlugins[ 0 ].name ], radioPlugins )
-	repository.pluginFrame.getFromPath( defaultRadioButton, directoryPath, repository )
-	return radioPlugins
+def getProfileBaseName( repository ):
+	"Get the profile base file name."
+	if repository.profileDirectory == '':
+		return repository.baseName
+	return os.path.join( repository.profileDirectory(), repository.baseName )
 
 def getProfilesDirectoryPath( subfolder = '' ):
 	"Get the profiles directory path, which is the settings directory joined with profiles."
@@ -268,12 +268,24 @@ def getProfilesDirectoryInAboveDirectory( subName = '' ):
 		return aboveProfilesDirectory
 	return os.path.join( aboveProfilesDirectory, subName )
 
+def getRadioPluginsAddPluginFrame( directoryPath, importantFileNames, names, repository ):
+	"Get the radio plugins and add the plugin frame."
+	repository.pluginFrame = PluginFrame()
+	radioPlugins = []
+	for name in names:
+		radioPlugin = RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginFrame.latentStringVar, name, repository, name == importantFileNames[ 0 ] )
+		radioPlugin.updateFunction = repository.pluginFrame.update
+		radioPlugins.append( radioPlugin )
+	defaultRadioButton = getSelectedRadioPlugin( importantFileNames + [ radioPlugins[ 0 ].name ], radioPlugins )
+	repository.pluginFrame.getFromPath( defaultRadioButton, directoryPath, repository )
+	return radioPlugins
+
 def getReadRepository( repository ):
 	"Read and return settings from a file."
-	text = gcodec.getFileText( getProfilesDirectoryPath( repository.baseName ), 'r', False )
+	text = gcodec.getFileText( getProfilesDirectoryPath( getProfileBaseName( repository ) ), 'r', False )
 	if text == '':
 		print( 'The default %s will be written in the .skeinforge folder in the home directory.' % repository.title.lower() )
-		text = gcodec.getFileText( getProfilesDirectoryInAboveDirectory( repository.baseName ), 'r', False )
+		text = gcodec.getFileText( getProfilesDirectoryInAboveDirectory( getProfileBaseName( repository ) ), 'r', False )
 		if text != '':
 			readSettingsFromText( repository, text )
 		writeSettings( repository )
@@ -409,6 +421,11 @@ def readSettingsFromText( repository, text ):
 	for lineIndex in xrange( len( lines ) ):
 		setArchiveToLine( lineIndex, lines, settingTable )
 
+def saveAll():
+	"Save all the dialogs."
+	for globalRepositoryDialogValue in getGlobalRepositoryDialogValues():
+		globalRepositoryDialogValue.save()
+
 def saveRepository( repository ):
 	"Set the entities to the dialog then write them."
 	for setting in repository.archive:
@@ -497,7 +514,7 @@ def writeValueListToArchiveWriter( archiveWriter, setting ):
 
 def writeSettings( repository ):
 	"Write the settings to a file."
-	profilesDirectoryPath = getProfilesDirectoryPath( repository.baseName )
+	profilesDirectoryPath = getProfilesDirectoryPath( getProfileBaseName( repository ) )
 	makeDirectory( os.path.dirname( profilesDirectoryPath ) )
 	gcodec.writeFileText( profilesDirectoryPath, getArchiveText( repository ) )
 
@@ -1049,10 +1066,17 @@ class GridVertical:
 
 class HelpPage:
 	"A class to open a help page."
+	def __init__( self ):
+		"Initialize column."
+		self.column = 3
+
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		self.displayButton = Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', text = getEachWordCapitalized( self.name ), command = self.openPage )
-		self.displayButton.grid( row = gridPosition.row, column = 3, columnspan = 2 )
+		capitalizedName = getEachWordCapitalized( self.name )
+		self.displayButton = Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', command = self.openPage, text = capitalizedName )
+		if len( capitalizedName ) < 12:
+			self.displayButton[ 'width' ] = 10
+		self.displayButton.grid( row = gridPosition.row, column = self.column, columnspan = 2 )
 
 	def addToMenu( self, repositoryMenu ):
 		"Add this to the repository menu."
@@ -1400,9 +1424,9 @@ class MenuRadio( BooleanSetting ):
 
 
 class PluginFrame:
-	"A class to list the profiles."
+	"A class to display the plugins in a frame."
 	def __init__( self ):
-		"Set the radio."
+		"Initialize."
 		self.gridTable = {}
 		self.latentStringVar = LatentStringVar()
 		self.oldLatentString = ''
@@ -1418,9 +1442,9 @@ class PluginFrame:
 		"Create the frame."
 		gridVertical = GridVertical( 0, 0 )
 		gridVertical.master = Tkinter.LabelFrame( gridPosition.master, borderwidth = 3, relief = 'raised' )
-		gridVertical.master.grid( row = gridPosition.row, column = gridPosition.column, columnspan = 10, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
+		gridVertical.master.grid( row = gridPosition.row, column = gridPosition.column, columnspan = 12, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
 		gridPosition.master.grid_rowconfigure( gridPosition.row, weight = 1 )
-		gridPosition.master.grid_columnconfigure( gridPosition.column + 9, weight = 1 )
+		gridPosition.master.grid_columnconfigure( gridPosition.column + 11, weight = 1 )
 		if self.latentStringVar.getString() == '':
 			self.defaultRadioButton.setSelect()
 		self.gridTable[ self.latentStringVar.getString() ] = gridVertical
@@ -1443,10 +1467,10 @@ class PluginFrame:
 		addEmptyRow( gridVertical )
 		gridVertical.increment()
 		gridVertical.xScrollbar = HiddenScrollbar( gridVertical.master, orient = Tkinter.HORIZONTAL )
-		gridVertical.xScrollbar.grid( row = gridVertical.row + 1, column = gridVertical.column, columnspan = 10, sticky = Tkinter.E + Tkinter.W )
+		gridVertical.xScrollbar.grid( row = gridVertical.row + 1, column = gridVertical.column, columnspan = 11, sticky = Tkinter.E + Tkinter.W )
 		gridVertical.yScrollbar = HiddenScrollbar( gridVertical.master )
-		gridVertical.yScrollbar.grid( row = gridVertical.row, column = gridVertical.column + 11, sticky = Tkinter.N + Tkinter.S )
-		canvasHeight = min( 1000, gridPosition.master.winfo_screenheight() - 400 ) - 6 - int( gridVertical.xScrollbar[ 'width' ] )
+		gridVertical.yScrollbar.grid( row = gridVertical.row, column = gridVertical.column + 12, sticky = Tkinter.N + Tkinter.S )
+		canvasHeight = min( 1000, gridPosition.master.winfo_screenheight() - 500 ) - 6 - int( gridVertical.xScrollbar[ 'width' ] )
 		canvasWidth = min( 650, gridPosition.master.winfo_screenwidth() - 100 ) - 6 - int( gridVertical.yScrollbar[ 'width' ] )
 		gridVertical.canvas = Tkinter.Canvas( gridVertical.master, height = canvasHeight, highlightthickness = 0, width = canvasWidth )
 		gridVertical.frameGridVertical.master = Tkinter.Frame( gridVertical.canvas )
@@ -1460,11 +1484,15 @@ class PluginFrame:
 		gridVertical.canvas[ 'yscrollcommand' ] = gridVertical.yScrollbar.set
 		gridVertical.canvas.create_window( 0, 0, anchor = Tkinter.NW, window = gridVertical.frameGridVertical.master )
 		gridVertical.canvas[ 'scrollregion' ] = gridVertical.frameGridVertical.master.grid_bbox()
-		gridVertical.canvas.grid( row = gridVertical.row, column = gridVertical.column, columnspan = 10, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
+		gridVertical.canvas.grid( row = gridVertical.row, column = gridVertical.column, columnspan = 11, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
 		gridVertical.master.grid_rowconfigure( gridVertical.row, weight = 1 )
-		gridVertical.master.grid_columnconfigure( gridVertical.column + 9, weight = 1 )
+		gridVertical.master.grid_columnconfigure( gridVertical.column + 11, weight = 1 )
 		gridVertical.frameGridVertical.master.lift()
 		self.oldLatentString = self.latentStringVar.getString()
+
+	def focusSetMaster( self, gridPosition ):
+		"Set the focus to the plugin master."
+		gridPosition.frameGridVertical.master.focus_set()
 
 	def getFromPath( self, defaultRadioButton, directoryPath, repository ):
 		"Initialize."
@@ -1498,7 +1526,7 @@ class PluginFrame:
 		if self.latentStringVar.getString() in self.gridTable:
 			gridPosition = self.gridTable[ self.latentStringVar.getString() ]
 			gridPosition.master.lift()
-			gridPosition.frameGridVertical.master.focus_set()
+			self.focusSetMaster( gridPosition )
 			return
 		self.createFrame( self.gridPosition )
 
@@ -1508,6 +1536,46 @@ class PluginFrame:
 		gridTableKeys.sort()
 		for gridTableKey in gridTableKeys:
 			saveRepository( self.gridTable[ gridTableKey ].repository )
+
+
+class PluginGroupFrame( PluginFrame ):
+	"A class to display the plugin groups in a frame."
+	def createFrame( self, gridPosition ):
+		"Create the frame."
+		gridVertical = GridVertical( 0, 0 )
+		gridVertical.master = Tkinter.LabelFrame( gridPosition.master, borderwidth = 3, relief = 'raised' )
+		gridVertical.master.grid( row = gridPosition.row, column = gridPosition.column, columnspan = 11, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
+		gridPosition.master.grid_rowconfigure( gridPosition.row, weight = 1 )
+		gridPosition.master.grid_columnconfigure( gridPosition.column + 10, weight = 1 )
+		if self.latentStringVar.getString() == '':
+			self.defaultRadioButton.setSelect()
+		self.gridTable[ self.latentStringVar.getString() ] = gridVertical
+		path = os.path.join( self.directoryPath, self.latentStringVar.getString() )
+		pluginModule = gcodec.getModuleWithPath( path )
+		if pluginModule == None:
+			print( 'this should never happen, pluginModule in addToDialog in PluginFrame in settings is None' )
+			print( path )
+			return
+		gridVertical.repository = getReadRepository( pluginModule.getNewRepository() )
+		gridVertical.setExecutablesRepository( gridVertical.repository )
+		executeTitle = gridVertical.repository.executeTitle
+		if executeTitle != None:
+			executeButton = Tkinter.Button( gridVertical.master, activebackground = 'black', activeforeground = 'blue', text = executeTitle, command = gridVertical.execute )
+			executeButton.grid( row = gridVertical.row, column = gridVertical.column )
+			gridVertical.column += 1
+		self.helpButton = Tkinter.Button( gridVertical.master, activebackground = 'black', activeforeground = 'white', text = "?", command = HelpPageRepository( gridVertical.repository ).openPage )
+		self.helpButton.grid( row = gridVertical.row, column = gridVertical.column )
+		addEmptyRow( gridVertical )
+		gridVertical.increment()
+		for setting in gridVertical.repository.displayEntities:
+			setting.addToDialog( gridVertical )
+		gridVertical.master.update_idletasks()
+		gridVertical.master.lift()
+		self.oldLatentString = self.latentStringVar.getString()
+
+	def focusSetMaster( self, gridPosition ):
+		"Set the focus to the plugin master."
+		gridPosition.master.focus_set()
 
 
 class Radio( BooleanSetting ):
@@ -1605,7 +1673,7 @@ class RadioPlugin( RadioCapitalized ):
 
 	def incrementGridPosition( self, gridPosition ):
 		"Increment the grid position."
-		gridPosition.incrementGivenNumberOfColumns( 8 )
+		gridPosition.incrementGivenNumberOfColumns( 10 )
 		self.radiobutton.grid( row = gridPosition.row, column = gridPosition.column, sticky = Tkinter.W )
 
 
@@ -1831,16 +1899,16 @@ class RepositoryDialog:
 		saveCommand = self.save
 		saveText = 'Save'
 		if self.isFirst:
-			saveCommand = self.saveAll
+			saveCommand = saveAll
 			saveText = 'Save All'
 		if repository.executeTitle != None:
 			executeButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'blue', text = repository.executeTitle, command = self.gridPosition.execute )
-			executeButton.grid( row = self.gridPosition.row, column = columnIndex )
-			columnIndex += 1
+			executeButton.grid( row = self.gridPosition.row, column = columnIndex, columnspan = 2, sticky = Tkinter.W )
+			columnIndex += 2
 		self.helpButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'white', text = "?", command = HelpPageRepository( self.repository ).openPage )
 		self.helpButton.grid( row = self.gridPosition.row, column = columnIndex )
 		self.closeListener.listenToWidget( self.helpButton )
-		columnIndex += 5
+		columnIndex += 6
 		cancelButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'orange', command = self.cancel, fg = 'orange', text = 'Cancel' )
 		cancelButton.grid( row = self.gridPosition.row, column = columnIndex )
 		columnIndex += 1
@@ -1861,13 +1929,6 @@ class RepositoryDialog:
 	def save( self, event = None ):
 		"Set the entities to the dialog then write them."
 		saveRepository( self.repository )
-
-	def saveAll( self ):
-		"Save all the dialogs."
-		global globalRepositoryDialogListTable
-		globalRepositoryDialogValues = euclidean.getListTableElements( globalRepositoryDialogListTable )
-		for globalRepositoryDialogValue in globalRepositoryDialogValues:
-			globalRepositoryDialogValue.save()
 
 	def setWindowPositionDeiconify( self ):
 		"Set the window position if that setting exists."

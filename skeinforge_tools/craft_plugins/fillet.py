@@ -89,6 +89,7 @@ from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_utilities import skeinforge_craft
 from skeinforge_utilities import skeinforge_polyfile
+from skeinforge_utilities import skeinforge_profile
 import math
 import sys
 
@@ -383,7 +384,7 @@ class FilletRepository:
 	"A class to handle the fillet settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.fillet.html', '', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.fillet.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fillet' )
 		self.activateFillet = settings.BooleanSetting().getFromValue( 'Activate Fillet', self, False )

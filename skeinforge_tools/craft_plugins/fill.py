@@ -192,13 +192,11 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
 
-# sphere_simple_format.xml
-# make frame for plugin groups, add plugin help menu, add craft below menu
 # search page in skeinforge,
+# sphere_simple_format.xml
 # check for last existing then remove unneeded fill code from euclidean
 # remove cool set at end of layer
-# save bug when switching from profile to profile
-# save just before printing
+# add circling when hot
 # maybe measuring rod
 # comb simplify path, option of only combing around inside loops
 # remove comments from clip, bend
@@ -211,7 +209,7 @@ __license__ = "GPL 3.0"
 #
 #
 #
-#  implement acceleration & collinear removal in viewers _extrusion
+# implement acceleration & collinear removal in penultimate viewers _extrusion
 # add polish, has perimeter, has cut first layer (False)
 # probably not set addedLocation in distanceFeedRate after arc move
 # maybe horizontal bridging and/or check to see if the ends are standing on anything
@@ -224,6 +222,8 @@ __license__ = "GPL 3.0"
 #
 #
 # help primary menu item refresh
+# add plugin help menu, add craft below menu
+# give option of saving when switching profiles
 # integral thin width _extrusion
 # xml & svg more forgiving, svg make defaults for layerThickness, maxZ, minZ, add layer z to svg_template, make the slider on the template track even when mouse is outside
 # layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
@@ -292,6 +292,7 @@ __license__ = "GPL 3.0"
 #12,3304
 #1,4960
 #2, 7077
+#3, 9598
 #85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?

@@ -127,8 +127,8 @@ class CraftRadioButtonsSaveListener:
 		"Add this to the dialog."
 		euclidean.addElementToListTableIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
 		self.gridPosition = gridPosition.getCopy()
-		self.gridPosition.increment()
 		self.gridPosition.row = gridPosition.rowStart
+		self.gridPosition.increment()
 		self.setRadioButtons()
 
 	def getFromRadioPlugins( self, radioPlugins, repository ):

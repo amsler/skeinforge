@@ -258,6 +258,18 @@ def getNewRepository():
 	"Get the repository constructor."
 	return SkeinforgeRepository()
 
+def getRadioPluginsAddPluginGroupFrame( directoryPath, importantFileNames, names, repository ):
+	"Get the radio plugins and add the plugin frame."
+	repository.pluginGroupFrame = settings.PluginGroupFrame()
+	radioPlugins = []
+	for name in names:
+		radioPlugin = settings.RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginGroupFrame.latentStringVar, name, repository, name == importantFileNames[ 0 ] )
+		radioPlugin.updateFunction = repository.pluginGroupFrame.update
+		radioPlugins.append( radioPlugin )
+	defaultRadioButton = settings.getSelectedRadioPlugin( importantFileNames + [ radioPlugins[ 0 ].name ], radioPlugins )
+	repository.pluginGroupFrame.getFromPath( defaultRadioButton, directoryPath, repository )
+	return radioPlugins
+
 def writeOutput( fileName ):
 	"Craft a gcode file."
 	skeinforge_craft.writeOutput( fileName )
@@ -274,10 +286,15 @@ class SkeinforgeRepository:
 		self.profileType = settings.MenuButtonDisplay().getFromName( 'Profile Type: ', self )
 		self.profileSelection = settings.MenuButtonDisplay().getFromName( 'Profile Selection: ', self )
 		addToProfileMenu( self.profileSelection, self.profileType, self )
+		settings.LabelDisplay().getFromName( 'Search:', self )
+		reprapSearch = settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_reprap.html', 'Reprap', self )
+		skeinforgeSearch = settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_skeinforge.html', 'Skeinforge', self )
+		skeinforgeSearch.column += 2
+		webSearch = settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_web.html', 'Web', self )
+		webSearch.column += 4
 		settings.LabelDisplay().getFromName( '', self )
-		self.skeinforgeLabel = settings.LabelDisplay().getFromName( 'Open Settings: ', self )
 		importantFileNames = [ 'craft', 'profile' ]
-		settings.getDisplayToolButtonsRepository( gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_tools' ), importantFileNames, getPluginFileNames(), self )
+		getRadioPluginsAddPluginGroupFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		self.executeTitle = 'Skeinforge'
 
 	def execute( self ):

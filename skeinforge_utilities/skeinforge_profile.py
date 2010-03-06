@@ -58,9 +58,7 @@ def addListsSetCraftProfileArchive( craftSequence, defaultProfile, repository, f
 
 def addListsToCraftTypeRepository( fileNameHelp, repository ):
 	"Add the value to the lists."
-	craftTypeName = getCraftTypeName()
-	craftTypeProfileDirectory = os.path.join( craftTypeName, getProfileName( craftTypeName ) )
-	settings.addListsToRepository( fileNameHelp, craftTypeProfileDirectory, repository )
+	settings.addListsToRepository( fileNameHelp, getProfileDirectory, repository )
 	dotsMinusOne = fileNameHelp.count( '.' ) - 1
 	x = 0
 	xAddition = 400
@@ -68,6 +66,11 @@ def addListsToCraftTypeRepository( fileNameHelp, repository ):
 		x += xAddition
 		xAddition /= 2
 	repository.windowPosition.value = '%s+0' % x
+
+def cancelAll():
+	"Cancel all the dialogs."
+	for globalRepositoryDialogValue in settings.getGlobalRepositoryDialogValues():
+		globalRepositoryDialogValue.cancel()
 
 def getCraftTypeName( subName = '' ):
 	"Get the craft type from the profile."
@@ -96,6 +99,11 @@ def getPluginsDirectoryPath():
 	"Get the plugins directory path."
 	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_tools', 'profile_plugins' ) )
 
+def getProfileDirectory():
+	"Get the profile directory."
+	craftTypeName = getCraftTypeName()
+	return os.path.join( craftTypeName, getProfileName( craftTypeName ) )
+
 def getProfileName( craftTypeName ):
 	"Get the profile name from the craft type name."
 	craftTypeSettings = getCraftTypePluginModule( craftTypeName ).getNewRepository()
@@ -110,6 +118,8 @@ def updateProfileSaveListeners():
 	"Call the save function of all the update profile save listeners."
 	for globalProfileSaveListener in euclidean.getListTableElements( settings.globalProfileSaveListenerListTable ):
 		globalProfileSaveListener.save()
+	cancelAll()
+
 
 
 class AddProfile:
@@ -167,6 +177,7 @@ class DeleteProfile( AddProfile ):
 
 
 class DeleteProfileDialog:
+	"A dialog to delete a profile."
 	def __init__( self, profileListboxSetting, root ):
 		"Display a delete dialog."
 		self.profileListboxSetting = profileListboxSetting
