@@ -54,7 +54,7 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities import triangle_mesh
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
@@ -90,7 +90,7 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Coil a gcode linear move file."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
 	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'coil' )
@@ -101,14 +101,14 @@ class CoilRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.coil.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Coil', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Coil', self, '' )
 		self.activateCoil = settings.BooleanSetting().getFromValue( 'Activate Coil', self, True )
 		self.minimumToolDistance = settings.FloatSpin().getFromValue( 10.0, 'Minimum Tool Distance (millimeters):', self, 50.0, 20.0 )
 		self.executeTitle = 'Coil'
 
 	def execute( self ):
 		"Coil button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

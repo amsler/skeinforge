@@ -10,6 +10,7 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 import cStringIO
+import math
 import os
 import shutil
 import webbrowser
@@ -118,7 +119,7 @@ def getAlongWayHexadecimalColor( beginBrightness, colorWidth, difference, endCol
 	"Get a color along the way from begin brightness to the end color."
 	alongWay = 1.0
 	if wayLength != 0.0:
-		alongWay = min( 1.0, float( difference ) / float( wayLength ) )
+		alongWay = math.sqrt( min( 1.0, abs( float( difference ) / float( wayLength ) ) ) )
 	hexadecimalColor = '#'
 	oneMinusAlongWay = 1.0 - alongWay
 	for primaryIndex in xrange( 3 ):
@@ -1029,7 +1030,7 @@ class GridVertical:
 		"The execute button was clicked."
 		for executable in self.executables:
 			executable.execute()
-		saveRepository( self.repository )
+		saveAll()
 		self.repository.execute()
 
 	def getCopy( self ):
@@ -1460,10 +1461,10 @@ class PluginFrame:
 		executeTitle = gridVertical.repository.executeTitle
 		if executeTitle != None:
 			executeButton = Tkinter.Button( gridVertical.master, activebackground = 'black', activeforeground = 'blue', text = executeTitle, command = gridVertical.frameGridVertical.execute )
-			executeButton.grid( row = gridVertical.row, column = gridVertical.column )
+			executeButton.grid( row = gridVertical.row, column = gridVertical.column, sticky = Tkinter.W )
 			gridVertical.column += 1
 		self.helpButton = Tkinter.Button( gridVertical.master, activebackground = 'black', activeforeground = 'white', text = "?", command = HelpPageRepository( gridVertical.repository ).openPage )
-		self.helpButton.grid( row = gridVertical.row, column = gridVertical.column )
+		self.helpButton.grid( row = gridVertical.row, column = gridVertical.column, sticky = Tkinter.W )
 		addEmptyRow( gridVertical )
 		gridVertical.increment()
 		gridVertical.xScrollbar = HiddenScrollbar( gridVertical.master, orient = Tkinter.HORIZONTAL )
@@ -1561,10 +1562,10 @@ class PluginGroupFrame( PluginFrame ):
 		executeTitle = gridVertical.repository.executeTitle
 		if executeTitle != None:
 			executeButton = Tkinter.Button( gridVertical.master, activebackground = 'black', activeforeground = 'blue', text = executeTitle, command = gridVertical.execute )
-			executeButton.grid( row = gridVertical.row, column = gridVertical.column )
+			executeButton.grid( row = gridVertical.row, column = gridVertical.column, sticky = Tkinter.W )
 			gridVertical.column += 1
 		self.helpButton = Tkinter.Button( gridVertical.master, activebackground = 'black', activeforeground = 'white', text = "?", command = HelpPageRepository( gridVertical.repository ).openPage )
-		self.helpButton.grid( row = gridVertical.row, column = gridVertical.column )
+		self.helpButton.grid( row = gridVertical.row, column = gridVertical.column, sticky = Tkinter.W )
 		addEmptyRow( gridVertical )
 		gridVertical.increment()
 		for setting in gridVertical.repository.displayEntities:
@@ -1906,7 +1907,7 @@ class RepositoryDialog:
 			executeButton.grid( row = self.gridPosition.row, column = columnIndex, columnspan = 2, sticky = Tkinter.W )
 			columnIndex += 2
 		self.helpButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'white', text = "?", command = HelpPageRepository( self.repository ).openPage )
-		self.helpButton.grid( row = self.gridPosition.row, column = columnIndex )
+		self.helpButton.grid( row = self.gridPosition.row, column = columnIndex, sticky = Tkinter.W )
 		self.closeListener.listenToWidget( self.helpButton )
 		columnIndex += 6
 		cancelButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'orange', command = self.cancel, fg = 'orange', text = 'Cancel' )

@@ -90,7 +90,7 @@ import __init__
 
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities import svg_codec
 from skeinforge_utilities import skeinforge_polyfile
@@ -106,16 +106,12 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def getCraftedText( fileName, text = '', repository = None ):
+def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get cleaved text."
 	if gcodec.getHasSuffix( fileName, '.svg' ):
-		if text == '':
-			text = gcodec.getFileText( fileName )
-		return text
-	return getCraftedTextFromFileName( fileName, repository = None )
-
-def getCraftedTextFromFileName( fileName, repository = None ):
-	"Cleave a shape file."
+		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
+		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'cleave' ):
+			return gcodeText
 	carving = svg_codec.getCarving( fileName )
 	if carving == None:
 		return ''
@@ -131,7 +127,7 @@ def getNewRepository():
 def writeOutput( fileName = '' ):
 	"Cleave a GNU Triangulated Surface file.  If no fileName is specified, cleave the first GNU Triangulated Surface file in this folder."
 	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypesWithoutWords( interpret.getImportPluginFileNames() )
+		unmodified = gcodec.getFilesWithFileTypesWithoutWords( skeinforge_interpret.getImportPluginFileNames() )
 		if len( unmodified ) == 0:
 			print( "There are no carvable files in this folder." )
 			return
@@ -156,7 +152,7 @@ class CleaveRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.cleave.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File to be Cleaved', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getTranslatorFileTypeTuples(), 'Open File to be Cleaved', self, '' )
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
@@ -171,7 +167,7 @@ class CleaveRepository:
 
 	def execute( self ):
 		"Cleave button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -181,7 +177,6 @@ class CleaveSkein( svg_codec.SVGCodecSkein ):
 	def getCarvedSVG( self, carving, fileName, repository ):
 		"Parse gnu triangulated surface text and store the cleaved gcode."
 		self.carving = carving
-		self.repository = repository
 		self.layerThickness = repository.layerThickness.value
 		self.perimeterWidth = repository.perimeterWidth.value
 		carving.setCarveLayerThickness( self.layerThickness )
@@ -194,8 +189,8 @@ class CleaveSkein( svg_codec.SVGCodecSkein ):
 		self.cornerMaximum = carving.getCarveCornerMaximum()
 		self.cornerMinimum = carving.getCarveCornerMinimum()
 		self.layerThickness = self.carving.layerThickness
-		self.decimalPlacesCarried = max( 0, 1 + self.repository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
-		return self.getReplacedSVGTemplate( fileName, 'cleave', rotatedBoundaryLayers )
+		self.decimalPlacesCarried = max( 0, 1 + repository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
+		return self.getReplacedSVGTemplate( fileName, 'cleave', svg_codec.getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ) )
 
 
 def main():

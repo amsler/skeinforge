@@ -2,7 +2,7 @@
 This page is in the table of contents.
 The stl.py script is an import translator plugin to get a carving from an stl file.
 
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getCarving function takes the file name of an stl file and returns the carving.
 
@@ -72,11 +72,7 @@ def addFacesGivenVertices( triangleMesh, vertexIndexTable, vertices ):
 def getCarving( fileName = '' ):
 	"Get the triangle mesh for the stl file."
 	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypeWithoutWords( 'stl' )
-		if len( unmodified ) == 0:
-			print( "There is no stl file in this folder." )
-			return None
-		fileName = unmodified[ 0 ]
+		return None
 	stlData = gcodec.getFileText( fileName, 'rb' )
 	if stlData == '':
 		return None
@@ -117,6 +113,10 @@ def getFloat( floatString ):
 def getFloatGivenBinary( byteIndex, stlData ):
 	"Get vertex given stl vertex line."
 	return unpack( 'f', stlData[ byteIndex : byteIndex + 4 ] )[ 0 ]
+
+def getInterpretationSuffix():
+	"Return the suffix for a triangle mesh."
+	return 'gts'
 
 def getVertexGivenBinary( byteIndex, stlData ):
 	"Get vertex given stl vertex line."

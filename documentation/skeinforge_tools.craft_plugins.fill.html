@@ -267,10 +267,10 @@ The fill tool has created the file:<br>
 <a href="skeinforge_tools.fabmetheus_utilities.euclidean.html">skeinforge_tools.fabmetheus_utilities.euclidean</a><br>
 <a href="skeinforge_tools.fabmetheus_utilities.gcodec.html">skeinforge_tools.fabmetheus_utilities.gcodec</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_tools.fabmetheus_utilities.intercircle.html">skeinforge_tools.fabmetheus_utilities.intercircle</a><br>
-<a href="skeinforge_tools.fabmetheus_utilities.interpret.html">skeinforge_tools.fabmetheus_utilities.interpret</a><br>
 <a href="math.html">math</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.fabmetheus_utilities.settings.html">skeinforge_tools.fabmetheus_utilities.settings</a><br>
-<a href="skeinforge_utilities.skeinforge_craft.html">skeinforge_utilities.skeinforge_craft</a><br>
+<a href="skeinforge_tools.fabmetheus_utilities.settings.html">skeinforge_tools.fabmetheus_utilities.settings</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_utilities.skeinforge_craft.html">skeinforge_utilities.skeinforge_craft</a><br>
+<a href="skeinforge_utilities.skeinforge_interpret.html">skeinforge_utilities.skeinforge_interpret</a><br>
 <a href="skeinforge_utilities.skeinforge_polyfile.html">skeinforge_utilities.skeinforge_polyfile</a><br>
 </td><td width="25%" valign=top><a href="skeinforge_utilities.skeinforge_profile.html">skeinforge_utilities.skeinforge_profile</a><br>
 <a href="sys.html">sys</a><br>
@@ -333,7 +333,7 @@ The fill tool has created the file:<br>
 
 <dl><dt><a name="FillSkein-getCarveArea"><strong>getCarveArea</strong></a>(self, layerIndex)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;of&nbsp;the&nbsp;carve.</tt></dd></dl>
 
-<dl><dt><a name="FillSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, fillRepository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="FillSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-getGridPoints"><strong>getGridPoints</strong></a>(self, fillLoops, reverseZRotationAngle)</dt><dd><tt>Get&nbsp;the&nbsp;grid&nbsp;pointsl.</tt></dd></dl>
 
@@ -351,7 +351,7 @@ The fill tool has created the file:<br>
 
 <dl><dt><a name="FillSkein-parseLine"><strong>parseLine</strong></a>(self, lineIndex)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;fill&nbsp;skein.</tt></dd></dl>
 
-<dl><dt><a name="FillSkein-setGridVariables"><strong>setGridVariables</strong></a>(self, fillRepository)</dt><dd><tt>Set&nbsp;the&nbsp;grid&nbsp;variables.</tt></dd></dl>
+<dl><dt><a name="FillSkein-setGridVariables"><strong>setGridVariables</strong></a>(self, repository)</dt><dd><tt>Set&nbsp;the&nbsp;grid&nbsp;variables.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -408,8 +408,8 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-createFillForSurroundings"><strong>createFillForSurroundings</strong></a>(radius, shouldExtraLoopsBeAdded, surroundingLoops)</dt><dd><tt>Create&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;for&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getAdditionalLength"><strong>getAdditionalLength</strong></a>(path, point, pointIndex)</dt><dd><tt>Get&nbsp;the&nbsp;additional&nbsp;length&nbsp;added&nbsp;by&nbsp;inserting&nbsp;a&nbsp;point&nbsp;into&nbsp;a&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getClosestOppositeIntersectionPaths"><strong>getClosestOppositeIntersectionPaths</strong></a>(yIntersectionPaths)</dt><dd><tt>Get&nbsp;the&nbsp;close&nbsp;to&nbsp;center&nbsp;paths,&nbsp;starting&nbsp;with&nbsp;the&nbsp;first&nbsp;and&nbsp;an&nbsp;additional&nbsp;opposite&nbsp;if&nbsp;it&nbsp;exists.</tt></dd></dl>
- <dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText<font color="#909090">=''</font>, fillRepository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;file&nbsp;or&nbsp;gcode&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, fillRepository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;gcode&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText<font color="#909090">=''</font>, repository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;file&nbsp;or&nbsp;gcode&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;gcode&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getExtraFillLoops"><strong>getExtraFillLoops</strong></a>(insideLoops, outsideLoop, radius)</dt><dd><tt>Get&nbsp;extra&nbsp;loops&nbsp;between&nbsp;inside&nbsp;and&nbsp;outside&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getKeyIsInPixelTableAddValue"><strong>getKeyIsInPixelTableAddValue</strong></a>(key, pathIndexTable, pixelTable)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;key&nbsp;is&nbsp;in&nbsp;the&nbsp;pixel&nbsp;table,&nbsp;and&nbsp;if&nbsp;it&nbsp;is&nbsp;and&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;None&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;path&nbsp;index&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>

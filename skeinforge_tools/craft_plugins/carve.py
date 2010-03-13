@@ -106,10 +106,10 @@ import __init__
 
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
-from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities import svg_codec
 from skeinforge_tools.fabmetheus_utilities import triangle_mesh
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import math
@@ -123,15 +123,12 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def getCraftedText( fileName, text = '', repository = None ):
+def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get carved text."
 	if gcodec.getHasSuffix( fileName, '.svg' ):
-		text = gcodec.getTextIfEmpty( fileName, text )
-		return text
-	return getCraftedTextFromFileName( fileName, repository = None )
-
-def getCraftedTextFromFileName( fileName, repository = None ):
-	"Carve a shape file."
+		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
+		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'carve' ):
+			return gcodeText
 	carving = svg_codec.getCarving( fileName )
 	if carving == None:
 		return ''
@@ -163,7 +160,7 @@ class CarveRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.carve.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Carve' )
 		self.bridgeThicknessMultiplier = settings.FloatSpin().getFromValue( 0.8, 'Bridge Thickness Multiplier (ratio):', self, 1.2, 1.0 )
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
@@ -184,7 +181,7 @@ class CarveRepository:
 
 	def execute( self ):
 		"Carve button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -201,7 +198,6 @@ class CarveSkein( svg_codec.SVGCodecSkein ):
 	def getCarvedSVG( self, carving, fileName, repository ):
 		"Parse gnu triangulated surface text and store the carved gcode."
 		self.carving = carving
-		self.repository = repository
 		self.layerThickness = repository.layerThickness.value
 		self.setExtrusionDiameterWidth( repository )
 		if repository.infillDirectionBridge.value:
@@ -216,9 +212,9 @@ class CarveSkein( svg_codec.SVGCodecSkein ):
 		self.cornerMaximum = carving.getCarveCornerMaximum()
 		self.cornerMinimum = carving.getCarveCornerMinimum()
 		self.layerThickness = self.carving.layerThickness
-		self.decimalPlacesCarried = max( 0, 1 + self.repository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
+		self.decimalPlacesCarried = max( 0, 1 + repository.extraDecimalPlaces.value - int( math.floor( math.log10( self.layerThickness ) ) ) )
 		self.setExtrusionDiameterWidth( repository )
-		return self.getReplacedSVGTemplate( fileName, 'carve', rotatedBoundaryLayers )
+		return self.getReplacedSVGTemplate( fileName, 'carve', svg_codec.getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ) )
 
 	def setExtrusionDiameterWidth( self, repository ):
 		"Set the extrusion diameter & width and the bridge thickness & width."

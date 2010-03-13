@@ -19,13 +19,14 @@
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="Tkinter.html">Tkinter</a><br>
 <a href="__init__.html">__init__</a><br>
-</td><td width="25%" valign=top><a href="cStringIO.html">cStringIO</a><br>
-<a href="skeinforge_tools.fabmetheus_utilities.euclidean.html">skeinforge_tools.fabmetheus_utilities.euclidean</a><br>
-</td><td width="25%" valign=top><a href="skeinforge_tools.fabmetheus_utilities.gcodec.html">skeinforge_tools.fabmetheus_utilities.gcodec</a><br>
-<a href="os.html">os</a><br>
-</td><td width="25%" valign=top><a href="shutil.html">shutil</a><br>
+<a href="cStringIO.html">cStringIO</a><br>
+</td><td width="25%" valign=top><a href="skeinforge_tools.fabmetheus_utilities.euclidean.html">skeinforge_tools.fabmetheus_utilities.euclidean</a><br>
+<a href="skeinforge_tools.fabmetheus_utilities.gcodec.html">skeinforge_tools.fabmetheus_utilities.gcodec</a><br>
+<a href="math.html">math</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="shutil.html">shutil</a><br>
 <a href="webbrowser.html">webbrowser</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -53,7 +54,12 @@
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.fabmetheus_utilities.settings.html#LatentStringVar">LatentStringVar</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.fabmetheus_utilities.settings.html#MenuButtonDisplay">MenuButtonDisplay</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.fabmetheus_utilities.settings.html#PluginFrame">PluginFrame</a>
-</font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.fabmetheus_utilities.settings.html#RepositoryDialog">RepositoryDialog</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="skeinforge_tools.fabmetheus_utilities.settings.html#PluginGroupFrame">PluginGroupFrame</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="skeinforge_tools.fabmetheus_utilities.settings.html#RepositoryDialog">RepositoryDialog</a>
 </font></dt><dt><font face="helvetica, arial"><a href="skeinforge_tools.fabmetheus_utilities.settings.html#StringSetting">StringSetting</a>
 </font></dt><dd>
 <dl>
@@ -578,6 +584,8 @@ Methods inherited from <a href="skeinforge_tools.fabmetheus_utilities.settings.h
 <td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;open&nbsp;a&nbsp;help&nbsp;page.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
+<dl><dt><a name="HelpPage-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;column.</tt></dd></dl>
+
 <dl><dt><a name="HelpPage-addToDialog"><strong>addToDialog</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
 
 <dl><dt><a name="HelpPage-addToMenu"><strong>addToMenu</strong></a>(self, repositoryMenu)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;repository&nbsp;menu.</tt></dd></dl>
@@ -1793,14 +1801,16 @@ Methods inherited from <a href="skeinforge_tools.fabmetheus_utilities.settings.h
 <font color="#000000" face="helvetica, arial"><a name="PluginFrame">class <strong>PluginFrame</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;list&nbsp;the&nbsp;profiles.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;display&nbsp;the&nbsp;plugins&nbsp;in&nbsp;a&nbsp;frame.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="PluginFrame-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;radio.</tt></dd></dl>
+<dl><dt><a name="PluginFrame-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize.</tt></dd></dl>
 
 <dl><dt><a name="PluginFrame-addToDialog"><strong>addToDialog</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
 
 <dl><dt><a name="PluginFrame-createFrame"><strong>createFrame</strong></a>(self, gridPosition)</dt><dd><tt>Create&nbsp;the&nbsp;frame.</tt></dd></dl>
+
+<dl><dt><a name="PluginFrame-focusSetMaster"><strong>focusSetMaster</strong></a>(self, gridPosition)</dt><dd><tt>Set&nbsp;the&nbsp;focus&nbsp;to&nbsp;the&nbsp;plugin&nbsp;master.</tt></dd></dl>
 
 <dl><dt><a name="PluginFrame-getFromPath"><strong>getFromPath</strong></a>(self, defaultRadioButton, directoryPath, repository)</dt><dd><tt>Initialize.</tt></dd></dl>
 
@@ -1811,6 +1821,36 @@ Methods inherited from <a href="skeinforge_tools.fabmetheus_utilities.settings.h
 <dl><dt><a name="PluginFrame-update"><strong>update</strong></a>(self)</dt><dd><tt>Update&nbsp;the&nbsp;frame.</tt></dd></dl>
 
 <dl><dt><a name="PluginFrame-writeToArchiveWriter"><strong>writeToArchiveWriter</strong></a>(self, archiveWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;archive&nbsp;writer.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PluginGroupFrame">class <strong>PluginGroupFrame</strong></a>(<a href="skeinforge_tools.fabmetheus_utilities.settings.html#PluginFrame">PluginFrame</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;display&nbsp;the&nbsp;plugin&nbsp;groups&nbsp;in&nbsp;a&nbsp;frame.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PluginGroupFrame-createFrame"><strong>createFrame</strong></a>(self, gridPosition)</dt><dd><tt>Create&nbsp;the&nbsp;frame.</tt></dd></dl>
+
+<dl><dt><a name="PluginGroupFrame-focusSetMaster"><strong>focusSetMaster</strong></a>(self, gridPosition)</dt><dd><tt>Set&nbsp;the&nbsp;focus&nbsp;to&nbsp;the&nbsp;plugin&nbsp;master.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="skeinforge_tools.fabmetheus_utilities.settings.html#PluginFrame">PluginFrame</a>:<br>
+<dl><dt><a name="PluginGroupFrame-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<dl><dt><a name="PluginGroupFrame-addToDialog"><strong>addToDialog</strong></a>(self, gridPosition)</dt><dd><tt>Add&nbsp;this&nbsp;to&nbsp;the&nbsp;dialog.</tt></dd></dl>
+
+<dl><dt><a name="PluginGroupFrame-getFromPath"><strong>getFromPath</strong></a>(self, defaultRadioButton, directoryPath, repository)</dt><dd><tt>Initialize.</tt></dd></dl>
+
+<dl><dt><a name="PluginGroupFrame-setStateToValue"><strong>setStateToValue</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;of&nbsp;all&nbsp;the&nbsp;plugins&nbsp;to&nbsp;the&nbsp;value.</tt></dd></dl>
+
+<dl><dt><a name="PluginGroupFrame-setToDisplay"><strong>setToDisplay</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;plugins&nbsp;to&nbsp;the&nbsp;display.</tt></dd></dl>
+
+<dl><dt><a name="PluginGroupFrame-update"><strong>update</strong></a>(self)</dt><dd><tt>Update&nbsp;the&nbsp;frame.</tt></dd></dl>
+
+<dl><dt><a name="PluginGroupFrame-writeToArchiveWriter"><strong>writeToArchiveWriter</strong></a>(self, archiveWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;archive&nbsp;writer.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -2114,8 +2154,6 @@ Methods inherited from <a href="skeinforge_tools.fabmetheus_utilities.settings.h
 
 <dl><dt><a name="RepositoryDialog-save"><strong>save</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;entities&nbsp;to&nbsp;the&nbsp;dialog&nbsp;then&nbsp;write&nbsp;them.</tt></dd></dl>
 
-<dl><dt><a name="RepositoryDialog-saveAll"><strong>saveAll</strong></a>(self)</dt><dd><tt>Save&nbsp;all&nbsp;the&nbsp;dialogs.</tt></dd></dl>
-
 <dl><dt><a name="RepositoryDialog-setWindowPositionDeiconify"><strong>setWindowPositionDeiconify</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;window&nbsp;position&nbsp;if&nbsp;that&nbsp;setting&nbsp;exists.</tt></dd></dl>
 
 </td></tr></table> <p>
@@ -2342,7 +2380,9 @@ Methods inherited from <a href="skeinforge_tools.fabmetheus_utilities.settings.h
  <dl><dt><a name="-getFileInGivenDirectory"><strong>getFileInGivenDirectory</strong></a>(directory, fileName)</dt><dd><tt>Get&nbsp;the&nbsp;file&nbsp;from&nbsp;the&nbsp;fileName&nbsp;or&nbsp;the&nbsp;lowercase&nbsp;fileName&nbsp;in&nbsp;the&nbsp;given&nbsp;directory.</tt></dd></dl>
  <dl><dt><a name="-getFileTextGivenDirectoryFileName"><strong>getFileTextGivenDirectoryFileName</strong></a>(directory, fileName)</dt><dd><tt>Get&nbsp;the&nbsp;entire&nbsp;text&nbsp;of&nbsp;a&nbsp;file&nbsp;with&nbsp;the&nbsp;given&nbsp;file&nbsp;name&nbsp;in&nbsp;the&nbsp;given&nbsp;directory.</tt></dd></dl>
  <dl><dt><a name="-getFolders"><strong>getFolders</strong></a>(directory)</dt><dd><tt>Get&nbsp;the&nbsp;folder&nbsp;list&nbsp;in&nbsp;a&nbsp;directory.</tt></dd></dl>
+ <dl><dt><a name="-getGlobalRepositoryDialogValues"><strong>getGlobalRepositoryDialogValues</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;global&nbsp;repository&nbsp;dialog&nbsp;values.</tt></dd></dl>
  <dl><dt><a name="-getPathFromFileNameHelp"><strong>getPathFromFileNameHelp</strong></a>(fileNameHelp)</dt><dd><tt>Get&nbsp;the&nbsp;directory&nbsp;path&nbsp;from&nbsp;file&nbsp;name&nbsp;help.</tt></dd></dl>
+ <dl><dt><a name="-getProfileBaseName"><strong>getProfileBaseName</strong></a>(repository)</dt><dd><tt>Get&nbsp;the&nbsp;profile&nbsp;base&nbsp;file&nbsp;name.</tt></dd></dl>
  <dl><dt><a name="-getProfilesDirectoryInAboveDirectory"><strong>getProfilesDirectoryInAboveDirectory</strong></a>(subName<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;profiles&nbsp;directory&nbsp;path&nbsp;in&nbsp;the&nbsp;above&nbsp;directory.</tt></dd></dl>
  <dl><dt><a name="-getProfilesDirectoryPath"><strong>getProfilesDirectoryPath</strong></a>(subfolder<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;profiles&nbsp;directory&nbsp;path,&nbsp;which&nbsp;is&nbsp;the&nbsp;settings&nbsp;directory&nbsp;joined&nbsp;with&nbsp;profiles.</tt></dd></dl>
  <dl><dt><a name="-getRadioPluginsAddPluginFrame"><strong>getRadioPluginsAddPluginFrame</strong></a>(directoryPath, importantFileNames, names, repository)</dt><dd><tt>Get&nbsp;the&nbsp;radio&nbsp;plugins&nbsp;and&nbsp;add&nbsp;the&nbsp;plugin&nbsp;frame.</tt></dd></dl>
@@ -2362,6 +2402,7 @@ Methods inherited from <a href="skeinforge_tools.fabmetheus_utilities.settings.h
  <dl><dt><a name="-quitWindow"><strong>quitWindow</strong></a>(root)</dt><dd><tt>Quit&nbsp;a&nbsp;window.</tt></dd></dl>
  <dl><dt><a name="-quitWindows"><strong>quitWindows</strong></a>(event<font color="#909090">=None</font>)</dt><dd><tt>Quit&nbsp;all&nbsp;windows.</tt></dd></dl>
  <dl><dt><a name="-readSettingsFromText"><strong>readSettingsFromText</strong></a>(repository, text)</dt><dd><tt>Read&nbsp;settings&nbsp;from&nbsp;a&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-saveAll"><strong>saveAll</strong></a>()</dt><dd><tt>Save&nbsp;all&nbsp;the&nbsp;dialogs.</tt></dd></dl>
  <dl><dt><a name="-saveRepository"><strong>saveRepository</strong></a>(repository)</dt><dd><tt>Set&nbsp;the&nbsp;entities&nbsp;to&nbsp;the&nbsp;dialog&nbsp;then&nbsp;write&nbsp;them.</tt></dd></dl>
  <dl><dt><a name="-setArchiveToLine"><strong>setArchiveToLine</strong></a>(lineIndex, lines, settingTable)</dt><dd><tt>Set&nbsp;an&nbsp;archive&nbsp;to&nbsp;a&nbsp;setting&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-setButtonFontWeightString"><strong>setButtonFontWeightString</strong></a>(button, isBold)</dt><dd><tt>Set&nbsp;button&nbsp;font&nbsp;weight&nbsp;given&nbsp;isBold.</tt></dd></dl>

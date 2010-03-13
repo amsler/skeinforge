@@ -61,7 +61,7 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
 from skeinforge_utilities import skeinforge_polyfile
@@ -101,7 +101,7 @@ def getSelectedPlugin( repository ):
 
 def writeOutput( fileName = '' ):
 	"Unpause a gcode linear move file."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'unpause' )
 
@@ -111,7 +111,7 @@ class UnpauseRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository( 'skeinforge_tools.craft_plugins.unpause.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Unpause' )
 		self.activateUnpause = settings.BooleanSetting().getFromValue( 'Activate Unpause', self, False )
 		self.delay = settings.FloatSpin().getFromValue( 2.0, 'Delay (milliseconds):', self, 42.0, 28.0 )
@@ -120,7 +120,7 @@ class UnpauseRepository:
 
 	def execute( self ):
 		"Unpause button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

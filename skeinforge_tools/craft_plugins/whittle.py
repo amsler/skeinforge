@@ -56,7 +56,7 @@ except:
 import __init__
 
 from skeinforge_tools.fabmetheus_utilities import gcodec
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
 from skeinforge_utilities import skeinforge_polyfile
@@ -90,7 +90,7 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Whittle the carving of a gcode file.  If no fileName is specified, whittle the first unmodified gcode file in this folder."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
 	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'whittle' )
@@ -101,14 +101,14 @@ class WhittleRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.whittle.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Whittled', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Whittled', self, '' )
 		self.activateWhittle = settings.BooleanSetting().getFromValue( 'Activate Whittle:', self, False )
 		self.maximumVerticalStep = settings.FloatSpin().getFromValue( 0.02, 'Maximum Vertical Step (mm):', self, 0.42, 0.1 )
 		self.executeTitle = 'Whittle'
 
 	def execute( self ):
 		"Whittle button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

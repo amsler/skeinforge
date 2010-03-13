@@ -84,7 +84,7 @@ import __init__
 
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_utilities import skeinforge_craft
@@ -127,7 +127,7 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Fillet a gcode linear move file. Depending on the settings, either arcPoint, arcRadius, arcSegment, bevel or do nothing."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'fillet' )
 
@@ -385,7 +385,7 @@ class FilletRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.fillet.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fillet' )
 		self.activateFillet = settings.BooleanSetting().getFromValue( 'Activate Fillet', self, False )
 		self.filletProcedureChoiceLabel = settings.LabelDisplay().getFromName( 'Fillet Procedure Choice: ', self )
@@ -402,7 +402,7 @@ class FilletRepository:
 
 	def execute( self ):
 		"Fillet button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

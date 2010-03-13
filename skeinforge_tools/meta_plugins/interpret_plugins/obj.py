@@ -2,7 +2,7 @@
 This page is in the table of contents.
 The obj.py script is an import translator plugin to get a carving from an obj file.
 
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getCarving function takes the file name of an obj file and returns the carving.
 
@@ -78,11 +78,7 @@ def getFaceGivenLine( line, triangleMesh ):
 def getCarving( fileName = '' ):
 	"Get the triangle mesh for the obj file."
 	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypeWithoutWords( 'obj' )
-		if len( unmodified ) == 0:
-			print( "There is no obj file in this folder." )
-			return None
-		fileName = unmodified[ 0 ]
+		return None
 	objText = gcodec.getFileText( fileName, 'rb' )
 	if objText == '':
 		return None
@@ -90,6 +86,10 @@ def getCarving( fileName = '' ):
 	addFacesGivenText( objText, triangleMesh )
 	triangleMesh.setEdgesForAllFaces()
 	return triangleMesh
+
+def getInterpretationSuffix():
+	"Return the suffix for a triangle mesh."
+	return 'gts'
 
 def getVertexGivenLine( line ):
 	"Get vertex given obj vertex line."

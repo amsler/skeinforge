@@ -60,14 +60,13 @@ class XMLElement:
 			stringRepresentation += '\n%s' % child
 		return stringRepresentation
 
-	def addAttribute( self, word ):
-		"Set the attribute table to the split line."
-		indexOfEqualSign = word.find( '=' )
-		key = word[ : indexOfEqualSign ]
-		afterEqualSign = word[ indexOfEqualSign + 1 : ]
-		afterEqualSign = afterEqualSign.lstrip()
-		value = afterEqualSign[ 1 : - 1 ]
-		self.attributeTable[ key ] = value
+	def addAttribute( self, characterIndex, line ):
+		"Add the attribute to the dictionary."
+		beforeEqualLine = line[ : characterIndex ][ : : - 1 ]
+		lineStripped = beforeEqualLine.lstrip().replace( '"', ' ' ).replace( "'", ' ' )
+		firstWord = lineStripped.split()[ 0 ]
+		key = firstWord[ : : - 1 ]
+		self.attributeTable[ key ] = self.getWordWithinQuotes( line[ characterIndex + 1 : ] )
 
 	def getChildrenWithClassName( self, className ):
 		"Get the children which have the given class name."
@@ -95,21 +94,32 @@ class XMLElement:
 				return subChildWithID
 		return None
 
+	def getWordWithinQuotes( self, line ):
+		"Get the word within the quotes."
+		quoteCharacter = None
+		word = ''
+		for character in line:
+			if character == '"' or character == "'":
+				if quoteCharacter == None:
+					quoteCharacter = character
+				else:
+					return word
+			elif quoteCharacter != None:
+				word += character
+		return word
+
 	def parseReplacedLine( self, line, parents ):
 		"Parse replaced line."
 		if line[ : len( '</' ) ] == '</':
 			del parents[ - 1 ]
 			return
 		self.className = line[ 1 : line.replace( '>', ' ' ).find( ' ' ) ]
-		indexOfEndOfTheBeginTag = - 1
 		lastWord = line[ - 2 : ]
 		splitLine = line.replace( '">', '" > ' ).split()
-		if lastWord == '/>':
-			indexOfEndOfTheBeginTag = len( splitLine ) - 1
-		elif '>' in splitLine:
-			indexOfEndOfTheBeginTag = splitLine.index( '>' )
-		for word in splitLine[ 1 : indexOfEndOfTheBeginTag ]:
-			self.addAttribute( word )
+		lineAfterClassName = line[ 2 + len( self.className ) : - 2 ]
+		for characterIndex in xrange( len( lineAfterClassName ) ):
+			if lineAfterClassName[ characterIndex ] == '=':
+				self.addAttribute( characterIndex, lineAfterClassName )
 		self.parents = parents
 		if len( self.parents ) > 0:
 			parents[ - 1 ].children.append( self )

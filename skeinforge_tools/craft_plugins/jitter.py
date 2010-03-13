@@ -55,7 +55,7 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
 from skeinforge_utilities import skeinforge_polyfile
@@ -120,7 +120,7 @@ def isLoopNumberEqual( betweenX, betweenXIndex, loopNumber ):
 
 def writeOutput( fileName = '' ):
 	"Jitter a gcode linear move file."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'jitter' )
 
@@ -130,7 +130,7 @@ class JitterRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.jitter.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Jitter', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Jitter', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Jitter' )
 		self.activateJitter = settings.BooleanSetting().getFromValue( 'Activate Jitter', self, True )
 		self.jitterOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Jitter Over Perimeter Width (ratio):', self, 3.0, 2.0 )
@@ -138,7 +138,7 @@ class JitterRepository:
 
 	def execute( self ):
 		"Jitter button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

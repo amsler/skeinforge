@@ -2,7 +2,7 @@
 This page is in the table of contents.
 The xml.py script is an import translator plugin to get a carving from an Art of Illusion xml file.
 
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getCarving function takes the file name of an xml file and returns the carving.
 
@@ -36,6 +36,7 @@ from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
 from skeinforge_tools.fabmetheus_utilities import triangle_mesh
+import cStringIO
 import math
 import sys
 
@@ -45,25 +46,20 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-#check that matrices & bridge are working, see how to handle a list of objects in Art of Illusion for subtracting
-def addCarvableObjectInfo( carvableObjectInfos, objectInfoElement ):
-	"Add the object info if it is carvable."
-	carvableObjectInfo = getCarvableObjectInfo( objectInfoElement )
-	if carvableObjectInfo == None:
-		return
-	if objectInfoElement.attributeTable[ 'visible' ] == 'false':
-		return
-	carvableObjectInfo.setShape( carvableObjectInfo.matrix4By4 )
-	carvableObjectInfos.append( carvableObjectInfo )
+def addBeginXMLTag( attributeTable, depth, name, output ):
+	"Get the begin xml tag."
+	attributeTableString = ''
+	attributeTableKeys = attributeTable.keys()
+	attributeTableKeys.sort()
+	for attributeTableKey in attributeTableKeys:
+		attributeTableString += ' %s="%s"' % ( attributeTableKey, attributeTable[ attributeTableKey ] )
+	depthStart = '\t' * depth
+	output.write( '%s<%s%s>\n' % ( depthStart, name, attributeTableString ) )
 
-def addCarvableObjectInfoWithMatrix( carvableObjectInfos, matrix4By4, objectInfoElement ):
-	"Add the object info if it is carvable."
-	carvableObjectInfo = getCarvableObjectInfo( objectInfoElement )
-	if carvableObjectInfo == None:
-		return
-	newMatrix4By4 = matrix4By4.getMultiplied( carvableObjectInfo.matrix4By4.matrix )
-	carvableObjectInfo.setShape( newMatrix4By4 )
-	carvableObjectInfos.append( carvableObjectInfo )
+def addEndXMLTag( depth, name, output ):
+	"Get the end xml tag."
+	depthStart = '\t' * depth
+	output.write( '%s</%s>\n' % ( depthStart, name ) )
 
 def addLineLoopsIntersections( loopLoopsIntersections, loops, pointBegin, pointEnd ):
 	"Add intersections of the line with the loops."
@@ -121,39 +117,17 @@ def getBottom( points ):
 		bottom = min( bottom, point.z )
 	return bottom
 
-def getCarvableObjectInfo( objectInfoElement ):
-	"Get the object info if it is carvable."
-	if objectInfoElement == None:
-		return
-	object = objectInfoElement.getFirstChildWithClassName( 'object' )
-	shapeType = object.attributeTable[ 'bf:type' ]
-	if shapeType not in globalCarvableClassObjectInfoTable:
-		return
-	carvableClassObjectInfo = globalCarvableClassObjectInfoTable[ shapeType ]
-	newCarvableObjectInfo = carvableClassObjectInfo.getNewCarvableObjectInfo( objectInfoElement )
-	return newCarvableObjectInfo
+def getFloatOne( key, table ):
+	"Get the value as a float if it exists, otherwise return one."
+	if key in table:
+		return float( table[ key ] )
+	return 1.0
 
-def getCarvableClassObjectInfoTable():
-	"Get the carvable class object info table."
-	carvableClassObjectInfos = [ CSGObjectObjectInfo(), CubeObjectInfo(), CylinderObjectInfo(), SphereObjectInfo(), TriangleMeshObjectInfo() ]
-	carvableClassObjectInfoTable = {}
-	for carvableClassObjectInfo in carvableClassObjectInfos:
-		className = carvableClassObjectInfo.__class__.__name__
-		truncatedClassName = className[ : className.find( 'ObjectInfo' ) ]
-		carvableClassObjectInfoTable[ truncatedClassName ] = carvableClassObjectInfo
-	return carvableClassObjectInfoTable
-
-def getCarving( fileName = '' ):
-	"Get the carving for the xml file."
-	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypeWithoutWords( 'xml' )
-		if len( unmodified ) == 0:
-			print( "There is no xml file in this folder." )
-			return None
-		fileName = unmodified[ 0 ]
-	carving = XMLCarving()
-	carving.parseXML( gcodec.getFileText( fileName ) )
-	return carving
+def getFloatZero( key, table ):
+	"Get the value as a float if it exists, otherwise return zero."
+	if key in table:
+		return float( table[ key ] )
+	return 0.0
 
 def getInBetweenPointsFromLoops( importRadius, loops ):
 	"Get the in between points from loops."
@@ -202,6 +176,10 @@ def getLoopsLoopsIntersections( loops, otherLoops ):
 		addLoopLoopsIntersections( loop, loopsLoopsIntersections, otherLoops )
 	return loopsLoopsIntersections
 
+def getMatrixKey( column, row ):
+	"Get the key string from row & column, counting from one."
+	return 'm' + str( column + 1 ) + str( row + 1 )
+
 def getPointsBoundarySideLoops( inside, loops, points, radius ):
 	"Get the points inside the loops."
 	pointsInsideLoops = []
@@ -213,13 +191,13 @@ def getPointsBoundarySideLoops( inside, loops, points, radius ):
 			pointsInsideLoops.append( pointCenter )
 	return pointsInsideLoops
 
-def getSubObjectInfoLoopsList( importRadius, subObjectInfos, z ):
-	"Get subObjectInfo loops list."
-	subObjectInfoLoopsList = []
-	for subObjectInfo in subObjectInfos:
-		subObjectInfoLoops = subObjectInfo.getLoops( importRadius, z )
-		subObjectInfoLoopsList.append( subObjectInfoLoops )
-	return subObjectInfoLoopsList
+def getSubObjectLoopsList( importRadius, subObjects, z ):
+	"Get subObject loops list."
+	subObjectLoopsList = []
+	for subObject in subObjects:
+		subObjectLoops = subObject.getLoops( importRadius, z )
+		subObjectLoopsList.append( subObjectLoops )
+	return subObjectLoopsList
 
 def getTop( points ):
 	"Get the top of the points."
@@ -231,18 +209,6 @@ def getTop( points ):
 def getTransformedByList( floatList, point ):
 	"Get the point transformed by the array."
 	return floatList[ 0 ] * point.x + floatList[ 1 ] * point.y + floatList[ 2 ] * point.z + floatList[ 3 ]
-
-def getValueInQuotes( name, text, value ):
-	"Get value in quotes after the name."
-	nameAndQuote = name + '="'
-	nameIndexStart = text.find( nameAndQuote )
-	if nameIndexStart == - 1:
-		return value
-	valueStartIndex = nameIndexStart + len( nameAndQuote )
-	nameIndexEnd = text.find( '"', valueStartIndex )
-	if nameIndexEnd == - 1:
-		return value
-	return float( text[ valueStartIndex : nameIndexEnd ] )
 
 def getVector3TransformedByMatrix( matrix, vector3 ):
 	"Get the vector3 multiplied by a vector3."
@@ -288,68 +254,44 @@ def isPointOrEitherLineBoundarySideInsideLoops( inside, loops, pointBegin, point
 		return False
 	return euclidean.isPointInsideLoops( loops,  pointCenter - addedSegment ) == inside
 
-
-class Matrix4By4:
-	"A four by four matrix."
-	def __init__( self ):
-		"Add empty lists."
-		self.matrix = None
-
-	def __repr__( self ):
-		"Get the string representation of this four by four matrix."
-		return str( self.matrix )
-
-	def getFromAttributeTable( self, attributeTable ):
-		"Get the from row column attribute strings, counting from one."
-		for column in xrange( 4 ):
-			for row in xrange( 4 ):
-				columnString = str( column + 1 )
-				rowString = str( row + 1 )
-				key = 'm' + columnString + rowString
-				if key in attributeTable:
-					if self.matrix == None:
-						self.setMatrixToZero()
-					self.matrix[ column ][ row ] = float( attributeTable[ key ] )
-				else:
-					self.matrix = None
-					return self
-		return self
-
-	def getMultiplied( self, otherMatrix ):
-		"Get this matrix multiplied by the other matrix."
-		if otherMatrix == None or self.matrix == None:
-			return None
-		#A down, B right from http://en.wikipedia.org/wiki/Matrix_multiplication
-		newMatrix4By4 = Matrix4By4()
-		newMatrix4By4.setMatrixToZero()
-		for column in xrange( 4 ):
-			for row in xrange( 4 ):
-				matrixColumn = self.matrix[ column ]
-				dotProduct = 0
-				for elementIndex in xrange( 4 ):
-					dotProduct += matrixColumn[ elementIndex ] * otherMatrix[ elementIndex ][ row ]
-				newMatrix4By4.matrix[ column ][ row ] = dotProduct
-		return newMatrix4By4
-
-	def setMatrixToZero( self ):
-		"Get the matrix elements to zero."
-		self.matrix = [ [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ] ]
+def setBottomTopTriangleMesh( carvableObject, edgeTriples, matrixChain, vertexPairs, vertices ):
+	"Set the bottom, top and triangle mesh of this carvable object info."
+	newMatrix4X4 = carvableObject.matrix4X4.getReverseMultiplied( matrixChain )
+	carvableObject.triangleMesh = triangle_mesh.TriangleMesh()
+	for vertex in vertices:
+		carvableObject.triangleMesh.vertices.append( getVector3TransformedByMatrix( newMatrix4X4.matrix, vertex ) )
+	for vertexPairsIndex in xrange( len( vertexPairs ) ):
+		vertexPair = vertexPairs[ vertexPairsIndex ]
+		edge = triangle_mesh.Edge().getFromVertexIndexes( vertexPairsIndex, vertexPair )
+		carvableObject.triangleMesh.edges.append( edge )
+	for edgeTriplesIndex in xrange( len( edgeTriples ) ):
+		edgeTriple = edgeTriples[ edgeTriplesIndex ]
+		face = triangle_mesh.Face().getFromEdgeIndexes( edgeTriple, carvableObject.triangleMesh.edges, edgeTriplesIndex )
+		carvableObject.triangleMesh.faces.append( face )
+	carvableObject.bottom = getBottom( carvableObject.triangleMesh.vertices )
+	carvableObject.top = getTop( carvableObject.triangleMesh.vertices )
 
 
-class XMLCarving:
-	"An svg carving."
+class BooleanGeometry:
+	"A shape scene."
 	def __init__( self ):
 		"Add empty lists."
 		self.belowLoops = []
 		self.bridgeLayerThickness = None
-		self.carvableObjectInfos = []
+		self.carvableObjects = []
 		self.importRadius = 0.3
 		self.layerThickness = 0.4
 		self.rotatedBoundaryLayers = []
-	
+
 	def __repr__( self ):
 		"Get the string representation of this carving."
-		return str( self.rotatedBoundaryLayers )
+		output = cStringIO.StringIO()
+		output.write( "<?xml version='1.0' ?>\n" )
+		addBeginXMLTag( { 'version' : '2010-03-10' }, 0, self.__class__.__name__.lower(), output )
+		for carvableObject in self.carvableObjects:
+			carvableObject.addXML( 1, output )
+		addEndXMLTag( 0, self.__class__.__name__.lower(), output )
+		return output.getvalue()
 
 	def getCarveCornerMaximum( self ):
 		"Get the corner maximum of the vertices."
@@ -365,17 +307,20 @@ class XMLCarving:
 
 	def getCarveRotatedBoundaryLayers( self ):
 		"Get the rotated boundary layers."
-		if len( self.carvableObjectInfos ) < 1:
+		if len( self.carvableObjects ) < 1:
 			return []
 		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, - 9999999999.9 )
 		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, 9999999999.9 )
-		for carvableObjectInfo in self.carvableObjectInfos:
-			self.cornerMaximum.z = max( self.cornerMaximum.z, carvableObjectInfo.top )
-			self.cornerMinimum.z = min( self.cornerMinimum.z, carvableObjectInfo.bottom )
+		for carvableObject in self.carvableObjects:
+			self.cornerMaximum.z = max( self.cornerMaximum.z, carvableObject.top )
+			self.cornerMinimum.z = min( self.cornerMinimum.z, carvableObject.bottom )
 		halfHeight = 0.5 * self.layerThickness
 		layerTop = self.cornerMaximum.z - halfHeight
 		self.setActualMinimumZ( halfHeight, layerTop )
-		self.zZoneInterval = triangle_mesh.getZoneInterval( self.layerThickness )
+		vertices = []
+		for carvableObject in self.carvableObjects:
+			vertices += carvableObject.getVertices()
+		triangle_mesh.initializeZoneIntervalTable( self, vertices )
 		z = self.cornerMinimum.z + halfHeight
 		while z < layerTop:
 			z = self.getZAddExtruderPaths( z )
@@ -395,25 +340,13 @@ class XMLCarving:
 	def getExtruderPaths( self, z ):
 		"Get extruder loops."
 		rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
-		for carvableObjectInfo in self.carvableObjectInfos:
-			rotatedBoundaryLayer.loops += carvableObjectInfo.getLoops( self.importRadius, z )
+		for carvableObject in self.carvableObjects:
+			rotatedBoundaryLayer.loops += carvableObject.getLoops( self.importRadius, z )
 		return rotatedBoundaryLayer
 
 	def getZAddExtruderPaths( self, z ):
 		"Get next z and add extruder loops."
-		zoneArray = []
-		vertices = []
-		for carvableObjectInfo in self.carvableObjectInfos:
-			vertices += carvableObjectInfo.getVertices()
-		for point in vertices:
-			triangle_mesh.addToZoneArray( point, z, zoneArray, self.zZoneInterval )
-		lowestZoneIndex = triangle_mesh.getLowestZoneIndex( zoneArray, z )
-		halfAround = int( math.ceil( float( lowestZoneIndex ) / 2.0 ) )
-		zAround = float( halfAround ) * self.zZoneInterval
-		if lowestZoneIndex % 2 == 1:
-			zAround = - zAround
-		zPlusAround = z + zAround
-		rotatedBoundaryLayer = self.getExtruderPaths( zPlusAround )
+		rotatedBoundaryLayer = self.getExtruderPaths( triangle_mesh.getEmptyZ( self, z ) )
 		self.rotatedBoundaryLayers.append( rotatedBoundaryLayer )
 		if self.bridgeLayerThickness == None:
 			return z + self.layerThickness
@@ -425,18 +358,6 @@ class XMLCarving:
 		if rotatedBoundaryLayer.rotation == None:
 			return z + self.layerThickness
 		return z + self.bridgeLayerThickness
-
-	def parseXML( self, xmlText ):
-		"Parse XML text and store the layers."
-		if xmlText == '':
-			return None
-		xmlParser = XMLSimpleParser( xmlText )
-		artOfIllusionElement = xmlParser.rootElement.getFirstChildWithClassName( 'ArtOfIllusion' )
-		sceneElement = artOfIllusionElement.getFirstChildWithClassName( 'Scene' )
-		rootElement = sceneElement.getFirstChildWithClassName( 'objects' )
-		objectInfoElements = rootElement.getChildrenWithClassName( 'bf:Elem' )
-		for objectInfoElement in objectInfoElements:
-			addCarvableObjectInfo( self.carvableObjectInfos, objectInfoElement )
 
 	def setActualMinimumZ( self, halfHeight, layerTop ):
 		"Get the actual minimum z at the lowest rotated boundary layer."
@@ -468,186 +389,260 @@ class XMLCarving:
 		self.isCorrectMesh = isCorrectMesh
 
 
-class TriangleMeshObjectInfo:
-	"An Art of Illusion object info."
+class Matrix4X4:
+	"A four by four matrix."
+	def __init__( self ):
+		"Add empty lists."
+		self.setMatrixToIdentity()
+
+	def __repr__( self ):
+		"Get the string representation of this four by four matrix."
+		output = cStringIO.StringIO()
+		self.addXML( 0, output )
+		return output.getvalue()
+
+	def addXML( self, depth, output ):
+		"Add xml for this object."
+		addBeginXMLTag( self.getAttributeTable(), depth, self.__class__.__name__.lower(), output )
+		addEndXMLTag( depth, self.__class__.__name__.lower(), output )
+
+	def getAttributeTable( self ):
+		"Get the from row column attribute strings, counting from one."
+		attributeTable = {}
+		for column in xrange( 4 ):
+			for row in xrange( 4 ):
+				default = float( column == row )
+				value = self.matrix[ column ][ row ]
+				if abs( value - default ) > 0.00000000000001:
+					attributeTable[ getMatrixKey( column, row ) ] = value
+		return attributeTable
+
+	def getFromAttributeTable( self, attributeTable ):
+		"Get the values from row column attribute strings, counting from one."
+		if attributeTable == None:
+			return self
+		for column in xrange( 4 ):
+			for row in xrange( 4 ):
+				key = getMatrixKey( column, row )
+				if key in attributeTable:
+					self.matrix[ column ][ row ] = float( attributeTable[ key ] )
+		return self
+
+	def getMultiplied( self, otherMatrix ):
+		"Get this matrix multiplied by the other matrix."
+		if otherMatrix == None:
+			return self.matrix
+		if self.matrix == None:
+			return None
+		#A down, B right from http://en.wikipedia.org/wiki/Matrix_multiplication
+		newMatrix4X4 = Matrix4X4()
+		newMatrix4X4.setMatrixToZero()
+		for column in xrange( 4 ):
+			for row in xrange( 4 ):
+				matrixColumn = self.matrix[ column ]
+				dotProduct = 0
+				for elementIndex in xrange( 4 ):
+					dotProduct += matrixColumn[ elementIndex ] * otherMatrix[ elementIndex ][ row ]
+				newMatrix4X4.matrix[ column ][ row ] = dotProduct
+		return newMatrix4X4
+
+	def getReverseMultiplied( self, otherMatrix4X4 ):
+		"Get this matrix reverse multiplied by the other matrix."
+		if otherMatrix4X4 == None:
+			return self
+		return otherMatrix4X4.getMultiplied( self.matrix )
+
+	def setMatrixToIdentity( self ):
+		"Set the diagonal matrix elements to one."
+		self.setMatrixToZero()
+		for diagonal in xrange( 4 ):
+			self.matrix[ diagonal ][ diagonal ] = 1.0
+
+	def setMatrixToZero( self ):
+		"Set the matrix elements to zero."
+		self.matrix = [ [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ] ]
+
+
+class TriangleMesh:
+	"A triangle mesh object."
 	def __init__( self ):
 		"Set name to None."
 		self.name = None
 
 	def __repr__( self ):
 		"Get the string representation of this object info."
-		if self.name == None:
-			return self.__class__.__name__
-		return "%s %s\n%s" % ( self.name, self.__class__.__name__, self.triangleMesh )
+		output = cStringIO.StringIO()
+		self.addXML( 0, output )
+		return output.getvalue()
+
+	def addXML( self, depth, output ):
+		"Add xml for this object."
+		attributeTable = self.getAttributeTable()
+		attributeTable[ 'id' ] = self.getName()
+		addBeginXMLTag( attributeTable, depth, self.getXMLClassName(), output )
+		self.addXMLSection( depth + 1, output )
+		self.matrix4X4.addXML( depth + 1, output )
+		addEndXMLTag( depth, self.getXMLClassName(), output )
+
+	def addXMLSection( self, depth, output ):
+		"Add the xml section for this object."
+		addBeginXMLTag( {}, depth, 'vertices', output )
+		for vertex in self.originalVertices:
+			attributeTable = { 'x' : str( vertex.x ), 'y' : str( vertex.y ), 'z' : str( vertex.z ) }
+			addBeginXMLTag( attributeTable, depth + 1, 'vector3', output )
+			addEndXMLTag( depth + 1, 'vector3', output )
+		addEndXMLTag( depth, 'vertices', output )
+		addBeginXMLTag( {}, depth, 'faces', output )
+		for face in self.triangleMesh.faces:
+			attributeTable = {}
+			for vertexIndexIndex in xrange( len( face.vertexIndexes ) ):
+				vertexIndex = face.vertexIndexes[ vertexIndexIndex ]
+				attributeTable[ 'vertex' + str( vertexIndexIndex ) ] = str( vertexIndex )
+			addBeginXMLTag( attributeTable, depth + 1, 'face', output )
+			addEndXMLTag( depth + 1, 'face', output )
+		addEndXMLTag( depth, 'faces', output )
+
+	def getAttributeTable( self ):
+		"Get attribute table."
+		return {}
 
 	def getLoops( self, importRadius, z ):
 		"Get loops sliced through shape."
 		self.triangleMesh.importRadius = importRadius
 		return self.triangleMesh.getLoopsFromMesh( z )
 
-	def getNewCarvableObjectInfo( self, objectInfoElement ):
-		"Get new carvable object info."
-		newCarvableObjectInfo = self.__class__()
-		newCarvableObjectInfo.name = objectInfoElement.getFirstChildWithClassName( 'name' ).text
-		newCarvableObjectInfo.object = objectInfoElement.getFirstChildWithClassName( 'object' )
-		coords = objectInfoElement.getFirstChildWithClassName( 'coords' )
-		transformAttributeTable = self.getTransformAttributeTable( coords, 'transformFrom' )
-		if len( transformAttributeTable ) < 16:
-			transformAttributeTable = self.getTransformAttributeTable( coords, 'transformTo' )
-		newCarvableObjectInfo.matrix4By4 = Matrix4By4().getFromAttributeTable( transformAttributeTable )
-		return newCarvableObjectInfo
+	def getName( self ):
+		"Get the name if it exists, otherwise return the class name."
+		if self.name == None:
+			return self.__class__.__name__
+		return self.name
 
-	def getTransformAttributeTable( self, coords, transformName ):
-		"Get the transform attributes."
-		transformAttributeTable = coords.getFirstChildWithClassName( transformName ).attributeTable
-		if len( transformAttributeTable ) < 16:
-			if 'bf:ref' in transformAttributeTable:
-				idReference = transformAttributeTable[ 'bf:ref' ]
-				return coords.rootElement.getSubChildWithID( idReference ).attributeTable
-		return transformAttributeTable
+	def getType( self ):
+		"Get type."
+		return self.__class__.__name__
+
+	def getXMLClassName( self ):
+		"Get xml class name."
+		return self.__class__.__name__.lower()
 
 	def getVertices( self ):
 		"Get all vertices."
 		return self.triangleMesh.vertices
 
-	def setShape( self, matrix4By4 ):
-		"Set the shape of this carvable object info."
-		self.triangleMesh = triangle_mesh.TriangleMesh()
-		vertexElement = self.object.getFirstChildWithClassName( 'vertex' )
-		vertexPointElements = vertexElement.getChildrenWithClassName( 'bf:Elem' )
-		for vertexPointElement in vertexPointElements:
-			coordinateElement = vertexPointElement.getFirstChildWithClassName( 'r' )
-			vertex = Vector3( float( coordinateElement.attributeTable[ 'x' ] ), float( coordinateElement.attributeTable[ 'y' ] ), float( coordinateElement.attributeTable[ 'z' ] ) )
-			self.triangleMesh.vertices.append( getVector3TransformedByMatrix( matrix4By4.matrix, vertex ) )
-		edgeElement = self.object.getFirstChildWithClassName( 'edge' )
-		edgeSubelements = edgeElement.getChildrenWithClassName( 'bf:Elem' )
-		for edgeSubelementIndex in xrange( len( edgeSubelements ) ):
-			edgeSubelement = edgeSubelements[ edgeSubelementIndex ]
-			vertexIndexes = [ int( edgeSubelement.attributeTable[ 'v1' ] ), int( edgeSubelement.attributeTable[ 'v2' ] ) ]
-			edge = triangle_mesh.Edge().getFromVertexIndexes( edgeSubelementIndex, vertexIndexes )
-			self.triangleMesh.edges.append( edge )
-		faceElement = self.object.getFirstChildWithClassName( 'face' )
-		faceSubelements = faceElement.getChildrenWithClassName( 'bf:Elem' )
-		for faceSubelementIndex in xrange( len( faceSubelements ) ):
-			faceSubelement = faceSubelements[ faceSubelementIndex ]
-			edgeIndexes = [ int( faceSubelement.attributeTable[ 'e1' ] ), int( faceSubelement.attributeTable[ 'e2' ] ), int( faceSubelement.attributeTable[ 'e3' ] ) ]
-			face = triangle_mesh.Face().getFromEdgeIndexes( edgeIndexes, self.triangleMesh.edges, faceSubelementIndex )
-			self.triangleMesh.faces.append( face )
+	def setShapeToObjectVariables( self, matrixChain ):
+		"Set the shape to the object variables."
+		self.originalVertices = []
+		newMatrix4X4 = self.matrix4X4.getReverseMultiplied( matrixChain )
+		for vertex in self.triangleMesh.vertices:
+			self.originalVertices.append( vertex.copy() )
+			vertex.setToVector3( getVector3TransformedByMatrix( newMatrix4X4.matrix, vertex ) )
 		self.bottom = getBottom( self.triangleMesh.vertices )
 		self.top = getTop( self.triangleMesh.vertices )
 
 
-class CSGObjectObjectInfo( TriangleMeshObjectInfo ):
-	"An Art of Illusion CSG object info."
+class BooleanSolid( TriangleMesh ):
+	"A boolean solid object."
 	def __repr__( self ):
 		"Get the string representation of this object info."
-		if self.name == None:
-			return self.__class__.__name__
-		stringRepresentation = '%s %s\n%s' % ( self.name, self.__class__.__name__ )
-		for subObjectInfo in self.subObjectInfos:
-			stringRepresentation += '\n%s' % subObjectInfo
+		stringRepresentation = '%s %s' % ( self.getName(), self.__class__.__name__ )
+		for subObject in self.subObjects:
+			stringRepresentation += '\n%s' % subObject
 		return stringRepresentation
 
-	def getIntersectedLoops( self, importRadius, subObjectInfoLoopsList ):
+	def addXMLSection( self, depth, output ):
+		"Add the xml section for this object."
+		for subObject in self.subObjects:
+			subObject.addXML( depth, output )
+
+	def getAttributeTable( self ):
+		"Get attribute table."
+		return { 'operation' : self.operationFunction.__name__.lower()[ 3 : ] }
+
+	def getIntersection( self, importRadius, subObjectLoopsList ):
 		"Get intersected loops sliced through shape."
-		firstLoops = subObjectInfoLoopsList[ 0 ]
-		lastLoops = getJoinedList( subObjectInfoLoopsList[ 1 : ] )
+		firstLoops = subObjectLoopsList[ 0 ]
+		lastLoops = getJoinedList( subObjectLoopsList[ 1 : ] )
 		radiusSide = 0.01 * importRadius
 		corners = getPointsBoundarySideLoops( True, firstLoops, getJoinedList( lastLoops ), radiusSide )
 		corners += getPointsBoundarySideLoops( True, lastLoops, getJoinedList( firstLoops ), radiusSide )
-		corners += getLoopsListsIntersections( subObjectInfoLoopsList )
+		corners += getLoopsListsIntersections( subObjectLoopsList )
 		allPoints = corners[ : ]
 		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( True, importRadius, lastLoops, firstLoops, radiusSide )
 		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( True, importRadius, firstLoops, lastLoops, radiusSide )
 		return triangle_mesh.getInclusiveLoops( allPoints, corners, importRadius, False )
 
-	def getJoinedLoops( self, importRadius, subObjectInfoLoopsList ):
+	def getUnion( self, importRadius, subObjectLoopsList ):
 		"Get joined loops sliced through shape."
 		loops = []
-		for subObjectInfoLoops in subObjectInfoLoopsList:
-			loops += subObjectInfoLoops
+		for subObjectLoops in subObjectLoopsList:
+			loops += subObjectLoops
 		corners = []
 		for loop in loops:
 			corners += loop
-		corners += getLoopsListsIntersections( subObjectInfoLoopsList )
+		corners += getLoopsListsIntersections( subObjectLoopsList )
 		allPoints = corners[ : ]
 		allPoints += getInBetweenPointsFromLoops( importRadius, loops )
 		return triangle_mesh.getInclusiveLoops( allPoints, corners, importRadius, False )
 
 	def getLoops( self, importRadius, z ):
 		"Get loops sliced through shape."
-		if len( self.subObjectInfos ) < 1:
+		if len( self.subObjects ) < 1:
 			return []
-		operationString = self.object.attributeTable[ 'operation' ]
-		subObjectInfoLoopsList = getSubObjectInfoLoopsList( importRadius, self.subObjectInfos, z )
-		loops = []
-		if operationString == '0':
-			loops = self.getJoinedLoops( importRadius, subObjectInfoLoopsList )
-		elif operationString == '1':
-			loops = self.getIntersectedLoops( importRadius, subObjectInfoLoopsList )
-		elif operationString == '2':
-			loops = self.getSubtractedLoops( importRadius, subObjectInfoLoopsList )
-		elif operationString == '3':
-			subObjectInfoLoopsList.reverse()
-			loops = self.getSubtractedLoops( importRadius, subObjectInfoLoopsList )
+		subObjectLoopsList = getSubObjectLoopsList( importRadius, self.subObjects, z )
+		loops = self.operationFunction( importRadius, subObjectLoopsList )
 		return euclidean.getSimplifiedLoops( loops, importRadius )
 
-	def getSubtractedLoops( self, importRadius, subObjectInfoLoopsList ):
+	def getFirstMinusComplement( self, importRadius, subObjectLoopsList ):
 		"Get subtracted loops sliced through shape."
-		negativeLoops = getJoinedList( subObjectInfoLoopsList[ 1 : ] )
-		positiveLoops = subObjectInfoLoopsList[ 0 ]
+		negativeLoops = getJoinedList( subObjectLoopsList[ 1 : ] )
+		positiveLoops = subObjectLoopsList[ 0 ]
 		radiusSide = 0.01 * importRadius
 		corners = getPointsBoundarySideLoops( True, positiveLoops, getJoinedList( negativeLoops ), radiusSide )
 		corners += getPointsBoundarySideLoops( False, negativeLoops, getJoinedList( positiveLoops ), radiusSide )
-		loopsListsIntersections = getLoopsListsIntersections( subObjectInfoLoopsList )
+		loopsListsIntersections = getLoopsListsIntersections( subObjectLoopsList )
 		corners += loopsListsIntersections
 		allPoints = corners[ : ]
 		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( True, importRadius, negativeLoops, positiveLoops, radiusSide )
 		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( False, importRadius, positiveLoops, negativeLoops, radiusSide )
 		return triangle_mesh.getInclusiveLoops( allPoints, corners, importRadius, False )
 
+	def getLastMinusComplement( self, importRadius, subObjectLoopsList ):
+		"Get subtracted loops sliced through shape."
+		subObjectLoopsList.reverse()
+		return self.getFirstMinusComplement( importRadius, subObjectLoopsList )
+
 	def getVertices( self ):
 		"Get all vertices."
 		vertices = []
-		for subObjectInfo in self.subObjectInfos:
-			vertices += subObjectInfo.getVertices()
+		for subObject in self.subObjects:
+			vertices += subObject.getVertices()
 		return vertices
 
-	def setShape( self, matrix4By4 ):
-		"Set the shape of this carvable object info."
-		self.subObjectInfos = []
-		addCarvableObjectInfoWithMatrix( self.subObjectInfos, matrix4By4, self.object.getFirstChildWithClassName( 'obj1' ) )
-		addCarvableObjectInfoWithMatrix( self.subObjectInfos, matrix4By4, self.object.getFirstChildWithClassName( 'obj2' ) )
+	def getXMLClassName( self ):
+		"Get xml class name."
+		return 'booleansolid'
+
+	def setShapeToObjectVariables( self, matrixChain ):
+		"Set the shape to the object variables."
 		self.bottom = 999999999.9
 		self.top = - 999999999.9
-		for subObjectInfo in self.subObjectInfos:
-			self.bottom = min( self.bottom, subObjectInfo.bottom )
-			self.top = max( self.top, subObjectInfo.top )
+		for subObject in self.subObjects:
+			self.bottom = min( self.bottom, subObject.bottom )
+			self.top = max( self.top, subObject.top )
 
 
-class CubeObjectInfo( TriangleMeshObjectInfo ):
-	"An Art of Illusion Cube object info."
-	def setBottomTopTriangleMesh( self, edgeTriples, matrix4By4, vertexPairs, vertices ):
-		"Set the bottom, top and triangle mesh of this carvable object info."
-		self.triangleMesh = triangle_mesh.TriangleMesh()
-		for vertex in vertices:
-			self.triangleMesh.vertices.append( getVector3TransformedByMatrix( matrix4By4.matrix, vertex ) )
-		for vertexPairsIndex in xrange( len( vertexPairs ) ):
-			vertexPair = vertexPairs[ vertexPairsIndex ]
-			edge = triangle_mesh.Edge().getFromVertexIndexes( vertexPairsIndex, vertexPair )
-			self.triangleMesh.edges.append( edge )
-		for edgeTriplesIndex in xrange( len( edgeTriples ) ):
-			edgeTriple = edgeTriples[ edgeTriplesIndex ]
-			face = triangle_mesh.Face().getFromEdgeIndexes( edgeTriple, self.triangleMesh.edges, edgeTriplesIndex )
-			self.triangleMesh.faces.append( face )
-		self.bottom = getBottom( self.triangleMesh.vertices )
-		self.top = getTop( self.triangleMesh.vertices )
+class Cube( TriangleMesh ):
+	"A cube object."
+	def addXMLSection( self, depth, output ):
+		"Add the xml section for this object."
+		pass
 
-	def setShape( self, matrix4By4 ):
-		"Set the shape of this carvable object info."
-		halfX = float( self.object.attributeTable[ 'halfx' ] )
-		halfY = float( self.object.attributeTable[ 'halfy' ] )
-		halfZ = float( self.object.attributeTable[ 'halfz' ] )
+	def getAttributeTable( self ):
+		"Get attribute table."
+		return { 'halfx': self.halfX, 'halfy': self.halfY, 'halfz': self.halfZ }
+
+	def setShapeToObjectVariables( self, matrixChain ):
+		"Set the shape to the object variables."
 		vertices = [
 			Vector3( - 1.0, - 1.0, 1.0 ),
 			Vector3( 1.0, - 1.0, 1.0 ),
@@ -658,9 +653,9 @@ class CubeObjectInfo( TriangleMeshObjectInfo ):
 			Vector3( 1.0, 1.0, - 1.0 ),
 			Vector3( - 1.0, 1.0, - 1.0 ) ]
 		for vertex in vertices:
-			vertex.x *= halfX
-			vertex.y *= halfY
-			vertex.z *= halfZ
+			vertex.x *= self.halfX
+			vertex.y *= self.halfY
+			vertex.z *= self.halfZ
 		vertexPairs = [
 			[ 6, 4 ],
 			[ 7, 6 ],
@@ -693,19 +688,19 @@ class CubeObjectInfo( TriangleMeshObjectInfo ):
 			[ 10, 14, 6 ],
 			[ 15, 16, 14 ],
 			[ 1, 17, 0 ] ]
-		self.setBottomTopTriangleMesh( edgeTriples, matrix4By4, vertexPairs, vertices )
+		setBottomTopTriangleMesh( self, edgeTriples, matrixChain, vertexPairs, vertices )
 
 
-class CylinderObjectInfo( CubeObjectInfo ):
-	"An Art of Illusion Cylinder object info."
-	def setShape( self, matrix4By4 ):
-		"Set the shape of this carvable object info."
+class Cylinder( Cube ):
+	"A cylinder object."
+	def getAttributeTable( self ):
+		"Get attribute table."
+		return { 'height': self.height, 'radiusx': self.radiusX, 'radiusz': self.radiusZ, 'topoverbottom': self.topOverBottom }
+
+	def setShapeToObjectVariables( self, matrixChain ):
+		"Set the shape to the object variables."
 		numberOfSides = 31
-		height = float( self.object.attributeTable[ 'height' ] )
-		halfHeight = 0.5 * height
-		radiusX = float( self.object.attributeTable[ 'rx' ] )
-		ratioTopOverBottom = float( self.object.attributeTable[ 'ratio' ] )
-		radiusZ = float( self.object.attributeTable[ 'rz' ] )
+		halfHeight = 0.5 * self.height
 		vertices = []
 		sideAngle = 2.0 * math.pi / float( numberOfSides )
 		halfSideAngle = 0.5 * sideAngle
@@ -716,9 +711,9 @@ class CylinderObjectInfo( CubeObjectInfo ):
 		for side in xrange( numberOfSides ):
 			bottomAngle = float( side ) * sideAngle
 			bottomComplex = euclidean.getUnitPolar( bottomAngle )
-			bottomPoint = Vector3( bottomComplex.real * radiusX, - halfHeight, bottomComplex.imag * radiusZ )
+			bottomPoint = Vector3( bottomComplex.real * self.radiusX, - halfHeight, bottomComplex.imag * self.radiusZ )
 			vertices.append( bottomPoint )
-			topPoint = Vector3( bottomPoint.x * ratioTopOverBottom, halfHeight, bottomPoint.z * ratioTopOverBottom )
+			topPoint = Vector3( bottomPoint.x * self.topOverBottom, halfHeight, bottomPoint.z * self.topOverBottom )
 			vertices.append( topPoint )
 			vertexPairBottom = [ side + side, ( side + side + 2 ) % numberOfVertices ]
 			vertexPairBottomIndex = len( vertexPairs )
@@ -758,13 +753,17 @@ class CylinderObjectInfo( CubeObjectInfo ):
 			edgeTriples.append( edgeTripleBottomHorizontal )
 			edgeTripleTopHorizontal = [ vertexPairTopIndex, vertexPairTopDiagonalIndex, vertexPairTopBeforeIndex ]
 			edgeTriples.append( edgeTripleTopHorizontal )
-		self.setBottomTopTriangleMesh( edgeTriples, matrix4By4, vertexPairs, vertices )
+		setBottomTopTriangleMesh( self, edgeTriples, matrixChain, vertexPairs, vertices )
 
 
-class SphereObjectInfo( CubeObjectInfo ):
-	"An Art of Illusion Sphere object info."
-	def setShape( self, matrix4By4 ):
-		"Set the shape of this carvable object info."
+class Sphere( Cube ):
+	"A sphere object."
+	def getAttributeTable( self ):
+		"Get attribute table."
+		return { 'radiusx': self.radiusX, 'radiusy': self.radiusY, 'radiusz': self.radiusZ }
+
+	def setShapeToObjectVariables( self, matrixChain ):
+		"Set the shape to the object variables."
 		self.numberOfInBetweens = 19
 		self.numberOfDivisions = self.numberOfInBetweens + 1
 		squareRadius = 0.5 * float( self.numberOfInBetweens )
@@ -821,23 +820,10 @@ class SphereObjectInfo( CubeObjectInfo ):
 				edgeTriples.append( fourThirtyOClockFaceTop )
 				tenThirtyOClockFaceTop = [ edgeHorizontalTable[ row, column + 1, 1 ], edgeVerticalTable[ row, column, 1 ], edgeDiagonalTable[ row, column, 1 ] ]
 				edgeTriples.append( tenThirtyOClockFaceTop )
-		radiusX = float( self.object.attributeTable[ 'rx' ] )
-		radiusY = float( self.object.attributeTable[ 'ry' ] )
-		radiusZ = float( self.object.attributeTable[ 'rz' ] )
 		for vertex in vertices:
 			vertex.normalize()
-			vertex.x *= radiusX
-			vertex.y *= radiusY
-			vertex.z *= radiusZ
-		self.setBottomTopTriangleMesh( edgeTriples, matrix4By4, vertexPairs, vertices )
+			vertex.x *= self.radiusX
+			vertex.y *= self.radiusY
+			vertex.z *= self.radiusZ
+		setBottomTopTriangleMesh( self, edgeTriples, matrixChain, vertexPairs, vertices )
 
-
-globalCarvableClassObjectInfoTable = getCarvableClassObjectInfoTable()
-
-def main():
-	"Display the inset dialog."
-	if len( sys.argv ) > 1:
-		getCarving( ' '.join( sys.argv[ 1 : ] ) )
-
-if __name__ == "__main__":
-	main()

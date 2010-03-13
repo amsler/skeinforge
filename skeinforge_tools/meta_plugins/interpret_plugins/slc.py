@@ -2,7 +2,7 @@
 This page is in the table of contents.
 The slc.py script is an import translator plugin to get a carving from an slc file.
 
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getCarving function takes the file name of an slc file and returns the carving.
 
@@ -34,7 +34,9 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import svg_codec
 from struct import unpack
+import math
 import sys
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -45,15 +47,13 @@ __license__ = "GPL 3.0"
 
 def getCarving( fileName = '' ):
 	"Get the triangle mesh for the slc file."
-	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypeWithoutWords( 'slc' )
-		if len( unmodified ) == 0:
-			print( "There is no slc file in this folder." )
-			return None
-		fileName = unmodified[ 0 ]
 	carving = SLCCarving()
 	carving.readFile( fileName )
 	return carving
+
+def getInterpretationSuffix():
+	"Return the suffix for a slice file."
+	return 'svg'
 
 def getLittleEndianFloatGivenFile( file ):
 	"Get little endian float given a file."
@@ -92,10 +92,11 @@ class SampleTableEntry:
 		return '%s, %s, %s' % ( self.min_z_level, self.layer_thickness, self.beam_comp )
 
 
-class SLCCarving:
+class SLCCarving( svg_codec.SVGCodecSkein ):
 	"An slc carving."
 	def __init__( self ):
 		"Add empty lists."
+		svg_codec.SVGCodecSkein.__init__( self )
 		self.maximumZ = - 999999999.0
 		self.minimumZ = 999999999.0
 		self.layerThickness = None
@@ -103,7 +104,7 @@ class SLCCarving:
 	
 	def __repr__( self ):
 		"Get the string representation of this carving."
-		return '%s, %s, %s, %s' % ( self.layerThickness, self.minimumZ, self.maximumZ, self.rotatedBoundaryLayers )
+		return self.getCarvedSVG()
 
 	def getCarveCornerMaximum( self ):
 		"Get the corner maximum of the vertices."
@@ -113,23 +114,20 @@ class SLCCarving:
 		"Get the corner minimum of the vertices."
 		return self.cornerMinimum
 
+	def getCarvedSVG( self ):
+		"Get the carved svg text."
+		if len( self.rotatedBoundaryLayers ) < 1:
+			return ''
+		self.decimalPlacesCarried = max( 0, 2 - int( math.floor( math.log10( self.layerThickness ) ) ) )
+		self.perimeterWidth = None
+		return self.getReplacedSVGTemplate( self.fileName, 'basic', self.rotatedBoundaryLayers )
+
 	def getCarveLayerThickness( self ):
 		"Get the layer thickness."
 		return self.layerThickness
 
 	def getCarveRotatedBoundaryLayers( self ):
 		"Get the rotated boundary layers."
-		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, self.maximumZ )
-		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, self.minimumZ )
-		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
-			for loop in rotatedBoundaryLayer.loops:
-				for point in loop:
-					pointVector3 = Vector3( point.real, point.imag, rotatedBoundaryLayer.z )
-					self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, pointVector3 )
-					self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, pointVector3 )
-		halfLayerThickness = 0.5 * self.layerThickness
-		self.cornerMaximum.z += halfLayerThickness
-		self.cornerMinimum.z -= halfLayerThickness
 		return self.rotatedBoundaryLayers
 
 	def processContourLayers( self, file ):
@@ -149,12 +147,24 @@ class SLCCarving:
 
 	def readFile( self, fileName ):
 		"Read SLC and store the layers."
+		self.fileName = fileName
 		pslcfile = open( fileName, 'rb' )
 		readHeader( pslcfile )
 		pslcfile.read( 256 ) #Go past the 256 byte 3D Reserved Section.
 		self.readTableEntry( pslcfile )
 		self.processContourLayers( pslcfile )
 		pslcfile.close()
+		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, self.maximumZ )
+		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, self.minimumZ )
+		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
+			for loop in rotatedBoundaryLayer.loops:
+				for point in loop:
+					pointVector3 = Vector3( point.real, point.imag, rotatedBoundaryLayer.z )
+					self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, pointVector3 )
+					self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, pointVector3 )
+		halfLayerThickness = 0.5 * self.layerThickness
+		self.cornerMaximum.z += halfLayerThickness
+		self.cornerMinimum.z -= halfLayerThickness
 
 	def readTableEntry( self, file ):
 		"Read in the sampling table section. It contains a table length (byte) and the table entries."

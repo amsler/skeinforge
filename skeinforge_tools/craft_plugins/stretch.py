@@ -79,7 +79,7 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_utilities import skeinforge_craft
@@ -94,9 +94,9 @@ __license__ = "GPL 3.0"
 
 
 #maybe speed up feedRate option
-def getCraftedText( fileName, text, stretchRepository = None ):
+def getCraftedText( fileName, gcodeText, stretchRepository = None ):
 	"Stretch a gcode linear move text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), stretchRepository )
+	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, gcodeText ), stretchRepository )
 
 def getCraftedTextFromText( gcodeText, stretchRepository = None ):
 	"Stretch a gcode linear move text."
@@ -114,7 +114,7 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Stretch a gcode linear move file.  Chain stretch the gcode if it is not already stretched.  If no fileName is specified, stretch the first unmodified gcode file in this folder."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'stretch' )
 
@@ -229,7 +229,7 @@ class StretchRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.stretch.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Stretch', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Stretch', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch' )
 		self.activateStretch = settings.BooleanSetting().getFromValue( 'Activate Stretch', self, False )
 		self.crossLimitDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 3.0, 'Cross Limit Distance Over Perimeter Width (ratio):', self, 10.0, 5.0 )
@@ -245,7 +245,7 @@ class StretchRepository:
 
 	def execute( self ):
 		"Stretch button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

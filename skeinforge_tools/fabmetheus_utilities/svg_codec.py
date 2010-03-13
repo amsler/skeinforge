@@ -11,8 +11,8 @@ import __init__
 
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
-from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import triangle_mesh
+from skeinforge_utilities import skeinforge_interpret
 import cStringIO
 import math
 import os
@@ -25,16 +25,10 @@ __license__ = "GPL 3.0"
 
 def getCarving( fileName ):
 	"Get a carving for the file using an import plugin."
-	importPluginFileNames = interpret.getImportPluginFileNames()
-	for importPluginFileName in importPluginFileNames:
-		fileTypeDot = '.' + importPluginFileName
-		if fileName[ - len( fileTypeDot ) : ].lower() == fileTypeDot:
-			importPluginsDirectoryPath = gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'import_plugins' )
-			pluginModule = gcodec.getModuleWithDirectoryPath( importPluginsDirectoryPath, importPluginFileName )
-			if pluginModule != None:
-				return pluginModule.getCarving( fileName )
-	print( 'Could not find plugin to handle ' + fileName )
-	return None
+	pluginModule = skeinforge_interpret.getInterpretPlugin( fileName )
+	if pluginModule == None:
+		return None
+	return pluginModule.getCarving( fileName )
 
 def getParameterFromJavascript( lines, parameterName, parameterValue ):
 	"Get a parameter from lines of javascript."
@@ -69,6 +63,10 @@ def getReplacedWordAndInQuotes( original, replacement, text ):
 	"Replace the word in the text and replace what follows in quotes after the word."
 	text = text.replace( 'replaceWith_' + original, replacement )
 	return getReplacedInQuotes( original, replacement, text )
+
+def getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ):
+	"Get the truncated rotated boundary layers."
+	return rotatedBoundaryLayers[ repository.layersFrom.value : repository.layersTo.value ]
 
 def parseLineReplaceWithTable( firstWordTable, line, output, replaceWithTable ):
 	"Parse the line and replace it if the first word of the line is in the first word table."
@@ -128,10 +126,9 @@ class SVGCodecSkein:
 
 	def addRotatedLoopLayersToOutput( self, rotatedBoundaryLayers ):
 		"Add rotated boundary layers to the output."
-		truncatedRotatedBoundaryLayers = rotatedBoundaryLayers[ self.repository.layersFrom.value : self.repository.layersTo.value ]
-		for truncatedRotatedBoundaryLayerIndex in xrange( len( truncatedRotatedBoundaryLayers ) ):
-			truncatedRotatedBoundaryLayer = truncatedRotatedBoundaryLayers[ truncatedRotatedBoundaryLayerIndex ]
-			self.addRotatedLoopLayerToOutput( truncatedRotatedBoundaryLayerIndex, truncatedRotatedBoundaryLayer )
+		for rotatedBoundaryLayerIndex in xrange( len( rotatedBoundaryLayers ) ):
+			rotatedBoundaryLayer = rotatedBoundaryLayers[ rotatedBoundaryLayerIndex ]
+			self.addRotatedLoopLayerToOutput( rotatedBoundaryLayerIndex, rotatedBoundaryLayer )
 
 	def addLine( self, line ):
 		"Add a line of text and a newline to the output."
@@ -147,8 +144,9 @@ class SVGCodecSkein:
 		canvasInitializationOutput = cStringIO.StringIO()
 		canvasInitializationOutput.write( '\tdecimalPlacesCarried = %s\n' % self.decimalPlacesCarried ) # Set decimal places carried.
 		canvasInitializationOutput.write( '\tlayerThickness = %s\n' % self.getRounded( self.layerThickness ) ) # Set layer thickness.
-		canvasInitializationOutput.write( '\tperimeterWidth = %s\n' % self.getRounded( self.perimeterWidth ) ) # Set perimeter width.
-		canvasInitializationOutput.write( '\tprocedureDone = "%s"\n' % procedureName ) # The procedure done one this svg file.
+		if self.perimeterWidth != None:
+			canvasInitializationOutput.write( '\tperimeterWidth = %s\n' % self.getRounded( self.perimeterWidth ) ) # Set perimeter width.
+		canvasInitializationOutput.write( '\tprocedureDone = "%s"\n' % procedureName ) # The procedure done on this svg file.
 		canvasInitializationOutput.write( '\textrusionStart = 1\n' ) # Initialization is finished, extrusion is starting.
 		return canvasInitializationOutput.getvalue()
 

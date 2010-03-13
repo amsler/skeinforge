@@ -8,7 +8,7 @@ http://blog.thingiverse.com/2009/10/19/parametric-object-party-day-1-the-power-o
 
 An example procedural script is circular_wave.py in the model folder.
 
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.  The getCarving function takes the file name of a python script and returns the carving.
+An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.  The getCarving function takes the file name of a python script and returns the carving.
 
 This example gets a carving for the python script circular_wave.py.  This example is run in a terminal in the folder which contains circular_wave.py and py.py.
 

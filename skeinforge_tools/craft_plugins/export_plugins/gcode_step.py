@@ -71,7 +71,7 @@ from __future__ import absolute_import
 import __init__
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_utilities import skeinforge_polyfile
 from struct import Struct
 import cStringIO

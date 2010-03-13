@@ -51,7 +51,7 @@ import __init__
 
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
 from skeinforge_utilities import skeinforge_polyfile
@@ -84,7 +84,7 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Flow a gcode linear move file."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'flow' )
 
@@ -94,14 +94,14 @@ class FlowRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.flow.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Flow', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Flow', self, '' )
 		self.activateFlow = settings.BooleanSetting().getFromValue( 'Activate Flow:', self, True )
 		self.flowRate = settings.FloatSpin().getFromValue( 50.0, 'Flow Rate (arbitrary units):', self, 250.0, 210.0 )
 		self.executeTitle = 'Flow'
 
 	def execute( self ):
 		"Flow button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

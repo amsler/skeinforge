@@ -2,7 +2,7 @@
 This page is in the table of contents.
 The svg.py script is an import translator plugin to get a carving from an svg file.
 
-An import plugin is a script in the import_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getCarving function takes the file name of an svg file and returns the carving.
 
@@ -29,6 +29,9 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
+from skeinforge_tools.fabmetheus_utilities import svg_codec
+import math
+
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
@@ -81,15 +84,13 @@ def addTextData( line, rotatedBoundaryLayers ):
 
 def getCarving( fileName = '' ):
 	"Get the triangle mesh for the gts file."
-	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypeWithoutWords( 'gts' )
-		if len( unmodified ) == 0:
-			print( "There is no gts file in this folder." )
-			return None
-		fileName = unmodified[ 0 ]
 	carving = SVGCarving()
-	carving.parseSVG( gcodec.getFileText( fileName ) )
+	carving.parseSVG( fileName, gcodec.getFileText( fileName ) )
 	return carving
+
+def getInterpretationSuffix():
+	"Return the suffix for a slice file."
+	return 'svg'
 
 def getValueInQuotes( name, text, value ):
 	"Get value in quotes after the name."
@@ -104,10 +105,11 @@ def getValueInQuotes( name, text, value ):
 	return float( text[ valueStartIndex : nameIndexEnd ] )
 
 
-class SVGCarving:
+class SVGCarving( svg_codec.SVGCodecSkein ):
 	"An svg carving."
 	def __init__( self ):
 		"Add empty lists."
+		svg_codec.SVGCodecSkein.__init__( self )
 		self.maximumZ = - 999999999.0
 		self.minimumZ = 999999999.0
 		self.layerThickness = None
@@ -115,7 +117,7 @@ class SVGCarving:
 	
 	def __repr__( self ):
 		"Get the string representation of this carving."
-		return str( self.rotatedBoundaryLayers )
+		return self.getCarvedSVG()
 
 	def getCarveCornerMaximum( self ):
 		"Get the corner maximum of the vertices."
@@ -125,24 +127,25 @@ class SVGCarving:
 		"Get the corner minimum of the vertices."
 		return self.cornerMinimum
 
+	def getCarvedSVG( self ):
+		"Get the carved svg text."
+		if len( self.rotatedBoundaryLayers ) < 1:
+			return ''
+		self.decimalPlacesCarried = max( 0, 2 - int( math.floor( math.log10( self.layerThickness ) ) ) )
+		self.perimeterWidth = None
+		return self.getReplacedSVGTemplate( self.fileName, 'basic', self.rotatedBoundaryLayers )
+
 	def getCarveLayerThickness( self ):
 		"Get the layer thickness."
 		return self.layerThickness
 
 	def getCarveRotatedBoundaryLayers( self ):
 		"Get the rotated boundary layers."
-		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, self.maximumZ )
-		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, self.minimumZ )
-		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
-			for loop in rotatedBoundaryLayer.loops:
-				for point in loop:
-					pointVector3 = Vector3( point.real, point.imag, rotatedBoundaryLayer.z )
-					self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, pointVector3 )
-					self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, pointVector3 )
 		return self.rotatedBoundaryLayers
 
-	def parseSVG( self, svgText ):
+	def parseSVG( self, fileName, svgText ):
 		"Parse SVG text and store the layers."
+		self.fileName = fileName
 		if svgText == '':
 			return None
 		svgText = svgText.replace( '\t', ' ' )
@@ -151,6 +154,14 @@ class SVGCarving:
 		self.parseInitialization()
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			self.parseLine( lineIndex )
+		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, self.maximumZ )
+		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, self.minimumZ )
+		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
+			for loop in rotatedBoundaryLayer.loops:
+				for point in loop:
+					pointVector3 = Vector3( point.real, point.imag, rotatedBoundaryLayer.z )
+					self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, pointVector3 )
+					self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, pointVector3 )
 
 	def parseInitialization( self ):
 		"Parse gcode initialization and store the parameters."

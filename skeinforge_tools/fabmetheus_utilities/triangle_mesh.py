@@ -73,6 +73,12 @@ def addPointsAtZ( edgePair, points, radius, vertices, z ):
 	carveIntersectionSecond = getCarveIntersectionFromEdge( edgePair.edges[ 1 ], vertices, z )
 	intercircle.addPointsFromSegment( carveIntersectionFirst, carveIntersectionSecond, points, radius, 0.3 )
 
+def addToZoneTable( point, shape ):
+	"Add point to the zone table."
+	zoneIndexFloat = point.z / shape.zoneInterval
+	shape.zZoneTable[ math.floor( zoneIndexFloat ) ] = None
+	shape.zZoneTable[ math.ceil( zoneIndexFloat ) ] = None
+
 def addWithLeastLength( loops, point, shortestAdditionalLength ):
 	"Insert a point into a loop, at the index at which the loop would be shortest."
 	shortestLoop = None
@@ -192,6 +198,21 @@ def getDoubledRoundZ( overhangingSegment, segmentRoundZ ):
 		roundZ *= - 1.0
 	roundZLength = abs( roundZ )
 	return roundZ * roundZ / roundZLength
+
+def getEmptyZ( shape, z ):
+	"Get the first z which is not in the zone table."
+	zoneIndex = round( z / shape.zoneInterval )
+	if zoneIndex not in shape.zZoneTable:
+		return z
+	zoneAround = 1
+	while 1:
+		zoneDown = zoneIndex - zoneAround
+		if zoneDown not in shape.zZoneTable:
+			return zoneDown * shape.zoneInterval
+		zoneUp = zoneIndex + zoneAround
+		if zoneUp not in shape.zZoneTable:
+			return zoneUp * shape.zoneInterval
+		zoneAround += 1
 
 def getInclusiveLoops( allPoints, corners, importRadius, isInteriorWanted = True ):
 	"Get loops which include most of the points."
@@ -418,6 +439,13 @@ def getWideAnglePointIndex( loop ):
 			widestPointIndex = pointIndex
 	return widestPointIndex
 
+def initializeZoneIntervalTable( shape, vertices ):
+	"Initialize the zone interval and the zZone table"
+	shape.zoneInterval = shape.layerThickness / math.sqrt( len( vertices ) ) / 1000.0
+	shape.zZoneTable = {}
+	for point in vertices:
+		addToZoneTable( point, shape )
+
 def isInline( beginComplex, centerComplex, endComplex ):
 	"Determine if the three complex points form a line."
 	centerBeginComplex = beginComplex - centerComplex
@@ -583,13 +611,7 @@ class TriangleMesh:
 	
 	def __repr__( self ):
 		"Get the string representation of this TriangleMesh."
-		return str( self.vertices ) + '\n' + str( self.edges ) + '\n' + str( self.faces )
-
-	def addToZoneTable( self, point ):
-		"Add point to the zone table."
-		zoneIndexFloat = point.z / self.zoneInterval
-		self.zZoneTable[ math.floor( zoneIndexFloat ) ] = None
-		self.zZoneTable[ math.ceil( zoneIndexFloat ) ] = None
+		return self.getGNUTriangulatedSurfaceText()
 
 	def getCarveCornerMaximum( self ):
 		"Get the corner maximum of the vertices."
@@ -611,44 +633,26 @@ class TriangleMesh:
 			self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, point )
 			self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, point )
 		halfHeight = 0.5 * self.layerThickness
-		self.zoneInterval = self.layerThickness / math.sqrt( len( self.vertices ) ) / 1000.0
-		self.zZoneTable = {}
-		for point in self.vertices:
-			self.addToZoneTable( point )
+		initializeZoneIntervalTable( self, self.vertices )
 		layerTop = self.cornerMaximum.z - halfHeight * 0.5
 		z = self.cornerMinimum.z + halfHeight
 		while z < layerTop:
 			z = self.getZAddExtruderPaths( z )
 		return self.rotatedBoundaryLayers
 
-	def getEmptyZ( self, z ):
-		"Get the first z which is not in the zone table."
-		zoneIndex = round( z / self.zoneInterval )
-		if zoneIndex not in self.zZoneTable:
-			return z
-		zoneAround = 1
-		while 1:
-			zoneDown = zoneIndex - zoneAround
-			if zoneDown not in self.zZoneTable:
-				return zoneDown * self.zoneInterval
-			zoneUp = zoneIndex + zoneAround
-			if zoneUp not in self.zZoneTable:
-				return zoneUp * self.zoneInterval
-			zoneAround += 1
-
 	def getGNUTriangulatedSurfaceText( self ):
 		"Get this mesh in the GNU Triangulated Surface (.gts) format."
 		output = cStringIO.StringIO()
-		distanceFeedRate.output.write( '%s %s %s Number of Vertices,Number of Edges,Number of Faces\n' % ( len( self.vertices ), len( self.edges ), len( self.faces ) ) )
-		distanceFeedRate.output.write( '%s %s %s Vertex Coordinates XYZ\n' % ( self.vertices[ 0 ].x, self.vertices[ 0 ].y, self.vertices[ 0 ].z ) )
+		output.write( '%s %s %s Number of Vertices,Number of Edges,Number of Faces\n' % ( len( self.vertices ), len( self.edges ), len( self.faces ) ) )
+		output.write( '%s %s %s Vertex Coordinates XYZ\n' % ( self.vertices[ 0 ].x, self.vertices[ 0 ].y, self.vertices[ 0 ].z ) )
 		for vertex in self.vertices[ 1 : ]:
-			distanceFeedRate.output.write( '%s %s %s\n' % ( vertex.x, vertex.y, vertex.z ) )
-		distanceFeedRate.output.write( '%s Edge Vertex Indices Starting from 1\n' % self.edges[ 0 ].getGNUTriangulatedSurfaceLine() )
+			output.write( '%s %s %s\n' % ( vertex.x, vertex.y, vertex.z ) )
+		output.write( '%s Edge Vertex Indices Starting from 1\n' % self.edges[ 0 ].getGNUTriangulatedSurfaceLine() )
 		for edge in self.edges[ 1 : ]:
-			distanceFeedRate.output.write( '%s\n' % edge.getGNUTriangulatedSurfaceLine() )
-		distanceFeedRate.output.write( '%s Face Edge Indices Starting from 1\n' % self.faces[ 0 ].getGNUTriangulatedSurfaceLine() )
+			output.write( '%s\n' % edge.getGNUTriangulatedSurfaceLine() )
+		output.write( '%s Face Edge Indices Starting from 1\n' % self.faces[ 0 ].getGNUTriangulatedSurfaceLine() )
 		for face in self.faces[ 1 : ]:
-			distanceFeedRate.output.write( '%s\n' % face.getGNUTriangulatedSurfaceLine() )
+			output.write( '%s\n' % face.getGNUTriangulatedSurfaceLine() )
 		return output.getvalue()
 
 	def getLoopsFromMesh( self, z ):
@@ -671,7 +675,7 @@ class TriangleMesh:
 		"Get next z and add extruder loops."
 		rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
 		self.rotatedBoundaryLayers.append( rotatedBoundaryLayer )
-		rotatedBoundaryLayer.loops = self.getLoopsFromMesh( self.getEmptyZ( z ) )
+		rotatedBoundaryLayer.loops = self.getLoopsFromMesh( getEmptyZ( self, z ) )
 		if self.bridgeLayerThickness == None:
 			return z + self.layerThickness
 		allExtrudateLoops = []

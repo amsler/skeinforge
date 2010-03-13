@@ -203,8 +203,8 @@ from __future__ import absolute_import
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
-from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import os
@@ -280,7 +280,7 @@ class SkeinforgeRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository( 'skeinforge.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '' )
 		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
 		self.createdOnLabel = settings.LabelDisplay().getFromName( 'Created On: ' + versionText, self )
 		self.profileType = settings.MenuButtonDisplay().getFromName( 'Profile Type: ', self )
@@ -299,7 +299,7 @@ class SkeinforgeRepository:
 
 	def execute( self ):
 		"Skeinforge button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

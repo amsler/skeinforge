@@ -177,10 +177,10 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
-from skeinforge_tools.fabmetheus_utilities import interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_utilities import skeinforge_craft
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_utilities import skeinforge_polyfile
 from skeinforge_utilities import skeinforge_profile
 import math
@@ -192,19 +192,25 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
 
-# search page in skeinforge,
+# interpretation suffix inside carving
+# handle xml better
 # sphere_simple_format.xml
+# interpret xml to simple format
+# convert global settings to local settings
+# table to dictionary
+# split out svg_codec sometime
 # check for last existing then remove unneeded fill code from euclidean
 # remove cool set at end of layer
-# add circling when hot
+# add circling when hot in chamber
 # maybe measuring rod
 # comb simplify path, option of only combing around inside loops
 # remove comments from clip, bend
 # add hook _extrusion
 # winding into coiling, coil into wind & weave
+# add initial loops option
 # speed into speed and limit
 # documentation
-# setting for skeinforge
+# getInterpretation, getInterpretationSuffix for importPlugins, importPlugins to interpretPlugins
 #
 #
 #
@@ -217,6 +223,7 @@ __license__ = "GPL 3.0"
 # maybe later remove isPerimeterPathInSurroundLoops, once there are no weird fill bugs, also change getHorizontalSegmentListsFromLoopLists
 # save all analyze viewers of the same name except itself, update help menu self.wikiManualPrimary.setUpdateFunction
 # check alterations folder first, if there is something copy it to the home directory, if not check the home directory
+# set temperature in temperature
 # move alterations and profiles to top level
 #
 #
@@ -536,19 +543,19 @@ def getAdditionalLength( path, point, pointIndex ):
 		return abs( point - path[ - 1 ] )
 	return abs( point - path[ pointIndex - 1 ] ) + abs( point - path[ pointIndex ] ) - abs( path[ pointIndex ] - path[ pointIndex - 1 ] )
 
-def getCraftedText( fileName, gcodeText = '', fillRepository = None ):
+def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Fill the inset file or gcode text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, gcodeText ), fillRepository )
+	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, gcodeText ), repository )
 
-def getCraftedTextFromText( gcodeText, fillRepository = None ):
+def getCraftedTextFromText( gcodeText, repository = None ):
 	"Fill the inset gcode text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'fill' ):
 		return gcodeText
-	if fillRepository == None:
-		fillRepository = settings.getReadRepository( FillRepository() )
-	if not fillRepository.activateFill.value:
+	if repository == None:
+		repository = settings.getReadRepository( FillRepository() )
+	if not repository.activateFill.value:
 		return gcodeText
-	return FillSkein().getCraftedGcode( fillRepository, gcodeText )
+	return FillSkein().getCraftedGcode( repository, gcodeText )
 
 def getClosestOppositeIntersectionPaths( yIntersectionPaths ):
 	"Get the close to center paths, starting with the first and an additional opposite if it exists."
@@ -937,7 +944,7 @@ def setIsOutside( yCloseToCenterPath, yIntersectionPaths ):
 
 def writeOutput( fileName = '' ):
 	"Fill an inset gcode file."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'fill' )
 
@@ -947,7 +954,7 @@ class FillRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.fill.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Fill', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Fill', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fill' )
 		self.activateFill = settings.BooleanSetting().getFromValue( 'Activate Fill:', self, True )
 		settings.LabelSeparator().getFromRepository( self )
@@ -992,7 +999,7 @@ class FillRepository:
 
 	def execute( self ):
 		"Fill button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -1031,16 +1038,16 @@ class FillSkein:
 		layerRotationAroundZAngle = self.getLayerRoundZ( layerIndex )
 		reverseZRotationAngle = complex( layerRotationAroundZAngle.real, - layerRotationAroundZAngle.imag )
 		surroundingCarves = []
-		layerRemainder = layerIndex % int( round( self.fillRepository.diaphragmPeriod.value ) )
-		if layerRemainder >= int( round( self.fillRepository.diaphragmThickness.value ) ) and rotatedLayer.rotation == None:
+		layerRemainder = layerIndex % int( round( self.repository.diaphragmPeriod.value ) )
+		if layerRemainder >= int( round( self.repository.diaphragmThickness.value ) ) and rotatedLayer.rotation == None:
 			for surroundingIndex in xrange( 1, self.solidSurfaceThickness + 1 ):
 				self.addRotatedCarve( layerIndex - surroundingIndex, reverseZRotationAngle, surroundingCarves )
 				self.addRotatedCarve( layerIndex + surroundingIndex, reverseZRotationAngle, surroundingCarves )
-		extraShells = self.fillRepository.extraShellsSparseLayer.value
+		extraShells = self.repository.extraShellsSparseLayer.value
 		if len( surroundingCarves ) < self.doubleSolidSurfaceThickness:
-			extraShells = self.fillRepository.extraShellsAlternatingSolidLayer.value
-			if self.lastExtraShells != self.fillRepository.extraShellsBase.value:
-				extraShells = self.fillRepository.extraShellsBase.value
+			extraShells = self.repository.extraShellsAlternatingSolidLayer.value
+			if self.lastExtraShells != self.repository.extraShellsBase.value:
+				extraShells = self.repository.extraShellsBase.value
 		if rotatedLayer.rotation != None:
 			extraShells = 0
 			betweenWidth *= self.bridgeWidthMultiplier
@@ -1057,7 +1064,7 @@ class FillSkein:
 		layerInfillSolidity = self.infillSolidity
 		self.isDoubleJunction = True
 		self.isJunctionWide = True
-		if self.fillRepository.infillPatternGridHexagonal.value:
+		if self.repository.infillPatternGridHexagonal.value:
 			if abs( euclidean.getDotProduct( layerRotationAroundZAngle, euclidean.getUnitPolar( self.infillBeginRotation ) ) ) < math.sqrt( 0.5 ):
 				layerInfillSolidity *= 0.5
 				self.isDoubleJunction = False
@@ -1103,9 +1110,9 @@ class FillSkein:
 				areaChange = max( areaChange, self.getAreaChange( area, layerIndex - surroundingIndex ) )
 				areaChange = max( areaChange, self.getAreaChange( area, layerIndex + surroundingIndex ) )
 			if areaChange < 0.5 or self.solidSurfaceThickness == 0:
-				if self.fillRepository.infillInteriorDensityOverExteriorDensity.value <= 0.0:
+				if self.repository.infillInteriorDensityOverExteriorDensity.value <= 0.0:
 					self.addThreadsBridgeLayer( rotatedLayer, surroundingLoops )
-				self.layerExtrusionWidth /= self.fillRepository.infillInteriorDensityOverExteriorDensity.value
+				self.layerExtrusionWidth /= self.repository.infillInteriorDensityOverExteriorDensity.value
 		front = math.ceil( front / self.layerExtrusionWidth ) * self.layerExtrusionWidth
 		fillWidth = back - front
 		numberOfLines = int( math.ceil( fillWidth / self.layerExtrusionWidth ) )
@@ -1161,9 +1168,9 @@ class FillSkein:
 			explodedPath = explodedPaths[ pathIndex ]
 			euclidean.addPathToPixelTable( explodedPath, pixelTable, pathIndex, width )
 		gridPoints = self.getGridPoints( fillLoops, reverseZRotationAngle )
-		gridPointInsetY = gridPointInsetX * ( 1.0 - self.fillRepository.gridExtraOverlap.value )
-		if self.fillRepository.infillPatternGridRectangular.value:
-			gridBandHeight = self.fillRepository.gridJunctionSeparationBandHeight.value
+		gridPointInsetY = gridPointInsetX * ( 1.0 - self.repository.gridExtraOverlap.value )
+		if self.repository.infillPatternGridRectangular.value:
+			gridBandHeight = self.repository.gridJunctionSeparationBandHeight.value
 			gridLayerRemainder = ( layerIndex - self.solidSurfaceThickness ) % gridBandHeight
 			halfBandHeight = 0.5 * float( gridBandHeight )
 			halfBandHeightFloor = math.floor( halfBandHeight )
@@ -1249,24 +1256,24 @@ class FillSkein:
 		layerArea = self.getCarveArea( layerIndex )
 		return 1.0 - min( area, layerArea ) / max( area, layerArea )
 
-	def getCraftedGcode( self, fillRepository, gcodeText ):
+	def getCraftedGcode( self, repository, gcodeText ):
 		"Parse gcode text and store the bevel gcode."
-		self.fillRepository = fillRepository
+		self.repository = repository
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.threadSequence = None
-		if fillRepository.threadSequenceInfillLoops.value:
+		if repository.threadSequenceInfillLoops.value:
 			self.threadSequence = [ 'infill', 'loops', 'perimeter' ]
-		if fillRepository.threadSequenceInfillPerimeter.value:
+		if repository.threadSequenceInfillPerimeter.value:
 			self.threadSequence = [ 'infill', 'perimeter', 'loops' ]
-		if fillRepository.threadSequenceLoopsInfill.value:
+		if repository.threadSequenceLoopsInfill.value:
 			self.threadSequence = [ 'loops', 'infill', 'perimeter' ]
-		if fillRepository.threadSequenceLoopsPerimeter.value:
+		if repository.threadSequenceLoopsPerimeter.value:
 			self.threadSequence = [ 'loops', 'perimeter', 'infill' ]
-		if fillRepository.threadSequencePerimeterInfill.value:
+		if repository.threadSequencePerimeterInfill.value:
 			self.threadSequence = [ 'perimeter', 'infill', 'loops' ]
-		if fillRepository.threadSequencePerimeterLoops.value:
+		if repository.threadSequencePerimeterLoops.value:
 			self.threadSequence = [ 'perimeter', 'loops', 'infill' ]
-		if self.fillRepository.infillPerimeterOverlap.value > 0.7:
+		if self.repository.infillPerimeterOverlap.value > 0.7:
 			print( '' )
 			print( '!!! WARNING !!!' )
 			print( '"Infill Perimeter Overlap" is greater than 0.7, which may create problems with the infill, like threads going through empty space.' )
@@ -1274,15 +1281,15 @@ class FillSkein:
 			print( '' )
 		self.parseInitialization()
 		self.betweenWidth = self.perimeterWidth - 0.5 * self.infillWidth
-		self.fillInset = self.infillWidth - self.infillWidth * self.fillRepository.infillPerimeterOverlap.value
-		if self.fillRepository.infillInteriorDensityOverExteriorDensity.value > 0:
-			self.interiorExtrusionWidth /= self.fillRepository.infillInteriorDensityOverExteriorDensity.value
-		self.infillSolidity = fillRepository.infillSolidity.value
+		self.fillInset = self.infillWidth - self.infillWidth * self.repository.infillPerimeterOverlap.value
+		if self.repository.infillInteriorDensityOverExteriorDensity.value > 0:
+			self.interiorExtrusionWidth /= self.repository.infillInteriorDensityOverExteriorDensity.value
+		self.infillSolidity = repository.infillSolidity.value
 		if self.isGridToBeExtruded():
-			self.setGridVariables( fillRepository )
-		self.infillBeginRotation = math.radians( fillRepository.infillBeginRotation.value )
-		self.infillOddLayerExtraRotation = math.radians( fillRepository.infillOddLayerExtraRotation.value )
-		self.solidSurfaceThickness = int( round( self.fillRepository.solidSurfaceThickness.value ) )
+			self.setGridVariables( repository )
+		self.infillBeginRotation = math.radians( repository.infillBeginRotation.value )
+		self.infillOddLayerExtraRotation = math.radians( repository.infillOddLayerExtraRotation.value )
+		self.solidSurfaceThickness = int( round( self.repository.solidSurfaceThickness.value ) )
 		self.doubleSolidSurfaceThickness = self.solidSurfaceThickness + self.solidSurfaceThickness
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			self.parseLine( lineIndex )
@@ -1346,14 +1353,14 @@ class FillSkein:
 		rotation = self.rotatedLayers[ layerIndex ].rotation
 		if rotation != None:
 			return rotation
-		infillBeginRotationRepeat = self.fillRepository.infillBeginRotationRepeat.value
+		infillBeginRotationRepeat = self.repository.infillBeginRotationRepeat.value
 		infillOddLayerRotationMultiplier = float( layerIndex % ( infillBeginRotationRepeat + 1 ) == infillBeginRotationRepeat )
 		return euclidean.getUnitPolar( self.infillBeginRotation + infillOddLayerRotationMultiplier * self.infillOddLayerExtraRotation )
 
 	def getNextGripXStep( self, gridXStep ):
 		"Get the next grid x step, increment by an extra one every three if hexagonal grid is chosen."
 		gridXStep += 1
-		if self.fillRepository.infillPatternGridHexagonal.value:
+		if self.repository.infillPatternGridHexagonal.value:
 			if gridXStep % 3 == 0:
 				gridXStep += 1
 		return gridXStep
@@ -1370,7 +1377,7 @@ class FillSkein:
 
 	def isGridToBeExtruded( self ):
 		"Determine if the grid is to be extruded."
-		return ( not self.fillRepository.infillPatternLine.value ) and self.fillRepository.infillInteriorDensityOverExteriorDensity.value > 0
+		return ( not self.repository.infillPatternLine.value ) and self.repository.infillInteriorDensityOverExteriorDensity.value > 0
 
 	def isPointInsideLineSegments( self, gridPoint ):
 		"Is the point inside the line segments of the loops."
@@ -1416,7 +1423,7 @@ class FillSkein:
 				self.bridgeWidthMultiplier = float( splitLine[ 1 ] )
 			elif firstWord == '(<layerThickness>':
 				self.layerThickness = float( splitLine[ 1 ] )
-				self.infillWidth = self.fillRepository.infillWidthOverThickness.value * self.layerThickness
+				self.infillWidth = self.repository.infillWidthOverThickness.value * self.layerThickness
 				self.interiorExtrusionWidth = self.infillWidth
 			self.distanceFeedRate.addLine( line )
  
@@ -1455,18 +1462,18 @@ class FillSkein:
 		elif firstWord == '(<perimeter>':
 			self.isPerimeter = True
 
-	def setGridVariables( self, fillRepository ):
+	def setGridVariables( self, repository ):
 		"Set the grid variables."
 		self.gridRadius = self.interiorExtrusionWidth / self.infillSolidity
 		self.gridWidthMultiplier = 2.0
 		self.offsetMultiplier = 1.0
-		if self.fillRepository.infillPatternGridHexagonal.value:
+		if self.repository.infillPatternGridHexagonal.value:
 			self.gridWidthMultiplier = 2.0 / math.sqrt( 3.0 )
 			self.offsetMultiplier = 2.0 / math.sqrt( 3.0 ) * 1.5
-		if self.fillRepository.infillPatternGridRectangular.value:
+		if self.repository.infillPatternGridRectangular.value:
 			halfGridRadiusMinusInteriorExtrusionWidth = 0.5 * ( self.gridRadius - self.interiorExtrusionWidth )
-			self.gridJunctionSeparationAtEnd = halfGridRadiusMinusInteriorExtrusionWidth * fillRepository.gridJunctionSeparationOverOctogonRadiusAtEnd.value
-			self.gridJunctionSeparationAtMiddle = halfGridRadiusMinusInteriorExtrusionWidth * fillRepository.gridJunctionSeparationOverOctogonRadiusAtMiddle.value
+			self.gridJunctionSeparationAtEnd = halfGridRadiusMinusInteriorExtrusionWidth * repository.gridJunctionSeparationOverOctogonRadiusAtEnd.value
+			self.gridJunctionSeparationAtMiddle = halfGridRadiusMinusInteriorExtrusionWidth * repository.gridJunctionSeparationOverOctogonRadiusAtMiddle.value
 
 
 class RotatedLayer:

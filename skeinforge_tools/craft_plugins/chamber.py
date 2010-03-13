@@ -46,13 +46,6 @@ http://casainho-emcrepstrap.blogspot.com/2010/01/perfect-build-platform.html
 http://casainho-emcrepstrap.blogspot.com/2009/12/almost-no-warp.html
 http://casainho-emcrepstrap.blogspot.com/2009/12/heated-base-plate.html
 
-===James Villeneuve===
-A PCB copper heater by James Villeneuve
-http://www.thingiverse.com/jamesvilleneuve
-
-with an article at:
-http://www.thingiverse.com/thing:1433
-
 ===Jmil===
 A heated build stage by jmil, over at:
 http://www.hive76.org
@@ -148,7 +141,7 @@ import __init__
 
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
 from skeinforge_utilities import skeinforge_polyfile
@@ -181,7 +174,7 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Chamber a gcode linear move file."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
 	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'chamber' )
@@ -192,7 +185,7 @@ class ChamberRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.chamber.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Chamber', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Chamber', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber' )
 		self.activateChamber = settings.BooleanSetting().getFromValue( 'Activate Chamber:', self, True )
 		self.bedTemperature = settings.FloatSpin().getFromValue( 20.0, 'Bed Temperature (Celcius):', self, 90.0, 60.0 )
@@ -202,7 +195,7 @@ class ChamberRepository:
 
 	def execute( self ):
 		"Chamber button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 

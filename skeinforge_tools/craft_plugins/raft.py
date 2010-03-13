@@ -214,7 +214,7 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities.vector3 import Vector3
 from skeinforge_utilities import skeinforge_craft
@@ -297,7 +297,7 @@ def setExtendedPoint( lineSegmentEnd, pointOriginal, x ):
 
 def writeOutput( fileName = '' ):
 	"Raft a gcode linear move file."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
 	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'raft' )
@@ -308,7 +308,7 @@ class RaftRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.raft.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Raft', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Raft', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Raft' )
 		self.activateRaft = settings.BooleanSetting().getFromValue( 'Activate Raft', self, True )
 		self.addRaftElevateNozzleOrbitSetAltitude = settings.BooleanSetting().getFromValue( 'Add Raft, Elevate Nozzle, Orbit and Set Altitude:', self, True )
@@ -357,7 +357,7 @@ class RaftRepository:
 
 	def execute( self ):
 		"Raft button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -738,7 +738,10 @@ class RaftSkein:
 		self.supportStartLines = gcodec.getTextLines( self.supportStartText )
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.parseInitialization()
-		self.temperatureChangeTimeBeforeRaft = self.getTemperatureChangeTime( max( max( self.baseTemperature, self.interfaceTemperature ), self.objectFirstLayerPerimeterTemperature ) )
+		self.temperatureChangeTimeBeforeRaft = 0.0
+		firstMaxTemperature = max( max( self.baseTemperature, self.interfaceTemperature ), self.objectFirstLayerPerimeterTemperature )
+		if firstMaxTemperature > self.chamberTemperature:
+			self.temperatureChangeTimeBeforeRaft = self.getTemperatureChangeTime( firstMaxTemperature )
 		if repository.addRaftElevateNozzleOrbitSetAltitude.value:
 			self.addRaft()
 		self.addTemperatureLineIfDifferent( self.objectFirstLayerPerimeterTemperature )

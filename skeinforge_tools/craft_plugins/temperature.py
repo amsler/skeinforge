@@ -24,7 +24,7 @@ Defines the heating rate of the extruder.
 ====Chamber Temperature====
 Default is twenty five degrees Celcius.
 
-Defines the chamber temperature.  If there is no chamber, the chamber temperature will be slightly higher than room temperature.
+Defines the chamber temperature.  If there is no chamber, the chamber temperature will be slightly higher than room temperature.  If you do not want the loops at the beginning, set the chamber temperature to a high value, like 300 Celcius.
 
 ====Base Temperature====
 Default for ABS is two hundred degrees Celcius.
@@ -102,7 +102,7 @@ import __init__
 from skeinforge_tools.fabmetheus_utilities import euclidean
 from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import intercircle
-from skeinforge_tools.fabmetheus_utilities import interpret
+from skeinforge_utilities import skeinforge_interpret
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_utilities import skeinforge_craft
 from skeinforge_utilities import skeinforge_polyfile
@@ -136,7 +136,7 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Temperature a gcode linear move file."
-	fileName = interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = skeinforge_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'temperature' )
 
@@ -146,15 +146,15 @@ class TemperatureRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.craft_plugins.temperature.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Temperature', self, '' )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( skeinforge_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Temperature', self, '' )
 		self.activateTemperature = settings.BooleanSetting().getFromValue( 'Activate Temperature:', self, True )
 		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Rate -', self )
-		self.coolingRate = settings.FloatSpin().getFromValue( 0.0, 'Cooling Rate (Celcius/second):', self, 20.0, 3.0 )
-		self.heatingRate = settings.FloatSpin().getFromValue( 0.0, 'Heating Rate (Celcius/second):', self, 20.0, 10.0 )
+		self.coolingRate = settings.FloatSpin().getFromValue( 1.0, 'Cooling Rate (Celcius/second):', self, 20.0, 3.0 )
+		self.heatingRate = settings.FloatSpin().getFromValue( 1.0, 'Heating Rate (Celcius/second):', self, 20.0, 10.0 )
 		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Temperature -', self )
-		self.chamberTemperature = settings.FloatSpin().getFromValue( 0.0, 'Chamber Temperature (Celcius):', self, 100.0, 25.0 )
+		self.chamberTemperature = settings.FloatSpin().getFromValue( 0.0, 'Chamber Temperature (Celcius):', self, 400.0, 25.0 )
 		self.baseTemperature = settings.FloatSpin().getFromValue( 140.0, 'Base Temperature (Celcius):', self, 260.0, 200.0 )
 		self.interfaceTemperature = settings.FloatSpin().getFromValue( 140.0, 'Interface Temperature (Celcius):', self, 260.0, 200.0 )
 		self.objectFirstLayerInfillTemperature = settings.FloatSpin().getFromValue( 140.0, 'Object First Layer Infill Temperature (Celcius):', self, 260.0, 195.0 )
@@ -166,7 +166,7 @@ class TemperatureRepository:
 
 	def execute( self ):
 		"Temperature button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, skeinforge_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -182,10 +182,14 @@ class TemperatureSkein:
 		"Parse gcode text and store the temperature gcode."
 		self.repository = repository
 		self.lines = gcodec.getTextLines( gcodeText )
+		if self.repository.coolingRate.value < 0.1:
+			print( 'The cooling rate should be more than 0.1, any cooling rate less than 0.1 will be treated as 0.1.' )
+			self.repository.coolingRate.value = 0.1
+		if self.repository.heatingRate.value < 0.1:
+			print( 'The heating rate should be more than 0.1, any heating rate less than 0.1 will be treated as 0.1.' )
+			self.repository.heatingRate.value = 0.1
 		self.parseInitialization()
 		self.distanceFeedRate.addLines( self.lines[ self.lineIndex : ] )
-#		for line in self.lines[ self.lineIndex : ]:
-#			self.parseLine( line )
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self ):

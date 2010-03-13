@@ -62,6 +62,7 @@ from skeinforge_tools.fabmetheus_utilities import gcodec
 from skeinforge_tools.fabmetheus_utilities import settings
 from skeinforge_tools.fabmetheus_utilities import svg_codec
 from skeinforge_utilities import skeinforge_polyfile
+from skeinforge_utilities import skeinforge_profile
 import cStringIO
 import os
 import sys
@@ -130,7 +131,7 @@ class VectorwriteRepository:
 	"A class to handle the vectorwrite settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_tools.analyze_plugins.vectorwrite.html', '', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_tools.analyze_plugins.vectorwrite.html', self )
 		self.activateVectorwrite = settings.BooleanSetting().getFromValue( 'Activate Vectorwrite', self, False )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Write Vector Graphics for', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Vectorwrite' )
