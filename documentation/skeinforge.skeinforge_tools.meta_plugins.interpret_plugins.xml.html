@@ -1,0 +1,159 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module skeinforge.skeinforge_tools.meta_plugins.interpret_plugins.xml</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge.html"><font color="#ffffff">skeinforge</font></a>.<a href="skeinforge.skeinforge_tools.html"><font color="#ffffff">skeinforge_tools</font></a>.<a href="skeinforge.skeinforge_tools.meta_plugins.html"><font color="#ffffff">meta_plugins</font></a>.<a href="skeinforge.skeinforge_tools.meta_plugins.interpret_plugins.html"><font color="#ffffff">interpret_plugins</font></a>.xml</strong></big></big> ($Date: 2008/21/04 $)</font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge/skeinforge_tools/meta_plugins/interpret_plugins/xml.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge/skeinforge_tools/meta_plugins/interpret_plugins/xml.py</a></font></td></tr></table>
+    <p>
+<a href="skeinforge.skeinforge_tools.meta_plugins.interpret_plugins.svg.html">Previous</a> / <a href="skeinforge.skeinforge_tools.meta_plugins.interpret_plugins.xml_plugins.artofillusion.html">Next</a> / <a href="contents.html">Contents</a>
+</p>
+<p><tt><br>
+The xml.py script is an import translator plugin to get a carving from an xml file.<br>
+ <br>
+An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.<br>
+ <br>
+The getCarving function takes the file name of an xml file and returns the carving.<br>
+ <br>
+This example gets a triangle mesh for the xml file boolean.xml.  This example is run in a terminal in the folder which contains boolean.xml and xml.py.<br>
+ <br>
+ <br>
+&gt; python<br>
+Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
+[GCC 4.2.1 (SUSE Linux)] on linux2<br>
+Type "help", "copyright", "credits" or "license" for more information.<br>
+&gt;&gt;&gt; import xml<br>
+&gt;&gt;&gt; xml.<a href="#-getCarving">getCarving</a>().getCarveRotatedBoundaryLayers()<br>
+[-1.159765625, None, [[(-18.925000000000001-2.4550000000000001j), (-18.754999999999981-2.4550000000000001j)<br>
+..<br>
+many more lines of the carving<br>
+..<br>
+ <br>
+ <br>
+An example of an xml boolean geometry format file follows below.<br>
+ <br>
+&lt;?xml version='1.0' ?&gt;<br>
+&lt;booleangeometry version="2010-03-10"&gt;<br>
+        &lt;booleansolid id="Boolean1" operation="lastminuscomplement"&gt;<br>
+                &lt;cube halfx="1.6" halfy="2.925" halfz="1.6" id="Cube 1"&gt;<br>
+                        &lt;matrix4x4 m14="-0.425" m24="-0.53"&gt;<br>
+                        &lt;/matrix4x4&gt;<br>
+                &lt;/cube&gt;<br>
+                &lt;cube halfx="1.36" halfy="3.05" halfz="1.36" id="Cube 2"&gt;<br>
+                        &lt;matrix4x4 m14="0.665" m24="0.405"&gt;<br>
+                        &lt;/matrix4x4&gt;<br>
+                &lt;/cube&gt;<br>
+                &lt;matrix4x4 m14="-20.1" m24="0.19"&gt;<br>
+                &lt;/matrix4x4&gt;<br>
+        &lt;/booleansolid&gt;<br>
+&lt;/booleangeometry&gt;<br>
+ <br>
+In the 'booleangeometry' format, all class and attribute names are lower case.  The defined geometric objects are booleansolid, cube, cylinder, sphere and trianglemesh.  The id attribute is not necessary.  The default matrix is a four by four identity matrix.  The attributes of the cube, cylinder and sphere default to one.  The attributes of the vector3 vertices in the triangle mesh default to zero.  The boolean operation names are join, intersection, firstminuscomplement and lastminuscomplement.  Examples of the remaining geometric obejcts follow below.<br>
+ <br>
+&lt;?xml version='1.0' ?&gt;<br>
+&lt;booleangeometry version="2010-03-10"&gt;<br>
+        &lt;cylinder height="20.4" id="Cylinder 1" radiusx="5.4" radiusz="5.4" topoverbottom="1.0"&gt;<br>
+                &lt;matrix4x4 m14="0.6" m24="-1.3"&gt;<br>
+                &lt;/matrix4x4&gt;<br>
+        &lt;/cylinder&gt;<br>
+&lt;/booleangeometry&gt;<br>
+ <br>
+&lt;?xml version='1.0' ?&gt;<br>
+&lt;booleangeometry version="2010-03-10"&gt;<br>
+        &lt;sphere id="Sphere1" radiusx="15.0" radiusy="10.0" radiusz="5.0"&gt;<br>
+                &lt;matrix4x4&gt;<br>
+                &lt;/matrix4x4&gt;<br>
+        &lt;/sphere&gt;<br>
+&lt;/booleangeometry&gt;<br>
+ <br>
+&lt;?xml version='1.0' ?&gt;<br>
+&lt;booleangeometry version="2010-03-10"&gt;<br>
+        &lt;trianglemesh id="tetrahedron"&gt;<br>
+                &lt;vertices&gt;<br>
+                        &lt;vector3 x="-5.0" y="0.0" z="2.89"&gt;<br>
+                        &lt;/vector3&gt;<br>
+                        &lt;vector3 x="0.0" y="0.0" z="-5.77"&gt;<br>
+                        &lt;/vector3&gt;<br>
+                        &lt;vector3 x="5.0" y="0.0" z="2.89"&gt;<br>
+                        &lt;/vector3&gt;<br>
+                        &lt;vector3 x="0.0" y="8.66" z="0.0"&gt;<br>
+                        &lt;/vector3&gt;<br>
+                &lt;/vertices&gt;<br>
+                &lt;faces&gt;<br>
+                        &lt;face vertex0="3" vertex1="0" vertex2="1"&gt;<br>
+                        &lt;/face&gt;<br>
+                        &lt;face vertex0="3" vertex1="1" vertex2="2"&gt;<br>
+                        &lt;/face&gt;<br>
+                        &lt;face vertex0="3" vertex1="2" vertex2="0"&gt;<br>
+                        &lt;/face&gt;<br>
+                        &lt;face vertex0="0" vertex1="2" vertex2="1"&gt;<br>
+                        &lt;/face&gt;<br>
+                &lt;/faces&gt;<br>
+                &lt;matrix4x4 m11="3.74939945665e-33" m13="1.0" m21="-1.0" m22="6.12323399574e-17" m32="-1.0" m33="6.12323399574e-17"&gt;<br>
+                &lt;/matrix4x4&gt;<br>
+        &lt;/trianglemesh&gt;<br>
+&lt;/booleangeometry&gt;<br>
+ <br>
+The 'booleangeometry' xml format is the preferred skeinforge format.  When the Interpret button in the Interpret tool in Meta is clicked, any xml format for which there is a plugin will be converted to the 'booleangeometry' format.<br>
+ <br>
+There is a plugin for the 'Art of Illusion' xml format.  An xml file can be exported from Art of Illusion by going to the "File" menu, then going into the "Export" menu item, then picking the XML choice.  This will bring up the XML file chooser window, choose a place to save the file then click "OK".  Leave the "compressFile" checkbox unchecked.  All the objects from the scene will be exported, the artofillusion plugin will ignore the light and camera.  If you want to fabricate more than one object at a time, you can have multiple objects in the Art of Illusion scene and they will all be carved, then fabricated together.</tt>
+<br />
+<br />
+<p>
+<a href="skeinforge.skeinforge_tools.meta_plugins.interpret_plugins.svg.html">Previous</a> / <a href="skeinforge.skeinforge_tools.meta_plugins.interpret_plugins.xml_plugins.artofillusion.html">Next</a> / <a href="contents.html">Contents</a>
+</p>
+<hr>
+</p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.gcodec.html">fabmetheus_utilities.gcodec</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-getCarving"><strong>getCarving</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;carving&nbsp;for&nbsp;the&nbsp;xml&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-getPluginsDirectoryPath"><strong>getPluginsDirectoryPath</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;plugins&nbsp;directory&nbsp;path.</tt></dd></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;inset&nbsp;dialog.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
+<strong>__credits__</strong> = 'Nophead &lt;http://hydraraptor.blogspot.com/&gt;<font color="#c040c0">\n</font>Art of Illusion &lt;http://www.artofillusion.org/&gt;'<br>
+<strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
+<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#7799ee">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Author</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#7799ee"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Enrique&nbsp;Perez&nbsp;(perez_enrique@yahoo.com)</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#7799ee">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Credits</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#7799ee"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Nophead&nbsp;&lt;<a href="http://hydraraptor.blogspot.com/">http://hydraraptor.blogspot.com/</a>&gt;<br>
+Art&nbsp;of&nbsp;Illusion&nbsp;&lt;<a href="http://www.artofillusion.org/">http://www.artofillusion.org/</a>&gt;</td></tr></table>
+</body></html>
