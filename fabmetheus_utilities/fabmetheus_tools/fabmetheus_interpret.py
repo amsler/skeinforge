@@ -1,7 +1,7 @@
 """
 Interpret is a collection of utilities to list the import plugins.
 
-An import plugin is a script in the interpret_plugins folder which has the function getTriangleMesh.
+An import plugin is a script in the interpret_plugins folder which has the function getCarving.
 
 The following examples shows functions of fabmetheus_interpret.  The examples are run in a terminal in the folder which contains fabmetheus_interpret.py.
 
@@ -36,6 +36,49 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
+def analyzeFile( fileName ):
+	"Get file interpretion."
+	startTime = time.time()
+	carving = getCarving( fileName )
+	if carving == None:
+		return ''
+	interpretGcode = str( carving )
+	if interpretGcode == '':
+		return
+	repository = settings.getReadRepository( InterpretRepository() )
+	if repository.printInterpretion.value:
+		print( interpretGcode )
+	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_interpret.' + carving.getInterpretationSuffix()
+	suffixDirectoryName = os.path.dirname( suffixFileName )
+	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
+	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
+	gcodec.writeFileText( suffixFileName, interpretGcode )
+	print( 'The interpret file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to interpret the file.' )
+	textProgram = repository.textProgram.value
+	if textProgram == '':
+		return
+	if textProgram == 'webbrowser':
+		settings.openWebPage( suffixFileName )
+		return
+	textFilePath = '"' + os.path.normpath( suffixFileName ) + '"' # " to send in file name with spaces
+	shellCommand = textProgram + ' ' + textFilePath
+	print( 'Sending the shell command:' )
+	print( shellCommand )
+	commandResult = os.system( shellCommand )
+	if commandResult != 0:
+		print( 'It may be that the system could not find the %s program.' % textProgram )
+		print( 'If so, try installing the %s program or look for another one, like Open Office which can be found at:' % textProgram )
+		print( 'http://www.openoffice.org/' )
+		print( 'Open office writer can then be started from the command line with the command "soffice -writer".' )
+
+def getCarving( fileName ):
+	"Get carving."
+	pluginModule = getInterpretPlugin( fileName )
+	if pluginModule == None:
+		return None
+	return pluginModule.getCarving( fileName )
+
 def getFirstTranslatorFileNameUnmodified( fileName ):
 	"Get the first file name from the translators in the import plugins folder, if the file name is not already set."
 	if fileName != '':
@@ -57,6 +100,10 @@ def getGNUTranslatorFilesUnmodified():
 	"Get the file types from the translators in the import plugins folder."
 	return gcodec.getFilesWithFileTypesWithoutWords( getImportPluginFileNames() ) + [ gcodec.getUnmodifiedGCodeFiles() ]
 
+def getImportPluginFileNames():
+	"Get interpret plugin fileNames."
+	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
+
 def getInterpretPlugin( fileName ):
 	"Get the interpret plugin for the file."
 	importPluginFileNames = getImportPluginFileNames()
@@ -69,10 +116,6 @@ def getInterpretPlugin( fileName ):
 				return pluginModule
 	print( 'Could not find plugin to handle ' + fileName )
 	return None
-
-def getImportPluginFileNames():
-	"Get interpret plugin fileNames."
-	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -93,39 +136,20 @@ def getTranslatorFileTypeTuples():
 	fileTypeTuples.sort()
 	return fileTypeTuples
 
-def interpretFile( fileName ):
-	"Get file interpretion."
-	startTime = time.time()
-	pluginModule = getInterpretPlugin( fileName )
-	if pluginModule == None:
-		return ''
-	carving = pluginModule.getCarving( fileName )
-	interpretGcode = str( carving )
-	if interpretGcode == '':
-		return
-	repository = settings.getReadRepository( InterpretRepository() )
-	if repository.printInterpretion.value:
-		print( interpretGcode )
-	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_interpret.' + carving.getInterpretationSuffix()
-	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
-	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
-	gcodec.writeFileText( suffixFileName, interpretGcode )
-	print( 'The interpret file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to interpret the file.' )
-
 
 class InterpretRepository:
 	"A class to handle the interpret settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_tools.meta_plugins.interpret.html', '', self )
+		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.meta_plugins.interpret.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Interpret', self, '' )
+		self.activateInterpret = settings.BooleanSetting().getFromValue( 'Activate Interpret', self, False )
 		self.printInterpretion = settings.BooleanSetting().getFromValue( 'Print Interpretion', self, False )
+		self.textProgram = settings.StringSetting().getFromValue( 'Text Program:', self, 'webbrowser' )
 		self.executeTitle = 'Interpret'
 
 	def execute( self ):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			interpretFile( fileName )
+			analyzeFile( fileName )

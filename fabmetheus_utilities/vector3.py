@@ -31,6 +31,7 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import xml_simple_writer
 import math
 import operator
 
@@ -169,6 +170,17 @@ class Vector3:
 	def __truediv__( self, other ):
 		"Get a new Vector3 by true dividing each component of this one."
 		return Vector3( operator.truediv( self.x, other ), operator.truediv( self.y, other ), operator.truediv( self.z, other ) )
+
+	def addXML( self, depth, output ):
+		"Add the xml for this object."
+		attributeDictionary = {}
+		if self.x != 0.0:
+			attributeDictionary[ 'x' ] = str( self.x )
+		if self.y != 0.0:
+			attributeDictionary[ 'y' ] = str( self.y )
+		if self.z != 0.0:
+			attributeDictionary[ 'z' ] = str( self.z)
+		xml_simple_writer.addClosedXMLTag( attributeDictionary, depth, 'vertex', output )
 
 	def cross( self, other ):
 		"Calculate the cross product of this vector with other one."

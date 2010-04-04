@@ -33,9 +33,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.solids.solid_tools import face
+from fabmetheus_utilities.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities.solids import triangle_mesh
 from struct import unpack
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -76,7 +77,7 @@ def getCarving( fileName = '' ):
 	stlData = gcodec.getFileText( fileName, 'rb' )
 	if stlData == '':
 		return None
-	triangleMesh = triangle_mesh.TriangleMesh()
+	triangleMesh = trianglemesh.TriangleMesh()
 	vertexIndexTable = {}
 	numberOfVertexStrings = stlData.count( 'vertex' )
 	requiredVertexStringsForText = max( 2, len( stlData ) / 8000 )
@@ -90,8 +91,8 @@ def getCarving( fileName = '' ):
 
 def getFaceGivenLines( triangleMesh, vertexStartIndex, vertexIndexTable, vertices ):
 	"Add face given line index and lines."
-	face = triangle_mesh.Face()
-	face.index = len( triangleMesh.faces )
+	faceGivenLines = face.Face()
+	faceGivenLines.index = len( triangleMesh.faces )
 	for vertexIndex in xrange( vertexStartIndex, vertexStartIndex + 3 ):
 		vertex = vertices[ vertexIndex ]
 		vertexUniqueIndex = len( vertexIndexTable )
@@ -100,8 +101,8 @@ def getFaceGivenLines( triangleMesh, vertexStartIndex, vertexIndexTable, vertice
 		else:
 			vertexIndexTable[ str( vertex ) ] = vertexUniqueIndex
 			triangleMesh.vertices.append( vertex )
-		face.vertexIndexes.append( vertexUniqueIndex )
-	return face
+		faceGivenLines.vertexIndexes.append( vertexUniqueIndex )
+	return faceGivenLines
 
 def getFloat( floatString ):
 	"Get the float, replacing commas if necessary because an inferior program is using a comma instead of a point for the decimal point."

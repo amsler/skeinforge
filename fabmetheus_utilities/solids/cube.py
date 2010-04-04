@@ -30,7 +30,9 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.solids import triangle_mesh
+from fabmetheus_utilities.solids.solid_utilities import geomancer
+from fabmetheus_utilities.solids import trianglemesh
+from fabmetheus_utilities import euclidean
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
@@ -38,7 +40,12 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-class Cube( triangle_mesh.TriangleMesh ):
+def processXMLElement( xmlElement ):
+	"Process the xml element."
+	geomancer.processShape( Cube, xmlElement )
+
+
+class Cube( trianglemesh.TriangleMesh ):
 	"A cube object."
 	def addXMLSection( self, depth, output ):
 		"Add the xml section for this object."
@@ -47,10 +54,15 @@ class Cube( triangle_mesh.TriangleMesh ):
 	def createShape( self, matrixChain ):
 		"Create the shape."
 		square = [ complex( - self.halfX, - self.halfY ), complex( self.halfX, - self.halfY ), complex( self.halfX, self.halfY ), complex( - self.halfX, self.halfY ) ]
-		bottomTopSquare = triangle_mesh.getAddIndexedLoops( square, self.vertices, [ - self.halfZ, self.halfZ ] )
-		triangle_mesh.addPillarFromConvexLoops( self.faces, bottomTopSquare )
+		bottomTopSquare = trianglemesh.getAddIndexedLoops( square, self.vertices, [ - self.halfZ, self.halfZ ] )
+		trianglemesh.addPillarFromConvexLoops( self.faces, bottomTopSquare )
 		self.transformSetBottomTopEdges( matrixChain )
 
-	def getAttributeTable( self ):
-		"Get attribute table."
-		return { 'halfx': self.halfX, 'halfy': self.halfY, 'halfz': self.halfZ }
+	def setToObjectAttributeDictionary( self ):
+		"Set the shape of this carvable object info."
+		self.halfX = euclidean.getFloatOneFromDictionary( 'halfx', self.xmlElement.attributeDictionary )
+		self.halfY = euclidean.getFloatOneFromDictionary( 'halfy', self.xmlElement.attributeDictionary )
+		self.halfZ = euclidean.getFloatOneFromDictionary( 'halfz', self.xmlElement.attributeDictionary )
+		self.xmlElement.attributeDictionary[ 'halfx' ] = self.halfX
+		self.xmlElement.attributeDictionary[ 'halfy' ] = self.halfY
+		self.xmlElement.attributeDictionary[ 'halfz' ] = self.halfZ

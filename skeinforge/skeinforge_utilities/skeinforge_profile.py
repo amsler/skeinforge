@@ -97,7 +97,7 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_tools', 'profile_plugins' ) )
+	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_plugins', 'profile_plugins' ) )
 
 def getProfileDirectory():
 	"Get the profile directory."
@@ -111,7 +111,7 @@ def getProfileName( craftTypeName ):
 	return craftTypeSettings.profileListbox.value
 
 def getReadProfileRepository():
-	"Get the read profile repository.	from skeinforge.skeinforge_tools import profile"
+	"Get the read profile repository.	from skeinforge.skeinforge_plugins import profile"
 	return settings.getReadRepository( ProfileRepository() )
 
 def updateProfileSaveListeners():

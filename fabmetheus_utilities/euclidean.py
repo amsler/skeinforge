@@ -31,6 +31,7 @@ except:
 import __init__
 
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import xml_simple_writer
 import math
 
 
@@ -406,6 +407,13 @@ def getBackOfLoops( loops ):
 	if back == negativeFloat:
 		print( "This should never happen, there are no loops for getBackOfLoops in euclidean" )
 	return back
+
+def getBooleanFromValue( value ):
+	"Get boolean from the word."
+	firstCharacter = str( value ).lower().lstrip()[ : 1 ]
+	if firstCharacter == 'f':
+		return False
+	return firstCharacter != '0'
 
 def getBottom( points ):
 	"Get the bottom of the points."
@@ -1190,7 +1198,7 @@ def getTransferredSurroundingLoops( insides, loop ):
 			del insides[ insideIndex ]
 	return transferredSurroundings
 
-def getUnitPolar( angle ):
+def getWiddershinsUnitPolar( angle ):
 	"Get polar complex from counterclockwise angle from 1, 0."
 	return complex( math.cos( angle ), math.sin( angle ) )
 
@@ -1305,6 +1313,18 @@ def isLoopListIntersectingInsideXSegment( loopList, segmentFirstX, segmentSecond
 	"Determine if the loop list is crossing inside the x segment."
 	for alreadyFilledLoop in loopList:
 		if isLoopIntersectingInsideXSegment( alreadyFilledLoop, segmentFirstX, segmentSecondX, segmentYMirror, y ):
+			return True
+	return False
+
+def isLoopListIntersecting( loops, z ):
+	"Determine if a loop in the list is intersecting the other loops."
+	for loopIndex in xrange( len( loops ) - 1 ):
+		loop = loops[ loopIndex ]
+		if isLoopIntersectingLoops( loop, loops[ loopIndex + 1 : ] ):
+			print( 'Warning, the triangle mesh slice intersects itself.' )
+			print( "Something will still be printed, but there is no guarantee that it will be the correct shape." )
+			print( 'Once the gcode is saved, you should check over the layer with a z of:' )
+			print( z )
 			return True
 	return False
 
@@ -1461,12 +1481,22 @@ def removeElementFromPixelListFromPoint( element, pixelTable, point ):
 	stepKey = getStepKeyFromPoint( point )
 	removeElementFromListTable( element, stepKey, pixelTable )
 
+def removeListFromDictionary( dictionary, keys ):
+	"Remove list from the dictionary."
+	for key in keys:
+		if key in dictionary:
+			del dictionary[ key ]
+
 def removePixelTableFromPixelTable( pixelTableToBeRemoved, pixelTableToBeRemovedFrom ):
 	"Remove pixel from the pixel table."
-	pixelTableToBeRemovedKeys = pixelTableToBeRemoved.keys()
-	for pixelTableToBeRemovedKey in pixelTableToBeRemovedKeys:
-		if pixelTableToBeRemovedKey in pixelTableToBeRemovedFrom:
-			del pixelTableToBeRemovedFrom[ pixelTableToBeRemovedKey ]
+	removeListFromDictionary( pixelTableToBeRemovedFrom, pixelTableToBeRemoved.keys() )
+
+def removeTrueListFromDictionary( dictionary, keys ):
+	"Remove list from the dictionary in the value is true."
+	for key in keys:
+		if key in dictionary:
+			if getBooleanFromValue( dictionary[ key ] ):
+				del dictionary[ key ]
 
 def subtractXIntersectionsTable( subtractFromTable, subtractTable ):
 	"Subtract the subtractTable from the subtractFromTable."
@@ -1708,6 +1738,18 @@ class RotatedLoopLayer:
 	def __repr__( self ):
 		"Get the string representation of this rotated loop layer."
 		return '%s, %s, %s' % ( self.z, self.rotation, self.loops )
+
+	def addXML( self, depth, output ):
+		"Add the xml for this object."
+		if len( self.loops ) < 1:
+			return
+		if len( self.loops ) == 1:
+			xml_simple_writer.addXMLFromLoopComplexZ( {}, depth, self.loops[ 0 ], output, self.z )
+			return
+		xml_simple_writer.addBeginXMLTag( {}, depth, 'group', output )
+		for loop in self.loops:
+			xml_simple_writer.addXMLFromLoopComplexZ( {}, depth + 1, loop, output, self.z )
+		xml_simple_writer.addEndXMLTag( depth, 'group', output )
 
 	def getCopyAtZ( self, z ):
 		"Get a raised copy."

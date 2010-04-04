@@ -61,7 +61,7 @@ def findWords( fileNames, search ):
 					print( whereInTextFromEnd )
 
 def getAbsoluteFolderPath( filePath, folderName = '' ):
-	"Get the double value of the word after the first letter."
+	"Get the absolute folder path."
 	absoluteFolderPath = os.path.dirname( os.path.abspath( filePath ) )
 	if folderName == '':
 		return absoluteFolderPath

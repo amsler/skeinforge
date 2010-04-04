@@ -37,9 +37,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.solids.solid_tools import face
+from fabmetheus_utilities.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities.solids import triangle_mesh
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
@@ -75,7 +76,7 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 		vertexIndexes = []
 		for word in splitLine[ : 2 ]:
 			vertexIndexes.append( int( word ) - 1 )
-		edge = triangle_mesh.Edge().getFromVertexIndexes( edgeIndex, vertexIndexes )
+		edge = face.Edge().getFromVertexIndexes( edgeIndex, vertexIndexes )
 		triangleMesh.edges.append( edge )
 	faceStart = edgeStart + numberOfEdges
 	for faceIndex in xrange( numberOfFaces ):
@@ -84,10 +85,9 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 		edgeIndexes = []
 		for word in splitLine[ : 3 ]:
 			edgeIndexes.append( int( word ) - 1 )
-		face = triangle_mesh.Face().getFromEdgeIndexes( edgeIndexes, triangleMesh.edges, faceIndex )
-		triangleMesh.faces.append( face )
+		triangleMesh.faces.append( face.Face().getFromEdgeIndexes( edgeIndexes, triangleMesh.edges, faceIndex ) )
 	return triangleMesh
 
 def getCarving( fileName ):
 	"Get the carving for the gts file."
-	return getFromGNUTriangulatedSurfaceText( gcodec.getFileText( fileName ), triangle_mesh.TriangleMesh() )
+	return getFromGNUTriangulatedSurfaceText( gcodec.getFileText( fileName ), trianglemesh.TriangleMesh() )

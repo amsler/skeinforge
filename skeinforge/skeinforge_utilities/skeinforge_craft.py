@@ -60,7 +60,7 @@ def getNewRepository():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_tools', 'craft_plugins' ) )
+	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_plugins', 'craft_plugins' ) )
 
 def getPluginFileNames():
 	"Get craft plugin fileNames."
@@ -102,17 +102,17 @@ def writeChainTextWithNounMessage( fileName, procedure ):
 	print( os.path.basename( fileName ) )
 	print( '' )
 	startTime = time.time()
-	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_' + procedure + '.gcode'
+	fileNameSuffix = fileName[ : fileName.rfind( '.' ) ] + '_' + procedure + '.gcode'
 	craftText = getChainText( fileName, procedure )
 	if craftText == '':
 		return
-	gcodec.writeFileText( suffixFileName, craftText )
+	gcodec.writeFileText( fileNameSuffix, craftText )
 	print( '' )
 	print( 'The %s tool has created the file:' % procedure )
-	print( suffixFileName )
+	print( fileNameSuffix )
 	print( '' )
 	print( 'It took %s seconds to craft the file.' % int( time.time() - startTime ) )
-	skeinforge_analyze.writeOutput( suffixFileName, craftText )
+	skeinforge_analyze.writeOutput( fileName, fileNameSuffix, craftText )
 
 def writeOutput( fileName ):
 	"Craft a gcode file with the last module."

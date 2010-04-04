@@ -40,9 +40,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.solids.solid_tools import face
+from fabmetheus_utilities.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities.solids import triangle_mesh
 from struct import unpack
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -64,16 +65,16 @@ def addFacesGivenText( objText, triangleMesh ):
 
 def getFaceGivenLine( line, triangleMesh ):
 	"Add face given line index and lines."
-	face = triangle_mesh.Face()
-	face.index = len( triangleMesh.faces )
+	faceGivenLine = face.Face()
+	faceGivenLine.index = len( triangleMesh.faces )
 	splitLine = line.split()
 	for vertexStringIndex in xrange( 1, 4 ):
 		vertexString = splitLine[ vertexStringIndex ]
 		vertexStringWithSpaces = vertexString.replace( '/', ' ' )
 		vertexStringSplit = vertexStringWithSpaces.split()
 		vertexIndex = int( vertexStringSplit[ 0 ] ) - 1
-		face.vertexIndexes.append( vertexIndex )
-	return face
+		faceGivenLine.vertexIndexes.append( vertexIndex )
+	return faceGivenLine
 
 def getCarving( fileName = '' ):
 	"Get the triangle mesh for the obj file."
@@ -82,7 +83,7 @@ def getCarving( fileName = '' ):
 	objText = gcodec.getFileText( fileName, 'rb' )
 	if objText == '':
 		return None
-	triangleMesh = triangle_mesh.TriangleMesh()
+	triangleMesh = trianglemesh.TriangleMesh()
 	addFacesGivenText( objText, triangleMesh )
 	triangleMesh.setEdgesForAllFaces()
 	return triangleMesh

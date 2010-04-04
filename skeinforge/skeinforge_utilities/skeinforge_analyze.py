@@ -28,17 +28,17 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_tools', 'analyze_plugins' ) )
+	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_plugins', 'analyze_plugins' ) )
 
-def writeOutput( fileName, gcodeText = '' ):
+def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 	"Analyze a gcode file."
-	gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
+	gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
 	pluginFileNames = getPluginFileNames()
 	for pluginFileName in pluginFileNames:
 		analyzePluginsDirectoryPath = getPluginsDirectoryPath()
 		pluginModule = gcodec.getModuleWithDirectoryPath( analyzePluginsDirectoryPath, pluginFileName )
 		if pluginModule != None:
-			pluginModule.writeOutput( fileName, gcodeText )
+			pluginModule.writeOutput( fileName, fileNameSuffix, gcodeText )
 
 
 class AnalyzeRepository:

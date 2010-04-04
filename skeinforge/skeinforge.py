@@ -193,7 +193,7 @@ The exported file is saved as Screw Holder_export.gcode
 This brings up the skeinforge dialog.
 
 
-To run only fill for example, type in the skeinforge_tools folder which fill is in:
+To run only fill for example, type in the skeinforge_plugins folder which fill is in:
 > python fill.py
 
 """
@@ -249,7 +249,7 @@ def addToProfileMenu( profileSelection, profileType, repository ):
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_tools' )
+	return gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_plugins' )
 
 def getPluginFileNames():
 	"Get analyze plugin fileNames."

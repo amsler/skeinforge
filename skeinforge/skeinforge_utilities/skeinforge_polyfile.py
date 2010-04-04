@@ -21,7 +21,12 @@ def getFileOrGcodeDirectory( fileName, wasCancelled, words = [] ):
 	if isEmptyOrCancelled( fileName, wasCancelled ):
 		return []
 	if isDirectorySetting():
-		return gcodec.getFilesWithFileTypeWithoutWords( 'gcode', words, fileName )
+		dotIndex = fileName.rfind( '.' )
+		if dotIndex < 0:
+			print( 'The file name should have a suffix, like myfile.xml.' )
+			print( 'Since the file name does not have a suffix, nothing will be done' )
+		suffix = fileName[ dotIndex + 1 : ]
+		return gcodec.getFilesWithFileTypeWithoutWords( suffix, words, fileName )
 	return [ fileName ]
 
 def getFileOrDirectoryTypes( fileName, fileTypes, wasCancelled ):

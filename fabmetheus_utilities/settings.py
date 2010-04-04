@@ -140,11 +140,6 @@ def getArchiveText( repository ):
 		setting.writeToArchiveWriter( archiveWriter )
 	return archiveWriter.getvalue()
 
-def getDirectoryInAboveDirectory( directory ):
-	"Get the directory in the above directory."
-	aboveDirectory = os.path.dirname( os.path.dirname( os.path.abspath( __file__ ) ) )
-	return os.path.join( aboveDirectory, directory )
-
 def getDisplayedDialogFromConstructor( repository ):
 	"Display the repository dialog."
 	getReadRepository( repository )
@@ -174,7 +169,7 @@ def getDisplayToolButtonsRepository( directoryPath, importantFileNames, names, r
 
 def getDocumentationPath( subName = '' ):
 	"Get the documentation file path."
-	return os.path.join( getDirectoryInAboveDirectory( 'documentation' ), subName )
+	return os.path.join( getPathInFabmetheus( 'documentation' ), subName )
 
 def getEachWordCapitalized( name ):
 	"Get the capitalized name."
@@ -192,7 +187,7 @@ def getFileInAlterationsOrGivenDirectory( directory, fileName ):
 	fileInSettingsAlterationsDirectory = getFileInGivenDirectory( settingsAlterationsDirectory, fileName )
 	if fileInSettingsAlterationsDirectory != '':
 		return fileInSettingsAlterationsDirectory
-	alterationsDirectory = getDirectoryInAboveDirectory( os.path.join( 'skeinforge', 'alterations' ) )
+	alterationsDirectory = getPathInSkeinforge( 'alterations' )
 	fileInAlterationsDirectory = getFileInGivenDirectory( alterationsDirectory, fileName )
 	if fileInAlterationsDirectory != '':
 		return fileInAlterationsDirectory
@@ -237,12 +232,30 @@ def getGlobalRepositoryDialogValues():
 
 def getPathFromFileNameHelp( fileNameHelp ):
 	"Get the directory path from file name help."
-	skeinforgePath = getSkeinforgeDirectoryPath()
+	skeinforgePath = getPathInSkeinforge()
 	splitFileNameHelps = fileNameHelp.split( '.' )
 	splitFileNameDirectoryNames = splitFileNameHelps[ : - 1 ]
 	for splitFileNameDirectoryName in splitFileNameDirectoryNames:
 		skeinforgePath = os.path.join( skeinforgePath, splitFileNameDirectoryName )
 	return skeinforgePath
+
+def getPathInFabmetheus( subName = '' ):
+	"Get the path in the fabmetheus directory."
+	path = os.path.dirname( os.path.dirname( os.path.abspath( __file__ ) ) )
+	if subName == '':
+		return path
+	return os.path.join( path, subName )
+
+def getPathInSkeinforge( subName = '' ):
+	"Get the skeinforge directory path."
+	path = getPathInFabmetheus( 'skeinforge' )
+	if subName == '':
+		return path
+	return os.path.join( path, subName )
+
+def getPathInSkeinforgePlugins( subName = '' ):
+	"Get the skeinforge plugins directory path."
+	return getPathInSkeinforge( 'skeinforge_plugins' )
 
 def getProfileBaseName( repository ):
 	"Get the profile base file name."
@@ -259,7 +272,7 @@ def getProfilesDirectoryPath( subfolder = '' ):
 
 def getProfilesDirectoryInAboveDirectory( subName = '' ):
 	"Get the profiles directory path in the above directory."
-	aboveProfilesDirectory = getDirectoryInAboveDirectory( os.path.join( 'skeinforge', 'profiles' ) )
+	aboveProfilesDirectory = getPathInSkeinforge( 'profiles' )
 	if subName == '':
 		return aboveProfilesDirectory
 	return os.path.join( aboveProfilesDirectory, subName )
@@ -323,14 +336,6 @@ def getSettingsDirectoryPath( subfolder = '' ):
 	if subfolder == '':
 		return settingsDirectory
 	return os.path.join( settingsDirectory, subfolder )
-
-def getSkeinforgeToolsDirectoryPath():
-	"Get the skeinforge tools directory path."
-	return os.path.join( os.path.dirname( os.path.dirname( os.path.abspath( __file__ ) ) ), os.path.join( 'skeinforge', 'skeinforge_tools' ) )
-
-def getSkeinforgeDirectoryPath():
-	"Get the skeinforge directory path."
-	return os.path.dirname( getSkeinforgeToolsDirectoryPath() )
 
 def getSubfolderWithBasename( basename, directory ):
 	"Get the subfolder in the directory with the basename."
@@ -772,7 +777,7 @@ class FileHelpMenuBar:
 		addAcceleratorCommand( '<Control-KeyPress-w>', closeFunction, self.root, self.fileMenu, 'Close' )
 		self.fileMenu.add_separator()
 		addAcceleratorCommand( '<Control-KeyPress-q>', quitWindows, self.root, self.fileMenu, 'Quit' )
-		skeinforgeToolsDirectoryPath = getSkeinforgeToolsDirectoryPath()
+		skeinforgeToolsDirectoryPath = getPathInSkeinforgePlugins()
 		pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( skeinforgeToolsDirectoryPath )
 		for pluginFileName in pluginFileNames:
 			self.addPluginToMenuBar( os.path.join( skeinforgeToolsDirectoryPath, pluginFileName ), repository, window )

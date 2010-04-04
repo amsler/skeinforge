@@ -29,7 +29,8 @@ import __init__
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities import svg_codec
+from fabmetheus_utilities import svg_writer
+from fabmetheus_utilities import xml_simple_writer
 import math
 
 
@@ -101,11 +102,10 @@ def getValueInQuotes( name, text, value ):
 	return float( text[ valueStartIndex : nameIndexEnd ] )
 
 
-class SVGCarving( svg_codec.SVGCodecSkein ):
+class SVGCarving:
 	"An svg carving."
 	def __init__( self ):
 		"Add empty lists."
-		svg_codec.SVGCodecSkein.__init__( self )
 		self.maximumZ = - 999999999.0
 		self.minimumZ = 999999999.0
 		self.layerThickness = None
@@ -114,6 +114,10 @@ class SVGCarving( svg_codec.SVGCodecSkein ):
 	def __repr__( self ):
 		"Get the string representation of this carving."
 		return self.getCarvedSVG()
+
+	def addXML( self, depth, output ):
+		"Add xml for this object."
+		xml_simple_writer.addXMLFromObjects( depth, self.rotatedBoundaryLayers, output )
 
 	def getCarveCornerMaximum( self ):
 		"Get the corner maximum of the vertices."
@@ -127,9 +131,9 @@ class SVGCarving( svg_codec.SVGCodecSkein ):
 		"Get the carved svg text."
 		if len( self.rotatedBoundaryLayers ) < 1:
 			return ''
-		self.decimalPlacesCarried = max( 0, 2 - int( math.floor( math.log10( self.layerThickness ) ) ) )
-		self.perimeterWidth = None
-		return self.getReplacedSVGTemplate( self.fileName, 'basic', self.rotatedBoundaryLayers )
+		decimalPlacesCarried = max( 0, 2 - int( math.floor( math.log10( self.layerThickness ) ) ) )
+		self.svgWriter = svg_writer.SVGWriter( self, decimalPlacesCarried )
+		return self.svgWriter.getReplacedSVGTemplate( self.fileName, 'basic', self.rotatedBoundaryLayers )
 
 	def getCarveLayerThickness( self ):
 		"Get the layer thickness."
@@ -138,6 +142,10 @@ class SVGCarving( svg_codec.SVGCodecSkein ):
 	def getCarveRotatedBoundaryLayers( self ):
 		"Get the rotated boundary layers."
 		return self.rotatedBoundaryLayers
+
+	def getInterpretationSuffix( self ):
+		"Return the suffix for a carving."
+		return 'svg'
 
 	def parseSVG( self, fileName, svgText ):
 		"Parse SVG text and store the layers."
