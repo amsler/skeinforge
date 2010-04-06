@@ -34,15 +34,15 @@ class Cylinder( cube.Cube ):
 
 	def createShape( self, matrixChain ):
 		"Create the shape."
-		numberOfSides = 31
+		sides = 31
 		halfHeight = 0.5 * self.height
-		sideAngle = 2.0 * math.pi / float( numberOfSides )
+		sideAngle = 2.0 * math.pi / float( sides )
 		polygonBottom = []
 		polygonTop = []
 		imaginaryRadius = self.radiusZ
 		if self.isYImaginaryAxis:
 			imaginaryRadius = self.radiusY
-		for side in xrange( numberOfSides ):
+		for side in xrange( sides ):
 			angle = float( side ) * sideAngle
 			unitComplex = euclidean.getWiddershinsUnitPolar( angle )
 			pointBottom = complex( unitComplex.real * self.radiusX, unitComplex.imag * imaginaryRadius )

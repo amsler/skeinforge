@@ -1,0 +1,57 @@
+<?xml version='1.0' ?>
+<booleangeometry version="2010-03-29">
+	<difference id="cube_cylinder_difference">
+		<matrix4x4 m14="-10.0" m24="20.0" m34="5.0" />
+		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
+		</cube>
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+			<matrix4x4 m14="5.0" m24="-5.0" />
+		</cylinder>
+	</difference>
+	<intersection id="cube_cylinder_intersection">
+		<matrix4x4 m14="-10.0" m34="5.0" />
+		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
+		</cube>
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+			<matrix4x4 m14="5.0" m24="-5.0" />
+		</cylinder>
+	</intersection>
+	<union id="cube_cylinder_union">
+		<matrix4x4 m14="-10.0" m24="-20.0" m34="5.0" />
+		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
+		</cube>
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+			<matrix4x4 m14="5.0" m24="-5.0" />
+		</cylinder>
+	</union>
+	<group id="sphere_tetrahedron_group">
+		<matrix4x4 m14="10.0" m24="-20.0" m34="5.0" />
+		<sphere id="Group Sphere 5" radiusx="5.0" radiusy="5.0" radiusz="5.0">
+		</sphere>
+		<trianglemesh id="Group Tetrahedron 5">
+			<matrix4x4 m14="15.0" />
+			<vertex x="-5.0" y="-5.0" z="-5.0" />
+			<vertex x="5.0" y="-5.0" z="-5.0" />
+			<vertex y="5.0" z="-5.0" />
+			<vertex z="5.0" />
+			<face vertex0="0" vertex1="2" vertex2="1" />
+			<face vertex0="3" vertex1="1" vertex2="2" />
+			<face vertex0="3" vertex1="2" vertex2="0" />
+			<face vertex0="3" vertex1="0" vertex2="1" />
+		</trianglemesh>
+	</group>
+	<sphere id="Sphere 5" radiusx="5.0" radiusy="5.0" radiusz="5.0">
+		<matrix4x4 m14="10.0" m34="5.0" />
+	</sphere>
+	<trianglemesh id="Tetrahedron 5">
+		<matrix4x4 m14="10.0" m24="20.0" m34="5.0" />
+		<vertex x="-5.0" y="-5.0" z="-5.0" />
+		<vertex x="5.0" y="-5.0" z="-5.0" />
+		<vertex y="5.0" z="-5.0" />
+		<vertex z="5.0" />
+		<face vertex0="0" vertex1="2" vertex2="1" />
+		<face vertex0="3" vertex1="1" vertex2="2" />
+		<face vertex0="3" vertex1="2" vertex2="0" />
+		<face vertex0="3" vertex1="0" vertex2="1" />
+	</trianglemesh>
+</booleangeometry>

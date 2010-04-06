@@ -43,7 +43,7 @@ class Dictionary:
 		"Add xml for this object."
 		attributeDictionaryCopy = self.getAttributeDictionary().copy()
 		euclidean.removeListFromDictionary( attributeDictionaryCopy, matrix4x4.getMatrixKeys() )
-		euclidean.removeTrueListFromDictionary( attributeDictionaryCopy, [ 'visible' ] )
+		euclidean.removeTrueFromDictionary( attributeDictionaryCopy, 'visible' )
 		xml_simple_writer.addBeginXMLTag( attributeDictionaryCopy, depth, self.getXMLClassName(), output )
 		self.addXMLInnerSection( depth + 1, output )
 		self.addXMLArchivableObjects( depth + 1, output )
@@ -70,6 +70,10 @@ class Dictionary:
 	def getType( self ):
 		"Get type."
 		return self.__class__.__name__
+
+	def getVertices( self ):
+		"Get all vertices."
+		return []
 
 	def getVisible( self ):
 		"Get visible."

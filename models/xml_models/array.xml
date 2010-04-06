@@ -1,0 +1,8 @@
+<?xml version='1.0' ?>
+<booleangeometry version="2010-04-04">
+	<polygon id="polygon test" radius="20.0" sides="3" />
+	<cylinder id="Cylinder 5" height="10" radiusx="5" radiusy="5" visible="False">
+		<matrix4x4 x="5" y="-5" />
+	</cylinder>
+	<array id="array test" target="Cylinder 5" vertices="polygon test" />
+</booleangeometry>

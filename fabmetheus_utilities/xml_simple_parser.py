@@ -92,6 +92,11 @@ class XMLElement:
 		xml_simple_writer.addXMLFromObjects( depth + 1, self.children, output )
 		xml_simple_writer.addEndXMLTag( depth, self.className, output )
 
+	def copyXMLChildren( self, parent ):
+		"Copy the xml children."
+		for child in self.children:
+			child.getCopy( '', parent )
+
 	def getChildrenWithClassName( self, className ):
 		"Get the children which have the given class name."
 		childrenWithClassName = []
@@ -99,6 +104,23 @@ class XMLElement:
 			if className == child.className:
 				childrenWithClassName.append( child )
 		return childrenWithClassName
+
+	def getCopy( self, idHint, parent ):
+		"Copy the xml element and add it to the parent."
+		copy = XMLElement()
+		copy.attributeDictionary = self.attributeDictionary.copy()
+		copy.className = self.className
+		copy.parent = parent
+		copy.text = self.text
+		parent.children.append( copy )
+		if idHint == '':
+			if 'id' in copy.attributeDictionary:
+				idHint = copy.attributeDictionary[ 'id' ]
+		if idHint != '':
+			copy.attributeDictionary[ 'id' ] = self.getUniqueID( idHint )
+			copy.addToIDDictionary( copy )
+		self.copyXMLChildren( copy )
+		return copy
 
 	def getFirstChildWithClassName( self, className ):
 		"Get the first child which has the given class name."

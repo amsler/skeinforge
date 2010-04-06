@@ -280,7 +280,7 @@ class SkeinforgeRepository:
 	"A class to handle the skeinforge settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.html', '', self )
+		settings.addListsToRepository( 'skeinforge.skeinforge.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '' )
 		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
 		self.createdOnLabel = settings.LabelDisplay().getFromName( 'Created On: ' + versionText, self )

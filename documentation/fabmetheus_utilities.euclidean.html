@@ -38,7 +38,8 @@ Below are examples of euclidean use.<br>
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
-</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.xml_simple_writer.html">fabmetheus_utilities.xml_simple_writer</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -131,6 +132,8 @@ Below are examples of euclidean use.<br>
 <dl><dt><a name="RotatedLoopLayer-__init__"><strong>__init__</strong></a>(self, z)</dt></dl>
 
 <dl><dt><a name="RotatedLoopLayer-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;string&nbsp;representation&nbsp;of&nbsp;this&nbsp;rotated&nbsp;loop&nbsp;layer.</tt></dd></dl>
+
+<dl><dt><a name="RotatedLoopLayer-addXML"><strong>addXML</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;the&nbsp;xml&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
 
 <dl><dt><a name="RotatedLoopLayer-getCopyAtZ"><strong>getCopyAtZ</strong></a>(self, z)</dt><dd><tt>Get&nbsp;a&nbsp;raised&nbsp;copy.</tt></dd></dl>
 
@@ -226,6 +229,8 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getAroundLoop"><strong>getAroundLoop</strong></a>(begin, end, loop)</dt><dd><tt>Get&nbsp;an&nbsp;arc&nbsp;around&nbsp;a&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getAwayPoints"><strong>getAwayPoints</strong></a>(points, radius)</dt><dd><tt>Get&nbsp;a&nbsp;path&nbsp;with&nbsp;only&nbsp;the&nbsp;points&nbsp;that&nbsp;are&nbsp;far&nbsp;enough&nbsp;away&nbsp;from&nbsp;each&nbsp;other.</tt></dd></dl>
  <dl><dt><a name="-getBackOfLoops"><strong>getBackOfLoops</strong></a>(loops)</dt><dd><tt>Get&nbsp;the&nbsp;back&nbsp;of&nbsp;the&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-getBooleanFromValue"><strong>getBooleanFromValue</strong></a>(value)</dt><dd><tt>Get&nbsp;boolean&nbsp;from&nbsp;the&nbsp;word.</tt></dd></dl>
+ <dl><dt><a name="-getBottom"><strong>getBottom</strong></a>(points)</dt><dd><tt>Get&nbsp;the&nbsp;bottom&nbsp;of&nbsp;the&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getClippedAtEndLoopPath"><strong>getClippedAtEndLoopPath</strong></a>(clip, loopPath)</dt><dd><tt>Get&nbsp;a&nbsp;clipped&nbsp;loop&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getClippedLoopPath"><strong>getClippedLoopPath</strong></a>(clip, loopPath)</dt><dd><tt>Get&nbsp;a&nbsp;clipped&nbsp;loop&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getConnectedPaths"><strong>getConnectedPaths</strong></a>(paths, pixelTable, width)</dt><dd><tt>Get&nbsp;connected&nbsp;paths&nbsp;from&nbsp;paths.</tt></dd></dl>
@@ -239,6 +244,8 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getEndpointsFromSegmentTable"><strong>getEndpointsFromSegmentTable</strong></a>(segmentTable)</dt><dd><tt>Get&nbsp;the&nbsp;endpoints&nbsp;from&nbsp;the&nbsp;segment&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-getEndpointsFromSegments"><strong>getEndpointsFromSegments</strong></a>(segments)</dt><dd><tt>Get&nbsp;endpoints&nbsp;from&nbsp;segments.</tt></dd></dl>
  <dl><dt><a name="-getFillOfSurroundings"><strong>getFillOfSurroundings</strong></a>(surroundingLoops)</dt><dd><tt>Get&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;of&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-getFloatOneFromDictionary"><strong>getFloatOneFromDictionary</strong></a>(key, dictionary)</dt><dd><tt>Get&nbsp;the&nbsp;value&nbsp;as&nbsp;a&nbsp;float&nbsp;if&nbsp;it&nbsp;exists,&nbsp;otherwise&nbsp;return&nbsp;one.</tt></dd></dl>
+ <dl><dt><a name="-getFloatZeroFromDictionary"><strong>getFloatZeroFromDictionary</strong></a>(key, dictionary)</dt><dd><tt>Get&nbsp;the&nbsp;value&nbsp;as&nbsp;a&nbsp;float&nbsp;if&nbsp;it&nbsp;exists,&nbsp;otherwise&nbsp;return&nbsp;zero.</tt></dd></dl>
  <dl><dt><a name="-getFourSignificantFigures"><strong>getFourSignificantFigures</strong></a>(number)</dt><dd><tt>Get&nbsp;number&nbsp;rounded&nbsp;to&nbsp;four&nbsp;significant&nbsp;figures&nbsp;as&nbsp;a&nbsp;string.</tt></dd></dl>
  <dl><dt><a name="-getFrontOfLoops"><strong>getFrontOfLoops</strong></a>(loops)</dt><dd><tt>Get&nbsp;the&nbsp;front&nbsp;of&nbsp;the&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getFrontOverWidthAddXListYList"><strong>getFrontOverWidthAddXListYList</strong></a>(front, loopLists, numberOfLines, xIntersectionIndexLists, width, yList)</dt><dd><tt>Get&nbsp;the&nbsp;front&nbsp;over&nbsp;width&nbsp;and&nbsp;add&nbsp;the&nbsp;x&nbsp;intersection&nbsp;index&nbsp;lists&nbsp;and&nbsp;ylist.</tt></dd></dl>
@@ -299,10 +306,11 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getStepKey"><strong>getStepKey</strong></a>(x, y)</dt><dd><tt>Get&nbsp;step&nbsp;key&nbsp;for&nbsp;x&nbsp;and&nbsp;y.</tt></dd></dl>
  <dl><dt><a name="-getStepKeyFromPoint"><strong>getStepKeyFromPoint</strong></a>(point)</dt><dd><tt>Get&nbsp;step&nbsp;key&nbsp;for&nbsp;the&nbsp;point.</tt></dd></dl>
  <dl><dt><a name="-getThreeSignificantFigures"><strong>getThreeSignificantFigures</strong></a>(number)</dt><dd><tt>Get&nbsp;number&nbsp;rounded&nbsp;to&nbsp;three&nbsp;significant&nbsp;figures&nbsp;as&nbsp;a&nbsp;string.</tt></dd></dl>
+ <dl><dt><a name="-getTop"><strong>getTop</strong></a>(points)</dt><dd><tt>Get&nbsp;the&nbsp;top&nbsp;of&nbsp;the&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getTransferClosestSurroundingLoop"><strong>getTransferClosestSurroundingLoop</strong></a>(oldOrderedLocation, remainingSurroundingLoops, skein)</dt><dd><tt>Get&nbsp;and&nbsp;transfer&nbsp;the&nbsp;closest&nbsp;remaining&nbsp;surrounding&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getTransferredPaths"><strong>getTransferredPaths</strong></a>(insides, loop)</dt><dd><tt>Get&nbsp;transferred&nbsp;paths&nbsp;from&nbsp;inside&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-getTransferredSurroundingLoops"><strong>getTransferredSurroundingLoops</strong></a>(insides, loop)</dt><dd><tt>Get&nbsp;transferred&nbsp;paths&nbsp;from&nbsp;inside&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
- <dl><dt><a name="-getUnitPolar"><strong>getUnitPolar</strong></a>(angle)</dt><dd><tt>Get&nbsp;polar&nbsp;complex&nbsp;from&nbsp;counterclockwise&nbsp;angle&nbsp;from&nbsp;1,&nbsp;0.</tt></dd></dl>
+ <dl><dt><a name="-getWiddershinsUnitPolar"><strong>getWiddershinsUnitPolar</strong></a>(angle)</dt><dd><tt>Get&nbsp;polar&nbsp;complex&nbsp;from&nbsp;counterclockwise&nbsp;angle&nbsp;from&nbsp;1,&nbsp;0.</tt></dd></dl>
  <dl><dt><a name="-getXIntersection"><strong>getXIntersection</strong></a>(firstComplex, secondComplex, y)</dt><dd><tt>Get&nbsp;where&nbsp;the&nbsp;line&nbsp;crosses&nbsp;y.</tt></dd></dl>
  <dl><dt><a name="-getXIntersectionsFromIntersections"><strong>getXIntersectionsFromIntersections</strong></a>(xIntersectionIndexList)</dt><dd><tt>Get&nbsp;x&nbsp;intersections&nbsp;from&nbsp;the&nbsp;x&nbsp;intersection&nbsp;index&nbsp;list,&nbsp;in&nbsp;other&nbsp;words&nbsp;subtract&nbsp;non&nbsp;negative&nbsp;intersections&nbsp;from&nbsp;negatives.</tt></dd></dl>
  <dl><dt><a name="-getXYComplexFromVector3"><strong>getXYComplexFromVector3</strong></a>(vector3)</dt><dd><tt>Get&nbsp;an&nbsp;xy&nbsp;complex&nbsp;from&nbsp;a&nbsp;vector3&nbsp;if&nbsp;it&nbsp;exists,&nbsp;otherwise&nbsp;return&nbsp;None.</tt></dd></dl>
@@ -315,6 +323,7 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-isLoopIntersectingInsideXSegment"><strong>isLoopIntersectingInsideXSegment</strong></a>(loop, segmentFirstX, segmentSecondX, segmentYMirror, y)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;loop&nbsp;is&nbsp;intersecting&nbsp;inside&nbsp;the&nbsp;x&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-isLoopIntersectingLoop"><strong>isLoopIntersectingLoop</strong></a>(loop, otherLoop)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;loop&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;other&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-isLoopIntersectingLoops"><strong>isLoopIntersectingLoops</strong></a>(loop, otherLoops)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;loop&nbsp;is&nbsp;intersecting&nbsp;other&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-isLoopListIntersecting"><strong>isLoopListIntersecting</strong></a>(loops, z)</dt><dd><tt>Determine&nbsp;if&nbsp;a&nbsp;loop&nbsp;in&nbsp;the&nbsp;list&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;other&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-isLoopListIntersectingInsideXSegment"><strong>isLoopListIntersectingInsideXSegment</strong></a>(loopList, segmentFirstX, segmentSecondX, segmentYMirror, y)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;loop&nbsp;list&nbsp;is&nbsp;crossing&nbsp;inside&nbsp;the&nbsp;x&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-isPathEntirelyInsideLoop"><strong>isPathEntirelyInsideLoop</strong></a>(loop, path)</dt><dd><tt>Determine&nbsp;if&nbsp;a&nbsp;path&nbsp;is&nbsp;entirely&nbsp;inside&nbsp;another&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-isPathEntirelyInsideLoops"><strong>isPathEntirelyInsideLoops</strong></a>(loops, path)</dt><dd><tt>Determine&nbsp;if&nbsp;a&nbsp;path&nbsp;is&nbsp;entirely&nbsp;inside&nbsp;another&nbsp;loop&nbsp;in&nbsp;a&nbsp;list.</tt></dd></dl>
@@ -332,7 +341,9 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-joinXIntersectionsTables"><strong>joinXIntersectionsTables</strong></a>(fromTable, intoTable)</dt><dd><tt>Join&nbsp;both&nbsp;XIntersections&nbsp;tables&nbsp;and&nbsp;put&nbsp;the&nbsp;join&nbsp;into&nbsp;the&nbsp;intoTable.</tt></dd></dl>
  <dl><dt><a name="-removeElementFromListTable"><strong>removeElementFromListTable</strong></a>(element, key, listTable)</dt><dd><tt>Remove&nbsp;an&nbsp;element&nbsp;from&nbsp;the&nbsp;list&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-removeElementFromPixelListFromPoint"><strong>removeElementFromPixelListFromPoint</strong></a>(element, pixelTable, point)</dt><dd><tt>Remove&nbsp;an&nbsp;element&nbsp;from&nbsp;the&nbsp;pixel&nbsp;list.</tt></dd></dl>
+ <dl><dt><a name="-removeListFromDictionary"><strong>removeListFromDictionary</strong></a>(dictionary, keys)</dt><dd><tt>Remove&nbsp;list&nbsp;from&nbsp;the&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-removePixelTableFromPixelTable"><strong>removePixelTableFromPixelTable</strong></a>(pixelTableToBeRemoved, pixelTableToBeRemovedFrom)</dt><dd><tt>Remove&nbsp;pixel&nbsp;from&nbsp;the&nbsp;pixel&nbsp;table.</tt></dd></dl>
+ <dl><dt><a name="-removeTrueListFromDictionary"><strong>removeTrueListFromDictionary</strong></a>(dictionary, keys)</dt><dd><tt>Remove&nbsp;list&nbsp;from&nbsp;the&nbsp;dictionary&nbsp;in&nbsp;the&nbsp;value&nbsp;is&nbsp;true.</tt></dd></dl>
  <dl><dt><a name="-subtractXIntersectionsTable"><strong>subtractXIntersectionsTable</strong></a>(subtractFromTable, subtractTable)</dt><dd><tt>Subtract&nbsp;the&nbsp;subtractTable&nbsp;from&nbsp;the&nbsp;subtractFromTable.</tt></dd></dl>
  <dl><dt><a name="-toggleHashtable"><strong>toggleHashtable</strong></a>(hashtable, key, value)</dt><dd><tt>Toggle&nbsp;a&nbsp;hashtable&nbsp;between&nbsp;having&nbsp;and&nbsp;not&nbsp;having&nbsp;a&nbsp;key.</tt></dd></dl>
  <dl><dt><a name="-transferClosestFillLoop"><strong>transferClosestFillLoop</strong></a>(extrusionHalfWidth, oldOrderedLocation, remainingFillLoops, skein)</dt><dd><tt>Transfer&nbsp;the&nbsp;closest&nbsp;remaining&nbsp;fill&nbsp;loop.</tt></dd></dl>

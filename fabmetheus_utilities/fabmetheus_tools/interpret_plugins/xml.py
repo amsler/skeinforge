@@ -24,68 +24,78 @@ many more lines of the carving
 An example of an xml boolean geometry format file follows below.
 
 <?xml version='1.0' ?>
-<booleangeometry version="2010-03-10">
-	<booleansolid id="Boolean1" operation="lastminuscomplement">
-		<cube halfx="1.6" halfy="2.925" halfz="1.6" id="Cube 1">
-			<matrix4x4 m14="-0.425" m24="-0.53">
-			</matrix4x4>
+<booleangeometry version="2010-03-29">
+	<difference id="cube_cylinder_difference">
+		<matrix4x4 m14="-10.0" m24="20.0" m34="5.0" />
+		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
-		<cube halfx="1.36" halfy="3.05" halfz="1.36" id="Cube 2">
-			<matrix4x4 m14="0.665" m24="0.405">
-			</matrix4x4>
-		</cube>
-		<matrix4x4 m14="-20.1" m24="0.19">
-		</matrix4x4>
-	</booleansolid>
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+			<matrix4x4 m14="5.0" m24="-5.0" />
+		</cylinder>
+	</difference>
 </booleangeometry>
 
-In the 'booleangeometry' format, all class and attribute names are lower case.  The defined geometric objects are booleansolid, cube, cylinder, sphere and trianglemesh.  The id attribute is not necessary.  The default matrix is a four by four identity matrix.  The attributes of the cube, cylinder and sphere default to one.  The attributes of the vector3 vertices in the triangle mesh default to zero.  The boolean operation names are join, intersection, firstminuscomplement and lastminuscomplement.  Examples of the remaining geometric obejcts follow below.
+In the 'booleangeometry' format, all class names are lower case.  The defined geometric objects are cube, cylinder, difference, group, sphere, trianglemesh and union.  The id attribute is not necessary.  The default matrix is a four by four identity matrix.  The attributes of the cube, cylinder and sphere default to one.  The attributes of the vertices in the triangle mesh default to zero.  The boolean solids are difference, intersection and union.  The difference solid is the first solid minus the remaining solids.  The combined_shape.xml example in the xml_models folder in the models folder is pasted below.
 
 <?xml version='1.0' ?>
-<booleangeometry version="2010-03-10">
-	<cylinder height="20.4" id="Cylinder 1" radiusx="5.4" radiusz="5.4" topoverbottom="1.0">
-		<matrix4x4 m14="0.6" m24="-1.3">
-		</matrix4x4>
-	</cylinder>
-</booleangeometry>
-
-<?xml version='1.0' ?>
-<booleangeometry version="2010-03-10">
-	<sphere id="Sphere1" radiusx="15.0" radiusy="10.0" radiusz="5.0">
-		<matrix4x4>
-		</matrix4x4>
+<booleangeometry version="2010-03-29">
+	<difference id="cube_cylinder_difference">
+		<matrix4x4 m14="-10.0" m24="20.0" m34="5.0" />
+		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
+		</cube>
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+			<matrix4x4 m14="5.0" m24="-5.0" />
+		</cylinder>
+	</difference>
+	<intersection id="cube_cylinder_intersection">
+		<matrix4x4 m14="-10.0" m34="5.0" />
+		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
+		</cube>
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+			<matrix4x4 m14="5.0" m24="-5.0" />
+		</cylinder>
+	</intersection>
+	<union id="cube_cylinder_union">
+		<matrix4x4 m14="-10.0" m24="-20.0" m34="5.0" />
+		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
+		</cube>
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+			<matrix4x4 m14="5.0" m24="-5.0" />
+		</cylinder>
+	</union>
+	<group id="sphere_tetrahedron_group">
+		<matrix4x4 m14="10.0" m24="-20.0" m34="5.0" />
+		<sphere id="Group Sphere 5" radiusx="5.0" radiusy="5.0" radiusz="5.0">
+		</sphere>
+		<trianglemesh id="Group Tetrahedron 5">
+			<matrix4x4 m14="15.0" />
+			<vertex x="-5.0" y="-5.0" z="-5.0" />
+			<vertex x="5.0" y="-5.0" z="-5.0" />
+			<vertex y="5.0" z="-5.0" />
+			<vertex z="5.0" />
+			<face vertex0="0" vertex1="2" vertex2="1" />
+			<face vertex0="3" vertex1="1" vertex2="2" />
+			<face vertex0="3" vertex1="2" vertex2="0" />
+			<face vertex0="3" vertex1="0" vertex2="1" />
+		</trianglemesh>
+	</group>
+	<sphere id="Sphere 5" radiusx="5.0" radiusy="5.0" radiusz="5.0">
+		<matrix4x4 m14="10.0" m34="5.0" />
 	</sphere>
-</booleangeometry>
-
-<?xml version='1.0' ?>
-<booleangeometry version="2010-03-10">
-	<trianglemesh id="tetrahedron">
-		<vertices>
-			<vector3 x="-5.0" y="0.0" z="2.89">
-			</vector3>
-			<vector3 x="0.0" y="0.0" z="-5.77">
-			</vector3>
-			<vector3 x="5.0" y="0.0" z="2.89">
-			</vector3>
-			<vector3 x="0.0" y="8.66" z="0.0">
-			</vector3>
-		</vertices>
-		<faces>
-			<face vertex0="3" vertex1="0" vertex2="1">
-			</face>
-			<face vertex0="3" vertex1="1" vertex2="2">
-			</face>
-			<face vertex0="3" vertex1="2" vertex2="0">
-			</face>
-			<face vertex0="0" vertex1="2" vertex2="1">
-			</face>
-		</faces>
-		<matrix4x4 m11="3.74939945665e-33" m13="1.0" m21="-1.0" m22="6.12323399574e-17" m32="-1.0" m33="6.12323399574e-17">
-		</matrix4x4>
+	<trianglemesh id="Tetrahedron 5">
+		<matrix4x4 m14="10.0" m24="20.0" m34="5.0" />
+		<vertex x="-5.0" y="-5.0" z="-5.0" />
+		<vertex x="5.0" y="-5.0" z="-5.0" />
+		<vertex y="5.0" z="-5.0" />
+		<vertex z="5.0" />
+		<face vertex0="0" vertex1="2" vertex2="1" />
+		<face vertex0="3" vertex1="1" vertex2="2" />
+		<face vertex0="3" vertex1="2" vertex2="0" />
+		<face vertex0="3" vertex1="0" vertex2="1" />
 	</trianglemesh>
 </booleangeometry>
 
-The 'booleangeometry' xml format is the preferred skeinforge format.  When the Interpret button in the Interpret tool in Meta is clicked, any xml format for which there is a plugin will be converted to the 'booleangeometry' format.
+The 'booleangeometry' xml format is the preferred skeinforge format.  When the Interpret button in the Interpret tool in Analyze is clicked, any xml format for which there is a plugin will be converted to the 'booleangeometry' format.
 
 There is a plugin for the 'Art of Illusion' xml format.  An xml file can be exported from Art of Illusion by going to the "File" menu, then going into the "Export" menu item, then picking the XML choice.  This will bring up the XML file chooser window, choose a place to save the file then click "OK".  Leave the "compressFile" checkbox unchecked.  All the objects from the scene will be exported, the artofillusion plugin will ignore the light and camera.  If you want to fabricate more than one object at a time, you can have multiple objects in the Art of Illusion scene and they will all be carved, then fabricated together.
 

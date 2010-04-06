@@ -3,7 +3,7 @@ This page is in the table of contents.
 Interpret is a script to interpret a file, turning it into xml.
 
 ==Operation==
-The default 'Activate Interpret' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the tool chain.  The functions will still be called, whether or not the 'Activate Interpret' checkbox is on, when interpret is run directly.
+The default 'Activate Interpret' checkbox is off.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the tool chain.  The functions will still be called, whether or not the 'Activate Interpret' checkbox is on, when interpret is run directly.
 
 ==Settings==
 ===Print Interpretion===

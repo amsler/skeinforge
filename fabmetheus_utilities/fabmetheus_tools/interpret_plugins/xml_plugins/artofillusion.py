@@ -73,7 +73,7 @@ def getCarvableObject( globalObject, object, xmlElement ):
 	transformAttributeDictionary = getTransformAttributeDictionary( coords, 'transformFrom' )
 	if len( transformAttributeDictionary ) < 16:
 		transformAttributeDictionary = getTransformAttributeDictionary( coords, 'transformTo' )
-	matrix4x4.setXMLElementToMatrixAttributeDictionary( transformAttributeDictionary, object )
+	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( transformAttributeDictionary, object.object.matrix4X4, object )
 	return archivableObject
 
 def getTransformAttributeDictionary( coords, transformName ):

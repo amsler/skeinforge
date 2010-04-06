@@ -107,7 +107,7 @@ def getCraftedTextFromText( gcodeText, exportRepository = None ):
 	return ExportSkein().getCraftedGcode( exportRepository, gcodeText )
 
 def getDistanceGcode( exportText ):
-	"Get gcode lines with distance variable added.G2 X-0.148 Y-0.062 Z0.0 I-0.148 J0.148G2 X-0.148 Y-0.062 Z0.0 R0.21"
+	"Get gcode lines with distance variable added."
 	lines = gcodec.getTextLines( exportText )
 	oldLocation = None
 	for line in lines:
@@ -161,7 +161,7 @@ def writeOutput( fileName = '' ):
 	gcodeText = skeinforge_craft.getChainTextFromProcedures( fileName, procedures[ : - 1 ], gcodeText )
 	if gcodeText == '':
 		return
-	skeinforge_analyze.writeOutput( suffixFileName, gcodeText )
+	skeinforge_analyze.writeOutput( fileName, suffixFileName, gcodeText )
 	if exportRepository.savePenultimateGcode.value:
 		penultimateFileName = fileName[ : fileName.rfind( '.' ) ] + '_penultimate.gcode'
 		gcodec.writeFileText( penultimateFileName, gcodeText )

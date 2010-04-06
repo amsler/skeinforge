@@ -35,3 +35,7 @@ class Path( Dictionary ):
 		"Add the xml section for this object."
 		xml_simple_writer.addXMLFromObjects( depth, self.vertices, output )
 
+	def getVertices( self ):
+		"Get all vertices."
+		return self.vertices
+

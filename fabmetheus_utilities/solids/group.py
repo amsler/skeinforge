@@ -71,7 +71,4 @@ class Group( Dictionary ):
 
 	def getVisible( self ):
 		"Get visible."
-		attributeDictionary = self.getAttributeDictionary()
-		if 'visible' not in attributeDictionary:
-			return True
-		return euclidean.getBooleanFromValue( attributeDictionary[ 'visible' ] )
+		return euclidean.getBooleanFromDictionary( self.getAttributeDictionary(), 'visible' )

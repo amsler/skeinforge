@@ -24,6 +24,15 @@ def getAngleFromDictionaryKey( dictionary, key ):
 	"Get the angle from the dictionary and key."
 	return math.radians( float( dictionary[ key ] ) )
 
+def getDiagonalSwitchedMatrix( angle, diagonals ):
+	"Get the diagonals and switched matrix.math."
+	unitPolar = euclidean.getWiddershinsUnitPolar( math.radians( angle ) )
+	newMatrixTetragrid = getIdentityMatrixTetragrid()
+	setDiagonalElements( diagonals, newMatrixTetragrid, unitPolar.real )
+	newMatrixTetragrid[ diagonals[ 0 ] ][ diagonals[ 1 ] ] = - unitPolar.imag
+	newMatrixTetragrid[ diagonals[ 1 ] ][ diagonals[ 0 ] ] = unitPolar.imag
+	return Matrix4X4( newMatrixTetragrid )
+
 def getIdentityMatrixTetragrid():
 	"Get four by four matrix with diagonal elements set to one."
 	identityMatrix = getZeroMatrixTetragrid()
@@ -122,21 +131,19 @@ def getZeroMatrixTetragrid():
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	setXMLElementToMatrixAttributeDictionary( xmlElement.attributeDictionary, xmlElement.parent )
+	setXMLElementMatrixToMatrixAttributeDictionary( xmlElement.attributeDictionary, xmlElement.parent.object.matrix4X4, xmlElement.parent )
 
 def setDiagonalElements( diagonals, matrixTetragrid, value ):
 	"Set the diagonal matrix elements to the value."
 	for diagonal in diagonals:
 		matrixTetragrid[ diagonal ][ diagonal ] = value
 
-def getDiagonalSwitchedMatrix( angle, diagonals ):
-	"Get the diagonals and switched matrix.math."
-	unitPolar = euclidean.getWiddershinsUnitPolar( math.radians( angle ) )
-	newMatrixTetragrid = getIdentityMatrixTetragrid()
-	setDiagonalElements( diagonals, newMatrixTetragrid, unitPolar.real )
-	newMatrixTetragrid[ diagonals[ 0 ] ][ diagonals[ 1 ] ] = - unitPolar.imag
-	newMatrixTetragrid[ diagonals[ 1 ] ][ diagonals[ 0 ] ] = unitPolar.imag
-	return Matrix4X4( newMatrixTetragrid )
+def setAttributeDictionaryToMatrix( attributeDictionary, matrix4X4 ):
+	"Set the attribute dictionary to the matrix."
+	for row in xrange( 4 ):
+		for column in xrange( 4 ):
+			key = getMatrixKey( row, column )
+			attributeDictionary[ key ] = str( matrix4X4.matrixTetragrid[ row ][ column ] )
 
 def setMatrixTetragridToMatrixTetragrid( matrixTetragrid, otherMatrixTetragrid ):
 	"Set the matrix grid to the other matirx grid."
@@ -146,13 +153,10 @@ def setMatrixTetragridToMatrixTetragrid( matrixTetragrid, otherMatrixTetragrid )
 		for column in xrange( 4 ):
 			matrixTetragrid[ row ][ column ] = otherMatrixTetragrid[ row ][ column ]
 
-def setXMLElementToMatrixAttributeDictionary( attributeDictionary, xmlElement ):
+def setXMLElementMatrixToMatrixAttributeDictionary( attributeDictionary, matrix4X4, xmlElement ):
 	"Set the xml element to the matrix attribute dictionary."
-	xmlElement.object.matrix4X4.getFromAttributeDictionary( attributeDictionary )
-	for row in xrange( 4 ):
-		for column in xrange( 4 ):
-			key = getMatrixKey( row, column )
-			xmlElement.attributeDictionary[ key ] = str( xmlElement.object.matrix4X4.matrixTetragrid[ row ][ column ] )
+	matrix4X4.getFromAttributeDictionary( attributeDictionary )
+	setAttributeDictionaryToMatrix( xmlElement.attributeDictionary, matrix4X4 )
 
 def transformVector3ByMatrix( matrixTetragrid, vector3 ):
 	"Transform the vector3 by a matrix."
@@ -208,7 +212,8 @@ class Matrix4X4:
 		self.multiplyByKeyFunction( attributeDictionary, 'y', getMatrixTranslationY )
 		self.multiplyByKeyFunction( attributeDictionary, 'z', getMatrixTranslationZ )
 		# http://en.wikipedia.org/wiki/Rotation_matrix zxy
-		self.getFromMatrixValues( attributeDictionary )
+		multiplicationMatrix4X4 = Matrix4X4().getFromMatrixValues( attributeDictionary )
+		self.matrixTetragrid = self.getOtherTimesSelf( multiplicationMatrix4X4 ).matrixTetragrid
 		euclidean.removeListFromDictionary( attributeDictionary, getMatrixKeys() )
 		return self
 

@@ -408,6 +408,12 @@ def getBackOfLoops( loops ):
 		print( "This should never happen, there are no loops for getBackOfLoops in euclidean" )
 	return back
 
+def getBooleanFromDictionary( dictionary, key ):
+	"Get boolean from the dictionary and key."
+	if key not in dictionary:
+		return True
+	return getBooleanFromValue( dictionary[ key ] )
+
 def getBooleanFromValue( value ):
 	"Get boolean from the word."
 	firstCharacter = str( value ).lower().lstrip()[ : 1 ]
@@ -1465,6 +1471,20 @@ def joinXIntersectionsTables( fromTable, intoTable ):
 		else:
 			print( "This should never happen, there are no line segments in joinSegments in euclidean" )
 
+def overwriteDictionary( fromDictionary, positives, toDictionary ):
+	"Overwrite the dictionary and remove any silent positives."
+	for fromDictionaryKey in fromDictionary.keys():
+		toDictionary[ fromDictionaryKey ] = fromDictionary[ fromDictionaryKey ]
+	for positive in positives:
+		if positive in toDictionary:
+			if getBooleanFromDictionary( fromDictionary, positive ):
+				del toDictionary[ positive ]
+
+def removeElementFromDictionary( dictionary, key ):
+	"Remove element from the dictionary."
+	if key in dictionary:
+		del dictionary[ key ]
+
 def removeElementFromListTable( element, key, listTable ):
 	"Remove an element from the list table."
 	if key not in listTable:
@@ -1484,19 +1504,22 @@ def removeElementFromPixelListFromPoint( element, pixelTable, point ):
 def removeListFromDictionary( dictionary, keys ):
 	"Remove list from the dictionary."
 	for key in keys:
-		if key in dictionary:
-			del dictionary[ key ]
+		removeElementFromDictionary( dictionary, key )
 
 def removePixelTableFromPixelTable( pixelTableToBeRemoved, pixelTableToBeRemovedFrom ):
 	"Remove pixel from the pixel table."
 	removeListFromDictionary( pixelTableToBeRemovedFrom, pixelTableToBeRemoved.keys() )
 
+def removeTrueFromDictionary( dictionary, key ):
+	"Remove key from the dictionary in the value is true."
+	if key in dictionary:
+		if getBooleanFromValue( dictionary[ key ] ):
+			del dictionary[ key ]
+
 def removeTrueListFromDictionary( dictionary, keys ):
 	"Remove list from the dictionary in the value is true."
 	for key in keys:
-		if key in dictionary:
-			if getBooleanFromValue( dictionary[ key ] ):
-				del dictionary[ key ]
+		removeTrueFromDictionary( dictionary, key )
 
 def subtractXIntersectionsTable( subtractFromTable, subtractTable ):
 	"Subtract the subtractTable from the subtractFromTable."

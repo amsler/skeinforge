@@ -108,5 +108,5 @@ def processShape( shapeClass, xmlElement ):
 	if xmlElement == None:
 		return
 	archivableObject = getArchivableObject( shapeClass, xmlElement )
-	matrix4x4.setXMLElementToMatrixAttributeDictionary( xmlElement.attributeDictionary, xmlElement )
+	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( xmlElement.attributeDictionary, xmlElement.object.matrix4X4, xmlElement )
 	xmlElement.getRootElement().xmlProcessor.processChildren( xmlElement )

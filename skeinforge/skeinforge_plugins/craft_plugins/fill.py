@@ -192,15 +192,15 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
 
-# upload, email
-# translate
-# tetroc
-# array target path
-# getPaths, getPathsCompound, getNormal, getIsFlat
 # extrude convex then arbitrary then paths
-# pyramid, lathe
+# getPaths, getPathsCompound, getNormal, getIsFlat
 # evaluate, getEvaluators, combine minus with next numeric, evaluate */+-, later bracket levels, later after bracket check for math
+# _morning - polygon, vertex ids, midpointMultiplier, rotationoverside, rotation, direction (float), float sides, profile, round polygon
+# lathe
 # tube, rotor
+# test translate
+# pyramid
+# tetroc
 # widen single path to different widths
 # generated_files?
 # creationID, addObject, getTarget, copyXMLElement?
