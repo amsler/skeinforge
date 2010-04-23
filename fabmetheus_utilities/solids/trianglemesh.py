@@ -38,10 +38,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.solids.group import Group
 from fabmetheus_utilities.solids.solid_tools import face
 from fabmetheus_utilities.solids.solid_tools import matrix4x4
-from fabmetheus_utilities.solids.solid_utilities import geomancer
+from fabmetheus_utilities.solids.solid_tools import vertex
+from fabmetheus_utilities.solids import group
+from fabmetheus_utilities import xml_simple_writer
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
@@ -167,6 +168,11 @@ def compareAreaDescending( loopArea, otherLoopArea ):
 	if loopArea.area > otherLoopArea.area:
 		return - 1
 	return int( loopArea.area < otherLoopArea.area )
+
+def convertXMLElement( geometryOutput, xmlElement ):
+	"Convert the xml element to a trianglemesh xml element."
+	vertex.addGeometryList( geometryOutput[ 'vertex' ], xmlElement )
+	face.addGeometryList( geometryOutput[ 'face' ], xmlElement )
 
 def getAddIndexedGrid( grid, vertices, z ):
 	"Get and add an indexed grid."
@@ -551,7 +557,7 @@ def isPathAdded( edges, faces, loops, remainingEdgeTable, vertices, z ):
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	geomancer.processShape( TriangleMesh, xmlElement )
+	group.processShape( TriangleMesh, xmlElement )
 
 
 class EdgePair:
@@ -584,37 +590,25 @@ class LoopArea:
 		return '%s, %s' % ( self.area, self.loop )
 
 
-class TriangleMesh( Group ):
+class TriangleMesh( group.Group ):
 	"A triangle mesh."
 	def __init__( self ):
 		"Add empty lists."
-		Group.__init__( self )
+		group.Group.__init__( self )
 		self.belowLoops = []
 		self.bridgeLayerThickness = None
 		self.edges = []
 		self.faces = []
 		self.importCoarseness = 1.0
 		self.isCorrectMesh = True
-		self.originalVertices = None
 		self.rotatedBoundaryLayers = []
+		self.transformedVertices = None
 		self.vertices = []
 
 	def addXMLSection( self, depth, output ):
 		"Add the xml section for this object."
-		vertices = self.originalVertices
-		if vertices == None:
-			vertices = self.vertices
-		for vertex in vertices:
-			vertex.addXML( depth, output )
-		for face in self.faces:
-			face.addXML( depth, output )
-
-	def createShape( self, matrixChain ):
-		"Create the shape."
-		self.originalVertices = []
-		for vertex in self.vertices:
-			self.originalVertices.append( vertex.copy() )
-		self.transformSetBottomTopEdges( matrixChain )
+		xml_simple_writer.addXMLFromVertices( depth, output, self.vertices )
+		xml_simple_writer.addXMLFromObjects( depth, self.faces, output )
 
 	def getCarveCornerMaximum( self ):
 		"Get the corner maximum of the vertices."
@@ -632,11 +626,11 @@ class TriangleMesh( Group ):
 		"Get the rotated boundary layers."
 		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, - 999999999.0 )
 		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, 999999999.0 )
-		for point in self.vertices:
+		for point in self.getVertices():
 			self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, point )
 			self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, point )
 		halfHeight = 0.5 * self.layerThickness
-		initializeZoneIntervalTable( self, self.vertices )
+		initializeZoneIntervalTable( self, self.getVertices() )
 		layerTop = self.cornerMaximum.z - halfHeight * 0.5
 		z = self.cornerMinimum.z + halfHeight
 		while z < layerTop:
@@ -656,9 +650,9 @@ class TriangleMesh( Group ):
 		"Get loops from a carve of a mesh."
 		originalLoops = []
 		if self.isCorrectMesh:
-			originalLoops = getLoopsFromCorrectMesh( self.edges, self.faces, self.vertices, z )
+			originalLoops = getLoopsFromCorrectMesh( self.edges, self.faces, self.getVertices(), z )
 		if len( originalLoops ) < 1:
-			originalLoops = getLoopsFromUnprovenMesh( self.edges, self.faces, self.importRadius, self.vertices, z )
+			originalLoops = getLoopsFromUnprovenMesh( self.edges, self.faces, self.importRadius, self.getVertices(), z )
 		loops = getLoopsInOrderOfArea( compareAreaDescending, euclidean.getSimplifiedLoops( originalLoops, self.importRadius ) )
 		for loopIndex in xrange( len( loops ) ):
 			loop = loops[ loopIndex ]
@@ -670,7 +664,12 @@ class TriangleMesh( Group ):
 
 	def getVertices( self ):
 		"Get all vertices."
-		return self.vertices
+		if self.xmlElement == None:
+			return self.vertices
+		if self.transformedVertices == None:
+			self.setEdgesForAllFaces()
+			self.transformedVertices = matrix4x4.getTransformedVector3s( self.getMatrixChain().matrixTetragrid, self.vertices )
+		return self.transformedVertices
 
 	def getZAddExtruderPaths( self, z ):
 		"Get next z and add extruder loops."
@@ -709,12 +708,3 @@ class TriangleMesh( Group ):
 		edgeTable = {}
 		for face in self.faces:
 			face.setEdgeIndexesToVertexIndexes( self.edges, edgeTable )
-
-	def transformSetBottomTopEdges( self, matrixChain ):
-		"Create the shape."
-		self.setEdgesForAllFaces()
-		newMatrix4X4 = self.matrix4X4.getOtherTimesSelf( matrixChain )
-		for vertex in self.vertices:
-			matrix4x4.transformVector3ByMatrix( newMatrix4X4.matrixTetragrid, vertex )
-		self.bottom = euclidean.getBottom( self.vertices )
-		self.top = euclidean.getTop( self.vertices )

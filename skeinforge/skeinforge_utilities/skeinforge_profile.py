@@ -25,10 +25,12 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.hidden_scrollbar import HiddenScrollbar
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 import os
+import shutil
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -144,7 +146,7 @@ class AddProfile:
 			print( 'There is already a profile by the name of %s, so no profile will be added.' % entryText )
 			return
 		self.entry.delete( 0, settings.Tkinter.END )
-		craftTypeProfileDirectory = getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName )
+		craftTypeProfileDirectory = settings.getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName )
 		destinationDirectory = os.path.join( craftTypeProfileDirectory, entryText )
 		shutil.copytree( self.profileListboxSetting.getSelectedFolder(), destinationDirectory )
 		self.profileListboxSetting.listSetting.setValueToFolders()
@@ -207,7 +209,7 @@ class DeleteProfileDialog:
 		else:
 			print( 'No profile is selected, so no profile will be deleted.' )
 			return
-		settings.deleteDirectory( getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
+		settings.deleteDirectory( settings.getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
 		settings.deleteDirectory( getProfilesDirectoryInAboveDirectory( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
 		self.profileListboxSetting.listSetting.setValueToFolders()
 		if len( self.profileListboxSetting.listSetting.value ) < 1:
@@ -251,7 +253,7 @@ class ProfileListboxSetting( settings.StringSetting ):
 #http://www.pythonware.com/library/tkinter/introduction/x5453-patterns.htm
 		self.root = gridPosition.master
 		gridPosition.increment()
-		scrollbar = settings.HiddenScrollbar( gridPosition.master )
+		scrollbar = HiddenScrollbar( gridPosition.master )
 		self.listbox = settings.Tkinter.Listbox( gridPosition.master, selectmode = settings.Tkinter.SINGLE, yscrollcommand = scrollbar.set )
 		self.listbox.bind( '<ButtonRelease-1>', self.buttonReleaseOne )
 		gridPosition.master.bind( '<FocusIn>', self.focusIn )

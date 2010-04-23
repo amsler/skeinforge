@@ -238,7 +238,7 @@ class OozebaneSkein:
 			self.isStartupEarly = False
 			return line
 		locationBack = location + segment * distanceBack / segmentLength
-		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.operatingFeedRateMinute, locationBack ) )
+		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( gcodec.getFeedRateMinute( self.feedRateMinute, splitLine ) , locationBack ) )
 		self.distanceFeedRate.addLine( 'M101' )
 		if self.isCloseToEither( locationBack, location, self.oldLocation ):
 			return ''
@@ -457,6 +457,7 @@ class OozebaneSkein:
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
 				self.operatingFeedRateMinute = 60.0 * float( splitLine[ 1 ] )
+				self.feedRateMinute = self.operatingFeedRateMinute
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float( splitLine[ 1 ] )
 				self.setExtrusionWidth( oozebaneRepository )

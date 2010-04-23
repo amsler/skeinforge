@@ -192,11 +192,20 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
 
-# extrude convex then arbitrary then paths
-# getPaths, getPathsCompound, getNormal, getIsFlat
-# evaluate, getEvaluators, combine minus with next numeric, evaluate */+-, later bracket levels, later after bracket check for math
-# _morning - polygon, vertex ids, midpointMultiplier, rotationoverside, rotation, direction (float), float sides, profile, round polygon
+# getArchiveValueRecursively, if None: getPythonExceptInit, precision = r/2*pi^2/sides^2
+# dictionary function
+# del previous, getPathBySuffix  default path  add begin & end if far  get actual path, getPaths, Interpolation
+# polling
+# extrude from to, then arbitrary then paths
+# path combine or getPathsCompound, getNormal, getIsFlat, equationx?
+# arc
 # lathe
+# line
+# evaluate float( equals, boolean etc )
+# transform
+# _morning - polygon, midpointMultiplier, rotationoverside, rotation, spin (float), float sides, profile, round or bevel polygon
+# concatenate
+# connect
 # tube, rotor
 # test translate
 # pyramid
@@ -207,7 +216,7 @@ __license__ = "GPL 3.0"
 # maybe not getNewObject, getNew, addToRoot, addToBoolean
 # convert global repository settings to local settings
 # table to dictionary
-# check for last existing then remove unneeded fill code from euclidean
+# check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # remove cool set at end of layer
 # add circling when hot in chamber
 # maybe measuring rod
@@ -226,7 +235,7 @@ __license__ = "GPL 3.0"
 #
 #
 #
-# arch, celining
+# arch, ceiling
 # implement acceleration & collinear removal in penultimate viewers _extrusion
 # add polish, has perimeter, has cut first layer (False)
 # probably not set addedLocation in distanceFeedRate after arc move

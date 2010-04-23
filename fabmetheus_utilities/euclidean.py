@@ -144,9 +144,7 @@ def addSegmentToPixelTable( beginComplex, endComplex, pixelTable, shortenDistanc
 		beginComplex = complex( beginComplex.imag, beginComplex.real )
 		endComplex = complex( endComplex.imag, endComplex.real )
 	if beginComplex.real > endComplex.real:
-		newBeginComplex = endComplex
-		endComplex = beginComplex
-		beginComplex = newBeginComplex
+		endComplex, beginComplex = beginComplex, endComplex
 	deltaX = endComplex.real - beginComplex.real
 	deltaY = endComplex.imag - beginComplex.imag
 	if deltaX > 0.0:
@@ -210,9 +208,7 @@ def addValueSegmentToPixelTable( beginComplex, endComplex, pixelTable, value, wi
 		beginComplex = complex( beginComplex.imag, beginComplex.real )
 		endComplex = complex( endComplex.imag, endComplex.real )
 	if beginComplex.real > endComplex.real:
-		newBeginComplex = endComplex
-		endComplex = beginComplex
-		beginComplex = newBeginComplex
+		endComplex, beginComplex = beginComplex, endComplex
 	deltaX = endComplex.real - beginComplex.real
 	deltaY = endComplex.imag - beginComplex.imag
 	if deltaX > 0.0:
@@ -573,18 +569,6 @@ def getFillOfSurroundings( surroundingLoops ):
 		fillOfSurroundings += surroundingLoop.getFillLoops()
 	return fillOfSurroundings
 
-def getFloatOneFromDictionary( key, dictionary ):
-	"Get the value as a float if it exists, otherwise return one."
-	if key in dictionary:
-		return float( dictionary[ key ] )
-	return 1.0
-
-def getFloatZeroFromDictionary( key, dictionary ):
-	"Get the value as a float if it exists, otherwise return zero."
-	if key in dictionary:
-		return float( dictionary[ key ] )
-	return 0.0
-
 def getFourSignificantFigures( number ):
 	"Get number rounded to four significant figures as a string."
 	if number == None:
@@ -755,6 +739,16 @@ def getLeftPoint( points ):
 			leftmost = pointComplex.real
 			leftPointComplex = pointComplex
 	return leftPointComplex
+
+def getLeftPointIndex( points ):
+	"Get the index of the leftmost complex point in the points."
+	if len( points ) < 1:
+		return None
+	leftPointIndex = 0
+	for pointIndex in xrange( len( points ) ):
+		if points[ pointIndex ].real < points[ leftPointIndex ].real:
+			leftPointIndex = pointIndex
+	return leftPointIndex
 
 def getListTableElements( listTable ):
 	"Get all the element in a list table."
@@ -979,13 +973,63 @@ def getPointPlusSegmentWithLength( length, point, segment ):
 
 def getPolygonArea( polygonComplex ):
 	"Get the area of a complex polygon."
-	polygonComplexArea = 0.0
+	polygonDoubleArea = 0.0
 	for pointIndex in xrange( len( polygonComplex ) ):
-		point = polygonComplex[ pointIndex ]
-		secondPointComplex  = polygonComplex[ ( pointIndex + 1 ) % len( polygonComplex ) ]
-		area  = point.real * secondPointComplex.imag - secondPointComplex.real * point.imag
-		polygonComplexArea += area
-	return 0.5 * polygonComplexArea
+		pointBegin = polygonComplex[ pointIndex ]
+		pointEnd  = polygonComplex[ ( pointIndex + 1 ) % len( polygonComplex ) ]
+		doubleArea = pointBegin.real * pointEnd.imag - pointEnd.real * pointBegin.imag
+		polygonDoubleArea += doubleArea
+	return 0.5 * polygonDoubleArea
+
+def getPolygonCentroid( polygonComplex ):
+	"Get the area of a complex polygon using http://en.wikipedia.org/wiki/Centroid."
+	polygonDoubleArea = 0.0
+	polygonTorque = 0.0
+	for pointIndex in xrange( len( polygonComplex ) ):
+		pointBegin = polygonComplex[ pointIndex ]
+		pointEnd  = polygonComplex[ ( pointIndex + 1 ) % len( polygonComplex ) ]
+		doubleArea = pointBegin.real * pointEnd.imag - pointEnd.real * pointBegin.imag
+		doubleCenter = complex( pointBegin.real + pointEnd.real, pointBegin.imag + pointEnd.imag )
+		polygonDoubleArea += doubleArea
+		polygonTorque += doubleArea * doubleCenter
+	torqueMultiplier = 0.333333333333333333333333 / polygonDoubleArea
+	return polygonTorque * torqueMultiplier
+
+def getPolygonConvex( polygonComplex ):
+	"Get convex hull of a complex polygon using gift wrap algorithm."
+	if len( polygonComplex ) < 4:
+		return polygonComplex
+	leftPointIndex = getLeftPointIndex( polygonComplex )
+	around = polygonComplex[ leftPointIndex + 1 :  ] + polygonComplex[ : leftPointIndex + 1  ]
+	lastAddedIndex = - 1
+	lastPoint = around[ - 1 ]
+	aroundLengthMinusOne = len( around ) - 1
+	polygonConvex = []
+	segment = complex( 0.0, - 1.0 )
+	while lastAddedIndex < aroundLengthMinusOne:
+		lastAddedIndex = getPolygonConvexAddedIndex( around, lastAddedIndex, lastPoint, segment )
+		segment = getNormalized( around[ lastAddedIndex ] - lastPoint )
+		lastPoint = around[ lastAddedIndex ]
+		polygonConvex.append( lastPoint )
+	return polygonConvex
+
+def getPolygonConvexAddedIndex( around, lastAddedIndex, lastPoint, segment ):
+	"Get polygon convex added index."
+	polygonConvexAddedIndex = len( around ) - 1
+	greatestDotProduct = - 9.9
+	for addedIndex in xrange( lastAddedIndex + 1, len( around ) ):
+		addedPoint = around[ addedIndex ]
+		addedSegment = getNormalized( addedPoint - lastPoint )
+		if abs( addedSegment ) > 0.0:
+			dotProduct = getDotProduct( addedSegment, segment )
+			if dotProduct >= greatestDotProduct:
+				greatestDotProduct = dotProduct
+				polygonConvexAddedIndex = addedIndex
+	return polygonConvexAddedIndex
+
+def getPolygonConvexCentroid( polygonComplex ):
+	"Get centroid of the convex hull of a complex polygon."
+	return getPolygonCentroid( getPolygonConvex( polygonComplex ) )
 
 def getPolygonLength( polygon ):
 	"Get the length of a polygon perimeter."
@@ -1471,10 +1515,11 @@ def joinXIntersectionsTables( fromTable, intoTable ):
 		else:
 			print( "This should never happen, there are no line segments in joinSegments in euclidean" )
 
-def overwriteDictionary( fromDictionary, positives, toDictionary ):
+def overwriteDictionary( fromDictionary, exceptions, positives, toDictionary ):
 	"Overwrite the dictionary and remove any silent positives."
 	for fromDictionaryKey in fromDictionary.keys():
-		toDictionary[ fromDictionaryKey ] = fromDictionary[ fromDictionaryKey ]
+		if fromDictionaryKey not in exceptions:
+			toDictionary[ fromDictionaryKey ] = fromDictionary[ fromDictionaryKey ]
 	for positive in positives:
 		if positive in toDictionary:
 			if getBooleanFromDictionary( fromDictionary, positive ):
@@ -1535,6 +1580,10 @@ def subtractXIntersectionsTable( subtractFromTable, subtractTable ):
 			subtractFromTable[ subtractFromTableKey ] = xIntersections
 		else:
 			del subtractFromTable[ subtractFromTableKey ]
+
+def swapList( elements, indexBegin, indexEnd ):
+	"Swap the list elements."
+	elements[ indexBegin ], elements[ indexEnd ] = elements[ indexEnd ], elements[ indexBegin ]
 
 def toggleHashtable( hashtable, key, value ):
 	"Toggle a hashtable between having and not having a key."

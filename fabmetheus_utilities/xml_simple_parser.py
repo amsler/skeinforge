@@ -50,6 +50,7 @@ class XMLElement:
 		self.className = ''
 		self.idDictionary = {}
 		self.object = None
+		self.nameDictionary = {}
 		self.parent = None
 		self.text = ''
 
@@ -67,24 +68,24 @@ class XMLElement:
 		key = firstWord[ : : - 1 ]
 		self.attributeDictionary[ key ] = self.getWordWithinQuotes( line[ characterIndex + 1 : ] )
 
-	def addIDIfUndefined( self, idHint ):
-		"Add the id if the id is undefined."
-		if 'id' in self.attributeDictionary:
-			return
-		uniqueID = self.getUniqueID( idHint )
-		self.attributeDictionary[ 'id' ] = uniqueID
-		self.addToIDDictionary( self )
-
-	def addToIDDictionary( self, xmlElement ):
+	def addToIDDictionary( self, idHint, xmlElement ):
 		"Add to the id dictionary of all the parents."
-		self.idDictionary[ xmlElement.attributeDictionary[ 'id' ] ] = xmlElement
 		if self.parent != None:
-			self.parent.addToIDDictionary( xmlElement )
+			self.parent.idDictionary[ idHint ] = xmlElement
+			self.parent.addToIDDictionary( idHint, xmlElement )
 
 	def addToIDDictionaryIFIDExists( self ):
 		"Add to the id dictionary if the id key exists in the attribute dictionary."
 		if 'id' in self.attributeDictionary:
-			self.addToIDDictionary( self )
+			self.addToIDDictionary( self.attributeDictionary[ 'id' ], self )
+		if 'name' in self.attributeDictionary:
+			self.addToNameDictionary( self.attributeDictionary[ 'name' ], self )
+
+	def addToNameDictionary( self, name, xmlElement ):
+		"Add to the id dictionary of all the parents."
+		if self.parent != None:
+			self.parent.nameDictionary[ name ] = xmlElement
+			self.parent.addToNameDictionary( name, xmlElement )
 
 	def addXML( self, depth, output ):
 		"Add xml for this object."
@@ -92,10 +93,18 @@ class XMLElement:
 		xml_simple_writer.addXMLFromObjects( depth + 1, self.children, output )
 		xml_simple_writer.addEndXMLTag( depth, self.className, output )
 
-	def copyXMLChildren( self, parent ):
+	def copyXMLChildren( self, idSuffix, parent ):
 		"Copy the xml children."
 		for child in self.children:
-			child.getCopy( '', parent )
+			child.getCopy( idSuffix, parent )
+
+	def getAttributeValueRecursively( self, defaultValue, key ):
+		"Get the attribute value recursively."
+		if key in self.attributeDictionary:
+			return self.attributeDictionary[ key ]
+		if self.parent == None:
+			return defaultValue
+		return self.parent.getAttributeValueRecursively( defaultValue, key )
 
 	def getChildrenWithClassName( self, className ):
 		"Get the children which have the given class name."
@@ -105,21 +114,19 @@ class XMLElement:
 				childrenWithClassName.append( child )
 		return childrenWithClassName
 
-	def getCopy( self, idHint, parent ):
+	def getCopy( self, idSuffix, parent ):
 		"Copy the xml element and add it to the parent."
 		copy = XMLElement()
 		copy.attributeDictionary = self.attributeDictionary.copy()
+		if idSuffix != '':
+			if 'id' in copy.attributeDictionary:
+				copy.attributeDictionary[ 'id' ] = copy.attributeDictionary[ 'id' ] + idSuffix
 		copy.className = self.className
 		copy.parent = parent
 		copy.text = self.text
 		parent.children.append( copy )
-		if idHint == '':
-			if 'id' in copy.attributeDictionary:
-				idHint = copy.attributeDictionary[ 'id' ]
-		if idHint != '':
-			copy.attributeDictionary[ 'id' ] = self.getUniqueID( idHint )
-			copy.addToIDDictionary( copy )
-		self.copyXMLChildren( copy )
+		copy.addToIDDictionaryIFIDExists()
+		self.copyXMLChildren( idSuffix, copy )
 		return copy
 
 	def getFirstChildWithClassName( self, className ):
@@ -128,6 +135,15 @@ class XMLElement:
 			if className == child.className:
 				return child
 		return None
+
+	def getIDSuffix( self, elementIndex = None ):
+		"Get the id suffix from the dictionary."
+		suffix = self.className
+		if 'id' in self.attributeDictionary:
+			suffix = self.attributeDictionary[ 'id' ]
+		if elementIndex == None:
+			return '_%s' % suffix
+		return '_%s_%s' % ( suffix, elementIndex )
 
 	def getParentParseReplacedLine( self, line, parent ):
 		"Parse replaced line."
@@ -162,6 +178,21 @@ class XMLElement:
 			return self
 		return self.parent.getRootElement()
 
+	def getShallowCopy( self, dictionary ):
+		"Copy the xml element and overwrite its dictionary."
+		shallowCopy = XMLElement()
+		shallowCopy.attributeDictionary = self.attributeDictionary.copy()
+		for key in dictionary.keys():
+			shallowCopy.attributeDictionary[ key ] = dictionary[ key ]
+		shallowCopy.children = self.children
+		shallowCopy.className = self.className
+		shallowCopy.idDictionary = self.idDictionary
+		shallowCopy.object = self.object
+		shallowCopy.nameDictionary = self.nameDictionar
+		shallowCopy.parent = self.parent
+		shallowCopy.text = self.text
+		return shallowCopy
+
 	def getSubChildWithID( self, idReference ):
 		"Get the child which has the idReference."
 		for child in self.children:
@@ -173,18 +204,6 @@ class XMLElement:
 				return subChildWithID
 		return None
 
-	def getUniqueID( self, idHint ):
-		"Get a unique id from the hint."
-		rootDictionary = self.getRootElement().idDictionary
-		if idHint not in rootDictionary:
-			return idHint
-		idHintIndex = 1
-		while 1:
-			uniqueID = '%s__%s' % ( idHint, idHintIndex )
-			if uniqueID not in rootDictionary:
-				return uniqueID
-			idHintIndex += 1
-
 	def getWordWithinQuotes( self, line ):
 		"Get the word within the quotes."
 		quoteCharacter = None
@@ -193,11 +212,27 @@ class XMLElement:
 			if character == '"' or character == "'":
 				if quoteCharacter == None:
 					quoteCharacter = character
-				else:
+				elif character == quoteCharacter:
 					return word
 			elif quoteCharacter != None:
 				word += character
 		return word
+
+	def getXMLElementByID( self, idKey ):
+		"Get the xml element by id."
+		if idKey in self.idDictionary:
+			return self.idDictionary[ idKey ]
+		if self.parent == None:
+			return None
+		return self.parent.getXMLElementByID( idKey )
+
+	def getXMLElementByName( self, name ):
+		"Get the xml element by name."
+		if name in self.nameDictionary:
+			return self.nameDictionary[ name ]
+		if self.parent == None:
+			return None
+		return self.parent.getXMLElementByName( name )
 
 
 class XMLSimpleParser:

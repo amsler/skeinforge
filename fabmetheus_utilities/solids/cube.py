@@ -31,6 +31,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.solids.solid_utilities import geomancer
+from fabmetheus_utilities.solids import group
 from fabmetheus_utilities.solids import trianglemesh
 from fabmetheus_utilities import euclidean
 
@@ -42,7 +43,7 @@ __license__ = "GPL 3.0"
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	geomancer.processShape( Cube, xmlElement )
+	group.processShape( Cube, xmlElement )
 
 
 class Cube( trianglemesh.TriangleMesh ):
@@ -51,18 +52,18 @@ class Cube( trianglemesh.TriangleMesh ):
 		"Add the xml section for this object."
 		pass
 
-	def createShape( self, matrixChain ):
+	def createShape( self ):
 		"Create the shape."
 		square = [ complex( - self.halfX, - self.halfY ), complex( self.halfX, - self.halfY ), complex( self.halfX, self.halfY ), complex( - self.halfX, self.halfY ) ]
 		bottomTopSquare = trianglemesh.getAddIndexedLoops( square, self.vertices, [ - self.halfZ, self.halfZ ] )
 		trianglemesh.addPillarFromConvexLoops( self.faces, bottomTopSquare )
-		self.transformSetBottomTopEdges( matrixChain )
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.halfX = euclidean.getFloatOneFromDictionary( 'halfx', self.xmlElement.attributeDictionary )
-		self.halfY = euclidean.getFloatOneFromDictionary( 'halfy', self.xmlElement.attributeDictionary )
-		self.halfZ = euclidean.getFloatOneFromDictionary( 'halfz', self.xmlElement.attributeDictionary )
+		self.halfX = geomancer.getEvaluatedFloatOne( 'halfx', self.xmlElement )
+		self.halfY = geomancer.getEvaluatedFloatOne( 'halfy', self.xmlElement )
+		self.halfZ = geomancer.getEvaluatedFloatOne( 'halfz', self.xmlElement )
 		self.xmlElement.attributeDictionary[ 'halfx' ] = self.halfX
 		self.xmlElement.attributeDictionary[ 'halfy' ] = self.halfY
 		self.xmlElement.attributeDictionary[ 'halfz' ] = self.halfZ
+		self.createShape()

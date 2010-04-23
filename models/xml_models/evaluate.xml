@@ -1,0 +1,42 @@
+<?xml version='1.0' ?>
+<booleangeometry version="2010-04-06" s="(2+1)" t="3">
+	<dictionary kapow='(4**-2)' />
+	<dictionary order="(-2+1+parent.t*root.s)" />
+	<dictionary bracket="(2*(3+1))" compoundbracket="(2*(8/(1+1)))" withoutbracket="(2*3+1)" />
+	<dictionary function="(math.degrees(math.pi))" />
+	<dictionary five="(4+1)" constant="math.e" self="(self.five*2)" />
+	<dictionary name="name test" power="(math.pow(4,-3))" />
+	<path id="zeropath" y="0" >
+		<vertex x="4" y="6" />
+		<vertex x="4" y="5" />
+		<dictionary v="vertex.0" />
+		<dictionary r="('w'+2)" />
+		<dictionary q="parent.vertex.(parent.t-2)" />
+		<dictionary n="name.name test.power" />
+		<dictionary v="parent.vertex.0" />
+		<dictionary v="parent.vertex.y" />
+		<dictionary z="id.zeropath.vertex.y" />
+		<dictionary t="parent.parent.t" />
+		<dictionary t="parent.parent.w" />
+		<dictionary v="(math.pow(parent.vertex.0))" />
+		<dictionary a="([1,2]+(2,3))" />
+		<dictionary a="([1,2,7]-(2,3))" />
+		<dictionary m="(2*[1,2,7])" />
+		<dictionary m="(-[1,2,7])" />
+		<dictionary m="([[1,2],[7,6]])" />
+		<dictionary m="(-[[1,2],[7,6]])" />
+		<dictionary m="(3*[[1,2],[7,6]])" />
+		<dictionary m="([2,4]*[[1,2],[7,6]])" />
+		<dictionary m="([[2,4],[3,5]]*[[1,2],[7,6]])" />
+		<dictionary a="([1,,2])" />
+		<dictionary d="(-{1:2})" />
+		<dictionary d="(-{1:2,3:[4,5]}*2)" />
+		<dictionary d="(4**{1:2,2:3})" />
+		<dictionary m="({'f':5})" />
+		<dictionary m="(2+{3:5}*{6:2,3:3})" />
+		<dictionaryc m="({'f':5}*{'v':[2,2],'f':[4,5]})" />
+		<dictionary p="(math.polygon(5.2))" />
+	<path/>
+	<polygon sides="1" five="5" radius="(self.five*2)" />
+	<polygon sides="p" radius="w" />
+</booleangeometry>

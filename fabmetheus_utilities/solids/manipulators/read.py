@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
-from fabmetheus_utilities.solids.group import Group
+from fabmetheus_utilities.solids import group
 from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities.xml_simple_parser import XMLSimpleParser
 from fabmetheus_utilities import gcodec
@@ -48,9 +48,9 @@ def getXMLFromXMLFileName( fileName ):
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	if 'file' not in xmlElement.attributeDictionary:
+	fileName = geomancer.getEvaluatedValue( 'file', xmlElement )
+	if fileName == None:
 		return
-	fileName = xmlElement.attributeDictionary[ 'file' ]
 	parserFileName = xmlElement.getRootElement().parser.fileName
 	absoluteFileName = gcodec.getAbsoluteFolderPath( parserFileName, fileName )
 	xmlText = getXMLFromFileName( absoluteFileName )
@@ -58,7 +58,7 @@ def processXMLElement( xmlElement ):
 		print( 'The file %s could not be found in the folder which the xml boolean geometry file is in.' % fileName )
 		return
 	XMLSimpleParser( xmlElement.getRootElement().parser.fileName, xmlElement, xmlText )
-	geomancer.processShape( Group, xmlElement )
+	group.processShape( group.Group, xmlElement )
 	baseNameUntilDot = gcodec.getUntilDot( os.path.basename( absoluteFileName ) )
 	xmlElement.addIDIfUndefined( baseNameUntilDot )
 

@@ -25,6 +25,7 @@ __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __date__ = "$Date: 2008/23/04 $"
 __license__ = "GPL 3.0"
 
+
 globalRepositoryDialogListTable = {}
 globalProfileSaveListenerListTable = {}
 globalCloseListTables = [ globalRepositoryDialogListTable, globalProfileSaveListenerListTable ]
@@ -142,8 +143,6 @@ def getArchiveText( repository ):
 
 def getDisplayedDialogFromConstructor( repository ):
 	"Display the repository dialog."
-	getReadRepository( repository )
-	return RepositoryDialog( repository, Tkinter.Tk() )
 	try:
 		getReadRepository( repository )
 		return RepositoryDialog( repository, Tkinter.Tk() )
@@ -502,7 +501,11 @@ def setSpinColor( setting ):
 
 def startMainLoopFromConstructor( repository ):
 	"Display the repository dialog and start the main loop."
-	getDisplayedDialogFromConstructor( repository ).root.mainloop()
+	displayedDialogFromConstructor = getDisplayedDialogFromConstructor( repository )
+	if displayedDialogFromConstructor == None:
+		print( 'Warning, displayedDialogFromConstructor in settings is none, so the window will not be displayed.' )
+	else:
+		displayedDialogFromConstructor.root.mainloop()
 
 def writeValueListToArchiveWriter( archiveWriter, setting ):
 	"Write tab separated name and list to the archive writer."
@@ -1156,17 +1159,6 @@ class HelpPageRepository:
 		self.repository.openLocalHelpPage()
 
 
-class HiddenScrollbar( Tkinter.Scrollbar ):
-	"A class to hide the scrollbar if it is not needed."
-	def set( self, lo, hi ):
-		"Add to grid is needed, remove if not."
-		if float( lo ) <= 0.0 and float( hi ) >= 1.0:
-			self.tk.call( 'grid', 'remove', self )
-		else:
-			self.grid()
-		Tkinter.Scrollbar.set( self, lo, hi )
-
-
 class IntSetting( FloatSetting ):
 	"A class to display, read & write an int."
 	def setValueToString( self, valueString ):
@@ -1467,6 +1459,7 @@ class PluginFrame:
 		self.helpButton.grid( row = gridVertical.row, column = gridVertical.column, sticky = Tkinter.W )
 		addEmptyRow( gridVertical )
 		gridVertical.increment()
+		from fabmetheus_utilities.hidden_scrollbar import HiddenScrollbar
 		gridVertical.xScrollbar = HiddenScrollbar( gridVertical.master, orient = Tkinter.HORIZONTAL )
 		gridVertical.xScrollbar.grid( row = gridVertical.row + 1, column = gridVertical.column, columnspan = 11, sticky = Tkinter.E + Tkinter.W )
 		gridVertical.yScrollbar = HiddenScrollbar( gridVertical.master )

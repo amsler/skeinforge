@@ -7,6 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import xml_simple_writer
@@ -117,6 +118,14 @@ def getTransformedByList( floatList, point ):
 	"Get the point transformed by the array."
 	return floatList[ 0 ] * point.x + floatList[ 1 ] * point.y + floatList[ 2 ] * point.z + floatList[ 3 ]
 
+def getTransformedVector3s( matrixTetragrid, vector3s ):
+	"Get the vector3s multiplied by a matrix."
+	transformedVector3s = []
+	for vector3 in vector3s:
+		transformedVector3 = getVector3TransformedByMatrix( matrixTetragrid, vector3 )
+		transformedVector3s.append( transformedVector3 )
+	return transformedVector3s
+
 def getVector3TransformedByMatrix( matrixTetragrid, vector3 ):
 	"Get the vector3 multiplied by a matrix."
 	vector3Transformed = Vector3()
@@ -131,7 +140,7 @@ def getZeroMatrixTetragrid():
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	setXMLElementMatrixToMatrixAttributeDictionary( xmlElement.attributeDictionary, xmlElement.parent.object.matrix4X4, xmlElement.parent )
+	setXMLElementMatrixToMatrixAttributeDictionary( xmlElement, xmlElement.parent.object.matrix4X4, xmlElement.parent )
 
 def setDiagonalElements( diagonals, matrixTetragrid, value ):
 	"Set the diagonal matrix elements to the value."
@@ -153,9 +162,9 @@ def setMatrixTetragridToMatrixTetragrid( matrixTetragrid, otherMatrixTetragrid )
 		for column in xrange( 4 ):
 			matrixTetragrid[ row ][ column ] = otherMatrixTetragrid[ row ][ column ]
 
-def setXMLElementMatrixToMatrixAttributeDictionary( attributeDictionary, matrix4X4, xmlElement ):
+def setXMLElementMatrixToMatrixAttributeDictionary( fromXMLElement, matrix4X4, xmlElement ):
 	"Set the xml element to the matrix attribute dictionary."
-	matrix4X4.getFromAttributeDictionary( attributeDictionary )
+	matrix4X4.getFromXMLElement( fromXMLElement )
 	setAttributeDictionaryToMatrix( xmlElement.attributeDictionary, matrix4X4 )
 
 def transformVector3ByMatrix( matrixTetragrid, vector3 ):
@@ -195,28 +204,6 @@ class Matrix4X4:
 					attributeDictionary[ getMatrixKey( row, column ) ] = value
 		return attributeDictionary
 
-	def getFromAttributeDictionary( self, attributeDictionary ):
-		"Get the values from row column attribute strings, counting from one."
-		if attributeDictionary == None:
-			return self
-		self.multiplyByKeyFunction( attributeDictionary, 'scalex', getMatrixScaleX )
-		self.multiplyByKeyFunction( attributeDictionary, 'scaley', getMatrixScaleY )
-		self.multiplyByKeyFunction( attributeDictionary, 'scalez', getMatrixScaleZ )
-		self.multiplyByKeysFunction( attributeDictionary, [ 'axisclockwisez', 'observerclockwisez', 'rotationz' ], getMatrixRotationZ )
-		self.multiplyByKeysFunction( attributeDictionary, [ 'axiscounterclockwisez', 'observercounterclockwisez' ], getMatrixRotationZCounter )
-		self.multiplyByKeysFunction( attributeDictionary, [ 'axisclockwisex', 'observerclockwisex', 'rotationx' ], getMatrixRotationX )
-		self.multiplyByKeysFunction( attributeDictionary, [ 'axiscounterclockwisex', 'observercounterclockwisex' ], getMatrixRotationXCounter )
-		self.multiplyByKeysFunction( attributeDictionary, [ 'axiscounterclockwisey', 'observerclockwisey', 'rotationy' ], getMatrixRotationY )
-		self.multiplyByKeysFunction( attributeDictionary, [ 'axisclockwisey', 'observercounterclockwisey' ], getMatrixRotationYCounter )
-		self.multiplyByKeyFunction( attributeDictionary, 'x', getMatrixTranslationX )
-		self.multiplyByKeyFunction( attributeDictionary, 'y', getMatrixTranslationY )
-		self.multiplyByKeyFunction( attributeDictionary, 'z', getMatrixTranslationZ )
-		# http://en.wikipedia.org/wiki/Rotation_matrix zxy
-		multiplicationMatrix4X4 = Matrix4X4().getFromMatrixValues( attributeDictionary )
-		self.matrixTetragrid = self.getOtherTimesSelf( multiplicationMatrix4X4 ).matrixTetragrid
-		euclidean.removeListFromDictionary( attributeDictionary, getMatrixKeys() )
-		return self
-
 	def getFromMatrixValues( self, attributeDictionary ):
 		"Get the values from row column attribute strings, counting from one."
 		for row in xrange( 4 ):
@@ -224,6 +211,30 @@ class Matrix4X4:
 				key = getMatrixKey( row, column )
 				if key in attributeDictionary:
 					self.matrixTetragrid[ row ][ column ] = float( attributeDictionary[ key ] )
+		return self
+
+	def getFromXMLElement( self, xmlElement ):
+		"Get the values from row column attribute strings, counting from one."
+		attributeDictionary = xmlElement.attributeDictionary
+		if attributeDictionary == None:
+			return self
+		self.multiplyByKeyFunction( xmlElement, 'scalex', getMatrixScaleX )
+		self.multiplyByKeyFunction( xmlElement, 'scaley', getMatrixScaleY )
+		self.multiplyByKeyFunction( xmlElement, 'scalez', getMatrixScaleZ )
+		self.multiplyByKeysFunction( xmlElement, [ 'axisclockwisez', 'observerclockwisez', 'rotationz' ], getMatrixRotationZ )
+		self.multiplyByKeysFunction( xmlElement, [ 'axiscounterclockwisez', 'observercounterclockwisez' ], getMatrixRotationZCounter )
+		self.multiplyByKeysFunction( xmlElement, [ 'axisclockwisex', 'observerclockwisex', 'rotationx' ], getMatrixRotationX )
+		self.multiplyByKeysFunction( xmlElement, [ 'axiscounterclockwisex', 'observercounterclockwisex' ], getMatrixRotationXCounter )
+		self.multiplyByKeysFunction( xmlElement, [ 'axiscounterclockwisey', 'observerclockwisey', 'rotationy' ], getMatrixRotationY )
+		self.multiplyByKeysFunction( xmlElement, [ 'axisclockwisey', 'observercounterclockwisey' ], getMatrixRotationYCounter )
+		self.multiplyByKeyFunction( xmlElement, 'x', getMatrixTranslationX )
+		self.multiplyByKeyFunction( xmlElement, 'y', getMatrixTranslationY )
+		self.multiplyByKeyFunction( xmlElement, 'z', getMatrixTranslationZ )
+		# http://en.wikipedia.org/wiki/Rotation_matrix zxy
+		matrixKeys = getMatrixKeys()
+		multiplicationMatrix4X4 = Matrix4X4().getFromMatrixValues( geomancer.getEvaluatedDictionary( matrixKeys, xmlElement ) )
+		self.matrixTetragrid = self.getOtherTimesSelf( multiplicationMatrix4X4 ).matrixTetragrid
+		euclidean.removeListFromDictionary( xmlElement.attributeDictionary, matrixKeys )
 		return self
 
 	def getOtherTimesSelf( self, otherMatrix4X4 ):
@@ -240,16 +251,16 @@ class Matrix4X4:
 			return None
 		return Matrix4X4( getMultipliedMatrixTetragrid( self.matrixTetragrid, otherMatrixTetragrid ) )
 
-	def multiplyByKeyFunction( self, attributeDictionary, key, matrixFunction ):
+	def multiplyByKeyFunction( self, xmlElement, key, matrixFunction ):
 		"Multiply matrix key, then delete the key."
-		if key not in attributeDictionary:
+		if key not in xmlElement.attributeDictionary:
 			return
-		floatValue = float( attributeDictionary[ key ] )
+		floatValue = geomancer.getEvaluatedFloat( key, xmlElement )
 		multiplicationMatrix4X4 = matrixFunction( floatValue )
 		self.matrixTetragrid = self.getOtherTimesSelf( multiplicationMatrix4X4 ).matrixTetragrid
-		del attributeDictionary[ key ]
+		del xmlElement.attributeDictionary[ key ]
 
-	def multiplyByKeysFunction( self, attributeDictionary, keys, matrixFunction ):
+	def multiplyByKeysFunction( self, xmlElement, keys, matrixFunction ):
 		"Multiply matrix keys, then delete the keys."
 		for key in keys:
-			self.multiplyByKeyFunction( attributeDictionary, key, matrixFunction )
+			self.multiplyByKeyFunction( xmlElement, key, matrixFunction )

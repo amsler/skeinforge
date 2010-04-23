@@ -16,11 +16,6 @@ Default is zero.
 
 Defines the ratio of the minimum distance that the extruder will travel and loop before leaving a perimeter.  A high value means the extruder will loop many times before leaving, so that the ooze will finish within the perimeter, a low value means the extruder will not loop and the stringers will be thicker.  Since it sometimes loops when there's no need, the default is zero.
 
-===Running Jump Space over Perimeter Width===
-Default is zero.
-
-Defines the ratio of the running jump space that is added before going from one island to another to the perimeter width.  The default is zero because sometimes an unnecessary running jump space is added, if you want to use it a reasonable value is five.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer across the islands will be thinner.  If the extruder does not have acceleration code, the speed will not be greater so there would be no benefit and 'Running Jump Space over Perimeter Width' should be left at zero.
-
 ==Examples==
 
 The following examples comb the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and comb.py.
@@ -76,6 +71,7 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
+#maybe remove getBetweenAdded because widdershins loops have been removed
 def getCraftedText( fileName, text, combRepository = None ):
 	"Comb a gcode linear move text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), combRepository )
@@ -110,7 +106,6 @@ class CombRepository:
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb' )
 		self.activateComb = settings.BooleanSetting().getFromValue( 'Activate Comb', self, False )
 		self.minimumDepartureDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Minimum Departure Distance over Perimeter Width (ratio):', self, 50.0, 0.0 )
-		self.runningJumpSpaceOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Running Jump Space over Perimeter Width (ratio):', self, 10.0, 0.0 )
 		self.executeTitle = 'Comb'
 
 	def execute( self ):
@@ -123,7 +118,6 @@ class CombRepository:
 class CombSkein:
 	"A class to comb a skein of extrusions."
 	def __init__( self ):
-		self.betweenTable = {}
 		self.betweenTable = {}
 		self.boundaryLoop = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
@@ -152,37 +146,6 @@ class CombSkein:
 				highestZ = max( location.z, self.oldLocation.z )
 				self.addGcodePathZ( self.travelFeedRatePerMinute, self.getPathsBetween( self.oldLocation.dropAxis( 2 ), location.dropAxis( 2 ) ), highestZ )
 		self.oldLocation = location
-
-	def addRunningJumpPath( self, end, loop, pathAround ):
-		"Get the running jump path from the perimeter to the intersection or running jump space."
-		if self.combRepository.runningJumpSpaceOverPerimeterWidth.value < 1.0:
-			return
-		if len( pathAround ) < 2:
-			return
-		loop = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, self.combInset )
-		penultimatePoint = pathAround[ - 2 ]
-		lastPoint = pathAround[ - 1 ]
-		nearestEndDistanceIndex = euclidean.getNearestDistanceIndex( end, loop )
-		nearestEndIndex = ( nearestEndDistanceIndex.index + 1 ) % len( loop )
-		nearestEnd = euclidean.getNearestPointOnSegment( loop[ nearestEndDistanceIndex.index ], loop[ nearestEndIndex ], end )
-		nearestEndMinusLast = nearestEnd - lastPoint
-		nearestEndMinusLastLength = abs( nearestEndMinusLast )
-		if nearestEndMinusLastLength <= 0.0:
-			return
-		nearestEndMinusLastSegment = nearestEndMinusLast / nearestEndMinusLastLength
-		betweens = self.getBetweens()
-		if self.getIsRunningJumpPathAdded( betweens, end, lastPoint, nearestEndMinusLastSegment, pathAround, penultimatePoint, self.runningJumpSpace ):
-			return
-		doubleCombInset = 2.0 * self.combInset
-		shortJumpSpace = 0.5 * self.runningJumpSpace
-		if shortJumpSpace < doubleCombInset:
-			return
-		if self.getIsRunningJumpPathAdded( betweens, end, lastPoint, nearestEndMinusLastSegment, pathAround, penultimatePoint, shortJumpSpace ):
-			return
-		shortJumpSpace = 0.25 * self.runningJumpSpace
-		if shortJumpSpace < doubleCombInset:
-			return
-		self.getIsRunningJumpPathAdded( betweens, end, lastPoint, nearestEndMinusLastSegment, pathAround, penultimatePoint, shortJumpSpace )
 
 	def addToLoop( self, location ):
 		"Add a location to loop."
@@ -221,6 +184,8 @@ class CombSkein:
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
 			self.parseBoundariesLayers( combRepository, line )
+		for layerTableKey in self.layerTable.keys():
+			self.layerTable[ layerTableKey ] = intercircle.getLoopsFromLoopsDirection( False, self.layerTable[ layerTableKey ] )
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
 			self.parseLine( line )
@@ -315,8 +280,6 @@ class CombSkein:
 				isLeavingPerimeter = True
 			pathBetween = self.getPathBetween( points[ lineXIndex + 1 ], points[ lineXIndex + 2 ], isLeavingPerimeter, loopFirst )
 			if isLeavingPerimeter:
-				if not pathBetweenAdded:
-					self.addRunningJumpPath( points[ lineXIndex + 3 ], boundaries[ lineXSecond.index ], pathBetween )
 				pathBetweenAdded = True
 			else:
 				pathBetween = self.getSimplifiedAroundPath( points[ lineXIndex ], points[ lineXIndex + 3 ], loopFirst, pathBetween )
@@ -384,7 +347,6 @@ class CombSkein:
 				self.betweenInset = 0.4 * perimeterWidth
 				self.uTurnWidth = 0.5 * self.betweenInset
 				self.minimumDepartureDistance = combRepository.minimumDepartureDistanceOverPerimeterWidth.value * perimeterWidth
-				self.runningJumpSpace = combRepository.runningJumpSpaceOverPerimeterWidth.value * perimeterWidth
 			elif firstWord == '(<travelFeedRatePerSecond>':
 				self.travelFeedRatePerMinute = 60.0 * float( splitLine[ 1 ] )
 			self.distanceFeedRate.addLine( line )

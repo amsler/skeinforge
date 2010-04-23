@@ -170,6 +170,7 @@ class PrefaceSkein:
 	def __init__( self ):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
+		self.layerThickness = None
 		self.lineIndex = 0
 		self.oldLocation = None
 		self.rotatedBoundaryLayers = []
@@ -281,6 +282,8 @@ class PrefaceSkein:
 		gcodeText = gcodeText.replace( ';', ' ' )
 		self.lines = gcodec.getTextLines( gcodeText )
 		self.parseInitialization()
+		if self.layerThickness == None:
+			return ''
 		self.addInitializationToOutput()
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			self.parseLine( lineIndex )

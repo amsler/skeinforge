@@ -38,7 +38,10 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 		analyzePluginsDirectoryPath = getPluginsDirectoryPath()
 		pluginModule = gcodec.getModuleWithDirectoryPath( analyzePluginsDirectoryPath, pluginFileName )
 		if pluginModule != None:
-			pluginModule.writeOutput( fileName, fileNameSuffix, gcodeText )
+			try:
+				pluginModule.writeOutput( fileName, fileNameSuffix, gcodeText )
+			except:
+				print( 'Warning, the tool %s could not analyze the output.' % pluginFileName )
 
 
 class AnalyzeRepository:

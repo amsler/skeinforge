@@ -30,8 +30,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities.solids.solid_utilities import boolean_carving
+from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 import os
@@ -55,21 +55,15 @@ def getCarvingFromParser( xmlParser ):
 	booleanGeometryElement.object = boolean_carving.BooleanGeometry()
 	xmlParser.getRootElement().xmlProcessor = XMLBooleanGeometryProcessor()
 	xmlParser.getRootElement().xmlProcessor.processChildren( booleanGeometryElement )
-	for archivableObject in booleanGeometryElement.object.archivableObjects:
-		archivableObject.createShape( None )
 	return booleanGeometryElement.object
 
-def getSolidsDirectoryPath():
-	"Get the solids directory path."
-	return settings.getPathInFabmetheus( os.path.join( 'fabmetheus_utilities', 'solids' ) )
+def getManipulatorsDirectoryPath():
+	"Get the manipulators directory path."
+	return os.path.join( geomancer.getSolidsDirectoryPath(), 'manipulators' )
 
 def getSolidToolsDirectoryPath():
 	"Get the plugins directory path."
-	return os.path.join( getSolidsDirectoryPath(), 'solid_tools' )
-
-def getToolsDirectoryPath():
-	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, os.path.join( 'booleangeometry_utilities', 'booleangeometry_tools' ) )
+	return os.path.join( geomancer.getSolidsDirectoryPath(), 'solid_tools' )
 
 
 class XMLBooleanGeometryProcessor():
@@ -77,9 +71,25 @@ class XMLBooleanGeometryProcessor():
 	def __init__( self ):
 		"Process the children of the xml element."
 		self.namePathDictionary = {}
-		addToNamePathDictionary( getSolidsDirectoryPath(), self.namePathDictionary )
+		addToNamePathDictionary( geomancer.getCreatorsDirectoryPath(), self.namePathDictionary )
+		addToNamePathDictionary( getManipulatorsDirectoryPath(), self.namePathDictionary )
+		addToNamePathDictionary( geomancer.getSolidsDirectoryPath(), self.namePathDictionary )
 		addToNamePathDictionary( getSolidToolsDirectoryPath(), self.namePathDictionary )
-		addToNamePathDictionary( getToolsDirectoryPath(), self.namePathDictionary )
+
+	def convertXMLElement( self, geometryOutput, xmlElement ):
+		"Convert the xml element."
+		geometryOutputKeys = geometryOutput.keys()
+		if len( geometryOutputKeys ) < 1:
+			return None
+		firstKey = geometryOutputKeys[ 0 ]
+		lowerClassName = firstKey.lower()
+		if lowerClassName not in self.namePathDictionary:
+			return None
+		pluginModule = gcodec.getModuleWithPath( self.namePathDictionary[ lowerClassName ] )
+		if pluginModule == None:
+			return None
+		xmlElement.className = lowerClassName
+		return pluginModule.convertXMLElement( geometryOutput[ firstKey ], xmlElement )
 
 	def processChildren( self, xmlElement ):
 		"Process the children of the xml element."
@@ -90,10 +100,8 @@ class XMLBooleanGeometryProcessor():
 		"Process the xml element."
 		lowerClassName = xmlElement.className.lower()
 		if lowerClassName not in self.namePathDictionary:
-			return []
+			return None
 		pluginModule = gcodec.getModuleWithPath( self.namePathDictionary[ lowerClassName ] )
 		if pluginModule == None:
-			return []
-		geomancer.getEvaluatedDictionary( xmlElement )
+			return None
 		return pluginModule.processXMLElement( xmlElement )
-

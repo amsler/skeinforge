@@ -8,8 +8,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities.solids import difference
+from fabmetheus_utilities.solids import group
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -20,7 +20,7 @@ __license__ = "GPL 3.0"
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	geomancer.processShape( Union, xmlElement )
+	group.processShape( Union, xmlElement )
 
 
 class Union( difference.Difference ):

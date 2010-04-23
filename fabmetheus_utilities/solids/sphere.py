@@ -10,8 +10,9 @@ import __init__
 
 from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities.solids import cube
+from fabmetheus_utilities.solids import group
 from fabmetheus_utilities.solids import trianglemesh
-from fabmetheus_utilities import euclidean
+
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
@@ -21,31 +22,32 @@ __license__ = "GPL 3.0"
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	geomancer.processShape( Sphere, xmlElement )
+	group.processShape( Sphere, xmlElement )
 
 
 class Sphere( cube.Cube ):
 	"A sphere object."
-	def createShape( self, matrixChain ):
+	def createShape( self ):
 		"Create the shape."
-		self.numberOfInBetweens = 12
-		self.numberOfDivisions = self.numberOfInBetweens + 1
+		maximumRadius = max( max( self.radiusX, self.radiusY ), self.radiusZ )
+		numberOfInBetweens = max( int( 0.25 * geomancer.getSides( maximumRadius, self.xmlElement ) ), 1 )
+		numberOfDivisions = numberOfInBetweens + 1
 		bottomLeft = complex( - 1.0, - 1.0 )
 		topRight = complex( 1.0, 1.0 )
 		extent = topRight - bottomLeft
-		elementExtent = extent / self.numberOfDivisions
+		elementExtent = extent / numberOfDivisions
 		grid = []
-		for rowIndex in xrange( self.numberOfDivisions + 1 ):
+		for rowIndex in xrange( numberOfDivisions + 1 ):
 			row = []
 			grid.append( row )
-			for columnIndex in xrange( self.numberOfDivisions + 1 ):
+			for columnIndex in xrange( numberOfDivisions + 1 ):
 				point = complex( elementExtent.real * float( columnIndex ), elementExtent.real * float( rowIndex ) ) + bottomLeft
 				row.append( point )
 		indexedGridBottom = trianglemesh.getAddIndexedGrid( grid, self.vertices, - 1.0 )
 		indexedGridBottomLoop = trianglemesh.getIndexedLoopFromIndexedGrid( indexedGridBottom )
 		indexedLoops = [ indexedGridBottomLoop ]
 		zList = []
-		for zIndex in xrange( 1, self.numberOfDivisions ):
+		for zIndex in xrange( 1, numberOfDivisions ):
 			z = elementExtent.real * float( zIndex ) + bottomLeft.real
 			zList.append( z )
 		gridLoop = []
@@ -60,13 +62,13 @@ class Sphere( cube.Cube ):
 			vertex.x *= self.radiusX
 			vertex.y *= self.radiusY
 			vertex.z *= self.radiusZ
-		self.transformSetBottomTopEdges( matrixChain )
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.radiusX = euclidean.getFloatOneFromDictionary( 'radiusx', self.xmlElement.attributeDictionary )
-		self.radiusY = euclidean.getFloatOneFromDictionary( 'radiusy', self.xmlElement.attributeDictionary )
-		self.radiusZ = euclidean.getFloatOneFromDictionary( 'radiusz', self.xmlElement.attributeDictionary )
+		self.radiusX = geomancer.getEvaluatedFloatOne( 'radiusx', self.xmlElement )
+		self.radiusY = geomancer.getEvaluatedFloatOne( 'radiusy', self.xmlElement )
+		self.radiusZ = geomancer.getEvaluatedFloatOne( 'radiusz', self.xmlElement )
 		self.xmlElement.attributeDictionary[ 'radiusx' ] = self.radiusX
 		self.xmlElement.attributeDictionary[ 'radiusy' ] = self.radiusY
 		self.xmlElement.attributeDictionary[ 'radiusz' ] = self.radiusZ
+		self.createShape()

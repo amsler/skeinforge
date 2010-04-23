@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.solids.solid_tools.dictionary import Dictionary
+from fabmetheus_utilities.solids.solid_tools import vertex
 from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities.solids.solid_tools import matrix4x4
 from fabmetheus_utilities import xml_simple_writer
@@ -19,6 +20,15 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
+def convertXMLElement( geometryOutput, xmlElement ):
+	"Convert the xml element to a path xml element."
+	vertex.addGeometryList( geometryOutput, xmlElement )
+
+def convertXMLElementRename( geometryOutput, xmlElement ):
+	"Convert the xml element to a path xml element."
+	xmlElement.className = 'path'
+	convertXMLElement( geometryOutput, xmlElement )
+
 def processXMLElement( xmlElement ):
 	"Process the xml element."
 	geomancer.processArchivable( Path, xmlElement )
@@ -29,13 +39,29 @@ class Path( Dictionary ):
 	def __init__( self ):
 		"Add empty lists."
 		Dictionary.__init__( self )
+		self.matrix4X4 = matrix4x4.Matrix4X4()
+		self.transformedVertices = None
 		self.vertices = []
 
 	def addXMLInnerSection( self, depth, output ):
 		"Add the xml section for this object."
-		xml_simple_writer.addXMLFromObjects( depth, self.vertices, output )
+		if self.matrix4X4 != None:
+			self.matrix4X4.addXML( depth, output )
+		xml_simple_writer.addXMLFromVertices( depth, output, self.vertices )
+
+	def getMatrixChain( self ):
+		"Get the matrix chain."
+		return self.matrix4X4.getOtherTimesSelf( self.xmlElement.parent.object.getMatrixChain() )
+
+	def getPaths( self ):
+		"Get all vertices."
+		return [ self.getVertices() ]
 
 	def getVertices( self ):
 		"Get all vertices."
-		return self.vertices
+		if self.xmlElement == None:
+			return self.vertices
+		if self.transformedVertices == None:
+			self.transformedVertices = matrix4x4.getTransformedVector3s( self.getMatrixChain().matrixTetragrid, self.vertices )
+		return self.transformedVertices
 

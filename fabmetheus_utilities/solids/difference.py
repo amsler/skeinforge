@@ -9,7 +9,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.solids.solid_utilities import booleansolid
-from fabmetheus_utilities.solids.solid_utilities import geomancer
+from fabmetheus_utilities.solids import group
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -20,7 +20,7 @@ __license__ = "GPL 3.0"
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	geomancer.processShape( Difference, xmlElement )
+	group.processShape( Difference, xmlElement )
 
 
 class Difference( booleansolid.BooleanSolid ):
@@ -32,7 +32,3 @@ class Difference( booleansolid.BooleanSolid ):
 	def getXMLClassName( self ):
 		"Get xml class name."
 		return self.__class__.__name__.lower()
-
-	def setArchivableObjectOrder( self ):
-		"Set the archivable object order."
-		pass

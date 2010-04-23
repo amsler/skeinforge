@@ -9,6 +9,7 @@ import __init__
 
 from skeinforge.skeinforge_plugins.analyze_plugins.analyze_utilities import zoom_in
 from skeinforge.skeinforge_plugins.analyze_plugins.analyze_utilities import zoom_out
+from fabmetheus_utilities.hidden_scrollbar import HiddenScrollbar
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -157,9 +158,9 @@ class TableauWindow:
 			menuRadio.mouseButton = self.getPhotoButtonGridIncrement( menuRadio.invoke, fileName, self.gridPosition )
 		self.gridPosition = settings.GridHorizontal( 1, 99 )
 		self.gridPosition.master = self.root
-		self.xScrollbar = settings.HiddenScrollbar( self.root, orient = settings.Tkinter.HORIZONTAL )
+		self.xScrollbar = HiddenScrollbar( self.root, orient = settings.Tkinter.HORIZONTAL )
 		self.xScrollbar.grid( row = 98, column = 2, columnspan = 96, sticky = settings.Tkinter.E + settings.Tkinter.W )
-		self.yScrollbar = settings.HiddenScrollbar( self.root )
+		self.yScrollbar = HiddenScrollbar( self.root )
 		self.yScrollbar.grid( row = 1, rowspan = 97, column = 99, sticky = settings.Tkinter.N + settings.Tkinter.S )
 		self.canvasHeight = min( int( skein.screenSize.imag ), self.root.winfo_screenheight() - repository.screenVerticalInset.value )
 		self.canvasWidth = min( int( skein.screenSize.real ), self.root.winfo_screenwidth() - repository.screenHorizontalInset.value )

@@ -59,8 +59,6 @@ def getCarvingFromParser( xmlParser ):
 	xmlElements = sceneElement.getFirstChildWithClassName( 'objects' ).getChildrenWithClassName( 'bf:Elem' )
 	for xmlElement in xmlElements:
 		processXMLElement( booleanGeometry.archivableObjects, xmlElement )
-	for archivableObject in booleanGeometry.archivableObjects:
-		archivableObject.createShape( None )
 	return booleanGeometry
 
 def getCarvableObject( globalObject, object, xmlElement ):
@@ -70,20 +68,20 @@ def getCarvableObject( globalObject, object, xmlElement ):
 	object.attributeDictionary[ 'id' ] = xmlElement.getFirstChildWithClassName( 'name' ).text
 	object.object = archivableObject
 	coords = xmlElement.getFirstChildWithClassName( 'coords' )
-	transformAttributeDictionary = getTransformAttributeDictionary( coords, 'transformFrom' )
-	if len( transformAttributeDictionary ) < 16:
-		transformAttributeDictionary = getTransformAttributeDictionary( coords, 'transformTo' )
-	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( transformAttributeDictionary, object.object.matrix4X4, object )
+	transformXMLElement = getTransformXMLElement( coords, 'transformFrom' )
+	if len( transformXMLElement.attributeDictionary ) < 16:
+		transformXMLElement = getTransformXMLElement( coords, 'transformTo' )
+	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( transformXMLElement, object.object.matrix4X4, object )
 	return archivableObject
 
-def getTransformAttributeDictionary( coords, transformName ):
+def getTransformXMLElement( coords, transformName ):
 	"Get the transform attributes."
-	transformAttributeDictionary = coords.getFirstChildWithClassName( transformName ).attributeDictionary
-	if len( transformAttributeDictionary ) < 16:
-		if 'bf:ref' in transformAttributeDictionary:
-			idReference = transformAttributeDictionary[ 'bf:ref' ]
-			return coords.getRootElement().getSubChildWithID( idReference ).attributeDictionary
-	return transformAttributeDictionary
+	transformXMLElement = coords.getFirstChildWithClassName( transformName )
+	if len( transformXMLElement.attributeDictionary ) < 16:
+		if 'bf:ref' in transformXMLElement.attributeDictionary:
+			idReference = transformXMLElement.attributeDictionary[ 'bf:ref' ]
+			return coords.getRootElement().getSubChildWithID( idReference )
+	return transformXMLElement
 
 def processXMLElement( archivableObjects, xmlElement ):
 	"Add the object info if it is carvable."
@@ -126,6 +124,7 @@ class Cube( cube.Cube ):
 		self.halfY = float( self.xmlElement.attributeDictionary[ 'halfy' ] )
 		self.halfZ = float( self.xmlElement.attributeDictionary[ 'halfz' ] )
 		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [] )
+		self.createShape()
 
 
 class Cylinder( cylinder.Cylinder ):
@@ -140,6 +139,7 @@ class Cylinder( cylinder.Cylinder ):
 		self.xmlElement.attributeDictionary[ 'radiusz' ] = self.xmlElement.attributeDictionary[ 'rz' ]
 		self.xmlElement.attributeDictionary[ 'topoverbottom' ] = self.xmlElement.attributeDictionary[ 'ratio' ]
 		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [ 'rx', 'rz', 'ratio' ] )
+		self.createShape()
 
 
 class Group( group.Group ):
@@ -164,6 +164,7 @@ class Sphere( sphere.Sphere ):
 		self.xmlElement.attributeDictionary[ 'radiusy' ] = self.xmlElement.attributeDictionary[ 'ry' ]
 		self.xmlElement.attributeDictionary[ 'radiusz' ] = self.xmlElement.attributeDictionary[ 'rz' ]
 		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [ 'rx', 'ry', 'rz' ] )
+		self.createShape()
 
 
 class TriangleMesh( trianglemesh.TriangleMesh ):

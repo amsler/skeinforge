@@ -1,5 +1,5 @@
 <?xml version='1.0' ?>
-<booleangeometry version="2010-03-29">
+<booleangeometry version="2010-03-29" precision='0.3'>
 	<difference id="cube_cylinder_difference">
 		<matrix4x4 x="-10" y="20" z="5" />
 		<cube id="Cube 5" halfx="5" halfy="5" halfz="5">

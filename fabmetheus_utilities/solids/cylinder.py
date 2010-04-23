@@ -10,6 +10,7 @@ import __init__
 
 from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities.solids import cube
+from fabmetheus_utilities.solids import group
 from fabmetheus_utilities.solids import trianglemesh
 from fabmetheus_utilities import euclidean
 import math
@@ -22,7 +23,7 @@ __license__ = "GPL 3.0"
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	geomancer.processShape( Cylinder, xmlElement )
+	group.processShape( Cylinder, xmlElement )
 
 
 class Cylinder( cube.Cube ):
@@ -32,16 +33,16 @@ class Cylinder( cube.Cube ):
 		self.isYImaginaryAxis = False
 		cube.Cube.__init__( self )
 
-	def createShape( self, matrixChain ):
+	def createShape( self ):
 		"Create the shape."
-		sides = 31
 		halfHeight = 0.5 * self.height
-		sideAngle = 2.0 * math.pi / float( sides )
 		polygonBottom = []
 		polygonTop = []
 		imaginaryRadius = self.radiusZ
 		if self.isYImaginaryAxis:
 			imaginaryRadius = self.radiusY
+		sides = max( int( geomancer.getSides( max( imaginaryRadius, self.radiusX ), self.xmlElement ) ), 3 )
+		sideAngle = 2.0 * math.pi / float( sides )
 		for side in xrange( sides ):
 			angle = float( side ) * sideAngle
 			unitComplex = euclidean.getWiddershinsUnitPolar( angle )
@@ -58,15 +59,14 @@ class Cylinder( cube.Cube ):
 				oldY = vertex.y
 				vertex.y = vertex.z
 				vertex.z = oldY
-		self.transformSetBottomTopEdges( matrixChain )
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.height = euclidean.getFloatOneFromDictionary( 'height', self.xmlElement.attributeDictionary )
-		self.radiusX = euclidean.getFloatOneFromDictionary( 'radiusx', self.xmlElement.attributeDictionary )
-		self.topOverBottom = euclidean.getFloatOneFromDictionary( 'topoverbottom', self.xmlElement.attributeDictionary )
-		self.radiusY = euclidean.getFloatOneFromDictionary( 'radiusy', self.xmlElement.attributeDictionary )
-		self.radiusZ = euclidean.getFloatOneFromDictionary( 'radiusz', self.xmlElement.attributeDictionary )
+		self.height = geomancer.getEvaluatedFloatOne( 'height', self.xmlElement )
+		self.radiusX = geomancer.getEvaluatedFloatOne( 'radiusx', self.xmlElement )
+		self.topOverBottom = geomancer.getEvaluatedFloatOne( 'topoverbottom', self.xmlElement )
+		self.radiusY = geomancer.getEvaluatedFloatOne( 'radiusy', self.xmlElement )
+		self.radiusZ = geomancer.getEvaluatedFloatOne( 'radiusz', self.xmlElement )
 		if 'radiusy' in self.xmlElement.attributeDictionary:
 			self.isYImaginaryAxis = True
 		self.xmlElement.attributeDictionary[ 'height' ] = self.height
@@ -76,3 +76,4 @@ class Cylinder( cube.Cube ):
 		else:
 			self.xmlElement.attributeDictionary[ 'radiusz' ] = self.radiusZ
 		self.xmlElement.attributeDictionary[ 'topoverbottom' ] = self.topOverBottom
+		self.createShape()

@@ -6,6 +6,12 @@
 			<dictionary id="sub" t="3" />
 		</dictionary>
 	</sphere>
-	<translate id="translate sphere" target="Sphere 5" x="15" y="3">
-	</translate>
+	<translate id="translate sphere" target="Sphere 5" x="15" y="3" />
+	<translate id="translate group" p="4" target="copy test" />
+	<dictionary id="divider" />
+	<group id="copy test" p="self.r" r="7">
+		<dictionary id="original" d="self.s" q="parent.r" s="parent.p" />
+		<dictionary id="copy" c="id.original.d" />
+		<polygon id="parent test" sides="1" radius="parent.p" />
+	</group>
 </booleangeometry>

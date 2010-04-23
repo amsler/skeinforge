@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.solids.solid_tools import matrix4x4
+from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities import euclidean
 
 
@@ -19,17 +20,16 @@ __license__ = "GPL 3.0"
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	if 'target' not in xmlElement.attributeDictionary:
+	target = geomancer.getXMLElementByKey( 'target', xmlElement )
+	if target == None:
+		print( 'Warning, translate could not get target.' )
 		return
-	targetID = xmlElement.attributeDictionary[ 'target' ]
-	target = xmlElement.getRootElement().idDictionary[ targetID ]
-	del xmlElement.attributeDictionary[ 'target' ]
 	translateDictionary = xmlElement.attributeDictionary.copy()
-	targetMatrix4X4Copy = matrix4x4.Matrix4X4().getFromAttributeDictionary( target.attributeDictionary )
+	targetMatrix4X4Copy = matrix4x4.Matrix4X4().getFromXMLElement( target )
 	xmlElement.attributeDictionary = target.attributeDictionary.copy()
 	matrix4x4.setAttributeDictionaryToMatrix( target.attributeDictionary, targetMatrix4X4Copy )
-	euclidean.overwriteDictionary( translateDictionary, [ 'visible' ], xmlElement.attributeDictionary )
+	euclidean.overwriteDictionary( translateDictionary, [], [ 'visible' ], xmlElement.attributeDictionary )
 	xmlElement.className = target.className
-	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( xmlElement.attributeDictionary, targetMatrix4X4Copy, xmlElement )
-	target.copyXMLChildren( xmlElement )
+	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( xmlElement, targetMatrix4X4Copy, xmlElement )
+	target.copyXMLChildren( xmlElement.getIDSuffix(), xmlElement )
 	xmlElement.getRootElement().xmlProcessor.processXMLElement( xmlElement )

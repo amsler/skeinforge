@@ -210,11 +210,6 @@ def isPointOrEitherLineBoundarySideInsideLoops( inside, loops, pointBegin, point
 
 class BooleanSolid( Group ):
 	"A boolean solid object."
-	def createShape( self, matrixChain ):
-		"Create the shape."
-		self.setArchivableObjectOrder()
-		Group.createShape( self, matrixChain )
-
 	def getDifference( self, importRadius, visibleObjectLoopsList ):
 		"Get subtracted loops sliced through shape."
 		negativeLoops = getJoinedList( visibleObjectLoopsList[ 1 : ] )
@@ -263,12 +258,8 @@ class BooleanSolid( Group ):
 		"Get xml class name."
 		return self.operationFunction.__name__.lower()[ len( 'get' ) : ]
 
-	def reverseArchivableObjects( self ):
+	def reverseArchivableObjects( self, importRadius, visibleObjectLoopsList ):
 		"Reverse the archivable objects and set the operation function."
 		self.archivableObjects.reverse()
 		self.operationFunction = self.getDifference
-
-	def setArchivableObjectOrder( self ):
-		"Set the archivable object order."
-		if self.operationFunction == self.reverseArchivableObjects:
-			self.reverseArchivableObjects()
+		self.getDifference( importRadius, visibleObjectLoopsList )

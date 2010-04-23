@@ -41,7 +41,9 @@ class Dictionary:
 
 	def addXML( self, depth, output ):
 		"Add xml for this object."
-		attributeDictionaryCopy = self.getAttributeDictionary().copy()
+		attributeDictionaryCopy = {}
+		if self.xmlElement != None:
+			attributeDictionaryCopy = geomancer.getEvaluatedDictionary( [], self.xmlElement )
 		euclidean.removeListFromDictionary( attributeDictionaryCopy, matrix4x4.getMatrixKeys() )
 		euclidean.removeTrueFromDictionary( attributeDictionaryCopy, 'visible' )
 		xml_simple_writer.addBeginXMLTag( attributeDictionaryCopy, depth, self.getXMLClassName(), output )
@@ -57,7 +59,7 @@ class Dictionary:
 		"Add xml section for this object."
 		pass
 
-	def createShape( self, matrixChain ):
+	def createShape( self ):
 		"Create the shape."
 		pass
 
@@ -67,9 +69,24 @@ class Dictionary:
 			return {}
 		return self.xmlElement.attributeDictionary
 
+	def getMatrixChain( self ):
+		"Get the matrix chain."
+		return self.xmlElement.parent.object.getMatrixChain()
+
 	def getType( self ):
 		"Get type."
 		return self.__class__.__name__
+
+	def getPaths( self ):
+		"Get all paths."
+		paths = []
+		for archivableObject in self.archivableObjects:
+			paths += archivableObject.getPaths()
+		return paths
+
+	def getPaths( self ):
+		"Get all vertices."
+		return [ [] ]
 
 	def getVertices( self ):
 		"Get all vertices."

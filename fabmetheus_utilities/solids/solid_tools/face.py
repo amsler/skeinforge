@@ -8,11 +8,13 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.solids.solid_tools import matrix4x4
+from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
+from fabmetheus_utilities import xml_simple_parser
 from fabmetheus_utilities import xml_simple_writer
 import cmath
 import cStringIO
@@ -24,6 +26,15 @@ __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
+
+def addGeometryList( faces, xmlElement ):
+	"Add vertex elements to an xml element."
+	for face in faces:
+		faceElement = xml_simple_parser.XMLElement()
+		face.addToAttributeDictionary( faceElement.attributeDictionary )
+		faceElement.className = 'face'
+		faceElement.parent = xmlElement
+		xmlElement.children.append( faceElement )
 
 def getCommonVertexIndex( edgeFirst, edgeSecond ):
 	"Get the vertex index that both edges have in common."
@@ -40,7 +51,7 @@ def processXMLElement( xmlElement ):
 	face = Face()
 	face.index = len( xmlElement.parent.object.faces )
 	for vertexIndexIndex in xrange( 3 ):
-		face.vertexIndexes.append( int( xmlElement.attributeDictionary[ 'vertex' + str( vertexIndexIndex ) ] ) )
+		face.vertexIndexes.append( geomancer.getEvaluatedInt( 'vertex' + str( vertexIndexIndex ), xmlElement ) )
 	xmlElement.parent.object.faces.append( face )
 
 
@@ -83,12 +94,16 @@ class Face:
 		self.addXML( 2, output )
 		return output.getvalue()
 
-	def addXML( self, depth, output ):
-		"Add the xml for this object."
-		attributeDictionary = {}
+	def addToAttributeDictionary( self, attributeDictionary ):
+		"Add to the attribute dictionary."
 		for vertexIndexIndex in xrange( len( self.vertexIndexes ) ):
 			vertexIndex = self.vertexIndexes[ vertexIndexIndex ]
 			attributeDictionary[ 'vertex' + str( vertexIndexIndex ) ] = str( vertexIndex )
+
+	def addXML( self, depth, output ):
+		"Add the xml for this object."
+		attributeDictionary = {}
+		self.addToAttributeDictionary( attributeDictionary )
 		xml_simple_writer.addClosedXMLTag( attributeDictionary, depth, 'face', output )
 
 	def getFromEdgeIndexes( self, edgeIndexes, edges, faceIndex ):

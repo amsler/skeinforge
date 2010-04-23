@@ -212,6 +212,184 @@ import os
 import sys
 
 
+# convert union
+# if None: getPythonExceptInit
+# del previous, add begin & end if far  get actual path, getPaths, xyz axis
+# polling
+# extrude from to, then arbitrary then paths
+# path combine or getPathsCompound, getNormal, getIsFlat, equationx?
+# arc
+# lathe
+# line
+# if there is no file types should start with all readable
+# evaluate float( equals, boolean etc )
+# transform
+# _morning - polygon, midpointMultiplier, rotationoverside, rotation, spin (float), float sides, profile, round or bevel polygon
+# concatenate
+# connect
+# tube, rotor
+# test translate
+# pyramid
+# tetroc
+# widen single path to different widths
+# generated_files?
+# creationID, addObject, getTarget, copyXMLElement?
+# maybe not getNewObject, getNew, addToBoolean
+# convert global repository settings to local settings
+# table to dictionary
+# check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
+# remove cool set at end of layer
+# add circling when hot in chamber
+# maybe measuring rod
+# comb simplify path, option of only combing around inside loops
+# remove comments from clip, bend
+# add hook _extrusion
+# winding into coiling, coil into wind & weave
+# later, precision
+# add initial loops option
+# speed into speed and limit
+# documentation
+# carving addXML, getInterpretationSuffix
+# http://wiki.makerbot.com/configuring-skeinforge
+# getInterpretation, getInterpretationSuffix for importPlugins, importPlugins to interpretPlugins
+#
+#
+#
+#
+# arch, ceiling
+# implement acceleration & collinear removal in penultimate viewers _extrusion
+# add polish, has perimeter, has cut first layer (False)
+# probably not set addedLocation in distanceFeedRate after arc move
+# maybe horizontal bridging and/or check to see if the ends are standing on anything
+# thin self? check when removing intersecting paths in inset
+# maybe later remove isPerimeterPathInSurroundLoops, once there are no weird fill bugs, also change getHorizontalSegmentListsFromLoopLists
+# save all analyze viewers of the same name except itself, update help menu self.wikiManualPrimary.setUpdateFunction
+# check alterations folder first, if there is something copy it to the home directory, if not check the home directory
+# set temperature in temperature
+# raft unified base, separate inside, tie
+# move alterations and profiles to top level
+#
+#
+#
+# help primary menu item refresh
+# add plugin help menu, add craft below menu
+# give option of saving when switching profiles
+# integral thin width _extrusion
+# xml & svg more forgiving, svg make defaults for layerThickness, maxZ, minZ, add layer z to svg_template, make the slider on the template track even when mouse is outside
+# layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
+# option of surrounding lines in display
+# maybe add connecting line in display line
+# maybe check inset loops to see if they have are smaller, but this would be slow
+# maybe status bar
+# maybe measurement ruler mouse tool
+# search rss from blogs, add search links for common materials, combine created on or progress bar with searchable help
+#boundaries, center radius z bottom top, circular or rectangular, polygon, put cool minimum radius orbits within boundaries
+# move & rotate model
+# comb improve running jump
+# possible jitter bug http://cpwebste.blogspot.com/2010/04/hydras-first-print.html
+# trial, meta in a grid settings
+# maybe svg slice format
+# maybe interpret svg_convex_mesh
+#laminate tool head
+#maybe use 5x5 radius search in circle node
+#maybe add layer updates in behold, skeinview and maybe others
+#lathe winding, extrusion and cutting; synonym for rotation or turning, loop angle
+# maybe split into source code and documentation sections
+# transform plugins, start with sarrus http://www.thingiverse.com/thing:1425
+# maybe make setting backups
+# maybe settings in gcode or saved versions
+# move skeinforge_utilities to fabmetheus_utilities
+# maybe lathe cutting
+# maybe lathe extrusion
+# maybe lathe millng
+# maybe lathe winding & weaving
+#
+#
+#
+# pick and place
+# search items, search links, choice entry field
+# svg triangle mesh, svg polygon mesh
+# simulate
+#document gear script
+#transform
+#extrude loops I guess make circles? and/or run along sparse infill
+#custom inclined plane, inclined plane from model, screw, fillet travel as well maybe
+# probably not stretch single isLoop
+#maybe much afterwards make congajure multistep view
+#maybe stripe although model colors alone can handle it
+#stretch fiber around shape, maybe modify winding for asymmetric shapes
+#multiple heads around edge
+#maybe add full underscored date name for version
+#maybe add rarely used tool option
+#angle shape for overhang extrusions
+# maybe double height shells option _extrusion
+#maybe m111? countdown
+#make stl instead of essentially gts the default format
+#common tool
+#first time tool tip
+#individual tool tip to place in text
+# maybe try to simplify raft layer start
+# maybe make temp directory
+# maybe carve aoi xml testing and check xml gcode
+# maybe cross hatch support polishing???
+# maybe print svg view from current layer or zero layer in single view
+# maybe check if tower is picking the nearest island
+# maybe combine skein classes in fillet
+# maybe isometric svg option
+
+#Manual
+#10,990
+#11,1776
+#12,3304
+#1,4960
+#2, 7077
+#3, 9598
+#4 12014
+#85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
+#make one piece electromagnet spool
+#stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?
+#stepper motor
+#make plastic coated thread in vat with pulley
+#tensile stuart platform
+#kayak
+#gear vacuum pump
+#gear turbine
+#heat engine
+#solar power
+#sailboat
+#yacht
+#house
+#condo with reflected gardens in between buildings
+#medical equipment
+#cell counter, etc..
+#pipe clamp lathe
+# square tube driller & cutter
+
+# archihedron
+# look from top of intersection circle plane to look for next, add a node; tree out until all are stepped on then connect, when more than three intersections are close
+# when loading a file, we should have a preview of the part and orientation in space
+# second (and most important in my opinion) would be the ability to rotate the part on X/Y/Z axis to chose it's orientation
+# third, a routine to detect the largest face and orient the part accordingly. Mat http://reprap.kumy.net/
+# concept, three perpendicular slices to get display spheres
+# extend lines around short segment after cross hatched boolean
+# concept, teslocracy; donation, postponement, rotate ad network, probably not gutenpedia, cached search options
+# concept, join cross slices, go from vertex to two orthogonal edges, then from edges to each other, if not to a common point, then simplify polygons by removing points which do not change the area much
+# concept, each node is fourfold, use sorted intersectionindexes to find close, connect each double sided edge, don't overlap more than two triangles on an edge
+# concept, diamond cross section loops
+# concept, in file, store polygon mesh and centers
+# concept, display spheres or polygons would have original triangle for work plane
+# .. then again no point with slices
+# concept, filled slices, about 2 mm thick
+# concept, rgb color triangle switch to get inside color, color golden ratio on 5:11 slope with a modulo 3 face
+# concept, interlaced bricks at corners ( length proportional to corner angle )
+# concept, new links to archi, import links to archi and adds skeinforge tool menu item, back on skeinforge named execute tool is added
+# concept, trnsnt
+# concept, inscribed key silencer
+# concept, spreadsheet to python and/or javascript
+# concept, blog, frequent updates, mix associated news
+# concept, limited python, only string, no import, open, exec, eval, locals, globals, __,
+
+
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __credits__ = """
 Adrian Bowyer <http://forums.reprap.org/profile.php?12,13>

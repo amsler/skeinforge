@@ -35,8 +35,9 @@ def addEndXMLTag( depth, name, output ):
 def addXMLFromLoopComplexZ( attributeDictionary, depth, loop, output, z ):
 	"Add xml from loop."
 	addBeginXMLTag( attributeDictionary, depth, 'path', output )
-	for pointComplex in loop:
-		addXMLFromXYZ( depth + 1, output, pointComplex.real, pointComplex.imag, z )
+	for pointComplexIndex in xrange( len( loop ) ):
+		pointComplex = loop[ pointComplexIndex ]
+		addXMLFromXYZ( depth + 1, pointComplexIndex, output, pointComplex.real, pointComplex.imag, z )
 	addEndXMLTag( depth, 'path', output )
 
 def addXMLFromObjects( depth, objects, output ):
@@ -44,15 +45,21 @@ def addXMLFromObjects( depth, objects, output ):
 	for object in objects:
 		object.addXML( depth, output )
 
-def addXMLFromXYZ( depth, output, x, y, z ):
+def addXMLFromVertices( depth, output, vertices ):
+	"Add xml from loop."
+	for vertexIndex in xrange( len( vertices ) ):
+		vertex = vertices[ vertexIndex ]
+		addXMLFromXYZ( depth + 1, vertexIndex, output, vertex.x, vertex.y, vertex.z )
+
+def addXMLFromXYZ( depth, index, output, x, y, z ):
 	"Add xml from x, y & z."
-	attributeDictionary = {}
+	attributeDictionary = { 'index' : str( index ) }
 	if x != 0.0:
 		attributeDictionary[ 'x' ] = str( x )
 	if y != 0.0:
 		attributeDictionary[ 'y' ] = str( y )
 	if z != 0.0:
-		attributeDictionary[ 'z' ] = str( z)
+		attributeDictionary[ 'z' ] = str( z )
 	addClosedXMLTag( attributeDictionary, depth, 'vertex', output )
 
 def compareAttributeKeyAscending( key, otherKey ):

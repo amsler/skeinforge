@@ -82,20 +82,17 @@ class BooleanGeometry:
 
 	def getCarveRotatedBoundaryLayers( self ):
 		"Get the rotated boundary layers."
-		visibleObjects = geomancer.getVisibleObjects( self.archivableObjects )
-		if len( visibleObjects ) < 1:
+		vertices = geomancer.getVerticesFromArchivableObjects( self.archivableObjects )
+		if len( vertices ) < 1:
 			return []
 		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, - 9999999999.9 )
 		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, 9999999999.9 )
-		for visibleObject in visibleObjects:
-			self.cornerMaximum.z = max( self.cornerMaximum.z, visibleObject.top )
-			self.cornerMinimum.z = min( self.cornerMinimum.z, visibleObject.bottom )
+		for vertex in vertices:
+			self.cornerMaximum.z = max( self.cornerMaximum.z, vertex.z )
+			self.cornerMinimum.z = min( self.cornerMinimum.z, vertex.z )
 		halfHeight = 0.5 * self.layerThickness
 		layerTop = self.cornerMaximum.z - halfHeight
 		self.setActualMinimumZ( halfHeight, layerTop )
-		vertices = []
-		for visibleObject in visibleObjects:
-			vertices += visibleObject.getVertices()
 		trianglemesh.initializeZoneIntervalTable( self, vertices )
 		z = self.cornerMinimum.z + halfHeight
 		while z < layerTop:
@@ -125,6 +122,10 @@ class BooleanGeometry:
 	def getInterpretationSuffix( self ):
 		"Return the suffix for a boolean carving."
 		return 'xml'
+
+	def getMatrixChain( self ):
+		"Get the matrix chain."
+		return None
 
 	def getZAddExtruderPaths( self, z ):
 		"Get next z and add extruder loops."

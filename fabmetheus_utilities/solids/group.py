@@ -19,9 +19,17 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
+def processShape( archivableClass, xmlElement ):
+	"Get any new elements and process the shape."
+	if xmlElement == None:
+		return
+	archivableObject = geomancer.getArchivableObject( archivableClass, xmlElement )
+	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( xmlElement, xmlElement.object.matrix4X4, xmlElement )
+	xmlElement.getRootElement().xmlProcessor.processChildren( xmlElement )
+
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	geomancer.processShape( Group, xmlElement )
+	processShape( Group, xmlElement )
 
 
 class Group( Dictionary ):
@@ -30,7 +38,6 @@ class Group( Dictionary ):
 		"Add empty lists."
 		Dictionary.__init__( self )
 		self.matrix4X4 = matrix4x4.Matrix4X4()
-		self.visible = True
 
 	def addXMLInnerSection( self, depth, output ):
 		"Add xml inner section for this object."
@@ -42,18 +49,6 @@ class Group( Dictionary ):
 		"Add the xml section for this object."
 		pass
 
-	def createShape( self, matrixChain ):
-		"Create the shape."
-		newMatrix4X4 = self.matrix4X4.getOtherTimesSelf( matrixChain )
-		visibleObjects = geomancer.getVisibleObjects( self.archivableObjects )
-		for visibleObject in visibleObjects:
-			visibleObject.createShape( newMatrix4X4 )
-		self.bottom = 999999999.9
-		self.top = - 999999999.9
-		for visibleObject in visibleObjects:
-			self.bottom = min( self.bottom, visibleObject.bottom )
-			self.top = max( self.top, visibleObject.top )
-
 	def getLoops( self, importRadius, z ):
 		"Get loops sliced through shape."
 		visibleObjects = geomancer.getVisibleObjects( self.archivableObjects )
@@ -62,12 +57,13 @@ class Group( Dictionary ):
 			loops += visibleObject.getLoops( importRadius, z )
 		return loops
 
+	def getMatrixChain( self ):
+		"Get the matrix chain."
+		return self.matrix4X4.getOtherTimesSelf( self.xmlElement.parent.object.getMatrixChain() )
+
 	def getVertices( self ):
 		"Get all vertices."
-		vertices = []
-		for visibleObject in geomancer.getVisibleObjects( self.archivableObjects ):
-			vertices += visibleObject.getVertices()
-		return vertices
+		return geomancer.getVerticesFromArchivableObjects( self.archivableObjects )
 
 	def getVisible( self ):
 		"Get visible."

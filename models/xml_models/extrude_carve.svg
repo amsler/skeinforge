@@ -1,0 +1,339 @@
+<?xml version="1.0" standalone="no"?>
+<!--Created with Sketsa SVG Editor (http://www.kiyut.com)-->
+<svg contentScriptType="text/ecmascript"
+	baseProfile="full" zoomAndPan="magnify" contentStyleType="text/css"
+	width="550.0px"
+	height="4292.291px"
+	onload="init()"
+	preserveAspectRatio="xMidYMid meet"
+	xmlns="http://www.w3.org/2000/svg" version="1.0"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:slice="http://www.reprap.org/slice">
+	<script type="text/ecmascript"><![CDATA[
+//Meta data variables 
+units='mm';
+	decimalPlacesCarried = 3
+	layerThickness = 0.4
+	perimeterWidth = 0.72
+	procedureDone = "carve"
+	extrusionStart = 1
+sliceMinX = 0;
+sliceMaxX = 0;
+sliceMinY = 0;
+sliceMaxY = 0;
+sliceMinZ = 0;
+sliceMaxZ = 0;
+//Control var's
+currentLayer = 0; //Number of currently viewed layer (zero index)
+javascriptControlBoxX = 510;
+javascriptControlBoxY = 95;
+sliding = false;
+//Display var's
+margin = 20;
+scale = 1; //unitScale * zoomScale
+sliceDimensionX = null;
+sliceDimensionY = null;
+sliceDimensionZ = null;
+svgMinWidth = javascriptControlBoxX + 2 * margin; //Width of control box and margins
+textHeight = 22.5;
+unitScale = 3.7;
+zoomScale = 1; //Default 1:1 may need smaller scale for large objects
+//No javascript control var
+noJavascriptControlBoxY = 110;
+var layers = [];
+function changeScale( newScale ) {
+	zoomScale = newScale
+	scale = unitScale * zoomScale
+	viewSingle()
+	setText( 'scaleNum' ,'1 : ' + 1.0 / zoomScale );
+	if ( zoomScale >=1 ) //dont scale line thickness for large display scale
+		document.getElementById( 'layerData' ).setAttributeNS( null, 'stroke-width', 2.0 / ( scale ) )
+}
+function displayLayer( layerNum ) {
+	if ( layerNum >= 0 && layerNum < layers.length ) {
+		layers[ currentLayer ].setAttributeNS( null, 'visibility', 'hidden' );
+		layers[ layerNum ].setAttributeNS( null, 'visibility', 'visible' );
+		currentLayer = layerNum;
+		setText( 'layerNum', currentLayer );
+		//Slider
+		if ( !sliding ) {
+			// 150 = width of sliderbar 14 = width circle
+			x = ( 150 - 14 ) / ( layers.length - 1 ) * currentLayer
+			document.getElementById( 'thumb' ).setAttributeNS( null, 'cx', x + 17 )
+		}
+	}
+}
+function getRoundedToThreePlaces( number ) {
+	//Get number rounded to three places.
+	return Math.round( number * 1000.0 ) / 1000.0;
+}
+function init() {
+	//Hide no javascript control box
+	document.getElementById( 'noJavascriptControls' ).setAttributeNS( null, 'visibility', 'hidden' )
+	//Get meta data
+	mD = document.getElementsByTagNameNS( 'http://www.reprap.org/slice', 'layers' )[ 0 ];
+	sliceMinX = mD.getAttribute( 'minX' ) * 1;
+	sliceMaxX = mD.getAttribute( 'maxX' ) * 1;
+	sliceMinY = mD.getAttribute( 'minY' ) * 1;
+	sliceMaxY = mD.getAttribute( 'maxY' ) * 1;
+	sliceMinZ = mD.getAttribute( 'minZ' ) * 1;
+	sliceMaxZ = mD.getAttribute( 'maxZ' ) * 1;
+	//Set Display variables
+	scale = unitScale * zoomScale;
+	sliceDimensionX = getRoundedToThreePlaces( sliceMaxX - sliceMinX );
+	sliceDimensionY = getRoundedToThreePlaces( sliceMaxY - sliceMinY );
+	sliceDimensionZ = getRoundedToThreePlaces( sliceMaxZ - sliceMinZ );
+	//Find all groups
+	var allGroups = document.getElementsByTagName( 'g' );
+	//Find only layer groups
+	for ( var i = 0; i < allGroups.length; i++ ) {
+		if ( allGroups[ i ].id.indexOf( 'z' ) == 0 ) {
+			layers.push( allGroups[ i ] );
+		}
+	}
+	//Slider
+	slider = document.getElementById( 'slider' );
+	thumb = document.getElementById( 'thumb' );
+	document.getElementById( 'javascriptControls' ).addEventListener( 'mouseup', sliderUp, false );
+	slider.addEventListener( 'mousedown', sliderDownMove, false );
+	slider.addEventListener( 'mouseup', sliderUp, false );
+	slider.addEventListener( 'mousemove', sliderMove, false );
+	thumb.addEventListener( 'mousedown', sliderDown, false );
+	thumb.addEventListener( 'mouseup', sliderUp, false );
+	thumb.addEventListener( 'mousemove', sliderMove, false );
+	//Control box data
+	setText( 'layerMax', layers.length - 1 );
+	setText( 'minX', sliceMinX );
+	setText( 'minX', sliceMinX );
+	setText( 'minY', sliceMinY );
+	setText( 'minZ', sliceMinZ );
+	setText( 'maxX', sliceMaxX );
+	setText( 'maxY', sliceMaxY );
+	setText( 'maxZ', sliceMaxZ );
+	setText( 'dimX', sliceDimensionX );
+	setText( 'dimY', sliceDimensionY );
+	setText( 'dimZ', sliceDimensionZ );
+	setText( 'scaleNum', '1 : ' + 1.0 / zoomScale );
+	setText( 'layerThickness', 'Layer Thickness: ' + mD.getAttribute( 'layerThickness' ) + units );
+	changeScale( zoomScale );
+}
+function setSVG( width, height ) {
+	rootSVG = document.getElementsByTagName( 'svg' )[ 0 ];
+	rootSVG.setAttributeNS( null, 'width', width + 'px' )
+	rootSVG.setAttributeNS( null, 'height', height + 'px' )
+}
+function setText( id, str ) {
+	e = document.getElementById( id )
+	if ( e != null )
+		e.firstChild.nodeValue = str;
+}
+function sliderDown( event ) {
+	sliding = true;
+}
+function sliderDownMove( event ) {
+	sliding = true;
+	sliderMove( event );
+}
+function sliderUp( event ) {
+	sliding = false;
+}
+function sliderMove( event ) {
+	if ( !sliding ) {
+		return;
+	}
+	value = event.clientX - 130;
+	thumb = document.getElementById( 'thumb' );
+	if ( value > 6 && value < 144 ) {
+		thumb.setAttribute( 'cx', 10 + value );
+		zoneWidth = ( 150 - 14 ) / ( layers.length )
+		newLayer = Math.round( ( value - 7 - 0.5 * zoneWidth ) / zoneWidth )
+		if ( newLayer != currentLayer ) {
+			displayLayer( newLayer )
+		}
+	}
+}
+function viewAll() {
+	//Set svg size and view port
+	width = margin + ( sliceDimensionX * unitScale ) + margin;
+	width = Math.max( width, svgMinWidth );
+	height = layers.length * ( margin + sliceDimensionY * unitScale + textHeight ) + 3 * margin + textHeight + noJavascriptControlBoxY;
+	setSVG( width,height );
+	//move and show all layers 
+	for ( var i in layers ) {
+		x = margin;
+		y = ( 1 * i + 1 ) * ( margin + sliceDimensionY * unitScale ) + i * textHeight;
+		layers[ i ].setAttributeNS( null, 'transform', 'translate(' + x + ', ' + y + ')' );
+		transform = 'scale(' + unitScale + ' ' + ( unitScale * - 1 ) + ') translate(' + ( sliceMinX * - 1 ) + ' ' + ( sliceMinY * - 1 ) + ')';
+		pathElements = layers[ i ].getElementsByTagName( 'path' );
+		for ( var pathElementIndex = 0; pathElementIndex < pathElements.length; pathElementIndex++ ) {
+			pathElements[ pathElementIndex ].setAttributeNS( null, 'transform', transform );
+		}
+		layers[ i ].setAttributeNS( null, 'visibility', 'visible' );
+		layers[ i ].getElementsByTagName( 'text' )[ 0 ].setAttributeNS( null, 'visibility', 'visible' );
+	}
+	//show control box
+	document.getElementById( 'javascriptControls' ).setAttributeNS( null, 'visibility', 'hidden' );
+	document.getElementById( 'noJavascriptControls' ).setAttributeNS( null, 'visibility', 'visible' );
+	y = layers.length * ( margin + sliceDimensionY * unitScale + textHeight ) + margin;
+	document.getElementById( 'buttonSingle' ).setAttributeNS( null, 'visibility', 'visible' );
+	document.getElementById( 'buttonSingle' ).setAttributeNS( null, 'transform', 'translate(' + margin + ' ' + y + ')' );
+}
+function viewSingle() {
+	//Set svg size and view port
+	width = margin + ( sliceDimensionX * scale ) + margin;
+	width = Math.max( width, svgMinWidth );
+	height = margin + ( sliceDimensionY * scale ) + margin + javascriptControlBoxY + margin;
+	setSVG( width,height );
+	//move and hide all layers 
+	for ( var i in layers ) {
+		y = margin + sliceDimensionY * scale
+		layers[ i ].setAttributeNS( null, 'transform', 'translate(' + margin + ' ' + y + ')' );
+		layers[ i ].setAttributeNS( null, 'visibility', 'hidden' );
+		layers[ i ].getElementsByTagName( 'text' )[ 0 ].setAttributeNS( null, 'visibility', 'hidden' );
+		transform = 'scale(' + scale + ' ' + ( scale * - 1 ) + ') translate(' + ( sliceMinX * - 1 ) + ' ' + ( sliceMinY * - 1 ) + ')';
+		pathElements = layers[ i ].getElementsByTagName( 'path' );
+		for ( var pathElementIndex = 0; pathElementIndex < pathElements.length; pathElementIndex++ ) {
+			pathElements[ pathElementIndex ].setAttributeNS( null, 'transform', transform );
+		}
+	}
+	//show control box
+	document.getElementById( 'javascriptControls' ).setAttributeNS( null, 'visibility', 'visible' );
+	document.getElementById( 'noJavascriptControls' ).setAttributeNS( null, 'visibility', 'hidden' );
+	y = margin + sliceDimensionY * scale + margin;
+	document.getElementById( 'javascriptControls' ).setAttributeNS( null, 'transform', 'translate(' + margin + ' ' + y + ')' );
+	document.getElementById( 'buttonSingle' ).setAttributeNS( null, 'visibility', 'hidden' );
+	//show current layer
+	displayLayer( currentLayer );
+}
+	]]></script>
+	<title>/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/models/xml_models/extrude.xml SVG Slice File</title>
+	<desc></desc>
+	<metadata>
+		<slice:layers id="sliceData" template = "svg_layer" version="0.1" layerThickness="0.4" minX="0.0" maxX="66.967" minY="-31.011" maxY="96.009" minZ="0.0" maxZ="3.598"/>
+	</metadata>
+	<!--Begin Layer Data   -->
+	<g id="layerData" fill="#556B2F" stroke="#00F" stroke-width="0.54px" font-weight="bold" font-family="Arial" font-size="15px">
+<!--Beginning of path section-->
+		<g id="z 0.2" transform="translate(20.0, 489.974)">
+			<text y="15" fill="#000" stroke="none">Layer 0, z 0.2</text>
+			<path transform="scale(3.7, -3.7) translate(0.0, 31.011)" d="M 0.419 -3.986 L 0.559 -5.314 L 3.216 -5.035 z M 20.0 59.018 L 0.0 69.018 L 0.0 59.018 z M 54.807 6.892 L 45.431 19.796 L 36.444 15.011 L 23.678 10.863 L 25.775 0.995 L 25.775 -12.428 L 32.805 -13.05 L 47.975 -17.979 L 50.397 -12.138 L 60.368 1.587 z"/>
+		</g>
+		<g id="z 0.6" transform="translate(20.0, 1002.448)">
+			<text y="15" fill="#000" stroke="none">Layer 1, z 0.6</text>
+			<!--bridgeRotation--> (0.970840229199-0.239727448091j)
+			<path transform="scale(3.7, -3.7) translate(0.0, 31.011)" d="M 9.637 -15.085 L 1.257 -11.942 L 1.676 -15.922 z M 20.002 77.009 L 0.002 87.009 L 0.002 77.009 z M 33.259 -13.059 L 48.351 -15.422 L 50.74 -15.634 L 51.556 -15.899 L 58.814 1.602 L 61.103 4.754 L 44.44 20.648 L 43.936 21.342 L 40.882 19.717 L 23.623 8.979 L 26.354 2.847 L 29.846 -13.585 z"/>
+		</g>
+		<g id="z 1.0" transform="translate(20.0, 1514.922)">
+			<text y="15" fill="#000" stroke="none">Layer 2, z 1.0</text>
+			<!--bridgeRotation--> (0.966833798269-0.255406355685j)
+			<path transform="scale(3.7, -3.7) translate(0.0, 31.011)" d="M 15.44 -23.961 L 18.087 -23.683 L 6.533 -20.681 L 3.747 -19.636 L 4.857 -24.858 L 4.996 -26.181 z M 22.202 86.009 L 2.202 96.009 L 2.202 86.009 z M 47.901 -12.269 L 54.873 -13.361 L 56.396 -3.302 L 61.505 7.85 L 50.717 14.906 L 42.384 22.363 L 27.669 10.58 L 24.209 7.458 L 33.772 -14.021 L 38.487 -13.718 z"/>
+		</g>
+		<g id="z 1.4" transform="translate(20.0, 2027.396)">
+			<text y="15" fill="#000" stroke="none">Layer 3, z 1.4</text>
+			<!--bridgeRotation--> (0.935431789426-0.353507238017j)
+			<path transform="scale(3.7, -3.7) translate(0.0, 31.011)" d="M 12.816 -29.36 L 23.239 -27.144 L 17.331 -26.255 L 5.8 -23.258 L 6.626 -25.799 L 7.734 -31.011 z M 26.606 85.991 L 6.606 95.991 L 6.606 85.991 z M 61.312 9.929 L 61.764 10.916 L 41.864 23.351 L 25.717 8.777 L 35.28 -12.702 L 46.055 -12.248 L 57.337 -11.402 z"/>
+		</g>
+		<g id="z 1.8" transform="translate(20.0, 2539.87)">
+			<text y="15" fill="#000" stroke="none">Layer 4, z 1.8</text>
+			<!--bridgeRotation--> (0.944453467142-0.328645170973j)
+			<path transform="scale(3.7, -3.7) translate(0.0, 31.011)" d="M 25.098 -25.48 L 7.415 -22.818 L 9.886 -30.424 z M 13.206 76.991 L 33.206 76.991 L 13.206 86.991 z M 42.993 24.339 L 40.613 22.191 L 28.332 13.495 L 32.51 -6.163 L 33.899 -9.282 L 43.241 -12.136 L 55.215 -10.605 L 58.466 -10.414 L 62.671 11.986 z"/>
+		</g>
+		<g id="z 2.2" transform="translate(20.0, 3052.343)">
+			<text y="15" fill="#000" stroke="none">Layer 5, z 2.2</text>
+			<!--bridgeRotation--> (0.915429283314-0.402478853173j)
+			<path transform="scale(3.7, -3.7) translate(0.0, 31.011)" d="M 12.51 -17.707 L 17.572 -16.063 L 11.609 -15.795 L 5.724 -14.909 L 6.81 -17.348 L 7.633 -19.879 z M 19.806 67.991 L 39.806 67.991 L 19.806 77.991 z M 46.099 -10.01 L 51.214 -11.573 L 57.799 -10.731 L 61.264 -3.5 L 63.723 12.612 L 61.752 14.408 L 46.343 25.328 L 39.604 20.549 L 31.516 17.965 L 31.516 1.245 L 32.928 -5.398 L 39.339 -9.399 z"/>
+		</g>
+		<g id="z 2.6" transform="translate(20.0, 3564.817)">
+			<text y="15" fill="#000" stroke="none">Layer 6, z 2.6</text>
+			<!--bridgeRotation--> (0.906945184726-0.421248658043j)
+			<path transform="scale(3.7, -3.7) translate(0.0, 31.011)" d="M 4.334 -9.735 L 9.202 -7.568 L 3.251 -7.301 z M 46.406 58.991 L 26.406 68.991 L 26.406 58.991 z M 64.409 4.651 L 65.417 11.258 L 54.009 21.653 L 50.14 26.166 L 40.22 21.924 L 40.22 -6.524 L 46.173 -10.239 L 56.681 -11.189 L 58.184 -9.321 L 59.708 -5.159 z"/>
+		</g>
+		<g id="z 3.0" transform="translate(20.0, 4077.291)">
+			<text y="15" fill="#000" stroke="none">Layer 7, z 3.0</text>
+			<!--bridgeRotation--> (0.264391611342-0.96441540627j)
+			<path transform="scale(3.7, -3.7) translate(0.0, 31.011)" d="M 60.623 18.749 L 53.894 26.597 L 51.675 25.648 L 51.675 -10.248 L 53.007 -11.079 L 55.358 -11.292 L 62.436 -2.496 L 66.967 9.873 z"/>
+		</g>
+<!--End of path section-->
+	</g>
+	<!--End Layer Data-->
+	<!--Button to change from all to single-->
+	<g font-weight="bold" font-family="Arial" font-size="15px">
+		<text id="buttonSingle" fill="darkslateblue" visibility="hidden" onclick="viewSingle()">[Single View]</text>
+	<!--Control box for single slice layout-->
+		<g id="javascriptControls" visibility="hidden" fill="#000">
+			<rect width="510" height="90" stroke="gray" stroke-width="4px" fill="silver"/>	
+			<g>
+				<path stroke="#000" stroke-width="3" d="M 20 20 h5 l-5 -10 l-5 10 h5 v35 h35 v-5 l10 5 l-10 5 v-5 h-35 z"/>
+				<text x="25" y="20">Y</text>
+				<text x="69" y="60">X</text>
+				<text x="10" y="80" id="buttonAll" onclick="viewAll();" fill="darkslateblue">[Show All]</text>
+			</g>
+			<g transform="translate(100, 20)">
+				<text id="layerMin">0</text>
+				<rect id="slider" x="10" y="-12" width="150" height="14" fill="gray"/>
+				<circle id="thumb" cx="17" cy="-5" r="7" fill="darkslateblue"/>
+				<text x="163" id="layerMax" >5</text>
+				<text y="20" x="0">Layer </text>
+				<text y="20" x="45" id="layerNum">100</text>
+				<text y="20" x="138" onclick="displayLayer(currentLayer-1)" fill="darkslateblue">&lt;</text>
+				<text y="20" x="153" onclick="displayLayer(currentLayer+1)" fill="darkslateblue">&gt;</text>
+				<text y="40" x="0">Scale</text>
+				<text y="40" x="45" id="scaleNum">0.125</text>
+				<text y="40" x="138" onclick="changeScale(zoomScale/2)" fill="darkslateblue">&lt;</text>
+				<text y="40" x="153" onclick="changeScale(zoomScale*2)" fill="darkslateblue">&gt;</text>
+				<text y="60" id="layerThickness" >Layer Thickness: </text>
+			</g>
+			<g transform="translate(290, 0)">
+				<text y="40">X</text>
+				<text y="60">Y</text>
+				<text y="80">Z</text>
+				<text x="20" y="20">Min</text>
+				<text id="minX" x="20" y="40">0.0</text>
+				<text id="minY" x="20" y="60">0.0</text>
+				<text id="minZ" x="20" y="80">0.0</text>
+				<text x="80" y="20">Max</text>
+				<text id="maxX" x="80" y="40">0.0</text>
+				<text id="maxY" x="80" y="60">0.0</text>
+				<text id="maxZ" x="80" y="80">0.0</text>
+				<text x="140" y="20">Dimension</text>
+				<text id="dimX" x="140" y="40">0.0</text>
+				<text id="dimY" x="140" y="60">0.0</text>
+				<text id="dimZ" x="140" y="80">0.0</text>
+			</g>
+		</g>
+	</g>
+	<!--No Javascript Control box   -->
+	<g id="noJavascriptControls" fill="#000" transform="translate(20.0, 4162.291)">
+		<rect width="300" height="110" stroke="gray" stroke-width="4px" fill="silver"/>
+		<g transform="translate(10, 0)">
+			<g transform="translate(0, 20)">
+				<text x="120">Min</text>
+				<text x="170">Max</text>
+				<text x="220">Dimension</text>
+				<path stroke="#000" stroke-width="3" d="M 5 40 h5 l-5 -10 l-5 10 h5 v35 h35 v-5 l10 5 l-10 5 v-5 h-35 z"/>
+				<text x="3" y="20" font-weight="bold">Y</text>
+				<text x="60" y="80" font-weight="bold">X</text>
+				<text x="120" y="80" id="layerThicknessNoJavascript">Layer Thickness: 0.4 mm</text>
+			</g>
+			<g transform="translate(100, 40)">
+				<text>X</text>
+				<text id="minXNoJavascript" x="20">0.0</text>
+				<text id="maxXNoJavascript" x="70">66.967</text>
+				<text id="dimXNoJavascript" x="120">66.967</text>
+			</g>
+			<g transform="translate(100, 60)">
+				<text>Y</text>
+				<text id="minYNoJavascript" x="20">-31.011</text>
+				<text id="maxYNoJavascript" x="70">96.009</text>
+				<text id="dimYNoJavascript" x="120">127.02</text>
+			</g>
+			<g transform="translate(100, 80)">
+				<text>Z</text>
+				<text id="minZNoJavascript" x="20">0.0</text>
+				<text id="maxZNoJavascript" x="70">3.598</text>
+				<text id="dimZNoJavascript" x="120">3.598</text>
+			</g>
+		</g>
+	</g>
+	<!--End Controls-->
+</svg>

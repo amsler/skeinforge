@@ -7,8 +7,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.vector3 import Vector3
-from fabmetheus_utilities import euclidean
+from fabmetheus_utilities.solids.solid_utilities import geomancer
+from fabmetheus_utilities import xml_simple_parser
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -17,8 +17,29 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
+def addGeometryList( vertices, xmlElement ):
+	"Add vertex elements to an xml element."
+	for vertex in vertices:
+		vertexElement = getUnboundVertexElement( vertex )
+		vertexElement.parent = xmlElement
+		xmlElement.children.append( vertexElement )
+
+def addVertexToAttributeDictionary( attributeDictionary, vertex ):
+	"Add to the attribute dictionary."
+	if vertex.x != 0.0:
+		attributeDictionary[ 'x' ] = str( vertex.x )
+	if vertex.y != 0.0:
+		attributeDictionary[ 'y' ] = str( vertex.y )
+	if vertex.z != 0.0:
+		attributeDictionary[ 'z' ] = str( vertex.z )
+
+def getUnboundVertexElement( vertex ):
+	"Add vertex element to an xml element."
+	vertexElement = xml_simple_parser.XMLElement()
+	addVertexToAttributeDictionary( vertexElement.attributeDictionary, vertex )
+	vertexElement.className = 'vertex'
+	return vertexElement
+
 def processXMLElement( xmlElement ):
 	"Process the xml element."
-	vertexDictionary = xmlElement.attributeDictionary
-	vertex = Vector3( euclidean.getFloatZeroFromDictionary( 'x', vertexDictionary ), euclidean.getFloatZeroFromDictionary( 'y', vertexDictionary ), euclidean.getFloatZeroFromDictionary( 'z', vertexDictionary ) )
-	xmlElement.parent.object.vertices.append( vertex )
+	xmlElement.parent.object.vertices.append( geomancer.getVector3FromXMLElement( xmlElement ) )
