@@ -38,7 +38,7 @@ def addLineAndNewlineIfNecessary( line, output ):
 	output.write( line )
 	if len( line ) < 1:
 		return
-	if not getHasSuffix( line, '\n' ):
+	if not line.endswith( '\n' ):
 		output.write( '\n' )
 
 def createInitFile():
@@ -162,17 +162,9 @@ def getGcodeFileText( fileName, gcodeText ):
 	"Get the gcode text from a file if it the gcode text is empty and if the file is a gcode file."
 	if gcodeText != '':
 		return gcodeText
-	if getHasSuffix( fileName, '.gcode' ):
+	if fileName.endswith( '.gcode' ):
 		return getFileText( fileName )
 	return ''
-
-def getHasPrefix( name, prefix ):
-	"Determine if the word begins with the prefix."
-	return name[ : len( prefix ) ].lower() == prefix
-
-def getHasSuffix( name, suffix ):
-	"Determine if the word ends with the suffix."
-	return name[ - len( suffix ) : ].lower() == suffix
 
 def getLocationFromSplitLine( oldLocation, splitLine ):
 	"Get the location from the split line."
@@ -331,7 +323,7 @@ def isFileWithFileTypeWithoutWords( fileType, fileName, words ):
 	"Determine if file has a given file type, but with does not contain a word in a list."
 	fileName = os.path.basename( fileName )
 	fileTypeDot = '.' + fileType
-	if not getHasSuffix( fileName, fileTypeDot ):
+	if not fileName.endswith( fileTypeDot ):
 		return False
 	for word in words:
 		if fileName.find( word ) >= 0:

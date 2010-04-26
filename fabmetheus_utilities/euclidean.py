@@ -532,6 +532,17 @@ def getDotProductPlusOne( firstComplex, secondComplex ):
 	"Get the dot product plus one of the x and y components of a pair of Vector3s."
 	return 1.0 + getDotProduct( firstComplex, secondComplex )
 
+def getDurationString( seconds ):
+	"Get the duration string."
+	secondsRounded = int( round( seconds ) )
+	durationString = getPluralString( secondsRounded % 60, 'second' )
+	if seconds < 60:
+		return durationString
+	durationString =  '%s %s' % ( getPluralString( ( secondsRounded / 60 ) % 60, 'minute' ), durationString )
+	if seconds < 3600:
+		return durationString
+	return  '%s %s' % ( getPluralString( secondsRounded / 3600, 'hour' ), durationString )
+
 def getEndpointFromPath( path, pathIndex ):
 	"Get endpoint segment from a path."
 	begin = path[ - 1 ]
@@ -702,6 +713,13 @@ def getIntersectionOfXIntersectionsTables( xIntersectionsTables ):
 		if len( xIntersections ) > 0:
 			intersectionOfXIntersectionsTables[ firstIntersectionTableKey ] = xIntersections
 	return intersectionOfXIntersectionsTables
+
+def getIsWiddershinsByVector3( polygon ):
+	"Determine if the polygon goes round in the widdershins direction."
+	polygonComplex = []
+	for point in polygon:
+		polygonComplex.append( point.dropAxis( 2 ) )
+	return isWiddershins( polygonComplex )
 
 def getJoinOfXIntersectionIndexes( xIntersectionIndexList ):
 	"Get joined x intersections from surrounding layers."
@@ -951,6 +969,12 @@ def getPathsFromEndpoints( endpoints, fillInset, pixelTable, width ):
 def getPlaneDot( vec3First, vec3Second ):
 	"Get the dot product of the x and y components of a pair of Vector3s."
 	return vec3First.x * vec3Second.x + vec3First.y * vec3Second.y
+
+def getPluralString( number, suffix ):
+	"Get the plural string."
+	if number == 1:
+		return '1 %s' % suffix
+	return '%s %ss' % ( number, suffix )
 
 def getPointsRoundZAxis( planeAngle, points ):
 	"Get points rotated by the plane angle"

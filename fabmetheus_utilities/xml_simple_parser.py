@@ -60,13 +60,14 @@ class XMLElement:
 		self.addXML( 0, output )
 		return output.getvalue()
 
-	def addAttribute( self, characterIndex, line ):
+	def addAttribute( self, beforeQuote, withinQuote ):
 		"Add the attribute to the dictionary."
-		beforeEqualLine = line[ : characterIndex ][ : : - 1 ]
-		lineStripped = beforeEqualLine.lstrip().replace( '"', ' ' ).replace( "'", ' ' )
-		firstWord = lineStripped.split()[ 0 ]
-		key = firstWord[ : : - 1 ]
-		self.attributeDictionary[ key ] = self.getWordWithinQuotes( line[ characterIndex + 1 : ] )
+		beforeQuote = beforeQuote.strip()
+		lastEqualIndex = beforeQuote.rfind( '=' )
+		if lastEqualIndex < 0:
+			return
+		key = beforeQuote[ : lastEqualIndex ].strip()
+		self.attributeDictionary[ key ] = withinQuote
 
 	def addToIDDictionary( self, idHint, xmlElement ):
 		"Add to the id dictionary of all the parents."
@@ -155,10 +156,27 @@ class XMLElement:
 		self.className = line[ 1 : line.replace( '>', ' ' ).find( ' ' ) ]
 		lastWord = line[ - 2 : ]
 		splitLine = line.replace( '">', '" > ' ).split()
-		lineAfterClassName = line[ 2 + len( self.className ) : - 2 ]
+		lineAfterClassName = line[ 2 + len( self.className ) : - 1 ]
+		beforeQuote = ''
+		lastQuoteCharacter = None
+		withinQuote = ''
 		for characterIndex in xrange( len( lineAfterClassName ) ):
-			if lineAfterClassName[ characterIndex ] == '=':
-				self.addAttribute( characterIndex, lineAfterClassName )
+			character = lineAfterClassName[ characterIndex ]
+			if lastQuoteCharacter == None:
+				if character == '"' or character == "'":
+					lastQuoteCharacter = character
+					character = ''
+			if character == lastQuoteCharacter:
+				self.addAttribute( beforeQuote, withinQuote )
+				beforeQuote = ''
+				lastQuoteCharacter = None
+				withinQuote = ''
+			if character == '"' or character == "'":
+				character = ''
+			if lastQuoteCharacter == None:
+				beforeQuote += character
+			else:
+				withinQuote += character
 		if self.parent != None:
 			self.parent.children.append( self )
 		self.addToIDDictionaryIFIDExists()
@@ -188,7 +206,7 @@ class XMLElement:
 		shallowCopy.className = self.className
 		shallowCopy.idDictionary = self.idDictionary
 		shallowCopy.object = self.object
-		shallowCopy.nameDictionary = self.nameDictionar
+		shallowCopy.nameDictionary = self.nameDictionary
 		shallowCopy.parent = self.parent
 		shallowCopy.text = self.text
 		return shallowCopy
@@ -203,20 +221,6 @@ class XMLElement:
 			if subChildWithID != None:
 				return subChildWithID
 		return None
-
-	def getWordWithinQuotes( self, line ):
-		"Get the word within the quotes."
-		quoteCharacter = None
-		word = ''
-		for character in line:
-			if character == '"' or character == "'":
-				if quoteCharacter == None:
-					quoteCharacter = character
-				elif character == quoteCharacter:
-					return word
-			elif quoteCharacter != None:
-				word += character
-		return word
 
 	def getXMLElementByID( self, idKey ):
 		"Get the xml element by id."
@@ -262,7 +266,7 @@ class XMLSimpleParser:
 		if len( lineStripped ) < 1:
 			return
 		if self.rootElement == None:
-			if gcodec.getHasPrefix( lineStripped, '<?xml' ):
+			if lineStripped.startswith( '<?xml' ):
 				return
 		if lineStripped[ : len( '<!--' ) ] == '<!--':
 			self.isInComment = True

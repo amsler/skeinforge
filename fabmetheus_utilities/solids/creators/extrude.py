@@ -50,10 +50,6 @@ def addOffsetAddToLists( loop, offset, vector3Index, vertices ):
 	loop.append( vector3Index )
 	vertices.append( vector3Index )
 
-def getTiltPlaneAngle( tiltScalar ):
-	"Get the tilt plane angle."
-	return euclidean.getWiddershinsUnitPolar( math.radians( tiltScalar ) ) - complex( 1.0, 0.0 )
-
 def getGeometryOutput( xmlElement ):
 	"Get vector3 vertices from attribute dictionary."
 	paths = geomancer.getPathsByKey( 'target', xmlElement )
@@ -62,34 +58,63 @@ def getGeometryOutput( xmlElement ):
 		print( xmlElement.attributeDictionary )
 		return None
 	offsetPathDefault = [ Vector3(), Vector3( 0.0, 0.0, 1.0 ) ]
-	interpolationOffset = geomancer.Interpolation().getByPrefix( offsetPathDefault, '', xmlElement )
+	interpolationOffset = geomancer.Interpolation().getByPrefixZ( offsetPathDefault, '', xmlElement )
 	scalePathDefault = [ Vector3( 1.0, 1.0, 0.0 ), Vector3( 1.0, 1.0, 1.0 ) ]
-	interpolationScale = geomancer.Interpolation().getByPrefix( scalePathDefault, 'scale', xmlElement )
+	interpolationScale = geomancer.Interpolation().getByPrefixZ( scalePathDefault, 'scale', xmlElement )
 	tiltPathDefault = [ Vector3(), Vector3( 0.0, 0.0, 1.0 ) ]
-	interpolationTilt = geomancer.Interpolation().getByPrefix( tiltPathDefault, 'tilt', xmlElement )
+	interpolationTilt = geomancer.Interpolation().getByPrefixZ( tiltPathDefault, 'tilt', xmlElement )
 	segments = geomancer.getEvaluatedIntOne( 'segments', xmlElement )
 	twist = geomancer.getEvaluatedFloatZero( 'twist', xmlElement )
 	twistPathDefault = [ Vector3(), Vector3( 1.0, twist ) ]
-	interpolationTwist = geomancer.Interpolation().getByPrefix( twistPathDefault, 'twist', xmlElement )
-	geometryOutputs = []
+	interpolationTwist = geomancer.Interpolation().getByPrefixX( twistPathDefault, 'twist', xmlElement )
+	negatives = []
+	positives = []
+	portionDirections = interpolationOffset.portionDirections
 	for path in paths:
-		geometryOutput = getGeometryOutputByPath( interpolationOffset, interpolationScale, interpolationTilt, interpolationTwist, path, segments )
-		geometryOutputs.append( geometryOutput )
-	return geometryOutputs[ 0 ]
+		endMultiplier = None
+		if not euclidean.getIsWiddershinsByVector3( path ):
+			endMultiplier = 1.000001
+		geometryOutput = getGeometryOutputByPath( endMultiplier, interpolationOffset, interpolationScale, interpolationTilt, interpolationTwist, path, portionDirections )
+		if endMultiplier == None:
+			positives.append( geometryOutput )
+		else:
+			negatives.append( geometryOutput )
+	positiveOutput = getPositiveOutput( positives )
+	if len( negatives ) < 1:
+		return positiveOutput
+	return { 'difference' : [ positiveOutput ] + negatives }
 
-def getGeometryOutputByPath( interpolationOffset, interpolationScale, interpolationTilt, interpolationTwist, path, segments ):
+def getGeometryOutputByPath( endMultiplier, interpolationOffset, interpolationScale, interpolationTilt, interpolationTwist, path, portionDirections ):
 	"Get vector3 vertices from attribute dictionary."
 	vertices = []
 	loops = []
-	for segmentIndex in xrange( 0, segments + 1 ):
-		portion = float( segmentIndex ) / float( segments )
+	for portionDirection in portionDirections:
+		portion = portionDirection.portion
+		offset = interpolationOffset.getVector3ByZPortion( portion )
+		if endMultiplier != None:
+			if portionDirection == portionDirections[ 0 ]:
+				setOffsetByMultiplier( interpolationOffset.path[ 1 ], interpolationOffset.path[ 0 ], endMultiplier, offset )
+			elif portionDirection == portionDirections[ - 1 ]:
+				setOffsetByMultiplier( interpolationOffset.path[ - 2 ], interpolationOffset.path[ - 1 ], endMultiplier, offset )
 		scale = interpolationScale.getComplexByZPortion( portion )
 		tilt = interpolationTilt.getComplexByZPortion( portion )
 		twistRadians = math.radians( interpolationTwist.getYByXPortion( portion ) )
-		addLoop( loops, interpolationOffset.getVector3ByZPortion( portion ), path, scale, tilt, twistRadians, vertices )
+		addLoop( loops, offset, path, scale, tilt, twistRadians, vertices )
 	faces = []
 	trianglemesh.addPillarFromConvexLoops( faces, loops )
 	return { 'trianglemesh' : { 'vertex' : vertices, 'face' : faces } }
+
+def getPositiveOutput( positives ):
+	"Get vector3 vertices from attribute dictionary."
+	if len( positives ) < 1:
+		return { 'trianglemesh' : { 'vertex' : [], 'face' : [] } }
+	if len( positives ) < 2:
+		return positives[ 0 ]
+	return { 'union' : positives }
+
+def getTiltPlaneAngle( tiltScalar ):
+	"Get the tilt plane angle."
+	return euclidean.getWiddershinsUnitPolar( math.radians( tiltScalar ) ) - complex( 1.0, 0.0 )
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
@@ -98,3 +123,10 @@ def processXMLElement( xmlElement ):
 		return
 	xmlElement.getRootElement().xmlProcessor.convertXMLElement( geometryOutput, xmlElement )
 	xmlElement.getRootElement().xmlProcessor.processXMLElement( xmlElement )
+
+def setOffsetByMultiplier( begin, end, multiplier, offset ):
+	"Set the offset by the multiplier."
+	return
+	segment = end - begin
+	delta = segment * multiplier - segment
+	offset.setToVector3( offset + delta )

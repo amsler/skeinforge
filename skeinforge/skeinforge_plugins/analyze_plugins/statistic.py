@@ -120,6 +120,7 @@ class StatisticRepository:
 		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.analyze_plugins.statistic.html', '', self )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic' )
 		self.activateStatistic = settings.BooleanSetting().getFromValue( 'Activate Statistic', self, True )
+		self.density = settings.FloatSpin().getFromValue( 500.0, 'Density (kg/m3):', self, 2000.0, 930.0 )
 		self.extrusionDiameterOverThickness = settings.FloatSpin().getFromValue( 1.0, 'Extrusion Diameter over Thickness (ratio):', self, 1.5, 1.25 )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Generate Statistics for', self, '' )
 		self.printStatistics = settings.BooleanSetting().getFromValue( 'Print Statistics', self, True )
@@ -218,6 +219,7 @@ class StatisticSkein:
 		if self.operatingFeedRatePerSecond != None:
 			flowRate = crossSectionArea * self.operatingFeedRatePerSecond
 			self.addLine( "The operating flow rate is %s mm3/s." % euclidean.getThreeSignificantFigures( flowRate ) )
+		self.addLine( "The mass extruded is %s grams." % euclidean.getThreeSignificantFigures( 1000.0 * volumeExtruded / repository.density.value ) )
 		self.addLine( "The perimeter width is %s mm." % euclidean.getThreeSignificantFigures( self.absolutePerimeterWidth ) )
 		self.addLine( " " )
 		self.addLine( "The following procedures have been performed on the skein:" )
@@ -225,7 +227,7 @@ class StatisticSkein:
 			self.addLine( procedure )
 		self.addLine( " " )
 		self.addLine( "The text has %s lines and a size of %s KB." % ( self.numberOfLines, kilobytes ) )
-		self.addLine( "The total build time is %s s." % int( round( self.totalBuildTime ) ) )
+		self.addLine( "The total build time is %s." % euclidean.getDurationString( self.totalBuildTime ) )
 		self.addLine( "The total distance extruded is %s mm." % euclidean.getThreeSignificantFigures( self.totalDistanceExtruded ) )
 		self.addLine( "The total distance traveled is %s mm." % euclidean.getThreeSignificantFigures( self.totalDistanceTraveled ) )
 		if self.version != None:

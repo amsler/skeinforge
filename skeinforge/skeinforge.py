@@ -212,11 +212,11 @@ import os
 import sys
 
 
-# convert union
 # if None: getPythonExceptInit
 # del previous, add begin & end if far  get actual path, getPaths, xyz axis
 # polling
 # extrude from to, then arbitrary then paths
+# equation, x, y, z
 # path combine or getPathsCompound, getNormal, getIsFlat, equationx?
 # arc
 # lathe

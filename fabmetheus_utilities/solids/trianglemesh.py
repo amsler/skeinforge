@@ -1,37 +1,6 @@
 """
 Triangle Mesh holds the faces and edges of a triangular mesh.
 
-It can read from and write to a GNU Triangulated Surface (.gts) file.
-
-The following examples carve the GNU Triangulated Surface file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and trianglemesh.py.
-
-
->python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import carve
->>> carve.main()
-File Screw Holder Bottom.stl is being carved.
-The carved file is saved as Screw Holder Bottom_carve.gcode
-It took 3 seconds to carve the file.
-
-
->>> carve.writeOutput( 'Screw Holder Bottom.stl' )
-File Screw Holder Bottom.gcode is being carved.
-The carved file is saved as Screw Holder Bottom_carve.gcode
-It took 3 seconds to carve the file.
-
-
->>> carve.getGcode("
-54 162 108 Number of Vertices,Number of Edges,Number of Faces
--5.800000000000001 5.341893939393939 4.017841892579603 Vertex Coordinates XYZ
-5.800000000000001 5.341893939393939 4.017841892579603
-..
-many lines of GNU Triangulated Surface vertices, edges and faces
-..
-")
-
 """
 
 from __future__ import absolute_import

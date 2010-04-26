@@ -39,7 +39,7 @@ def getChainTextFromProcedures( fileName, procedures, text ):
 		if craftModule != None:
 			text = craftModule.getCraftedText( fileName, text )
 			if gcodec.isProcedureDone( text, procedure ):
-				print( '%s procedure took %s seconds.' % ( procedure.capitalize(), int( round( time.time() - lastProcedureTime ) ) ) )
+				print( '%s procedure took %s.' % ( procedure.capitalize(), euclidean.getDurationString( time.time() - lastProcedureTime ) ) )
 				lastProcedureTime = time.time()
 	return text
 
@@ -111,7 +111,7 @@ def writeChainTextWithNounMessage( fileName, procedure ):
 	print( 'The %s tool has created the file:' % procedure )
 	print( fileNameSuffix )
 	print( '' )
-	print( 'It took %s seconds to craft the file.' % int( time.time() - startTime ) )
+	print( 'It took %s to craft the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	skeinforge_analyze.writeOutput( fileName, fileNameSuffix, craftText )
 
 def writeOutput( fileName ):

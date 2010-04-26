@@ -30,7 +30,7 @@ def getGeometryOutput( xmlElement ):
 	sideAngle = 2.0 * math.pi / float( sides )
 	radius = getRadiusFromXMLElement( sideAngle, xmlElement )
 	vertices = []
-	for side in xrange( int( math.ceil( sides ) ) ):
+	for side in xrange( int( math.ceil( abs( sides ) ) ) ):
 		angle = float( side ) * sideAngle
 		pointComplex = euclidean.getWiddershinsUnitPolar( angle ) * radius
 		vertex = Vector3( pointComplex.real, pointComplex.imag )

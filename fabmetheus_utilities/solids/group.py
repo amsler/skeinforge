@@ -19,6 +19,10 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
+def convertXMLElement( geometryOutput, xmlElement ):
+	"Convert the xml element to a group xml element."
+	xmlElement.getRootElement().xmlProcessor.createChildren( geometryOutput, xmlElement )
+
 def processShape( archivableClass, xmlElement ):
 	"Get any new elements and process the shape."
 	if xmlElement == None:

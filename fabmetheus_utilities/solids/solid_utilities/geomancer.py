@@ -39,10 +39,24 @@ def addKeys( fromKeys, toKeys ):
 		if fromKey not in toKeys:
 			toKeys.append( fromKey )
 
-def evaluateBrackets( evaluators, evaluatorIndex, lastBracketIndex ):
+def evaluateBrackets( evaluators, evaluatorIndex, evaluatorWord, lastBracketIndex ):
 	"Evaluate the expression value from within the brackets."
 	subEvaluators = evaluators[ evaluatorIndex + 1 : lastBracketIndex ]
+	subEvaluatorsCopy = subEvaluators[ : ]
 	withinEvaluators = getEvaluatedExpressionValueEvaluators( subEvaluators )
+	if evaluatorWord == '[':
+		if len( subEvaluators ) == 0:
+			withinEvaluator = evaluators[ evaluatorIndex ]
+			withinEvaluator.value = []
+			withinEvaluator.word = '[]'
+			withinEvaluators = [ withinEvaluator ]
+		elif not getHasListEvaluator( subEvaluatorsCopy ):
+			withinEvaluators[ 0 ].convertValueToList()
+	if lastBracketIndex == None:
+		print( 'Warning, lastBracketIndex in evaluateBrackets in geomancer is None.' )
+		print( 'This may be because the brackets are not balanced.' )
+		print( evaluators )
+		return
 	for deletionIndex in xrange( lastBracketIndex, evaluatorIndex + len( withinEvaluators ) - 1, - 1 ):
 		del evaluators[ deletionIndex ]
 	for overwriteIndex in xrange( len( withinEvaluators ) ):
@@ -53,7 +67,7 @@ def evaluateBrackets( evaluators, evaluatorIndex, lastBracketIndex ):
 
 def evaluateOperationLevel( evaluators, operationLevel ):
 	"Evaluate the evaluators with the given operation level."
-	for evaluatorIndex in xrange( len( evaluators ) - 2, 0, - 1 ):
+	for evaluatorIndex in xrange( len( evaluators ) - 1, 0, - 1 ):
 		evaluator = evaluators[ evaluatorIndex ]
 		evaluator.executeOperation( evaluators, evaluatorIndex, operationLevel )
 
@@ -71,10 +85,10 @@ def getBracketsExist( evaluators ):
 	lastBracketIndex = None
 	for evaluatorIndex in xrange( len( evaluators ) - 1, - 1, - 1 ):
 		evaluatorWord = evaluators[ evaluatorIndex ].word
-		if evaluatorWord == ')':
+		if evaluatorWord == ')' or evaluatorWord == ']':
 			lastBracketIndex = evaluatorIndex
-		elif evaluatorWord == '(':
-			evaluateBrackets( evaluators, evaluatorIndex, lastBracketIndex )
+		elif evaluatorWord == '(' or evaluatorWord == '[':
+			evaluateBrackets( evaluators, evaluatorIndex, evaluatorWord, lastBracketIndex )
 			return True
 	return False
 
@@ -90,35 +104,36 @@ def getEvaluatedDictionary( evaluationKeys, xmlElement ):
 		if key in evaluationKeys or zeroLength:
 			value = getEvaluatedValueWithoutChecking( key, xmlElement )
 			if value == '' or value == None:
-				print( 'Warning, %s does not evaluate.' % xmlElement.attributeDictionary[ key ] )
+				valueString = str(xmlElement.attributeDictionary[ key ]  )
+				print( 'Warning, %s does not evaluate.' % valueString )
+				evaluatedDictionary[ '__Warning__' + valueString ] = 'Does not evaluate.'
 			else:
 				evaluatedDictionary[ key ] = value
 	return evaluatedDictionary
 
 def getEvaluatedExpressionValue( value, xmlElement ):
 	"Evaluate the expression value."
-	strippedValue = value[ len( '(' ) : ]
-	if len( strippedValue ) < 1:
-		return None
-	if strippedValue[ - 1 ] == ')':
-		 strippedValue = strippedValue[ : - 1 ]
-	powerToken = getUniqueToken( strippedValue, '__PoweR__' )
-	splitToken = getUniqueToken( strippedValue, '__SpliT__' )
-	strippedValue = strippedValue.replace( '**', powerToken )
-	strippedValue = strippedValue.replace( '{', '(' ).replace( '[', '(' ).replace( ']', ')' ).replace( '}', ')' )
+	if value.startswith( '=' ):
+		value = value[ len( '=' ) : ]
+	powerToken = getUniqueToken( value, '__PoweR__' )
+	splitToken = getUniqueToken( value, '__SpliT__' )
+	value = value.replace( '**', powerToken ).replace( '{', '(' ).replace( '}', ')' )
 	global globalSplitDictionary
 	splitDictionary = globalSplitDictionary.copy()
 	splitDictionary[ powerToken ] = PowerEvaluator
 	splitDictionaryKeys = splitDictionary.keys()
 	for splitDictionaryKey in splitDictionaryKeys:
-		strippedValue = strippedValue.replace( splitDictionaryKey, splitToken + splitDictionaryKey + splitToken )
-	splitLine = strippedValue.split( splitToken )
+		value = value.replace( splitDictionaryKey, splitToken + splitDictionaryKey + splitToken )
+	splitLine = value.split( splitToken )
 	evaluators = []
 	for word in splitLine:
 		addEvaluator( evaluators, splitDictionary, word, xmlElement )
 	while getBracketsExist( evaluators ):
 		pass
-	return getEvaluatedExpressionValueEvaluators( evaluators )[ 0 ].value
+	evaluatedExpressionValueEvaluators = getEvaluatedExpressionValueEvaluators( evaluators )
+	if len( evaluatedExpressionValueEvaluators ) > 0:
+		return evaluatedExpressionValueEvaluators[ 0 ].value
+	return None
 
 def getEvaluatedExpressionValueEvaluators( evaluators ):
 	"Evaluate the expression value from the numeric and operation evaluators."
@@ -186,21 +201,21 @@ def getEvaluatedIDValue( value, xmlElement ):
 
 def getEvaluatedLinkValue( value, xmlElement ):
 	"Get the evaluated link value."
-	if gcodec.getHasPrefix( value, 'id.' ):
+	if value.startswith( 'id.' ):
 		return getEvaluatedIDValue( value, xmlElement )
-	if gcodec.getHasPrefix( value, 'math.' ):
+	if value.startswith( 'math.' ):
 		return getEvaluatedMathValue( value, xmlElement )
-	if gcodec.getHasPrefix( value, 'name.' ):
+	if value.startswith( 'name.' ):
 		return getEvaluatedNameValue( value, xmlElement )
-	if gcodec.getHasPrefix( value, 'parent.' ):
+	if value.startswith( 'parent.' ):
 		return getEvaluatedParentValue( value, xmlElement )
-	if gcodec.getHasPrefix( value, 'root.' ):
+	if value.startswith( 'root.' ):
 		return getEvaluatedRootValue( value, xmlElement )
-	if gcodec.getHasPrefix( value, 'self.' ):
+	if value.startswith( 'self.' ):
 		return getEvaluatedSelfValue( value, xmlElement )
-	if gcodec.getHasPrefix( value, 'vertex.' ):
+	if value.startswith( 'vertex.' ):
 		return getEvaluatedVertexValue( value, xmlElement )
-	if gcodec.getHasPrefix( value, '(' ):
+	if getStartsWithCurlyEqualRoundSquare( value ):
 		return getEvaluatedExpressionValue( value, xmlElement )
 	return value
 
@@ -285,6 +300,13 @@ def getFloatListFromBracketedString( bracketedString ):
 		return None
 	return floatList
 
+def getHasListEvaluator( evaluators ):
+	"Determine if one of the evaluators is list evaluator."
+	for evaluator in evaluators:
+		if evaluator.__class__ == ListEvaluator:
+			return True
+	return False
+
 def getKeys( repository ):
 	'Get keys for repository.'
 	if repository.__class__ == [].__class__:
@@ -326,7 +348,7 @@ def getPathByKey( key, xmlElement ):
 	if key not in xmlElement.attributeDictionary:
 		return []
 	value = str( xmlElement.attributeDictionary[ key ] ).strip()
-	if value.startswith( '(' ) or value.startswith( '[' ):
+	if getStartsWithCurlyEqualRoundSquare( value ):
 		value = getEvaluatedExpressionValue( value, xmlElement )
 		return getPathByList( value )
 	pathElement = getXMLElementByValue( value, xmlElement )
@@ -356,7 +378,7 @@ def getPathsByKey( key, xmlElement ):
 	if key not in xmlElement.attributeDictionary:
 		return []
 	value = str( xmlElement.attributeDictionary[ key ] ).strip()
-	if value.startswith( '(' ) or value.startswith( '[' ):
+	if getStartsWithCurlyEqualRoundSquare( value ):
 		value = getEvaluatedExpressionValue( value, xmlElement )
 		return getPathsByLists( value )
 	pathElement = getXMLElementByValue( value, xmlElement )
@@ -368,8 +390,10 @@ def getPathsByKey( key, xmlElement ):
 
 def getPathsByLists( vertexLists ):
 	"Get the paths by lists."
-	firstPathList = vertexLists[ 0 ][ 0 ]
-	if firstPathList.__class__ != [].__class__:
+	vertexList = vertexLists[ 0 ]
+	if len( vertexList ) == 0:
+		vertexLists = [ vertexLists ]
+	elif vertexList[ 0 ].__class__ != [].__class__:
 		vertexLists = [ vertexLists ]
 	paths = []
 	for vertexList in vertexLists:
@@ -389,6 +413,8 @@ def getSplitDictionary():
 		'/' : DivisionEvaluator,
 		'(' : Evaluator,
 		')' : Evaluator,
+		'[' : Evaluator,
+		']' : Evaluator,
 		',' : ListEvaluator,
 		'*' : MultiplicationEvaluator,
 		'-' : SubtractionEvaluator }
@@ -406,12 +432,16 @@ def getSolidsDirectoryPath():
 	"Get the solids directory path."
 	return settings.getPathInFabmetheus( os.path.join( 'fabmetheus_utilities', 'solids' ) )
 
+def getStartsWithCurlyEqualRoundSquare( word ):
+	"Determine if the word starts with round or square brackets."
+	return word.startswith( '{' ) or word.startswith( '=' ) or word.startswith( '(' ) or word.startswith( '[' )
+
 def getTypeLength( value ):
 	"Get the type length of the value."
 	if value == None or value == '':
 		return 0
 	valueString = str( value )
-	if valueString.startswith( '(' ) or valueString.startswith( '[' ) or valueString.startswith( '{' ):
+	if valueString.startswith( '{' ) or valueString.startswith( '(' ) or valueString.startswith( '[' ):
 		return len( value )
 	if getEvaluatedFloatFromValue( value ) == None:
 		return 0
@@ -425,7 +455,8 @@ def getUniqueToken( line, token ):
 
 def getVector3ByFloatList( vector3, floatList ):
 	"Get vector3 by float list."
-	vector3.x = floatList[ 0 ]
+	if len( floatList ) > 0:
+		vector3.x = floatList[ 0 ]
 	if len( floatList ) > 1:
 		vector3.y = floatList[ 1 ]
 	if len( floatList ) > 2:
@@ -495,11 +526,11 @@ def getXMLElementByKey( key, xmlElement ):
 
 def getXMLElementByValue( value, xmlElement ):
 	"Get the xml element by value."
-	if gcodec.getHasPrefix( value, 'id.' ):
+	if value.startswith( 'id.' ):
 		return xmlElement.getXMLElementByID( value[ len( 'id.' ) : ] )
-	if gcodec.getHasPrefix( value, 'name.' ):
+	if value.startswith( 'name.' ):
 		return xmlElement.getXMLElementByName( value[ len( 'name.' ) : ] )
-	if gcodec.getHasPrefix( value, 'parent.' ):
+	if value.startswith( 'parent.' ):
 		return xmlElement.parent
 	return xmlElement.getXMLElementByName( value )
 
@@ -520,12 +551,16 @@ class Evaluator:
 		self.xmlElement = xmlElement
 
 	def __repr__( self ):
-		"Get the string representation of this NumericEvaluator."
+		"Get the string representation of this Evaluator."
 		return '%s: %s, %s' % ( self.__class__.__name__, self.word, self.value )
+
+	def convertValueToList( self ):
+		'Convert the value into a list.'
+		self.value = [ getFloatIfFloat( self.value ) ]
 
 	def executeList( self ):
 		'Execute array.'
-		self.value = [ getFloatIfFloat( self.value ) ]
+		self.convertValueToList()
 
 	def executeMath( self, evaluators, evaluatorIndex, withinEvaluators ):
 		'Evaluate the math statement and delete the evaluators.'
@@ -559,11 +594,20 @@ class AdditionEvaluator( Evaluator ):
 		'Add two evaluators.'
 		leftIndex = evaluatorIndex - 1
 		rightIndex = evaluatorIndex + 1
-		leftValue = evaluators[ leftIndex ].value
-		rightValue = evaluators[ rightIndex ].value
-		evaluators[ leftIndex ].value = self.getOperationValue( leftValue, rightValue )
-		del evaluators[ rightIndex ]
-		del evaluators[ evaluatorIndex ]
+		valueIndex = leftIndex
+		while evaluators[ valueIndex ].__class__ == self.__class__:
+			valueIndex -= 1
+		leftValue = evaluators[ valueIndex ].value
+		rightValue = leftValue
+		if rightIndex < len( evaluators ):
+			rightValue = evaluators[ rightIndex ].value
+			del evaluators[ rightIndex ]
+		operationValue = self.getOperationValue( leftValue, rightValue )
+		if valueIndex == leftIndex:
+			evaluators[ leftIndex ].value = operationValue
+			del evaluators[ evaluatorIndex ]
+		else:
+			self.value = operationValue
 
 	def getOperationValue( self, leftValue, rightValue ):
 		'Add two evaluators.'
@@ -692,12 +736,28 @@ class Interpolation:
 		"Set index."
 		self.interpolationIndex = 0
 
-	def getByPrefix( self, path, prefix, xmlElement ):
-		"Get interpolation from prefix and xml element."
+	def getByPrefixX( self, path, prefix, xmlElement ):
+		"Get interpolation from prefix and xml element in the z direction."
 		if len( path ) < 2:
 			print( 'Warning, path is too small in geomancer in Interpolation.' )
 			return
 		self.path = getPathByPrefix( path, prefix, xmlElement )
+		self.interpolationLength = self.path[ - 1 ].x - self.path[ 0 ].x
+		self.portionDirections = []
+		for point in self.path:
+			self.portionDirections.append( PortionDirection( point.x / self.interpolationLength ) )
+		return self
+
+	def getByPrefixZ( self, path, prefix, xmlElement ):
+		"Get interpolation from prefix and xml element in the z direction."
+		if len( path ) < 2:
+			print( 'Warning, path is too small in geomancer in Interpolation.' )
+			return
+		self.path = getPathByPrefix( path, prefix, xmlElement )
+		self.interpolationLength = self.path[ - 1 ].z - self.path[ 0 ].z
+		self.portionDirections = []
+		for point in self.path:
+			self.portionDirections.append( PortionDirection( point.z / self.interpolationLength ) )
 		return self
 
 	def getComplexByZPortion( self, portion ):
@@ -734,7 +794,6 @@ class Interpolation:
 
 	def setInterpolationIndexByX( self, portion ):
 		"Set the interpolation index by the x of the path."
-		self.interpolationLength = self.path[ - 1 ].x - self.path[ 0 ].x
 		self.absolutePortion = self.path[ 0 ].x + self.interpolationLength * portion
 		for self.interpolationIndex in xrange( 0, len( self.path ) - 1 ):
 			beginX = self.path[ self.interpolationIndex ].x
@@ -744,9 +803,8 @@ class Interpolation:
 
 	def setInterpolationIndexByZ( self, portion ):
 		"Set the interpolation index by the z of the path."
-		self.interpolationLength = self.path[ - 1 ].z - self.path[ 0 ].z
 		self.absolutePortion = self.path[ 0 ].z + self.interpolationLength * portion
-		for self.interpolationIndex in xrange( self.interpolationIndex, len( self.path ) - 1 ):
+		for self.interpolationIndex in xrange( 0, len( self.path ) - 1 ):
 			beginZ = self.path[ self.interpolationIndex ].z
 			endZ = self.path[ self.interpolationIndex + 1 ].z
 			if beginZ <= self.absolutePortion and endZ >= self.absolutePortion:
@@ -774,7 +832,7 @@ class KeyValue:
 		self.value = line[ dotIndex + 1 : ]
 
 
-class ListEvaluator( Evaluator ):
+class ListEvaluator( AdditionEvaluator ):
 	'Class to join two evaluators.'
 	def __init__( self, word, xmlElement ):
 		'Set value to none.'
@@ -792,20 +850,7 @@ class ListEvaluator( Evaluator ):
 		if self.shouldList:
 			for evaluator in evaluators:
 				evaluator.executeList()
-		leftIndex = evaluatorIndex - 1
-		rightIndex = evaluatorIndex + 1
-		valueIndex = leftIndex
-		while evaluators[ valueIndex ].__class__ == ListEvaluator:
-			valueIndex -= 1
-		leftValue = evaluators[ valueIndex ].value
-		rightValue = evaluators[ rightIndex ].value
-		del evaluators[ rightIndex ]
-		operationValue = self.getOperationValue( leftValue, rightValue )
-		if valueIndex == leftIndex:
-			evaluators[ leftIndex ].value = operationValue
-			del evaluators[ evaluatorIndex ]
-		else:
-			self.value = operationValue
+		self.executePair( evaluators, evaluatorIndex )
 
 	def getOperationValue( self, leftValue, rightValue ):
 		'Join two values.'
@@ -825,8 +870,7 @@ class MathEvaluator( CreatorEvaluator ):
 			except:
 				self.withinValues = self.withinValues[ : - 1 ]
 		print( 'Warning, the MathEvaluator in geomancer can not handle:' )
-		print( functionName )
-		print( withinEvaluators )
+		print( self.functionName )
 		print( self.withinValues )
 
 
@@ -846,6 +890,18 @@ class NumericEvaluator( Evaluator ):
 		self.value = getEvaluatedLinkValue( valueString, xmlElement )
 
 
+class PortionDirection:
+	"Class to hold a portion and direction."
+	def __init__( self, portion ):
+		"Initialize."
+		self.direction = False
+		self.portion = portion
+
+	def __repr__( self ):
+		"Get the string representation of this PortionDirection."
+		return '%s: %s' % ( self.portion, self.direction )
+
+
 class PowerEvaluator( AdditionEvaluator ):
 	'Class to power two evaluators.'
 	def executeOperation( self, evaluators, evaluatorIndex, operationLevel ):
@@ -856,6 +912,7 @@ class PowerEvaluator( AdditionEvaluator ):
 	def getValueFromValuePair( self, leftValue, rightValue ):
 		'Power of two values.'
 		return math.pow( leftValue, rightValue )
+
 
 class SubtractionEvaluator( AdditionEvaluator ):
 	'Class to subtract two evaluators.'

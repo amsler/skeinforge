@@ -95,7 +95,7 @@ def analyzeFileGivenText( fileName, gcodeText, repository = None ):
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, vectorwriteGcode )
 	print( 'The vectorwrite file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to vectorwrite the file.' )
+	print( 'It took %s to vectorwrite the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openWebPage( suffixFileName )
 
 def getNewRepository():

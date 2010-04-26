@@ -84,10 +84,6 @@ class Dictionary:
 			paths += archivableObject.getPaths()
 		return paths
 
-	def getPaths( self ):
-		"Get all vertices."
-		return [ [] ]
-
 	def getVertices( self ):
 		"Get all vertices."
 		return []

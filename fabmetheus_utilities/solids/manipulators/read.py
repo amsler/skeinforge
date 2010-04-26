@@ -34,7 +34,7 @@ def getXMLFromCarvingFileName( fileName ):
 
 def getXMLFromFileName( fileName ):
 	"Get xml text from xml text."
-	if gcodec.getHasSuffix( fileName, '.xml' ):
+	if fileName.endswith( '.xml' ):
 		return getXMLFromXMLFileName( fileName )
 	return getXMLFromCarvingFileName( fileName )
 

@@ -18,6 +18,10 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
+def convertXMLElement( geometryOutput, xmlElement ):
+	"Convert the xml element to an intersection xml element."
+	xmlElement.getRootElement().xmlProcessor.createChildren( geometryOutput, xmlElement )
+
 def processXMLElement( xmlElement ):
 	"Process the xml element."
 	group.processShape( Intersection, xmlElement )

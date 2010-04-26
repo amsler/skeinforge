@@ -146,7 +146,7 @@ class Vector3Index:
 
 	def __repr__( self ):
 		"Get the string representation of this Vector3."
-		return '(%s, %s, %s, %s)' % ( self.x, self.y, self.z )
+		return '(%s, %s, %s, %s)' % ( self.index, self.x, self.y, self.z )
 
 	def __rdiv__( self, other ):
 		"Get a new Vector3 by dividing each component of this one."
@@ -191,7 +191,7 @@ class Vector3Index:
 		"Calculate the dot product of this vector with other one."
 		return self.x * other.x + self.y * other.y + self.z * other.z
 
-	def dropAxis( self, which ):
+	def dropAxis( self, which = 2 ):
 		"""Get a complex by removing one axis of this one.
 
 		Keyword arguments:

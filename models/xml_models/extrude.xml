@@ -1,11 +1,14 @@
 <?xml version='1.0' ?>
-<booleangeometry version="2010-04-04">
+<booleangeometry version="2010-04-04" comment="">
 	<path name="vertex holder">
 		<vertex x="8.8" y="7.7" z="2.9" />
 	</path>
-	<extrude id="bracket test" scalepath='[[0,0,0],[1,1,1],[0,0,2]]' segments="5" target="((0,-40,0),(20,-40,0),(0,-30,0))" toz="3.0" twist="30" />
+	<extrudecomment id="bracket test" scalepath='[0,0,0],[1,1,1],[0,0,2]' segments="5" target="[[],(0,-30),[20]],[ [5,-3],(5,-25),[12,-3]],[[30],(30,-10),[40]]" toz="3.0" twist="30" y='-40' />
 	<polygon id="polygon test" threesidedpolygon="test" radius="20.0" sides="3" />
-	<extrude id="extrude test" name="extrude test" path='[[0,0,0],[0,45,1],[33,0,2]' target="[[0,0,0],[20,0,0],[0,10,0]]" segments="5" y="50" toz="3.0" />
-	<polygon id="pentagon" name="star" radius="20.0" sides="5" />
-	<extrude id="extrude pentagon" segments="5" target="name.star" to="name.vertex holder.vertex.0" tilttox="2" twistpath="[[0,0],[1,30],[2,0]]" x="40" />
+	<extrude id="extrude test" name="extrude test" path='[0,0,0],[0,45,1],[33,0,2]' target="[0,0,0],[20,0,0],[0,10,0]" segments="5" y="50" toz="3.0" />
+	<group name="star">
+		<polygon id="pentagon" radius="20" sides="5" />
+		<polygoncomment id="square" radius="10" sides="-4" />
+	</group>
+	<extrude id="extrude pentagon" segments="5" target="name.star" to="name.vertex holder.vertex.0" tilttox="2" twistpath="[0,0],[1,30],[2,0]" x="40" />
 </booleangeometry>

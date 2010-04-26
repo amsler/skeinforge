@@ -190,7 +190,7 @@ class Vector3:
 		"Calculate the dot product of this vector with other one."
 		return self.x * other.x + self.y * other.y + self.z * other.z
 
-	def dropAxis( self, which ):
+	def dropAxis( self, which = 2 ):
 		"""Get a complex by removing one axis of this one.
 
 		Keyword arguments:

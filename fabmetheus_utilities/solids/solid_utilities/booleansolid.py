@@ -153,15 +153,22 @@ def getPointsBoundarySideLoops( inside, loops, points, radius ):
 			pointsInsideLoops.append( pointCenter )
 	return pointsInsideLoops
 
-def getUnifiedLoops( importRadius, visibleObjectLoops, visibleObjectLoopsList ):
+def getUnifiedLoops( importRadius, visibleObjectLoopsList ):
 	"Get joined loops sliced through shape."
 	corners = []
-	for visibleObjectLoop in visibleObjectLoops:
-		corners += visibleObjectLoop
-	corners += getLoopsListsIntersections( visibleObjectLoopsList )
+	radiusSide = 0.01 * importRadius
+	for visibleObjectLoopsIndex in xrange( len( visibleObjectLoopsList ) ):
+		visibleObjectLoops = visibleObjectLoopsList[ visibleObjectLoopsIndex ]
+		otherLoops = getJoinedList( visibleObjectLoopsList[ : visibleObjectLoopsIndex ] )
+		otherLoops += getJoinedList( visibleObjectLoopsList[ visibleObjectLoopsIndex + 1 : ] )
+		corners += getPointsBoundarySideLoops( False, otherLoops, getJoinedList( visibleObjectLoops ), radiusSide )
 	allPoints = corners[ : ]
-	allPoints += getInBetweenPointsFromLoops( importRadius, visibleObjectLoops )
-	return trianglemesh.getInclusiveLoops( allPoints, corners, importRadius, False )
+	for visibleObjectLoopsIndex in xrange( len( visibleObjectLoopsList ) ):
+		visibleObjectLoops = visibleObjectLoopsList[ visibleObjectLoopsIndex ]
+		otherLoops = getJoinedList( visibleObjectLoopsList[ : visibleObjectLoopsIndex ] )
+		otherLoops += getJoinedList( visibleObjectLoopsList[ visibleObjectLoopsIndex + 1 : ] )
+		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( False, importRadius, visibleObjectLoops, otherLoops, radiusSide )
+	return trianglemesh.getInclusiveLoops( allPoints, corners, importRadius, True )
 
 def getVisibleObjectLoopsList( importRadius, visibleObjects, z ):
 	"Get visible object loops list."
@@ -222,7 +229,7 @@ class BooleanSolid( Group ):
 		allPoints = corners[ : ]
 		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( True, importRadius, negativeLoops, positiveLoops, radiusSide )
 		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( False, importRadius, positiveLoops, negativeLoops, radiusSide )
-		return trianglemesh.getInclusiveLoops( allPoints, corners, importRadius, False )
+		return trianglemesh.getInclusiveLoops( allPoints, corners, importRadius, True )
 
 	def getIntersection( self, importRadius, visibleObjectLoopsList ):
 		"Get intersected loops sliced through shape."
@@ -235,7 +242,7 @@ class BooleanSolid( Group ):
 		allPoints = corners[ : ]
 		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( True, importRadius, lastLoops, firstLoops, radiusSide )
 		allPoints += getInBetweenPointsFromLoopsBoundarySideOtherLoops( True, importRadius, firstLoops, lastLoops, radiusSide )
-		return trianglemesh.getInclusiveLoops( allPoints, corners, importRadius, False )
+		return trianglemesh.getInclusiveLoops( allPoints, corners, importRadius, True )
 
 	def getLoops( self, importRadius, z ):
 		"Get loops sliced through shape."
@@ -252,7 +259,7 @@ class BooleanSolid( Group ):
 
 	def getUnion( self, importRadius, visibleObjectLoopsList ):
 		"Get joined loops sliced through shape."
-		return getUnifiedLoops( importRadius, getJoinedList( visibleObjectLoopsList ), visibleObjectLoopsList )
+		return getUnifiedLoops( importRadius, visibleObjectLoopsList )
 
 	def getXMLClassName( self ):
 		"Get xml class name."

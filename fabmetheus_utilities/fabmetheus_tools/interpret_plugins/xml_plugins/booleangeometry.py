@@ -34,6 +34,7 @@ from fabmetheus_utilities.solids.solid_utilities import boolean_carving
 from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
+from fabmetheus_utilities import xml_simple_parser
 import os
 
 
@@ -90,6 +91,18 @@ class XMLBooleanGeometryProcessor():
 			return None
 		xmlElement.className = lowerClassName
 		return pluginModule.convertXMLElement( geometryOutput[ firstKey ], xmlElement )
+
+	def createChild( self, geometryOutput, parent ):
+		"Create child for the parent."
+		child = xml_simple_parser.XMLElement()
+		child.parent = parent
+		parent.children.append( child )
+		self.convertXMLElement( geometryOutput, child )
+
+	def createChildren( self, geometryOutput, parent ):
+		"Create children for the parent."
+		for geometryOutputChild in geometryOutput:
+			self.createChild( geometryOutputChild, parent )
 
 	def processChildren( self, xmlElement ):
 		"Process the children of the xml element."

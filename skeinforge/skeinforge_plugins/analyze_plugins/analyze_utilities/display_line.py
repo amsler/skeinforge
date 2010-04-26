@@ -39,7 +39,7 @@ class DisplayLine( MouseToolBase ):
 			tags = self.getTagsGivenXY( x, y )
 		if tags == '':
 			return
-		if gcodec.getHasPrefix( tags, 'colored_line_index:' ):
+		if tags.startswith( 'colored_line_index:' ):
 			splitLine = tags.split()
 			coloredLineIndex = int( splitLine[ 1 ] )
 			self.repository.line.value = coloredLineIndex

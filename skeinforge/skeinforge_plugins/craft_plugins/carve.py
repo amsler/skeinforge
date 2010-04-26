@@ -125,7 +125,7 @@ __license__ = "GPL 3.0"
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get carved text."
-	if gcodec.getHasSuffix( fileName, '.svg' ):
+	if fileName.endswith( '.svg' ):
 		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
 		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'carve' ):
 			return gcodeText
@@ -151,7 +151,7 @@ def writeOutput( fileName = '' ):
 	suffixFileName = gcodec.getFilePathWithUnderscoredBasename( fileName, '_carve.svg' )
 	gcodec.writeFileText( suffixFileName, carveGcode )
 	print( 'The carved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to carve the file.' )
+	print( 'It took %s to carve the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openWebPage( suffixFileName )
 
 

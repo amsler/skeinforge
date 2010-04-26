@@ -184,7 +184,7 @@ def writeOutput( fileName = '' ):
 		if replaceableExportChainGcode == None:
 			replaceableExportChainGcode = selectedPluginModule.getOutput( exportChainGcode )
 		exec( 'print >> ' + exportRepository.alsoSendOutputTo.value + ', replaceableExportChainGcode' )
-	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to export the file.' )
+	print( 'It took %s to export the file.' % euclidean.getDurationString( time.time() - startTime ) )
 
 
 class ExportRepository:

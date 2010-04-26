@@ -113,7 +113,7 @@ __license__ = "GPL 3.0"
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get chopped text."
-	if gcodec.getHasSuffix( fileName, '.svg' ):
+	if fileName.endswith( '.svg' ):
 		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
 		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'chop' ):
 			return gcodeText
@@ -148,7 +148,7 @@ def writeOutput( fileName = '' ):
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, chopGcode )
 	print( 'The chopped file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to chop the file.' )
+	print( 'It took %s to chop the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openWebPage( suffixFileName )
 
 

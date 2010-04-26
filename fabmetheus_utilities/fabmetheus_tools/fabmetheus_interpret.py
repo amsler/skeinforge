@@ -54,7 +54,7 @@ def analyzeFile( fileName ):
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, interpretGcode )
 	print( 'The interpret file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took ' + str( int( round( time.time() - startTime ) ) ) + ' seconds to interpret the file.' )
+	print( 'It took %s to interpret the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	textProgram = repository.textProgram.value
 	if textProgram == '':
 		return
