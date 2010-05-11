@@ -60,9 +60,10 @@ class Cube( trianglemesh.TriangleMesh ):
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.halfX = geomancer.getEvaluatedFloatOne( 'halfx', self.xmlElement )
-		self.halfY = geomancer.getEvaluatedFloatOne( 'halfy', self.xmlElement )
-		self.halfZ = geomancer.getEvaluatedFloatOne( 'halfz', self.xmlElement )
+		half = geomancer.getEvaluatedFloatOne( 'half', self.xmlElement )
+		self.halfX = geomancer.getEvaluatedFloatDefault( half, 'halfx', self.xmlElement )
+		self.halfY = geomancer.getEvaluatedFloatDefault( half, 'halfy', self.xmlElement )
+		self.halfZ = geomancer.getEvaluatedFloatDefault( half, 'halfz', self.xmlElement )
 		self.xmlElement.attributeDictionary[ 'halfx' ] = self.halfX
 		self.xmlElement.attributeDictionary[ 'halfy' ] = self.halfY
 		self.xmlElement.attributeDictionary[ 'halfz' ] = self.halfZ

@@ -116,7 +116,7 @@ class BooleanGeometry:
 		visibleObjectLoopsList = booleansolid.getVisibleObjectLoopsList( self.importRadius, geomancer.getVisibleObjects( self.archivableObjects ), z )
 		rotatedBoundaryLayer.loops = booleansolid.getJoinedList( visibleObjectLoopsList )
 		if euclidean.isLoopListIntersecting( rotatedBoundaryLayer.loops, z ):
-			rotatedBoundaryLayer.loops = booleansolid.getUnifiedLoops( self.importRadius, visibleObjectLoopsList )
+			rotatedBoundaryLayer.loops = booleansolid.getLoopsUnified( self.importRadius, visibleObjectLoopsList )
 		return rotatedBoundaryLayer
 
 	def getInterpretationSuffix( self ):

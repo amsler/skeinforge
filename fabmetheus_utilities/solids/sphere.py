@@ -65,9 +65,10 @@ class Sphere( cube.Cube ):
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.radiusX = geomancer.getEvaluatedFloatOne( 'radiusx', self.xmlElement )
-		self.radiusY = geomancer.getEvaluatedFloatOne( 'radiusy', self.xmlElement )
-		self.radiusZ = geomancer.getEvaluatedFloatOne( 'radiusz', self.xmlElement )
+		radius = geomancer.getEvaluatedFloatOne( 'radius', self.xmlElement )
+		self.radiusX = geomancer.getEvaluatedFloatDefault( radius, 'radiusx', self.xmlElement )
+		self.radiusY = geomancer.getEvaluatedFloatDefault( radius, 'radiusy', self.xmlElement )
+		self.radiusZ = geomancer.getEvaluatedFloatDefault( radius, 'radiusz', self.xmlElement )
 		self.xmlElement.attributeDictionary[ 'radiusx' ] = self.radiusX
 		self.xmlElement.attributeDictionary[ 'radiusy' ] = self.radiusY
 		self.xmlElement.attributeDictionary[ 'radiusz' ] = self.radiusZ

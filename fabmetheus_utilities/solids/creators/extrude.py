@@ -21,26 +21,43 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def addLoop( loops, offset, originVertices, scale, tilt, twistRadians, vertices ):
+def addLoop( endMultiplier, extrude, loops, path, portionDirectionIndex, portionDirections, vertices ):
 	"Add an indexed loop to the vertices."
+	portionDirection = portionDirections[ portionDirectionIndex ]
+	interpolationOffset = extrude.interpolationDictionary[ 'offset' ]
+	offset = interpolationOffset.getVector3ByPortion( portionDirection )
+	if endMultiplier != None:
+		if portionDirectionIndex == 0:
+			setOffsetByMultiplier( interpolationOffset.path[ 1 ], interpolationOffset.path[ 0 ], endMultiplier, offset )
+		elif portionDirectionIndex == len( portionDirections ) - 1:
+			setOffsetByMultiplier( interpolationOffset.path[ - 2 ], interpolationOffset.path[ - 1 ], endMultiplier, offset )
+	scale = extrude.interpolationDictionary[ 'scale' ].getComplexByPortion( portionDirection )
+	twist = extrude.interpolationDictionary[ 'twist' ].getYByPortion( portionDirection )
+	projectiveSpace = euclidean.ProjectiveSpace()
+	if extrude.tiltTop == None:
+		tilt = extrude.interpolationDictionary[ 'tilt' ].getComplexByPortion( portionDirection )
+		projectiveSpace = projectiveSpace.getByTilt( tilt )
+	else:
+		normals = getNormals( interpolationOffset, offset, portionDirection )
+		normalFirst = normals[ 0 ]
+		normalAverage = getNormalAverage( normals )
+		if extrude.tiltFollow and extrude.oldProjectiveSpace != None:
+			projectiveSpace = extrude.oldProjectiveSpace.getNextSpace( normalAverage )
+		else:
+			projectiveSpace = projectiveSpace.getByBasisZTop( normalAverage, extrude.tiltTop )
+		extrude.oldProjectiveSpace = projectiveSpace
+		projectiveSpace.unbuckle( extrude.maximumUnbuckling, normalFirst )
+	projectiveSpace = projectiveSpace.getSpaceByXYScaleAngle( twist, scale )
 	loop = []
-	planeAngle = euclidean.getWiddershinsUnitPolar( twistRadians )
-	if abs( scale ) < 0.0001:
+	if ( abs( projectiveSpace.basisX ) + abs( projectiveSpace.basisY ) ) < 0.0001:
 		vector3Index = Vector3Index( len( vertices ) )
 		addOffsetAddToLists( loop, offset, vector3Index, vertices )
 		loops.append( loop )
 		return
-	for originVertex in originVertices:
+	for point in path:
 		vector3Index = Vector3Index( len( vertices ) )
-		scaledOriginVertex = Vector3( originVertex.x * scale.real, originVertex.y * scale.imag, originVertex.z )
-		vertexXZ = complex( scaledOriginVertex.x, scaledOriginVertex.z )
-		vertexYZ = complex( scaledOriginVertex.y, scaledOriginVertex.z )
-		tiltDeltaXZ = vertexXZ * getTiltPlaneAngle( tilt.real )
-		tiltDeltaYZ = vertexYZ * getTiltPlaneAngle( tilt.imag )
-		scaledOriginVertex.x += tiltDeltaXZ.real
-		scaledOriginVertex.y += tiltDeltaYZ.real
-		scaledOriginVertex.z += tiltDeltaXZ.imag + tiltDeltaYZ.imag
-		vector3Index.setToVector3( euclidean.getRoundZAxisByPlaneAngle( planeAngle, scaledOriginVertex ) )
+		projectedVertex = projectiveSpace.getVector3ByPoint( point )
+		vector3Index.setToVector3( projectedVertex )
 		addOffsetAddToLists( loop, offset, vector3Index, vertices )
 	loops.append( loop )
 
@@ -50,6 +67,23 @@ def addOffsetAddToLists( loop, offset, vector3Index, vertices ):
 	loop.append( vector3Index )
 	vertices.append( vector3Index )
 
+def addTwistPortions( interpolationTwist, remainderPortionDirection, twistPrecision ):
+	"Add twist portions."
+	lastPortionDirection = interpolationTwist.portionDirections[ - 1 ]
+	if remainderPortionDirection.portion == lastPortionDirection.portion:
+		return
+	lastTwist = interpolationTwist.getYByPortion( lastPortionDirection )
+	remainderTwist = interpolationTwist.getYByPortion( remainderPortionDirection )
+	twistSegments = int( math.floor( abs( remainderTwist - lastTwist ) / twistPrecision ) )
+	if twistSegments < 1:
+		return
+	portionDifference = remainderPortionDirection.portion - lastPortionDirection.portion
+	twistSegmentsPlusOne = float( twistSegments + 1 )
+	for twistSegment in xrange( twistSegments ):
+		additionalPortion = portionDifference * float( twistSegment + 1 ) / twistSegmentsPlusOne
+		portionDirection = geomancer.PortionDirection( lastPortionDirection.portion + additionalPortion )
+		interpolationTwist.portionDirections.append( portionDirection )
+
 def getGeometryOutput( xmlElement ):
 	"Get vector3 vertices from attribute dictionary."
 	paths = geomancer.getPathsByKey( 'target', xmlElement )
@@ -58,23 +92,33 @@ def getGeometryOutput( xmlElement ):
 		print( xmlElement.attributeDictionary )
 		return None
 	offsetPathDefault = [ Vector3(), Vector3( 0.0, 0.0, 1.0 ) ]
-	interpolationOffset = geomancer.Interpolation().getByPrefixZ( offsetPathDefault, '', xmlElement )
+	extrude = Extrude()
+	extrude.tiltFollow = geomancer.getEvaluatedBooleanDefault( extrude.tiltFollow, 'tiltfollow', xmlElement )
+	extrude.tiltTop = geomancer.getVector3ByPrefix( 'tilttop', extrude.tiltTop, xmlElement )
+	extrude.maximumUnbuckling = geomancer.getEvaluatedFloatDefault( 5.0, 'maximumunbuckling', xmlElement )
 	scalePathDefault = [ Vector3( 1.0, 1.0, 0.0 ), Vector3( 1.0, 1.0, 1.0 ) ]
-	interpolationScale = geomancer.Interpolation().getByPrefixZ( scalePathDefault, 'scale', xmlElement )
-	tiltPathDefault = [ Vector3(), Vector3( 0.0, 0.0, 1.0 ) ]
-	interpolationTilt = geomancer.Interpolation().getByPrefixZ( tiltPathDefault, 'tilt', xmlElement )
+	extrude.interpolationDictionary[ 'scale' ] = geomancer.Interpolation().getByPrefixZ( scalePathDefault, 'scale', xmlElement )
+	if extrude.tiltTop == None:
+		extrude.interpolationDictionary[ 'offset' ] = geomancer.Interpolation().getByPrefixZ( offsetPathDefault, '', xmlElement )
+		tiltPathDefault = [ Vector3(), Vector3( 0.0, 0.0, 1.0 ) ]
+		interpolationTilt = geomancer.Interpolation().getByPrefixZ( tiltPathDefault, 'tilt', xmlElement )
+		extrude.interpolationDictionary[ 'tilt' ] = interpolationTilt
+		for point in interpolationTilt.path:
+			point.x = math.radians( point.x )
+			point.y = math.radians( point.y )
+	else:
+		offsetAlongDefault = [ Vector3(), Vector3( 1.0, 0.0, 0.0 ) ]
+		extrude.interpolationDictionary[ 'offset' ] = geomancer.Interpolation().getByPrefixAlong( offsetAlongDefault, '', xmlElement )
+	insertTwistPortions( extrude.interpolationDictionary, xmlElement )
 	segments = geomancer.getEvaluatedIntOne( 'segments', xmlElement )
-	twist = geomancer.getEvaluatedFloatZero( 'twist', xmlElement )
-	twistPathDefault = [ Vector3(), Vector3( 1.0, twist ) ]
-	interpolationTwist = geomancer.Interpolation().getByPrefixX( twistPathDefault, 'twist', xmlElement )
 	negatives = []
 	positives = []
-	portionDirections = interpolationOffset.portionDirections
+	portionDirections = geomancer.getSpacedPortionDirections( extrude.interpolationDictionary )
 	for path in paths:
 		endMultiplier = None
 		if not euclidean.getIsWiddershinsByVector3( path ):
 			endMultiplier = 1.000001
-		geometryOutput = getGeometryOutputByPath( endMultiplier, interpolationOffset, interpolationScale, interpolationTilt, interpolationTwist, path, portionDirections )
+		geometryOutput = getGeometryOutputByPath( endMultiplier, extrude, path, portionDirections )
 		if endMultiplier == None:
 			positives.append( geometryOutput )
 		else:
@@ -84,25 +128,33 @@ def getGeometryOutput( xmlElement ):
 		return positiveOutput
 	return { 'difference' : [ positiveOutput ] + negatives }
 
-def getGeometryOutputByPath( endMultiplier, interpolationOffset, interpolationScale, interpolationTilt, interpolationTwist, path, portionDirections ):
+def getGeometryOutputByPath( endMultiplier, extrude, path, portionDirections ):
 	"Get vector3 vertices from attribute dictionary."
 	vertices = []
 	loops = []
-	for portionDirection in portionDirections:
-		portion = portionDirection.portion
-		offset = interpolationOffset.getVector3ByZPortion( portion )
-		if endMultiplier != None:
-			if portionDirection == portionDirections[ 0 ]:
-				setOffsetByMultiplier( interpolationOffset.path[ 1 ], interpolationOffset.path[ 0 ], endMultiplier, offset )
-			elif portionDirection == portionDirections[ - 1 ]:
-				setOffsetByMultiplier( interpolationOffset.path[ - 2 ], interpolationOffset.path[ - 1 ], endMultiplier, offset )
-		scale = interpolationScale.getComplexByZPortion( portion )
-		tilt = interpolationTilt.getComplexByZPortion( portion )
-		twistRadians = math.radians( interpolationTwist.getYByXPortion( portion ) )
-		addLoop( loops, offset, path, scale, tilt, twistRadians, vertices )
+	extrude.oldProjectiveSpace = None
+	for portionDirectionIndex in xrange( len( portionDirections ) ):
+		addLoop( endMultiplier, extrude, loops, path, portionDirectionIndex, portionDirections, vertices )
 	faces = []
 	trianglemesh.addPillarFromConvexLoops( faces, loops )
 	return { 'trianglemesh' : { 'vertex' : vertices, 'face' : faces } }
+
+def getNormalAverage( normals ):
+	"Get normal."
+	if len( normals ) < 2:
+		return normals[ 0 ]
+	return ( normals[ 0 ] + normals[ 1 ] ).getNormalized()
+
+def getNormals( interpolationOffset, offset, portionDirection ):
+	"Get normals."
+	normals = []
+	portionFrom = portionDirection.portion - 0.0001
+	portionTo = portionDirection.portion + 0.0001
+	if portionFrom >= 0.0:
+		normals.append( ( offset - interpolationOffset.getVector3ByPortion( geomancer.PortionDirection( portionFrom ) ) ).getNormalized() )
+	if portionTo <= 1.0:
+		normals.append( ( interpolationOffset.getVector3ByPortion( geomancer.PortionDirection( portionTo ) ) - offset ).getNormalized() )
+	return normals
 
 def getPositiveOutput( positives ):
 	"Get vector3 vertices from attribute dictionary."
@@ -112,9 +164,20 @@ def getPositiveOutput( positives ):
 		return positives[ 0 ]
 	return { 'union' : positives }
 
-def getTiltPlaneAngle( tiltScalar ):
-	"Get the tilt plane angle."
-	return euclidean.getWiddershinsUnitPolar( math.radians( tiltScalar ) ) - complex( 1.0, 0.0 )
+def insertTwistPortions( interpolationDictionary, xmlElement ):
+	"Insert twist portions and radian the twist."
+	twist = geomancer.getEvaluatedFloatZero( 'twist', xmlElement )
+	twistPathDefault = [ Vector3(), Vector3( 1.0, twist ) ]
+	interpolationTwist = geomancer.Interpolation().getByPrefixX( twistPathDefault, 'twist', xmlElement )
+	interpolationDictionary[ 'twist' ] = interpolationTwist
+	for point in interpolationTwist.path:
+		point.y = math.radians( point.y )
+	remainderPortionDirections = interpolationTwist.portionDirections[ 1 : ]
+	interpolationTwist.portionDirections = [ interpolationTwist.portionDirections[ 0 ] ]
+	twistPrecision = math.radians( xmlElement.getCascadeFloat( 5.0, 'twistprecision' ) )
+	for remainderPortionDirection in remainderPortionDirections:
+		addTwistPortions( interpolationTwist, remainderPortionDirection, twistPrecision )
+		interpolationTwist.portionDirections.append( remainderPortionDirection )
 
 def processXMLElement( xmlElement ):
 	"Process the xml element."
@@ -130,3 +193,15 @@ def setOffsetByMultiplier( begin, end, multiplier, offset ):
 	segment = end - begin
 	delta = segment * multiplier - segment
 	offset.setToVector3( offset + delta )
+
+
+class Extrude:
+	"Class to hold extrude variables."
+	def __init__( self ):
+		self.interpolationDictionary = {}
+		self.tiltFollow = True
+		self.tiltTop = None
+
+	def __repr__( self ):
+		"Get the string representation of extrude."
+		return '%s, %s' % ( self.interpolationDictionary, self.tiltTop )

@@ -118,7 +118,7 @@ To use the settings dialog you'll also need Tkinter, which probably came with th
 http://www.tcl.tk/software/tcltk/
 
 If you want python and Tkinter together on MacOS, you can try:
-http://www.astro.washington.edu/owen/PythonOnMacOSX.html
+http://www.astro.washington.edu/users/rowen/ROPackage/Overview.html
 
 If you want python and Tkinter together on all platforms and don't mind filling out forms, you can try the ActivePython package from Active State at:
 http://www.activestate.com/Products/activepython/feature_list.mhtml
@@ -212,24 +212,26 @@ import os
 import sys
 
 
-# if None: getPythonExceptInit
-# del previous, add begin & end if far  get actual path, getPaths, xyz axis
+# section, booleansolid threshold = default
+# getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
+# del previous, add begin & end if far  get actual path
 # polling
-# extrude from to, then arbitrary then paths
 # equation, x, y, z
-# path combine or getPathsCompound, getNormal, getIsFlat, equationx?
-# arc
+# getNormal, getIsFlat?
+# arc, pie
 # lathe
-# line
-# if there is no file types should start with all readable
+# support from top and bottom
+# line, parabolic interpolation if there is no endpoint angle then symmetrical, bysymmetricalplane, bysymmetricalsolid
 # evaluate float( equals, boolean etc )
+# maybe add back running jump
 # transform
 # _morning - polygon, midpointMultiplier, rotationoverside, rotation, spin (float), float sides, profile, round or bevel polygon
 # concatenate
-# connect
+# connect, from and to
 # tube, rotor
 # test translate
 # pyramid
+# round, fillet
 # tetroc
 # widen single path to different widths
 # generated_files?
@@ -345,6 +347,7 @@ import sys
 #2, 7077
 #3, 9598
 #4 12014
+#5 14319
 #85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?

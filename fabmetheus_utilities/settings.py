@@ -823,25 +823,25 @@ class FileNameInput( StringSetting ):
 
 	def getFileNameFirstTypes( self ):
 		"Get the file types with the file type of the fileName moved to the front of the list."
+		allFiles = [ ( 'All', '*.*' ) ]
 		try:
 			basename = os.path.basename( self.value )
 			splitFile = basename.split( '.' )
-			allFiles = [ ( 'All', '*.*' ) ]
 			allReadables = []
 			if len( self.fileTypes ) > 1:
 				for fileType in self.fileTypes:
 					allReadable = ( ( 'All Readable', fileType[ 1 ] ) )
 					allReadables.append( allReadable )
 			if len( splitFile ) < 1:
-				return self.fileTypes + allReadables + allFiles
+				return allReadables + allFiles + self.fileTypes
 			baseExtension = splitFile[ - 1 ]
 			for fileType in self.fileTypes:
 				fileExtension = fileType[ 1 ].split( '.' )[ - 1 ]
 				if fileExtension == baseExtension:
 					fileNameFirstTypes = self.fileTypes[ : ]
 					fileNameFirstTypes.remove( fileType )
-					return [ fileType ] + fileNameFirstTypes + allReadables + allFiles
-			return self.fileTypes + allReadables + allFiles
+					return [ fileType ] + allReadables + allFiles + fileNameFirstTypes
+			return allReadables + allFiles + self.fileTypes
 		except:
 			return allFiles
 

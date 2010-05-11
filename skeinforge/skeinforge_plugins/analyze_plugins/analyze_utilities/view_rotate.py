@@ -56,18 +56,6 @@ class LatitudeLongitude:
 		self.longitude = round( ( skeinWindow.repository.viewpointLongitude.value + self.deltaLongitude ) % 360.0, 1 )
 
 
-class ViewVectors:
-	def __init__( self, viewpointLatitude, viewpointLongitude ):
-		"Initialize the view vectors."
-		longitudeComplex = euclidean.getWiddershinsUnitPolar( math.radians( 90.0 - viewpointLongitude ) )
-		self.viewpointLatitudeRatio = euclidean.getWiddershinsUnitPolar( math.radians( viewpointLatitude ) )
-		self.viewpointVector3 = Vector3( self.viewpointLatitudeRatio.imag * longitudeComplex.real, self.viewpointLatitudeRatio.imag * longitudeComplex.imag, self.viewpointLatitudeRatio.real )
-		self.viewXVector3 = Vector3( - longitudeComplex.imag, longitudeComplex.real, 0.0 )
-		self.viewXVector3.normalize()
-		self.viewYVector3 = self.viewpointVector3.cross( self.viewXVector3 )
-		self.viewYVector3.normalize()
-
-
 class ViewpointRotate( MouseToolBase ):
 	"Display the line when it is clicked."
 	def button1( self, event, shift = False ):
@@ -151,7 +139,7 @@ class ViewpointRotate( MouseToolBase ):
 	def motionGivenCoordinates( self, motionCoordinate, shift, startCoordinate ):
 		"Move the motion viewpoint given the motion coordinates."
 		latitudeLongitude = LatitudeLongitude( startCoordinate, motionCoordinate, self.window, shift )
-		viewVectors = ViewVectors( latitudeLongitude.latitude, latitudeLongitude.longitude )
+		viewVectors = euclidean.ProjectiveSpace().getByLatitudeLongitude( latitudeLongitude.latitude, latitudeLongitude.longitude )
 		motionCentered = self.window.getCentered( motionCoordinate )
 		motionCenteredNormalized = motionCentered / abs( motionCentered )
 		buttonOnePressedCentered = self.window.getCentered( startCoordinate )

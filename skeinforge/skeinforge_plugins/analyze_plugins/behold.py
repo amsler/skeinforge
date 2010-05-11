@@ -681,7 +681,7 @@ class SkeinWindow( tableau.TableauWindow ):
 			self.positiveRulings.append( Ruling( modelDistance, self.getRoundedRulingText( 1, modelDistance ) ) )
 		self.rulingExtentHalf = 0.5 * self.rulingExtent
 
-	def drawRuling( self, relativeRulingEnd, ruling, tags, viewBegin, viewEnd, viewVectors ):
+	def drawRuling( self, projectiveSpace, relativeRulingEnd, ruling, tags, viewBegin, viewEnd ):
 		"Draw ruling."
 		alongWay = ruling.modelDistance / self.halfCenterModel
 		oneMinusAlongWay = 1.0 - alongWay
@@ -697,12 +697,12 @@ class SkeinWindow( tableau.TableauWindow ):
 			width = 2 )
 		self.canvas.create_text( int( alongScreenEnd.real ) + 3, alongScreenEnd.imag, anchor = settings.Tkinter.W, text = ruling.roundedRulingText )
 
-	def drawRulings( self, axisLine, rulings, viewVectors ):
+	def drawRulings( self, axisLine, projectiveSpace, rulings ):
 		"Draw rulings for the axis line."
 		if not self.repository.axisRulings.value:
 			return
-		viewBegin = self.getViewComplex( axisLine.begin, viewVectors )
-		viewEnd = self.getViewComplex( axisLine.end, viewVectors )
+		viewBegin = self.getScreenView( axisLine.begin, projectiveSpace )
+		viewEnd = self.getScreenView( axisLine.end, projectiveSpace )
 		viewSegment = viewEnd - viewBegin
 		viewSegmentLength = abs( viewSegment )
 		if viewSegmentLength < self.rulingExtent:
@@ -712,34 +712,34 @@ class SkeinWindow( tableau.TableauWindow ):
 		if normalizedViewSegment.imag > 0.0:
 			relativeRulingEnd = complex( normalizedViewSegment.imag, - normalizedViewSegment.real )
 		for ruling in rulings:
-			self.drawRuling( relativeRulingEnd * self.rulingExtentHalf, ruling, axisLine.tagString, viewBegin, viewEnd, viewVectors )
+			self.drawRuling( projectiveSpace, relativeRulingEnd * self.rulingExtentHalf, ruling, axisLine.tagString, viewBegin, viewEnd )
 
-	def drawSkeinPane( self, skeinPane, viewVectors ):
+	def drawSkeinPane( self, projectiveSpace, skeinPane ):
 		"Draw colored lines."
-		self.getDrawnColoredLines( skeinPane.raftLines, viewVectors, self.repository.widthOfRaftThread.value )
-		self.getDrawnColoredLines( skeinPane.travelLines, viewVectors, self.repository.widthOfTravelThread.value )
-		self.getDrawnColoredLines( skeinPane.fillBottomLines, viewVectors, self.repository.widthOfFillBottomThread.value )
-		self.getDrawnColoredLines( skeinPane.fillTopLines, viewVectors, self.repository.widthOfFillTopThread.value )
-		self.getDrawnColoredLines( skeinPane.infillLines, viewVectors, self.repository.widthOfInfillThread.value )
-		self.getDrawnColoredLines( skeinPane.loopLines, viewVectors, self.repository.widthOfLoopThread.value )
-		self.getDrawnColoredLines( skeinPane.perimeterInsideLines, viewVectors, self.repository.widthOfPerimeterInsideThread.value )
-		self.getDrawnColoredLines( skeinPane.perimeterOutsideLines, viewVectors, self.repository.widthOfPerimeterOutsideThread.value )
+		self.getDrawnColoredLines( skeinPane.raftLines, projectiveSpace, self.repository.widthOfRaftThread.value )
+		self.getDrawnColoredLines( skeinPane.travelLines, projectiveSpace, self.repository.widthOfTravelThread.value )
+		self.getDrawnColoredLines( skeinPane.fillBottomLines, projectiveSpace, self.repository.widthOfFillBottomThread.value )
+		self.getDrawnColoredLines( skeinPane.fillTopLines, projectiveSpace, self.repository.widthOfFillTopThread.value )
+		self.getDrawnColoredLines( skeinPane.infillLines, projectiveSpace, self.repository.widthOfInfillThread.value )
+		self.getDrawnColoredLines( skeinPane.loopLines, projectiveSpace, self.repository.widthOfLoopThread.value )
+		self.getDrawnColoredLines( skeinPane.perimeterInsideLines, projectiveSpace, self.repository.widthOfPerimeterInsideThread.value )
+		self.getDrawnColoredLines( skeinPane.perimeterOutsideLines, projectiveSpace, self.repository.widthOfPerimeterOutsideThread.value )
 
-	def drawXYAxisLines( self, viewVectors ):
+	def drawXYAxisLines( self, projectiveSpace ):
 		"Draw the x and y axis lines."
 		if self.repository.widthOfAxisNegativeSide.value > 0:
-			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineX, self.negativeAxisLineX.tagString, viewVectors, self.repository.widthOfAxisNegativeSide.value )
-			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineY, self.negativeAxisLineY.tagString, viewVectors, self.repository.widthOfAxisNegativeSide.value )
+			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineX, projectiveSpace, self.negativeAxisLineX.tagString, self.repository.widthOfAxisNegativeSide.value )
+			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineY, projectiveSpace, self.negativeAxisLineY.tagString, self.repository.widthOfAxisNegativeSide.value )
 		if self.repository.widthOfAxisPositiveSide.value > 0:
-			self.getDrawnColoredLine( 'last', self.positiveAxisLineX, self.positiveAxisLineX.tagString, viewVectors, self.repository.widthOfAxisPositiveSide.value )
-			self.getDrawnColoredLine( 'last', self.positiveAxisLineY, self.positiveAxisLineY.tagString, viewVectors, self.repository.widthOfAxisPositiveSide.value )
+			self.getDrawnColoredLine( 'last', self.positiveAxisLineX, projectiveSpace, self.positiveAxisLineX.tagString, self.repository.widthOfAxisPositiveSide.value )
+			self.getDrawnColoredLine( 'last', self.positiveAxisLineY, projectiveSpace, self.positiveAxisLineY.tagString, self.repository.widthOfAxisPositiveSide.value )
 
-	def drawZAxisLine( self, viewVectors ):
+	def drawZAxisLine( self, projectiveSpace ):
 		"Draw the z axis line."
 		if self.repository.widthOfAxisNegativeSide.value > 0:
-			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineZ, self.negativeAxisLineZ.tagString, viewVectors, self.repository.widthOfAxisNegativeSide.value )
+			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineZ, projectiveSpace, self.negativeAxisLineZ.tagString, self.repository.widthOfAxisNegativeSide.value )
 		if self.repository.widthOfAxisPositiveSide.value > 0:
-			self.getDrawnColoredLine( 'last', self.positiveAxisLineZ, self.positiveAxisLineZ.tagString, viewVectors, self.repository.widthOfAxisPositiveSide.value )
+			self.getDrawnColoredLine( 'last', self.positiveAxisLineZ, projectiveSpace, self.positiveAxisLineZ.tagString, self.repository.widthOfAxisPositiveSide.value )
 
 	def getCentered( self, coordinate ):
 		"Get the centered coordinate."
@@ -768,10 +768,10 @@ class SkeinWindow( tableau.TableauWindow ):
 		"Get a copy of this window with a new skein."
 		return getWindowGivenTextRepository( self.skein.fileName, self.skein.gcodeText, self.repository )
 
-	def getDrawnColoredLine( self, arrowType, coloredLine, tags, viewVectors, width ):
+	def getDrawnColoredLine( self, arrowType, coloredLine, projectiveSpace, tags, width ):
 		"Draw colored line."
-		viewBegin = self.getViewComplex( coloredLine.begin, viewVectors )
-		viewEnd = self.getViewComplex( coloredLine.end, viewVectors )
+		viewBegin = self.getScreenView( coloredLine.begin, projectiveSpace )
+		viewEnd = self.getScreenView( coloredLine.end, projectiveSpace )
 		return self.canvas.create_line(
 			viewBegin.real,
 			viewBegin.imag,
@@ -782,10 +782,10 @@ class SkeinWindow( tableau.TableauWindow ):
 			tags = tags,
 			width = width )
 
-	def getDrawnColoredLineMotion( self, coloredLine, viewVectors, width ):
+	def getDrawnColoredLineMotion( self, coloredLine, projectiveSpace, width ):
 		"Draw colored line with motion stipple and tag."
-		viewBegin = self.getViewComplex( coloredLine.begin, viewVectors )
-		viewEnd = self.getViewComplex( coloredLine.end, viewVectors )
+		viewBegin = self.getScreenView( coloredLine.begin, projectiveSpace )
+		viewEnd = self.getScreenView( coloredLine.end, projectiveSpace )
 		return self.canvas.create_line(
 			viewBegin.real,
 			viewBegin.imag,
@@ -798,19 +798,19 @@ class SkeinWindow( tableau.TableauWindow ):
 			tags = 'mouse_item',
 			width = width + 4 )
 
-	def getDrawnColoredLines( self, coloredLines, viewVectors, width ):
+	def getDrawnColoredLines( self, coloredLines, projectiveSpace, width ):
 		"Draw colored lines."
 		if width <= 0:
 			return
 		drawnColoredLines = []
 		for coloredLine in coloredLines:
-			drawnColoredLines.append( self.getDrawnColoredLine( self.arrowType, coloredLine, coloredLine.tagString, viewVectors, width ) )
+			drawnColoredLines.append( self.getDrawnColoredLine( self.arrowType, coloredLine, projectiveSpace, coloredLine.tagString, width ) )
 		return drawnColoredLines
 
-	def getDrawnColoredLineWithoutArrow( self, coloredLine, tags, viewVectors, width ):
+	def getDrawnColoredLineWithoutArrow( self, coloredLine, projectiveSpace, tags, width ):
 		"Draw colored line without an arrow."
-		viewBegin = self.getViewComplex( coloredLine.begin, viewVectors )
-		viewEnd = self.getViewComplex( coloredLine.end, viewVectors )
+		viewBegin = self.getScreenView( coloredLine.begin, projectiveSpace )
+		viewEnd = self.getScreenView( coloredLine.end, projectiveSpace )
 		return self.canvas.create_line(
 			viewBegin.real,
 			viewBegin.imag,
@@ -822,18 +822,16 @@ class SkeinWindow( tableau.TableauWindow ):
 
 	def getDrawnSelectedColoredLine( self, coloredLine ):
 		"Get the drawn selected colored line."
-		viewVectors = view_rotate.ViewVectors( self.repository.viewpointLatitude.value, self.repository.viewpointLongitude.value )
-		return self.getDrawnColoredLine( self.arrowType, coloredLine, 'mouse_item', viewVectors, self.repository.widthOfSelectionThread.value )
+		projectiveSpace = euclidean.ProjectiveSpace().getByLatitudeLongitude( self.repository.viewpointLatitude.value, self.repository.viewpointLongitude.value )
+		return self.getDrawnColoredLine( self.arrowType, coloredLine, projectiveSpace, 'mouse_item', self.repository.widthOfSelectionThread.value )
 
 	def getScreenComplex( self, pointComplex ):
 		"Get the point in screen perspective."
 		return complex( pointComplex.real, - pointComplex.imag ) + self.center
 
-	def getViewComplex( self, point, viewVectors ):
-		"Get the point in view perspective."
-		screenComplexX = point.dot( viewVectors.viewXVector3 )
-		screenComplexY = point.dot( viewVectors.viewYVector3 )
-		return self.getScreenComplex( complex( screenComplexX, screenComplexY ) )
+	def getScreenView( self, point, projectiveSpace ):
+		"Get the point in screen view perspective."
+		return self.getScreenComplex( projectiveSpace.getDotComplex( point ) )
 
 	def printHexadecimalColorName( self, name ):
 		"Print the color name in hexadecimal."
@@ -847,28 +845,28 @@ class SkeinWindow( tableau.TableauWindow ):
 		self.limitIndexSetArrowMouseDeleteCanvas()
 		self.repository.viewpointLatitude.value = view_rotate.getBoundedLatitude( self.repository.viewpointLatitude.value )
 		self.repository.viewpointLongitude.value = round( self.repository.viewpointLongitude.value, 1 )
-		viewVectors = view_rotate.ViewVectors( self.repository.viewpointLatitude.value, self.repository.viewpointLongitude.value )
+		projectiveSpace = euclidean.ProjectiveSpace().getByLatitudeLongitude( self.repository.viewpointLatitude.value, self.repository.viewpointLongitude.value )
 		skeinPanesCopy = self.getUpdateSkeinPanes()[ : ]
 		skeinPanesCopy.sort( compareLayerSequence )
-		if viewVectors.viewpointLatitudeRatio.real > 0.0:
-			self.drawXYAxisLines( viewVectors )
+		if projectiveSpace.basisZ.z > 0.0:
+			self.drawXYAxisLines( projectiveSpace )
 		else:
 			skeinPanesCopy.reverse()
-			self.drawZAxisLine( viewVectors )
+			self.drawZAxisLine( projectiveSpace )
 		for skeinPane in skeinPanesCopy:
-			self.drawSkeinPane( skeinPane, viewVectors )
-		if viewVectors.viewpointLatitudeRatio.real > 0.0:
-			self.drawZAxisLine( viewVectors )
+			self.drawSkeinPane( projectiveSpace, skeinPane )
+		if projectiveSpace.basisZ.z > 0.0:
+			self.drawZAxisLine( projectiveSpace )
 		else:
-			self.drawXYAxisLines( viewVectors )
+			self.drawXYAxisLines( projectiveSpace )
 		if self.repository.widthOfAxisNegativeSide.value > 0:
-			self.drawRulings( self.negativeAxisLineX, self.negativeRulings, viewVectors )
-			self.drawRulings( self.negativeAxisLineY, self.negativeRulings, viewVectors )
-			self.drawRulings( self.negativeAxisLineZ, self.negativeRulings, viewVectors )
+			self.drawRulings( self.negativeAxisLineX, projectiveSpace, self.negativeRulings )
+			self.drawRulings( self.negativeAxisLineY, projectiveSpace, self.negativeRulings )
+			self.drawRulings( self.negativeAxisLineZ, projectiveSpace, self.negativeRulings )
 		if self.repository.widthOfAxisPositiveSide.value > 0:
-			self.drawRulings( self.positiveAxisLineX, self.positiveRulings, viewVectors )
-			self.drawRulings( self.positiveAxisLineY, self.positiveRulings, viewVectors )
-			self.drawRulings( self.positiveAxisLineZ, self.positiveRulings, viewVectors )
+			self.drawRulings( self.positiveAxisLineX, projectiveSpace, self.positiveRulings )
+			self.drawRulings( self.positiveAxisLineY, projectiveSpace, self.positiveRulings )
+			self.drawRulings( self.positiveAxisLineZ, projectiveSpace, self.positiveRulings )
 		self.setDisplayLayerIndex()
 
 

@@ -30,7 +30,7 @@ class Cylinder( cube.Cube ):
 	"A cylinder object."
 	def __init__( self ):
 		"Add empty lists."
-		self.isYImaginaryAxis = False
+		self.radiusZ = None
 		cube.Cube.__init__( self )
 
 	def createShape( self ):
@@ -39,7 +39,7 @@ class Cylinder( cube.Cube ):
 		polygonBottom = []
 		polygonTop = []
 		imaginaryRadius = self.radiusZ
-		if self.isYImaginaryAxis:
+		if self.radiusZ == None:
 			imaginaryRadius = self.radiusY
 		sides = max( int( geomancer.getSides( max( imaginaryRadius, self.radiusX ), self.xmlElement ) ), 3 )
 		sideAngle = 2.0 * math.pi / float( sides )
@@ -54,7 +54,7 @@ class Cylinder( cube.Cube ):
 			polygonTop.append( complex() )
 		bottomTopPolygon = [ trianglemesh.getAddIndexedLoop( polygonBottom, self.vertices, - halfHeight ), trianglemesh.getAddIndexedLoop( polygonTop, self.vertices, halfHeight ) ]
 		trianglemesh.addPillarFromConvexLoops( self.faces, bottomTopPolygon )
-		if not self.isYImaginaryAxis:
+		if self.radiusZ != None:
 			for vertex in self.vertices:
 				oldY = vertex.y
 				vertex.y = vertex.z
@@ -63,15 +63,16 @@ class Cylinder( cube.Cube ):
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
 		self.height = geomancer.getEvaluatedFloatOne( 'height', self.xmlElement )
-		self.radiusX = geomancer.getEvaluatedFloatOne( 'radiusx', self.xmlElement )
+		radius = geomancer.getEvaluatedFloatOne( 'radius', self.xmlElement )
+		self.radiusX = geomancer.getEvaluatedFloatDefault( radius, 'radiusx', self.xmlElement )
+		self.radiusY = geomancer.getEvaluatedFloatDefault( radius, 'radiusy', self.xmlElement )
+		self.radiusZ = geomancer.getEvaluatedFloatDefault( radius, 'radiusz', self.xmlElement )
 		self.topOverBottom = geomancer.getEvaluatedFloatOne( 'topoverbottom', self.xmlElement )
-		self.radiusY = geomancer.getEvaluatedFloatOne( 'radiusy', self.xmlElement )
-		self.radiusZ = geomancer.getEvaluatedFloatOne( 'radiusz', self.xmlElement )
-		if 'radiusy' in self.xmlElement.attributeDictionary:
-			self.isYImaginaryAxis = True
+		if 'radiusz' not in self.xmlElement.attributeDictionary:
+			self.radiusZ = None
 		self.xmlElement.attributeDictionary[ 'height' ] = self.height
 		self.xmlElement.attributeDictionary[ 'radiusx' ] = self.radiusX
-		if self.isYImaginaryAxis:
+		if self.radiusZ == None:
 			self.xmlElement.attributeDictionary[ 'radiusy' ] = self.radiusY
 		else:
 			self.xmlElement.attributeDictionary[ 'radiusz' ] = self.radiusZ

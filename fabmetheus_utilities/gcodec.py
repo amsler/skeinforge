@@ -49,6 +49,8 @@ def createInitFile():
 def findWords( fileNames, search ):
 	"Find in files the search."
 	print( search + ' is being searched for.' )
+	if fileNames == None:
+		fileNames = getPythonFileNamesExceptInitRecursively()
 	for fileName in fileNames:
 		fileText = getFileText( fileName )
 		if fileText != '':
@@ -364,6 +366,8 @@ def isThereAFirstWord( firstWord, lines, startIndex ):
 def replaceWords( fileNames, original, replacement ):
 	"Replace in files the original with the replacement."
 	print( original + ' is being replaced with ' + replacement + ' in the following files:' )
+	if fileNames == None:
+		fileNames = getPythonFileNamesExceptInitRecursively()
 	for fileName in fileNames:
 		fileText = getFileText( fileName )
 		if fileText != '':
@@ -481,8 +485,6 @@ class DistanceFeedRate:
 
 	def addLine( self, line ):
 		"Add a line of text and a newline to the output."
-		if len( line ) <= 0:
-			return
 		splitLine = getSplitLineBeforeBracketSemicolon( line )
 		firstWord = getFirstWord( splitLine )
 		if firstWord == 'G90':
@@ -506,7 +508,8 @@ class DistanceFeedRate:
 			self.maximumZFeedRatePerSecond = self.maximumZDrillFeedRatePerSecond
 		elif firstWord == 'M103':
 			self.maximumZFeedRatePerSecond = self.maximumZTravelFeedRatePerSecond
-		self.output.write( line + "\n" )
+		if len( line ) > 0:
+			self.output.write( line + "\n" )
 
 	def addLines( self, lines ):
 		"Add lines of text to the output."

@@ -202,7 +202,7 @@ class Vector3:
 		if which == 2:
 			return complex( self.x, self.y )
 
-	def getNormalized( self, other ):
+	def getNormalized( self ):
 		"Get the normalized Vector3."
 		magnitude = abs( self )
 		if magnitude == 0.0:

@@ -16,14 +16,14 @@ The 'Meta' field is to add meta tags or a note to all your files.  Whatever is i
 Preface looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Preface does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the craft_plugins folder.
 
 ====Name of End File====
-Default is end.gcode.
+Default is start.gcode.
 
-If there is a file with the name of the "Name of End File" setting, it will be added to the very end.
+If there is a file with the name of the "Name of Start File" setting, it will be added to the very beginning of the gcode.
 
 ====Name of Start File====
 Default is end.gcode.
 
-If there is a file with the name of the "Name of Start File" setting, it will be added to the very beginning of the gcode.
+If there is a file with the name of the "Name of Start File" setting, it will be added to the very end.
 
 ===Set Positioning to Absolute===
 Default is on.

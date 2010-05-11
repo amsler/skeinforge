@@ -32,7 +32,7 @@ def getPluginsDirectoryPath():
 
 def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 	"Analyze a gcode file."
-	gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
+	gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
 	pluginFileNames = getPluginFileNames()
 	for pluginFileName in pluginFileNames:
 		analyzePluginsDirectoryPath = getPluginsDirectoryPath()
@@ -58,4 +58,4 @@ class AnalyzeRepository:
 		"Analyze button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput( fileName, fileName )

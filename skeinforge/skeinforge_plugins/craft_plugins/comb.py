@@ -63,6 +63,7 @@ from fabmetheus_utilities import settings
 from skeinforge.skeinforge_utilities import skeinforge_craft
 from skeinforge.skeinforge_utilities import skeinforge_polyfile
 from skeinforge.skeinforge_utilities import skeinforge_profile
+import math
 import sys
 
 
@@ -71,7 +72,6 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-#maybe remove getBetweenAdded because widdershins loops have been removed
 def getCraftedText( fileName, text, combRepository = None ):
 	"Comb a gcode linear move text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), combRepository )
@@ -86,9 +86,47 @@ def getCraftedTextFromText( gcodeText, combRepository = None ):
 		return gcodeText
 	return CombSkein().getCraftedGcode( combRepository, gcodeText )
 
+def getInsideness( path, loop ):
+	"Get portion of the path which is inside the loop."
+	if len( path ) < 2:
+		return 0.0
+	pathLength = euclidean.getPathLength( path )
+	incrementRatio = 0.017
+	increment = incrementRatio * pathLength
+	oldPoint = path[ 0 ]
+	numberOfPointsInside = float( euclidean.isPointInsideLoop( loop, oldPoint ) )
+	for point in path[ 1 : ]:
+		segment = point - oldPoint
+		distance = abs( segment )
+		numberOfPosts = int( math.ceil( distance / increment ) )
+		if numberOfPosts > 0:
+			segmentIncrement = segment / float( numberOfPosts )
+			for post in xrange( numberOfPosts ):
+				postPoint = oldPoint + float( post ) * segmentIncrement
+				numberOfPointsInside += float( euclidean.isPointInsideLoop( loop, postPoint ) )
+			oldPoint = point
+	return incrementRatio * numberOfPointsInside
+
 def getNewRepository():
 	"Get the repository constructor."
 	return CombRepository()
+
+def getPathsByIntersectedLoop( begin, end, loop ):
+	"Get both paths along the loop from the point nearest to the begin to the point nearest to the end."
+	nearestBeginDistanceIndex = euclidean.getNearestDistanceIndex( begin, loop )
+	nearestEndDistanceIndex = euclidean.getNearestDistanceIndex( end, loop )
+	beginIndex = ( nearestBeginDistanceIndex.index + 1 ) % len( loop )
+	endIndex = ( nearestEndDistanceIndex.index + 1 ) % len( loop )
+	nearestBegin = euclidean.getNearestPointOnSegment( loop[ nearestBeginDistanceIndex.index ], loop[ beginIndex ], begin )
+	nearestEnd = euclidean.getNearestPointOnSegment( loop[ nearestEndDistanceIndex.index ], loop[ endIndex ], end )
+	clockwisePath = [ nearestBegin ]
+	widdershinsPath = [ nearestBegin ]
+	if nearestBeginDistanceIndex.index != nearestEndDistanceIndex.index:
+		widdershinsPath += euclidean.getAroundLoop( beginIndex, endIndex, loop )
+		clockwisePath += euclidean.getAroundLoop( endIndex, beginIndex, loop )[ : : - 1 ]
+	clockwisePath.append( nearestEnd )
+	widdershinsPath.append( nearestEnd )
+	return [ clockwisePath, widdershinsPath ]
 
 def writeOutput( fileName = '' ):
 	"Comb a gcode linear move file."
@@ -184,8 +222,6 @@ class CombSkein:
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
 			self.parseBoundariesLayers( combRepository, line )
-		for layerTableKey in self.layerTable.keys():
-			self.layerTable[ layerTableKey ] = intercircle.getLoopsFromLoopsDirection( False, self.layerTable[ layerTableKey ] )
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
 			self.parseLine( line )
@@ -207,42 +243,22 @@ class CombSkein:
 		pathAround[ - 1 ] = jumpStartPoint
 		return True
 
-	def getPathBetween( self, betweenFirst, betweenSecond, isLeavingPerimeter, loopFirst ):
+	def getPathBetween( self, loop, points ):
 		"Add a path between the perimeter and the fill."
-		loopFirst = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loopFirst, self.combInset )
-		nearestFirstDistanceIndex = euclidean.getNearestDistanceIndex( betweenFirst, loopFirst )
-		nearestSecondDistanceIndex = euclidean.getNearestDistanceIndex( betweenSecond, loopFirst )
-		firstBeginIndex = ( nearestFirstDistanceIndex.index + 1 ) % len( loopFirst )
-		secondBeginIndex = ( nearestSecondDistanceIndex.index + 1 ) % len( loopFirst )
-		nearestFirst = euclidean.getNearestPointOnSegment( loopFirst[ nearestFirstDistanceIndex.index ], loopFirst[ firstBeginIndex ], betweenFirst )
-		nearestSecond = euclidean.getNearestPointOnSegment( loopFirst[ nearestSecondDistanceIndex.index ], loopFirst[ secondBeginIndex ], betweenSecond )
-		clockwisePath = [ nearestFirst ]
-		widdershinsPath = [ nearestFirst ]
-		loopBeforeLeaving = euclidean.getAroundLoop( firstBeginIndex, firstBeginIndex, loopFirst )
-		if nearestFirstDistanceIndex.index == nearestSecondDistanceIndex.index:
-			if euclidean.getPathLength( widdershinsPath ) < self.minimumDepartureDistance:
-				widdershinsPath = [ nearestFirst ] + loopBeforeLeaving
-				reversedLoop = loopBeforeLeaving[ : ]
-				reversedLoop.reverse()
-				clockwisePath = [ nearestFirst ] + reversedLoop
-		else:
-			widdershinsLoop = euclidean.getAroundLoop( firstBeginIndex, secondBeginIndex, loopFirst )
-			widdershinsPath += widdershinsLoop
-			clockwiseLoop = euclidean.getAroundLoop( secondBeginIndex, firstBeginIndex, loopFirst )
-			clockwiseLoop.reverse()
-			clockwisePath += clockwiseLoop
-		clockwisePath.append( nearestSecond )
-		widdershinsPath.append( nearestSecond )
-		if euclidean.getPathLength( widdershinsPath ) > euclidean.getPathLength( clockwisePath ):
-			loopBeforeLeaving.reverse()
-			widdershinsPath = clockwisePath
-		if isLeavingPerimeter:
-			totalDistance = euclidean.getPathLength( widdershinsPath )
-			loopLength = euclidean.getPolygonLength( loopBeforeLeaving )
-			while totalDistance < self.minimumDepartureDistance:
-				widdershinsPath = [ nearestFirst ] + loopBeforeLeaving + widdershinsPath[ 1 : ]
-				totalDistance += loopLength
-		return widdershinsPath
+		paths = getPathsByIntersectedLoop( points[ 1 ], points[ 2 ], loop )
+		shortestPath = paths[ int( euclidean.getPathLength( paths[ 1 ] ) < euclidean.getPathLength( paths[ 0 ] ) ) ]
+		if not euclidean.isWiddershins( shortestPath ):
+			shortestPath.reverse()
+		loopAround = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( shortestPath, - self.combInset )
+		endMinusBegin = points[ 3 ] - points[ 0 ]
+		endMinusBegin = 1.3 * self.combInset * euclidean.getNormalized( endMinusBegin )
+		aroundPaths = getPathsByIntersectedLoop( points[ 0 ] - endMinusBegin, points[ 3 ] + endMinusBegin, loopAround )
+		insidePath = aroundPaths[ int( getInsideness( aroundPaths[ 1 ], loop ) > getInsideness( aroundPaths[ 0 ], loop ) ) ]
+		pathBetween = []
+		for point in insidePath:
+			if euclidean.isPointInsideLoop( loop, point ):
+				pathBetween.append(point )
+		return pathBetween
 
 	def getPathsBetween( self, begin, end ):
 		"Insert paths between the perimeter and the fill."
@@ -270,22 +286,29 @@ class CombSkein:
 				lineX.append( xIntersection )
 		points.append( end )
 		lineXIndex = 0
-		pathBetweenAdded = False
+#		pathBetweenAdded = False
 		while lineXIndex < len( lineX ) - 1:
 			lineXFirst = lineX[ lineXIndex ]
 			lineXSecond = lineX[ lineXIndex + 1 ]
 			loopFirst = boundaries[ lineXFirst.index ]
-			isLeavingPerimeter = False
-			if lineXSecond.index != lineXFirst.index:
-				isLeavingPerimeter = True
-			pathBetween = self.getPathBetween( points[ lineXIndex + 1 ], points[ lineXIndex + 2 ], isLeavingPerimeter, loopFirst )
-			if isLeavingPerimeter:
-				pathBetweenAdded = True
-			else:
+			if lineXSecond.index == lineXFirst.index:
+				pathBetween = self.getPathBetween( loopFirst, points[ lineXIndex : lineXIndex + 4 ] )
 				pathBetween = self.getSimplifiedAroundPath( points[ lineXIndex ], points[ lineXIndex + 3 ], loopFirst, pathBetween )
-				pathBetweenAdded = True
-			aroundBetweenPath += pathBetween
-			lineXIndex += 2
+				aroundBetweenPath += pathBetween
+				lineXIndex += 2
+			else:
+				lineXIndex += 1
+#			isLeavingPerimeter = False
+#			if lineXSecond.index != lineXFirst.index:
+#				isLeavingPerimeter = True
+#			pathBetween = self.getPathBetween( points[ lineXIndex + 1 ], points[ lineXIndex + 2 ], isLeavingPerimeter, loopFirst )
+#			if isLeavingPerimeter:
+#				pathBetweenAdded = True
+#			else:
+#				pathBetween = self.getSimplifiedAroundPath( points[ lineXIndex ], points[ lineXIndex + 3 ], loopFirst, pathBetween )
+#				pathBetweenAdded = True
+#			aroundBetweenPath += pathBetween
+#			lineXIndex += 2
 		return aroundBetweenPath
 
 	def getSimplifiedAroundPath( self, begin, end, loop, pathAround ):
@@ -343,7 +366,7 @@ class CombSkein:
 				return
 			elif firstWord == '(<perimeterWidth>':
 				perimeterWidth = float( splitLine[ 1 ] )
-				self.combInset = 1.2 * perimeterWidth
+				self.combInset = 0.7 * perimeterWidth
 				self.betweenInset = 0.4 * perimeterWidth
 				self.uTurnWidth = 0.5 * self.betweenInset
 				self.minimumDepartureDistance = combRepository.minimumDepartureDistanceOverPerimeterWidth.value * perimeterWidth

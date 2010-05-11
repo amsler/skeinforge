@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from fabmetheus_utilities import xml_simple_parser
@@ -38,6 +39,25 @@ def addKeys( fromKeys, toKeys ):
 	for fromKey in fromKeys:
 		if fromKey not in toKeys:
 			toKeys.append( fromKey )
+
+def addSpacedPortionDirection( portionDirection, spacedPortionDirections ):
+	"Add spaced portion directions."
+	lastSpacedPortionDirection = spacedPortionDirections[ - 1 ]
+	if portionDirection.portion - lastSpacedPortionDirection.portion > 0.003:
+		spacedPortionDirections.append( portionDirection )
+		return
+	if portionDirection.directionReversed > lastSpacedPortionDirection.directionReversed:
+		spacedPortionDirections.append( portionDirection )
+
+def comparePortionDirection( portionDirection, otherPortionDirection ):
+	"Comparison in order to sort portion directions in ascending order of portion then direction."
+	if portionDirection.portion > otherPortionDirection.portion:
+		return 1
+	if portionDirection.portion < otherPortionDirection.portion:
+		return - 1
+	if portionDirection.directionReversed < otherPortionDirection.directionReversed:
+		return - 1
+	return portionDirection.directionReversed > otherPortionDirection.directionReversed
 
 def evaluateBrackets( evaluators, evaluatorIndex, evaluatorWord, lastBracketIndex ):
 	"Evaluate the expression value from within the brackets."
@@ -92,9 +112,35 @@ def getBracketsExist( evaluators ):
 			return True
 	return False
 
+def getCommaSeparatedValues( value ):
+	"Get comma separated values."
+	commaSeparatedValues = []
+	commaSeparatedValue = ''
+	bracketLevel = 0
+	for character in value:
+		if character == '(' or character == '[' or character == '{':
+			bracketLevel += 1
+		if character == ')' or character == ']' or character == '}':
+			bracketLevel -= 1
+		if character == ',' and bracketLevel == 0:
+			if len( commaSeparatedValue ) > 1:
+				commaSeparatedValues.append( commaSeparatedValue )
+			commaSeparatedValue = ''
+		else:
+			commaSeparatedValue += character
+	if len( commaSeparatedValue ) > 1:
+		commaSeparatedValues.append( commaSeparatedValue )
+	return commaSeparatedValues
+
 def getCreatorsDirectoryPath():
 	"Get the creators directory path."
 	return os.path.join( getSolidsDirectoryPath(), 'creators' )
+
+def getEvaluatedBooleanDefault( defaultBoolean, key, xmlElement ):
+	"Get the evaluated boolean as a float."
+	if key in xmlElement.attributeDictionary:
+		return euclidean.getBooleanFromValue( getEvaluatedValueWithoutChecking( key, xmlElement ) )
+	return defaultBoolean
 
 def getEvaluatedDictionary( evaluationKeys, xmlElement ):
 	"Get the evaluated dictionary."
@@ -146,24 +192,15 @@ def getEvaluatedExpressionValueEvaluators( evaluators ):
 def getEvaluatedFloat( key, xmlElement ):
 	"Get the evaluated value as a float."
 	if key in xmlElement.attributeDictionary:
-		return getEvaluatedFloatFromValue( getEvaluatedValueWithoutChecking( key, xmlElement ) )
+		return euclidean.getFloatFromValue( getEvaluatedValueWithoutChecking( key, xmlElement ) )
 	return None
 
-def getEvaluatedFloatDefault( defaultValue, key, xmlElement ):
+def getEvaluatedFloatDefault( defaultFloat, key, xmlElement ):
 	"Get the evaluated value as a float."
 	evaluatedFloat = getEvaluatedFloat( key, xmlElement )
 	if evaluatedFloat == None:
-		return defaultValue
+		return defaultFloat
 	return evaluatedFloat
-
-def getEvaluatedFloatFromValue( value ):
-	"Get the value as a float."
-	try:
-		return float( value )
-	except:
-		print( 'Warning, could not evaluate the float.' )
-		print( value )
-	return None
 
 def getEvaluatedFloatOne( key, xmlElement ):
 	"Get the evaluated value as a float with a default of one."
@@ -293,7 +330,7 @@ def getFloatListFromBracketedString( bracketedString ):
 	splitLine = bracketedString.split( ',' )
 	floatList = []
 	for word in splitLine:
-		evaluatedFloat = getEvaluatedFloatFromValue( word )
+		evaluatedFloat = euclidean.getFloatFromValue( word )
 		if evaluatedFloat != None:
 			floatList.append( evaluatedFloat )
 	if len( floatList ) < 1:
@@ -374,22 +411,26 @@ def getPathByPrefix( path, prefix, xmlElement ):
 	return path
 
 def getPathsByKey( key, xmlElement ):
-	"Get the paths by key."
+	"Get paths by key."
 	if key not in xmlElement.attributeDictionary:
+		print( 'Warning, no key in geomancer in getPathsByKey.' )
+		print( key )
 		return []
 	value = str( xmlElement.attributeDictionary[ key ] ).strip()
-	if getStartsWithCurlyEqualRoundSquare( value ):
-		value = getEvaluatedExpressionValue( value, xmlElement )
-		return getPathsByLists( value )
-	pathElement = getXMLElementByValue( value, xmlElement )
-	if pathElement == None:
-		print( 'Warning, no path element in geomancer in getPathsByKey.' )
-		print( pathElement )
-		return []
-	return pathElement.object.getPaths()
+	paths = getPathsByValue( value, xmlElement )
+	if len( paths ) > 0:
+		return paths
+	commaSeparatedValues = getCommaSeparatedValues( value )
+	for commaSeparatedValue in commaSeparatedValues:
+		paths += getPathsByValue( commaSeparatedValue.strip(), xmlElement )
+	if len( paths ) > 0:
+		return paths
+	print( 'Warning, no paths in geomancer in getPathsByKey.' )
+	print( key )
+	return []
 
 def getPathsByLists( vertexLists ):
-	"Get the paths by lists."
+	"Get paths by lists."
 	vertexList = vertexLists[ 0 ]
 	if len( vertexList ) == 0:
 		vertexLists = [ vertexLists ]
@@ -400,10 +441,27 @@ def getPathsByLists( vertexLists ):
 		paths.append( getPathByList( vertexList ) )
 	return paths
 
+def getPathsByValue( value, xmlElement ):
+	"Get paths by value."
+	if getStartsWithCurlyEqualRoundSquare( value ):
+		value = getEvaluatedExpressionValue( value, xmlElement )
+		return getPathsByLists( value )
+	pathElement = getXMLElementByValue( value, xmlElement )
+	if pathElement == None:
+		return []
+	if pathElement.object == None:
+		return []
+	return pathElement.object.getPaths()
+
+def getPrecision( xmlElement ):
+	"Get the cascade precision."
+	if xmlElement == None:
+		return 0.1
+	return xmlElement.getCascadeFloat( 0.1, 'precision' )
+
 def getSides( radius, xmlElement ):
 	"Get the nunber of poygon sides."
-	precision = xmlElement.getAttributeValueRecursively( 0.1, 'precision' )
-	return math.sqrt( 0.5 * radius * math.pi * math.pi / float( precision ) )
+	return math.sqrt( 0.5 * radius * math.pi * math.pi / getPrecision( xmlElement ) )
 
 def getSplitDictionary():
 	"Get split dictionary."
@@ -432,6 +490,19 @@ def getSolidsDirectoryPath():
 	"Get the solids directory path."
 	return settings.getPathInFabmetheus( os.path.join( 'fabmetheus_utilities', 'solids' ) )
 
+def getSpacedPortionDirections( interpolationDictionary ):
+	"Get sorted portion directions."
+	portionDirections = []
+	for interpolationDictionaryValue in interpolationDictionary.values():
+		portionDirections += interpolationDictionaryValue.portionDirections
+	portionDirections.sort( comparePortionDirection )
+	if len( portionDirections ) < 1:
+		return []
+	spacedPortionDirections = [ portionDirections[ 0 ] ]
+	for portionDirection in portionDirections[ 1 : ]:
+		addSpacedPortionDirection( portionDirection, spacedPortionDirections )
+	return spacedPortionDirections
+
 def getStartsWithCurlyEqualRoundSquare( word ):
 	"Determine if the word starts with round or square brackets."
 	return word.startswith( '{' ) or word.startswith( '=' ) or word.startswith( '(' ) or word.startswith( '[' )
@@ -443,7 +514,7 @@ def getTypeLength( value ):
 	valueString = str( value )
 	if valueString.startswith( '{' ) or valueString.startswith( '(' ) or valueString.startswith( '[' ):
 		return len( value )
-	if getEvaluatedFloatFromValue( value ) == None:
+	if euclidean.getFloatFromValue( value ) == None:
 		return 0
 	return - 1
 
@@ -580,7 +651,7 @@ class Evaluator:
 			return values
 		if self.value.__class__ == [].__class__ or self.value.__class__ == {}.__class__:
 			return self.value
-		return [ getEvaluatedFloatFromValue( self.value ) ]
+		return [ euclidean.getFloatFromValue( self.value ) ]
 
 
 class AdditionEvaluator( Evaluator ):
@@ -618,7 +689,7 @@ class AdditionEvaluator( Evaluator ):
 		if rightLength == 0:
 			return leftValue
 		if leftLength == - 1 and rightLength == - 1:
-			return self.getValueFromValuePair( getEvaluatedFloatFromValue( leftValue ), getEvaluatedFloatFromValue( rightValue ) )
+			return self.getValueFromValuePair( euclidean.getFloatFromValue( leftValue ), euclidean.getFloatFromValue( rightValue ) )
 		leftKeys = getKeys( leftValue )
 		rightKeys = getKeys( rightValue )
 		allKeys = []
@@ -736,17 +807,39 @@ class Interpolation:
 		"Set index."
 		self.interpolationIndex = 0
 
+	def getByDistances( self ):
+		"Get interpolation from prefix and xml element in the z direction."
+		self.interpolationLength = self.distances[ - 1 ] - self.distances[ 0 ]
+		self.close = abs( 0.000001 * self.interpolationLength )
+		self.portionDirections = []
+		for distance in self.distances:
+			self.portionDirections.append( PortionDirection( distance / self.interpolationLength ) )
+		return self
+
+	def getByPrefixAlong( self, path, prefix, xmlElement ):
+		"Get interpolation from prefix and xml element along the path."
+		if len( path ) < 2:
+			print( 'Warning, path is too small in geomancer in Interpolation.' )
+			return
+		self.path = getPathByPrefix( path, prefix, xmlElement )
+		self.distances = [ 0.0 ]
+		previousPoint = self.path[ 0 ]
+		for point in self.path[ 1 : ]:
+			distanceDifference = abs( point - previousPoint )
+			self.distances.append( self.distances[ - 1 ] + distanceDifference )
+			previousPoint = point
+		return self.getByDistances()
+
 	def getByPrefixX( self, path, prefix, xmlElement ):
 		"Get interpolation from prefix and xml element in the z direction."
 		if len( path ) < 2:
 			print( 'Warning, path is too small in geomancer in Interpolation.' )
 			return
 		self.path = getPathByPrefix( path, prefix, xmlElement )
-		self.interpolationLength = self.path[ - 1 ].x - self.path[ 0 ].x
-		self.portionDirections = []
+		self.distances = []
 		for point in self.path:
-			self.portionDirections.append( PortionDirection( point.x / self.interpolationLength ) )
-		return self
+			self.distances.append( point.x )
+		return self.getByDistances()
 
 	def getByPrefixZ( self, path, prefix, xmlElement ):
 		"Get interpolation from prefix and xml element in the z direction."
@@ -754,69 +847,61 @@ class Interpolation:
 			print( 'Warning, path is too small in geomancer in Interpolation.' )
 			return
 		self.path = getPathByPrefix( path, prefix, xmlElement )
-		self.interpolationLength = self.path[ - 1 ].z - self.path[ 0 ].z
-		self.portionDirections = []
+		self.distances = []
 		for point in self.path:
-			self.portionDirections.append( PortionDirection( point.z / self.interpolationLength ) )
-		return self
+			self.distances.append( point.z )
+		return self.getByDistances()
 
-	def getComplexByZPortion( self, portion ):
+	def getComparison( self, first, second ):
+		"Compare the first with the second."
+		if abs( second - first ) < self.close:
+			return 0
+		if second > first:
+			return 1
+		return - 1
+
+	def getComplexByPortion( self, portionDirection ):
 		"Get vector3 from z portion."
-		self.setInterpolationIndexByZ( portion )
-		innerZPortion = self.getInnerZPortion()
-		fromVertex = self.path[ self.interpolationIndex ]
-		toVertex = self.path[ self.interpolationIndex + 1 ]
-		return ( 1.0 - innerZPortion ) * fromVertex.dropAxis( 2 ) + innerZPortion * toVertex.dropAxis( 2 )
+		self.setInterpolationIndexFromTo( portionDirection )
+		return self.oneMinusInnerPortion * self.fromVertex.dropAxis( 2 ) + self.innerPortion * self.toVertex.dropAxis( 2 )
 
-	def getInnerXPortion( self ):
+	def getInnerPortion( self ):
 		"Get inner x portion."
-		fromVertex = self.path[ self.interpolationIndex ]
-		innerLength = self.path[ self.interpolationIndex + 1 ].x - fromVertex.x
+		fromDistance = self.distances[ self.interpolationIndex ]
+		innerLength = self.distances[ self.interpolationIndex + 1 ] - fromDistance
 		if abs( innerLength ) == 0.0:
 			return 0.0
-		return ( self.absolutePortion - fromVertex.x ) / innerLength
+		return ( self.absolutePortion - fromDistance ) / innerLength
 
-	def getInnerZPortion( self ):
-		"Get inner z portion."
-		fromVertex = self.path[ self.interpolationIndex ]
-		innerLength = self.path[ self.interpolationIndex + 1 ].z - fromVertex.z
-		if abs( innerLength ) == 0.0:
-			return 0.0
-		return ( self.absolutePortion - fromVertex.z ) / innerLength
-
-	def getVector3ByZPortion( self, portion ):
+	def getVector3ByPortion( self, portionDirection ):
 		"Get vector3 from z portion."
-		self.setInterpolationIndexByZ( portion )
-		innerZPortion = self.getInnerZPortion()
-		fromVertex = self.path[ self.interpolationIndex ]
-		toVertex = self.path[ self.interpolationIndex + 1 ]
-		return ( 1.0 - innerZPortion ) * fromVertex + innerZPortion * toVertex
+		self.setInterpolationIndexFromTo( portionDirection )
+		return self.oneMinusInnerPortion * self.fromVertex + self.innerPortion * self.toVertex
 
-	def setInterpolationIndexByX( self, portion ):
-		"Set the interpolation index by the x of the path."
-		self.absolutePortion = self.path[ 0 ].x + self.interpolationLength * portion
-		for self.interpolationIndex in xrange( 0, len( self.path ) - 1 ):
-			beginX = self.path[ self.interpolationIndex ].x
-			endX = self.path[ self.interpolationIndex + 1 ].x
-			if beginX <= self.absolutePortion and endX >= self.absolutePortion:
-				return
-
-	def setInterpolationIndexByZ( self, portion ):
-		"Set the interpolation index by the z of the path."
-		self.absolutePortion = self.path[ 0 ].z + self.interpolationLength * portion
-		for self.interpolationIndex in xrange( 0, len( self.path ) - 1 ):
-			beginZ = self.path[ self.interpolationIndex ].z
-			endZ = self.path[ self.interpolationIndex + 1 ].z
-			if beginZ <= self.absolutePortion and endZ >= self.absolutePortion:
-				return
-
-	def getYByXPortion( self, portion ):
+	def getYByPortion( self, portionDirection ):
 		"Get y from x portion."
-		self.setInterpolationIndexByX( portion )
-		innerXPortion = self.getInnerXPortion()
-		fromVertex = self.path[ self.interpolationIndex ]
-		toVertex = self.path[ self.interpolationIndex + 1 ]
-		return ( 1.0 - innerXPortion ) * fromVertex.y + innerXPortion * toVertex.y
+		self.setInterpolationIndexFromTo( portionDirection )
+		return self.oneMinusInnerPortion * self.fromVertex.y + self.innerPortion * self.toVertex.y
+
+	def setInterpolationIndex( self, portionDirection ):
+		"Set the interpolation index."
+		self.absolutePortion = self.distances[ 0 ] + self.interpolationLength * portionDirection.portion
+		interpolationIndexes = range( 0, len( self.distances ) - 1 )
+		if portionDirection.directionReversed:
+			interpolationIndexes.reverse()
+		for self.interpolationIndex in interpolationIndexes:
+			begin = self.distances[ self.interpolationIndex ]
+			end = self.distances[ self.interpolationIndex + 1 ]
+			if self.getComparison( begin, self.absolutePortion ) != self.getComparison( end, self.absolutePortion ):
+				return
+
+	def setInterpolationIndexFromTo( self, portionDirection ):
+		"Set the interpolation index, the from vertex and the to vertex."
+		self.setInterpolationIndex( portionDirection )
+		self.innerPortion = self.getInnerPortion()
+		self.oneMinusInnerPortion = 1.0 - self.innerPortion
+		self.fromVertex = self.path[ self.interpolationIndex ]
+		self.toVertex = self.path[ self.interpolationIndex + 1 ]
 
 
 class KeyValue:
@@ -894,12 +979,12 @@ class PortionDirection:
 	"Class to hold a portion and direction."
 	def __init__( self, portion ):
 		"Initialize."
-		self.direction = False
+		self.directionReversed = False
 		self.portion = portion
 
 	def __repr__( self ):
 		"Get the string representation of this PortionDirection."
-		return '%s: %s' % ( self.portion, self.direction )
+		return '%s: %s' % ( self.portion, self.directionReversed )
 
 
 class PowerEvaluator( AdditionEvaluator ):

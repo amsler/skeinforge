@@ -406,8 +406,12 @@ def getBackOfLoops( loops ):
 
 def getBooleanFromDictionary( dictionary, key ):
 	"Get boolean from the dictionary and key."
+	return getBooleanFromDictionaryDefault( True, dictionary, key )
+
+def getBooleanFromDictionaryDefault( defaultBoolean, dictionary, key ):
+	"Get boolean from the dictionary and key."
 	if key not in dictionary:
-		return True
+		return defaultBoolean
 	return getBooleanFromValue( dictionary[ key ] )
 
 def getBooleanFromValue( value ):
@@ -477,6 +481,20 @@ def getClippedLoopPath( clip, loopPath ):
 		newUltimatePoint = penultimateClippedPoint + segment * remainingLength / segmentLength
 		loopPath = [ newUltimatePoint ] + loopPath
 	return getClippedAtEndLoopPath( clip, loopPath )
+
+def getComplexPath( vector3Path ):
+	"Get the complex path from the vector3 path."
+	complexPath = []
+	for point in vector3Path:
+		complexPath.append( point.dropAxis() )
+	return complexPath
+
+def getComplexPaths( vector3Paths ):
+	"Get the complex paths from the vector3 paths."
+	complexPaths = []
+	for vector3Path in vector3Paths:
+		complexPaths.append( getComplexPath( vector3Path ) )
+	return complexPaths
 
 def getConnectedPaths( paths, pixelTable, width ):
 	"Get connected paths from paths."
@@ -579,6 +597,15 @@ def getFillOfSurroundings( surroundingLoops ):
 	for surroundingLoop in surroundingLoops:
 		fillOfSurroundings += surroundingLoop.getFillLoops()
 	return fillOfSurroundings
+
+def getFloatFromValue( value ):
+	"Get the value as a float."
+	try:
+		return float( value )
+	except:
+		print( 'Warning, could not evaluate the float.' )
+		print( value )
+	return None
 
 def getFourSignificantFigures( number ):
 	"Get number rounded to four significant figures as a string."
@@ -716,10 +743,7 @@ def getIntersectionOfXIntersectionsTables( xIntersectionsTables ):
 
 def getIsWiddershinsByVector3( polygon ):
 	"Determine if the polygon goes round in the widdershins direction."
-	polygonComplex = []
-	for point in polygon:
-		polygonComplex.append( point.dropAxis( 2 ) )
-	return isWiddershins( polygonComplex )
+	return isWiddershins( getComplexPath( polygon ) )
 
 def getJoinOfXIntersectionIndexes( xIntersectionIndexList ):
 	"Get joined x intersections from surrounding layers."
@@ -1272,6 +1296,20 @@ def getTransferredSurroundingLoops( insides, loop ):
 			del insides[ insideIndex ]
 	return transferredSurroundings
 
+def getVector3Path( complexPath ):
+	"Get the vector3 path from the complex path."
+	vector3Path = []
+	for complexPoint in complexPath:
+		vector3Path.append( Vector3( complexPoint.real, complexPoint.imag ) )
+	return vector3Path
+
+def getVector3Paths( complexPaths ):
+	"Get the vector3 paths from the complex paths."
+	vector3Paths = []
+	for complexPath in complexPaths:
+		vector3Paths.append( getVector3Path( complexPath ) )
+	return vector3Paths
+
 def getWiddershinsUnitPolar( angle ):
 	"Get polar complex from counterclockwise angle from 1, 0."
 	return complex( math.cos( angle ), math.sin( angle ) )
@@ -1657,6 +1695,15 @@ def transferPathsToSurroundingLoops( paths, surroundingLoops ):
 	for surroundingLoop in surroundingLoops:
 		surroundingLoop.transferPaths( paths )
 
+def unbuckleBasis( basis, maximumUnbuckling, normal ):
+	"Unbuckle space."
+	normalDot = basis.dot( normal )
+	dotComplement = math.sqrt( 1.0 - normalDot * normalDot )
+	unbuckling = maximumUnbuckling
+	if dotComplement > 0.0:
+		unbuckling = min( 1.0 / dotComplement, maximumUnbuckling )
+	basis.setToVector3( basis * unbuckling )
+
 
 class DistanceIndex:
 	"A class to hold the distance and the index of the loop."
@@ -1822,6 +1869,107 @@ class PathZ:
 	def __repr__( self ):
 		"Get the string representation of this path z."
 		return '%s, %s' % ( self.z, self.path )
+
+
+class ProjectiveSpace:
+	"Class to define a projective space."
+	def __init__( self, basisX = Vector3( 1.0, 0.0, 0.0 ), basisY = Vector3( 0.0, 1.0, 0.0 ), basisZ = Vector3( 0.0, 0.0, 1.0 ) ):
+		"Initialize the basis vectors."
+		self.basisX = basisX
+		self.basisY = basisY
+		self.basisZ = basisZ
+
+	def __repr__( self ):
+		"Get the string representation of this ProjectivePlane."
+		return '%s, %s, %s' % ( self.basisX, self.basisY, self.basisZ )
+
+	def getByBasisXZ( self, basisX, basisZ ):
+		"Get by x basis x and y basis."
+		self.basisX = basisX
+		self.basisX.normalize()
+		self.basisY = basisZ.cross( self.basisX )
+		self.basisY.normalize()
+		self.basisZ = basisZ
+		return self
+
+	def getByBasisZTop( self, basisZ, top ):
+		"Get by z basis and top."
+		return self.getByBasisXZ( top.cross( basisZ ), basisZ )
+
+	def getByLatitudeLongitude( self, viewpointLatitude, viewpointLongitude ):
+		"Get by latitude and longitude."
+		longitudeComplex = getWiddershinsUnitPolar( math.radians( 90.0 - viewpointLongitude ) )
+		viewpointLatitudeRatio = getWiddershinsUnitPolar( math.radians( viewpointLatitude ) )
+		basisZ = Vector3( viewpointLatitudeRatio.imag * longitudeComplex.real, viewpointLatitudeRatio.imag * longitudeComplex.imag, viewpointLatitudeRatio.real )
+		return self.getByBasisXZ( Vector3( - longitudeComplex.imag, longitudeComplex.real, 0.0 ), basisZ )
+
+	def getByTilt( self, tilt ):
+		"Get by latitude and longitude."
+		xPlaneAngle = getWiddershinsUnitPolar( tilt.real )
+		self.basisX = Vector3( xPlaneAngle.real, 0.0,  xPlaneAngle.imag )
+		yPlaneAngle = getWiddershinsUnitPolar( tilt.imag )
+		self.basisY = Vector3( 0.0,  yPlaneAngle.real, yPlaneAngle.imag )
+		self.basisZ = self.basisX.cross( self.basisY )
+		return self
+
+	def getComplexByComplex( self, pointComplex ):
+		"Get complex by complex point."
+		return self.basisX.dropAxis() * pointComplex.real + self.basisY.dropAxis() * pointComplex.imag
+
+	def getCopy( self ):
+		"Get copy."
+		return ProjectiveSpace( self.basisX, self.basisY, self.basisZ )
+
+	def getDotComplex( self, point ):
+		"Get the dot complex."
+		return complex( point.dot( self.basisX ), point.dot( self.basisY ) )
+
+	def getDotVector3( self, point ):
+		"Get the dot vector3."
+		return Vector3( point.dot( self.basisX ), point.dot( self.basisY ), point.dot( self.basisZ ) )
+
+	def getNextSpace( self, nextNormal ):
+		"Get next space by next normal."
+		nextSpace = self.getCopy()
+		nextSpace.normalize()
+		dotNext = nextSpace.basisZ.dot( nextNormal )
+		if dotNext > 0.999999:
+			return nextSpace
+		if dotNext < - 0.999999:
+			nextSpace.basisX = - nextSpace.basisX
+			return nextSpace
+		crossNext = nextSpace.basisZ.cross( nextNormal )
+		oldBasis = ProjectiveSpace().getByBasisZTop( nextSpace.basisZ, crossNext )
+		newBasis = ProjectiveSpace().getByBasisZTop( nextNormal, crossNext )
+		nextSpace.basisX = newBasis.getVector3ByPoint( oldBasis.getDotVector3( nextSpace.basisX ) )
+		nextSpace.basisY = newBasis.getVector3ByPoint( oldBasis.getDotVector3( nextSpace.basisY ) )
+		nextSpace.basisZ = newBasis.getVector3ByPoint( oldBasis.getDotVector3( nextSpace.basisZ ) )
+		nextSpace.normalize()
+		return nextSpace
+
+	def getSpaceByXYScaleAngle( self, angle, scale ):
+		"Get space by angle and scale."
+		spaceByXYScaleRotation = ProjectiveSpace()
+		planeAngle = getWiddershinsUnitPolar( angle )
+		spaceByXYScaleRotation.basisX = self.basisX * scale.real * planeAngle.real + self.basisY * scale.imag * planeAngle.imag
+		spaceByXYScaleRotation.basisY = - self.basisX * scale.real * planeAngle.imag + self.basisY * scale.imag * planeAngle.real
+		spaceByXYScaleRotation.basisZ = self.basisZ
+		return spaceByXYScaleRotation
+
+	def getVector3ByPoint( self, point ):
+		"Get vector3 by point."
+		return self.basisX * point.x + self.basisY * point.y + self.basisZ * point.z
+
+	def normalize( self ):
+		"Normalize."
+		self.basisX.normalize()
+		self.basisY.normalize()
+		self.basisZ.normalize()
+
+	def unbuckle( self, maximumUnbuckling, normal ):
+		"Unbuckle space."
+		unbuckleBasis( self.basisX, maximumUnbuckling, normal )
+		unbuckleBasis( self.basisY, maximumUnbuckling, normal )
 
 
 class RotatedLoopLayer:

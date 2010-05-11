@@ -31,6 +31,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import xml_simple_writer
 
@@ -99,13 +100,17 @@ class XMLElement:
 		for child in self.children:
 			child.getCopy( idSuffix, parent )
 
-	def getAttributeValueRecursively( self, defaultValue, key ):
-		"Get the attribute value recursively."
+	def getCascadeFloat( self, defaultFloat, key ):
+		"Get the cascade float."
+		return euclidean.getFloatFromValue( self.getCascadeValue( defaultFloat, key ) )
+
+	def getCascadeValue( self, defaultValue, key ):
+		"Get the cascade value."
 		if key in self.attributeDictionary:
 			return self.attributeDictionary[ key ]
 		if self.parent == None:
 			return defaultValue
-		return self.parent.getAttributeValueRecursively( defaultValue, key )
+		return self.parent.getCascadeValue( defaultValue, key )
 
 	def getChildrenWithClassName( self, className ):
 		"Get the children which have the given class name."

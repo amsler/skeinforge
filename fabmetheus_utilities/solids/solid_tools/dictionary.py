@@ -69,13 +69,16 @@ class Dictionary:
 			return {}
 		return self.xmlElement.attributeDictionary
 
+	def getComplexPathLists( self ):
+		"Get complex path lists."
+		complexPathLists = []
+		for archivableObject in self.archivableObjects:
+			complexPathLists.append( euclidean.getComplexPaths( archivableObject.getPaths() ) )
+		return complexPathLists
+
 	def getMatrixChain( self ):
 		"Get the matrix chain."
 		return self.xmlElement.parent.object.getMatrixChain()
-
-	def getType( self ):
-		"Get type."
-		return self.__class__.__name__
 
 	def getPaths( self ):
 		"Get all paths."
@@ -83,6 +86,10 @@ class Dictionary:
 		for archivableObject in self.archivableObjects:
 			paths += archivableObject.getPaths()
 		return paths
+
+	def getType( self ):
+		"Get type."
+		return self.__class__.__name__
 
 	def getVertices( self ):
 		"Get all vertices."

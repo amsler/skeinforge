@@ -527,13 +527,13 @@ class RaftSkein:
 		aroundWidth = 0.25 * layerLayerThickness
 		paths = euclidean.getPathsFromEndpoints( endpoints, layerLayerThickness, aroundPixelTable, aroundWidth )
 		paths = euclidean.getConnectedPaths( paths, aroundPixelTable, aroundWidth ) # this is probably unnecesary
-		self.addFlowRateValueIfDifferent( flowRateMultiplier * self.oldFlowRateInput )
 		self.addLayerLine( z )
-		self.addFlowRateValueIfDifferent( self.oldFlowRateInput )
+		self.addFlowRateValueIfDifferent( flowRateMultiplier * self.oldFlowRateInput )
 		for path in paths:
 			simplifiedPath = euclidean.getSimplifiedPath( path, layerLayerThickness )
 			self.distanceFeedRate.addGcodeFromFeedRateThreadZ( feedRateMinute, simplifiedPath, z )
 		self.extrusionTop += layerLayerThickness
+		self.addFlowRateValueIfDifferent( self.oldFlowRateInput )
 
 	def addLayerLine( self, z ):
 		"Add the layer gcode line and close the last layer gcode block."
