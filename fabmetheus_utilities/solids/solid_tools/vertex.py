@@ -40,6 +40,6 @@ def getUnboundVertexElement( vertex ):
 	vertexElement.className = 'vertex'
 	return vertexElement
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	xmlElement.parent.object.vertices.append( geomancer.getVector3FromXMLElement( xmlElement ) )

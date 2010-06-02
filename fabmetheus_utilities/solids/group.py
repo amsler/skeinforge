@@ -8,9 +8,11 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.solids.solid_tools.dictionary import Dictionary
+from fabmetheus_utilities.solids.solid_tools import path
 from fabmetheus_utilities.solids.solid_utilities import geomancer
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities.solids.solid_tools import matrix4x4
+from fabmetheus_utilities import xml_simple_parser
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -19,21 +21,28 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def convertXMLElement( geometryOutput, xmlElement ):
+def convertXMLElement( geometryOutput, xmlElement, xmlProcessor ):
 	"Convert the xml element to a group xml element."
-	xmlElement.getRootElement().xmlProcessor.createChildren( geometryOutput, xmlElement )
+	xmlProcessor.createChildren( geometryOutput, xmlElement )
 
-def processShape( archivableClass, xmlElement ):
+def convertXMLElementRenameByPaths( geometryOutput, xmlElement, xmlProcessor ):
+	"Convert the xml element to a group xml element and add paths."
+	xmlElement.className = 'group'
+	for geometryOutputChild in geometryOutput:
+		pathElement = xml_simple_parser.XMLElement().getByParent( xmlElement )
+		path.convertXMLElementRename( geometryOutputChild, pathElement, xmlProcessor )
+
+def processShape( archivableClass, xmlElement, xmlProcessor ):
 	"Get any new elements and process the shape."
 	if xmlElement == None:
 		return
 	archivableObject = geomancer.getArchivableObject( archivableClass, xmlElement )
 	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( xmlElement, xmlElement.object.matrix4X4, xmlElement )
-	xmlElement.getRootElement().xmlProcessor.processChildren( xmlElement )
+	xmlProcessor.processChildren( xmlElement )
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	processShape( Group, xmlElement )
+	processShape( Group, xmlElement, xmlProcessor )
 
 
 class Group( Dictionary ):

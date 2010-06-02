@@ -46,7 +46,7 @@ def getCommonVertexIndex( edgeFirst, edgeSecond ):
 	print( edgeSecond )
 	return 0
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	face = Face()
 	face.index = len( xmlElement.parent.object.faces )

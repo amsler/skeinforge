@@ -392,10 +392,8 @@ def removeIntersection( loop ):
 			aheadRotated = segmentYMirror * ahead
 			aheadMidpointRotated = segmentYMirror * aheadMidpoint
 			y = behindRotated.imag
-			isYAboveFirst = y > aheadRotated.imag
-			isYAboveSecond = y > aheadMidpointRotated.imag
-			if isYAboveFirst != isYAboveSecond:
-				xIntersection = euclidean.getXIntersection( aheadRotated, aheadMidpointRotated, y )
+			xIntersection = euclidean.getXIntersectionIfExists( aheadRotated, aheadMidpointRotated, y )
+			if xIntersection != None:
 				if xIntersection > min( behindMidpointRotated.real, behindRotated.real ) and xIntersection < max( behindMidpointRotated.real, behindRotated.real ):
 					intersectionPoint = normalizedSegment * complex( xIntersection, y )
 					loop[ ( pointIndex + len( loop ) - 1 ) % len( loop ) ] = intersectionPoint

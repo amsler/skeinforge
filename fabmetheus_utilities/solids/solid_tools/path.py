@@ -20,18 +20,18 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def convertXMLElement( geometryOutput, xmlElement ):
+def convertXMLElement( geometryOutput, xmlElement, xmlProcessor ):
 	"Convert the xml element to a path xml element."
 	vertex.addGeometryList( geometryOutput, xmlElement )
 
-def convertXMLElementRename( geometryOutput, xmlElement ):
+def convertXMLElementRename( geometryOutput, xmlElement, xmlProcessor ):
 	"Convert the xml element to a path xml element."
 	xmlElement.className = 'path'
-	convertXMLElement( geometryOutput, xmlElement )
+	convertXMLElement( geometryOutput, xmlElement, xmlProcessor )
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	geomancer.processArchivable( Path, xmlElement )
+	geomancer.processArchivable( Path, xmlElement, xmlProcessor )
 
 
 class Path( Dictionary ):

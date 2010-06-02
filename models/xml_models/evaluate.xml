@@ -1,10 +1,11 @@
 <?xml version='1.0' ?>
-<booleangeometry version="2010-04-06" sill="=2+1" lala="7" tra="3" gaga="7">
+<fabmetheus version="2010-04-06" sill="=2+1" lala="7" tra="3" gaga="7">
+	<dictionary function="=math.degrees(math.pi)" />
 	<dictionary kapow='=4**-2' />
 	<dictionary order="=-2+1+parent.tra*root.sill" />
 	<dictionary bracket="=2*(3+1)" compoundbracket="=2*(8/(1+1))" withoutbracket="=2*3+1" />
-	<dictionary function="=math.degrees(math.pi)" />
-	<dictionary five="=4+1" constant="math.e" self="=self.five*2" />
+	<dictionary five="=4+1" self="=self.five*2" />
+	<dictionary e="math.e" evaluatede="=math.e" euler="=math.euler" golden="=math.golden" />
 	<dictionary name="name test" power="=math.pow(4,-3)" />
 	<path id="zeropath" y="1" >
 		<vertex x="4" y="6" />
@@ -30,8 +31,8 @@
 		<dictionary m="=-[1,2,7]" />
 		<dictionary m="[[1,2],[7,6]]" />
 		<dictionary m="=-[[1,2],[7,6]]" />
-		<dictionary m="=3*[[1,2],[7,6]]" />
-		<dictionary m="[2,4]*[[1,2],[7,6]]" />
+		<dictionary m3="=3*[[1,2],[7,6]]" />
+		<dictionary m25="[2,4]*[[1,2],[7,6]]" />
 		<dictionary m="[[2,4],[3,5]]*[[1,2],[7,6]]" />
 		<dictionary a="[1,,2]" />
 		<dictionary d="=-{1:2}" />
@@ -41,7 +42,8 @@
 		<dictionary m="=2+{3:5}*{6:2,3:3}" />
 		<dictionaryc m="{'f':5}*{'v':[2,2],'f':[4,5]}" />
 		<dictionary p="=math.polygon(5.2)" />
+		<dictionary p="=math.polygon()*5" />
 	<path/>
 	<polygon sides="1" five="5" radius="=self.five*2" />
 	<polygon sides="pside" radius="wow" />
-</booleangeometry>
+</fabmetheus>

@@ -120,6 +120,11 @@ class StatisticRepository:
 		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.analyze_plugins.statistic.html', '', self )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic' )
 		self.activateStatistic = settings.BooleanSetting().getFromValue( 'Activate Statistic', self, True )
+		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelDisplay().getFromName( '- Cost -', self )
+		self.machineTime = settings.FloatSpin().getFromValue( 0.0, 'Machine Time ($/hour):', self, 2.0, 1.0 )
+		self.material = settings.FloatSpin().getFromValue( 0.0, 'Material ($/kg):', self, 20.0, 10.0 )
+		settings.LabelSeparator().getFromRepository( self )
 		self.density = settings.FloatSpin().getFromValue( 500.0, 'Density (kg/m3):', self, 2000.0, 930.0 )
 		self.extrusionDiameterOverThickness = settings.FloatSpin().getFromValue( 1.0, 'Extrusion Diameter over Thickness (ratio):', self, 1.5, 1.25 )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Generate Statistics for', self, '' )
@@ -173,7 +178,7 @@ class StatisticSkein:
 		self.cornerHigh = Vector3( - 999999999.0, - 999999999.0, - 999999999.0 )
 		self.cornerLow = Vector3( 999999999.0, 999999999.0, 999999999.0 )
 		self.extruderActive = False
-		self.extruderSpeed = 0.0
+		self.extruderSpeed = None
 		self.extruderToggled = 0
 		self.feedRateMinute = 600.0
 		self.layerThickness = 0.4
@@ -197,42 +202,61 @@ class StatisticSkein:
 		roundedHigh = euclidean.getRoundedPoint( self.cornerHigh )
 		roundedLow = euclidean.getRoundedPoint( self.cornerLow )
 		roundedExtent = euclidean.getRoundedPoint( extent )
-		axisString =  " axis, the extrusion starts at "
+		axisString =  " axis extrusion starts at "
 		crossSectionArea = 0.9 * self.absolutePerimeterWidth * self.layerThickness # 0.9 if from the typical fill density
 		if self.extrusionDiameter != None:
 			crossSectionArea = math.pi / 4.0 * self.extrusionDiameter * self.extrusionDiameter
 		volumeExtruded = 0.001 * crossSectionArea * self.totalDistanceExtruded
-		self.addLine( "On the X%s%s mm and ends at %s mm, for a width of %s mm." % ( axisString, int( roundedLow.x ), int( roundedHigh.x ), int( extent.x ) ) )
-		self.addLine( "On the Y%s%s mm and ends at %s mm, for a depth of %s mm." % ( axisString, int( roundedLow.y ), int( roundedHigh.y ), int( extent.y ) ) )
-		self.addLine( "On the Z%s%s mm and ends at %s mm, for a height of %s mm." % ( axisString, int( roundedLow.z ), int( roundedHigh.z ), int( extent.z ) ) )
-		self.addLine( " " )
-		self.addLine( "The average feedRate is %s mm/s, (%s mm/min)." % ( euclidean.getThreeSignificantFigures( averageFeedRate ), euclidean.getThreeSignificantFigures( 60.0 * averageFeedRate ) ) )
-		self.addLine( "The cross section area is %s mm2." % euclidean.getThreeSignificantFigures( crossSectionArea ) )
-		if self.extrusionDiameter != None:
-			self.addLine( "The extrusion diameter is %s mm." % euclidean.getThreeSignificantFigures( self.extrusionDiameter ) )
-		self.addLine( 'The extrusion fill density ratio is %s' % euclidean.getThreeSignificantFigures( crossSectionArea / self.absolutePerimeterWidth / self.layerThickness ) )
-#		self.addLine( 'The perimeter extrusion fill density ratio is %s' % euclidean.getThreeSignificantFigures( crossSectionArea / self.absolutePerimeterWidth / self.layerThickness ) )
-		self.addLine( "The extruder speed is %s" % euclidean.getThreeSignificantFigures( self.extruderSpeed ) )
-		self.addLine( "The extruder was extruding %s percent of the time." % euclidean.getThreeSignificantFigures( 100.0 * self.totalDistanceExtruded / self.totalDistanceTraveled ) )
-		self.addLine( "The extruder was toggled %s times." % self.extruderToggled )
-		self.addLine( "The layer thickness is %s mm." % euclidean.getThreeSignificantFigures( self.layerThickness ) )
+		mass = volumeExtruded / repository.density.value
+		machineTimeCost = repository.machineTime.value * self.totalBuildTime / 3600.0
+		materialCost = repository.material.value * mass
+		self.addLine( ' ' )
+		self.addLine( 'Cost' )
+		self.addLine( "Machine time cost is %s$." % round( machineTimeCost, 2 ) )
+		self.addLine( "Material cost is %s$." % round( materialCost, 2 ) )
+		self.addLine( "Total cost is %s$." % round( machineTimeCost + materialCost, 2 ) )
+		self.addLine( ' ' )
+		self.addLine( 'Extent' )
+		self.addLine( "X%s%s mm and ends at %s mm, for a width of %s mm." % ( axisString, int( roundedLow.x ), int( roundedHigh.x ), int( extent.x ) ) )
+		self.addLine( "Y%s%s mm and ends at %s mm, for a depth of %s mm." % ( axisString, int( roundedLow.y ), int( roundedHigh.y ), int( extent.y ) ) )
+		self.addLine( "Z%s%s mm and ends at %s mm, for a height of %s mm." % ( axisString, int( roundedLow.z ), int( roundedHigh.z ), int( extent.z ) ) )
+		self.addLine( ' ' )
+		self.addLine( 'Extruder' )
+		self.addLine( "Build time is %s." % euclidean.getDurationString( self.totalBuildTime ) )
+		self.addLine( "Distance extruded is %s mm." % euclidean.getThreeSignificantFigures( self.totalDistanceExtruded ) )
+		self.addLine( "Distance traveled is %s mm." % euclidean.getThreeSignificantFigures( self.totalDistanceTraveled ) )
+		if self.extruderSpeed != None:
+			self.addLine( "Extruder speed is %s" % euclidean.getThreeSignificantFigures( self.extruderSpeed ) )
+		self.addLine( "Extruder was extruding %s percent of the time." % euclidean.getThreeSignificantFigures( 100.0 * self.totalDistanceExtruded / self.totalDistanceTraveled ) )
+		self.addLine( "Extruder was toggled %s times." % self.extruderToggled )
 		if self.operatingFeedRatePerSecond != None:
 			flowRate = crossSectionArea * self.operatingFeedRatePerSecond
-			self.addLine( "The operating flow rate is %s mm3/s." % euclidean.getThreeSignificantFigures( flowRate ) )
-		self.addLine( "The mass extruded is %s grams." % euclidean.getThreeSignificantFigures( 1000.0 * volumeExtruded / repository.density.value ) )
-		self.addLine( "The perimeter width is %s mm." % euclidean.getThreeSignificantFigures( self.absolutePerimeterWidth ) )
-		self.addLine( " " )
-		self.addLine( "The following procedures have been performed on the skein:" )
+			self.addLine( "Operating flow rate is %s mm3/s." % euclidean.getThreeSignificantFigures( flowRate ) )
+		self.addLine( "Feed rate average is %s mm/s, (%s mm/min)." % ( euclidean.getThreeSignificantFigures( averageFeedRate ), euclidean.getThreeSignificantFigures( 60.0 * averageFeedRate ) ) )
+		self.addLine( ' ' )
+		self.addLine( 'Filament' )
+		self.addLine( "Cross section area is %s mm2." % euclidean.getThreeSignificantFigures( crossSectionArea ) )
+		if self.extrusionDiameter != None:
+			self.addLine( "Extrusion diameter is %s mm." % euclidean.getThreeSignificantFigures( self.extrusionDiameter ) )
+		self.addLine( 'Extrusion fill density ratio is %s' % euclidean.getThreeSignificantFigures( crossSectionArea / self.absolutePerimeterWidth / self.layerThickness ) )
+		self.addLine( ' ' )
+		self.addLine( 'Material' )
+		self.addLine( "Mass extruded is %s grams." % euclidean.getThreeSignificantFigures( 1000.0 * mass ) )
+		self.addLine( "Volume extruded is %s cc." % euclidean.getThreeSignificantFigures( volumeExtruded ) )
+		self.addLine( ' ' )
+		self.addLine( 'Meta' )
+		self.addLine( "Text has %s lines and a size of %s KB." % ( self.numberOfLines, kilobytes ) )
+		if self.version != None:
+			self.addLine( "Version is "  + self.version )
+		self.addLine( ' ' )
+		self.addLine( "Procedures" )
 		for procedure in self.procedures:
 			self.addLine( procedure )
-		self.addLine( " " )
-		self.addLine( "The text has %s lines and a size of %s KB." % ( self.numberOfLines, kilobytes ) )
-		self.addLine( "The total build time is %s." % euclidean.getDurationString( self.totalBuildTime ) )
-		self.addLine( "The total distance extruded is %s mm." % euclidean.getThreeSignificantFigures( self.totalDistanceExtruded ) )
-		self.addLine( "The total distance traveled is %s mm." % euclidean.getThreeSignificantFigures( self.totalDistanceTraveled ) )
-		if self.version != None:
-			self.addLine( "The version is "  + self.version )
-		self.addLine( "The volume extruded is %s cc." % euclidean.getThreeSignificantFigures( volumeExtruded ) )
+		self.addLine( ' ' )
+		self.addLine( 'Slice' )
+		self.addLine( "Layer thickness is %s mm." % euclidean.getThreeSignificantFigures( self.layerThickness ) )
+		self.addLine( "Perimeter width is %s mm." % euclidean.getThreeSignificantFigures( self.absolutePerimeterWidth ) )
+		self.addLine( ' ' )
 		return self.output.getvalue()
 
 	def getLocationSetFeedRateToSplitLine( self, splitLine ):

@@ -1,5 +1,5 @@
 <?xml version='1.0' ?>
-<booleangeometry version="2010-03-17">
+<fabmetheus version="2010-03-17">
 	<trianglemesh id="tetrahedron" rotationx="20" rotationy="40" rotationz="30">
 		<matrix4x4 />
 		<vertex x="-5.0" y="0.0" z="2.89" />
@@ -11,4 +11,4 @@
 		<face vertex0="3" vertex1="2" vertex2="0" />
 		<face vertex0="0" vertex1="2" vertex2="1" />
 	</trianglemesh>
-</booleangeometry>
+</fabmetheus>

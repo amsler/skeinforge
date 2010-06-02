@@ -78,6 +78,8 @@ class Vector3Index:
 		"Determine whether this vector is identical to other one."
 		if other == None:
 			return False
+		if other.__class__ != self.__class__:
+			return False
 		return self.x == other.x and self.y == other.y and self.z == other.z
 
 	def __floordiv__( self, other ):

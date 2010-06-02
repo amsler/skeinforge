@@ -138,7 +138,7 @@ def getZeroMatrixTetragrid():
 	"Get four by four zero matrix."
 	return [ [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ], [ 0.0, 0.0, 0.0, 0.0 ] ]
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	setXMLElementMatrixToMatrixAttributeDictionary( xmlElement, xmlElement.parent.object.matrix4X4, xmlElement.parent )
 

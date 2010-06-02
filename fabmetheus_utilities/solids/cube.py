@@ -41,9 +41,9 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	group.processShape( Cube, xmlElement )
+	group.processShape( Cube, xmlElement, xmlProcessor )
 
 
 class Cube( trianglemesh.TriangleMesh ):

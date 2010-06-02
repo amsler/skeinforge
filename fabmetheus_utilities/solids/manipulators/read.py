@@ -46,7 +46,7 @@ def getXMLFromXMLFileName( fileName ):
 		return xmlText
 	return getXMLFromCarvingFileName( fileName )
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	fileName = geomancer.getEvaluatedValue( 'file', xmlElement )
 	if fileName == None:
@@ -57,10 +57,11 @@ def processXMLElement( xmlElement ):
 	if xmlText == '':
 		print( 'The file %s could not be found in the folder which the xml boolean geometry file is in.' % fileName )
 		return
-	XMLSimpleParser( xmlElement.getRootElement().parser.fileName, xmlElement, xmlText )
-	group.processShape( group.Group, xmlElement )
+	XMLSimpleParser( parserFileName, xmlElement, xmlText )
+	group.processShape( group.Group, xmlElement, xmlProcessor )
 	baseNameUntilDot = gcodec.getUntilDot( os.path.basename( absoluteFileName ) )
-	xmlElement.addIDIfUndefined( baseNameUntilDot )
+	xmlElement.attributeDictionary[ 'id' ] = baseNameUntilDot
+	xmlElement.addToIDDictionaryIFIDExists()
 
 
 class BooleanGeometryParser:
@@ -84,12 +85,12 @@ class BooleanGeometryParser:
 			return
 		if line[ : len( '</' ) ] == '</':
 			lineAfterEndTagSymbol = line[ len( '</' ) : ].lstrip()
-			if lineAfterEndTagSymbol[ : len( 'booleangeometry' ) ] == 'booleangeometry':
+			if lineAfterEndTagSymbol[ : len( 'fabmetheus' ) ] == 'fabmetheus':
 				self.isInBooleanGeometry = False
 				return
 		if line[ : len( '<' ) ] == '<':
 			lineAfterBeginTagSymbol = line[ len( '<' ) : ].lstrip()
-			if lineAfterBeginTagSymbol[ : len( 'booleangeometry' ) ] == 'booleangeometry':
+			if lineAfterBeginTagSymbol[ : len( 'fabmetheus' ) ] == 'fabmetheus':
 				self.isInBooleanGeometry = True
 				return
 		if self.isInBooleanGeometry:

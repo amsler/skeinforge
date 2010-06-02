@@ -21,9 +21,12 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def addLoop( endMultiplier, extrude, loops, path, portionDirectionIndex, portionDirections, vertices ):
+def addLoop( endMultiplier, extrude, loopLists, path, portionDirectionIndex, portionDirections, vertices ):
 	"Add an indexed loop to the vertices."
 	portionDirection = portionDirections[ portionDirectionIndex ]
+	if portionDirection.directionReversed == True:
+		loopLists.append( [] )
+	loops = loopLists[ - 1 ]
 	interpolationOffset = extrude.interpolationDictionary[ 'offset' ]
 	offset = interpolationOffset.getVector3ByPortion( portionDirection )
 	if endMultiplier != None:
@@ -86,8 +89,8 @@ def addTwistPortions( interpolationTwist, remainderPortionDirection, twistPrecis
 
 def getGeometryOutput( xmlElement ):
 	"Get vector3 vertices from attribute dictionary."
-	paths = geomancer.getPathsByKey( 'target', xmlElement )
-	if len( paths ) == 0:
+	paths = geomancer.getPathsByKeys( [ 'crosssection', 'section', 'target' ], xmlElement )
+	if len( euclidean.getConcatenatedList( paths ) ) == 0:
 		print( 'Warning, in extrude there are no paths.' )
 		print( xmlElement.attributeDictionary )
 		return None
@@ -123,7 +126,7 @@ def getGeometryOutput( xmlElement ):
 			positives.append( geometryOutput )
 		else:
 			negatives.append( geometryOutput )
-	positiveOutput = getPositiveOutput( positives )
+	positiveOutput = trianglemesh.getUnifiedOutput( positives )
 	if len( negatives ) < 1:
 		return positiveOutput
 	return { 'difference' : [ positiveOutput ] + negatives }
@@ -131,13 +134,11 @@ def getGeometryOutput( xmlElement ):
 def getGeometryOutputByPath( endMultiplier, extrude, path, portionDirections ):
 	"Get vector3 vertices from attribute dictionary."
 	vertices = []
-	loops = []
+	loopLists = [ [] ]
 	extrude.oldProjectiveSpace = None
 	for portionDirectionIndex in xrange( len( portionDirections ) ):
-		addLoop( endMultiplier, extrude, loops, path, portionDirectionIndex, portionDirections, vertices )
-	faces = []
-	trianglemesh.addPillarFromConvexLoops( faces, loops )
-	return { 'trianglemesh' : { 'vertex' : vertices, 'face' : faces } }
+		addLoop( endMultiplier, extrude, loopLists, path, portionDirectionIndex, portionDirections, vertices )
+	return trianglemesh.getPillarsOutput( loopLists )
 
 def getNormalAverage( normals ):
 	"Get normal."
@@ -156,14 +157,6 @@ def getNormals( interpolationOffset, offset, portionDirection ):
 		normals.append( ( interpolationOffset.getVector3ByPortion( geomancer.PortionDirection( portionTo ) ) - offset ).getNormalized() )
 	return normals
 
-def getPositiveOutput( positives ):
-	"Get vector3 vertices from attribute dictionary."
-	if len( positives ) < 1:
-		return { 'trianglemesh' : { 'vertex' : [], 'face' : [] } }
-	if len( positives ) < 2:
-		return positives[ 0 ]
-	return { 'union' : positives }
-
 def insertTwistPortions( interpolationDictionary, xmlElement ):
 	"Insert twist portions and radian the twist."
 	twist = geomancer.getEvaluatedFloatZero( 'twist', xmlElement )
@@ -179,13 +172,13 @@ def insertTwistPortions( interpolationDictionary, xmlElement ):
 		addTwistPortions( interpolationTwist, remainderPortionDirection, twistPrecision )
 		interpolationTwist.portionDirections.append( remainderPortionDirection )
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	geometryOutput = getGeometryOutput( xmlElement )
 	if geometryOutput == None:
 		return
-	xmlElement.getRootElement().xmlProcessor.convertXMLElement( geometryOutput, xmlElement )
-	xmlElement.getRootElement().xmlProcessor.processXMLElement( xmlElement )
+	xmlProcessor.convertXMLElement( geometryOutput, xmlElement )
+	xmlProcessor.processXMLElement( xmlElement )
 
 def setOffsetByMultiplier( begin, end, multiplier, offset ):
 	"Set the offset by the multiplier."

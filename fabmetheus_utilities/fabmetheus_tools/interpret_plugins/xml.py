@@ -24,7 +24,7 @@ many more lines of the carving
 An example of an xml boolean geometry format file follows below.
 
 <?xml version='1.0' ?>
-<booleangeometry version="2010-03-29">
+<fabmetheus version="2010-03-29">
 	<difference id="cube_cylinder_difference">
 		<matrix4x4 m14="-10.0" m24="20.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
@@ -33,12 +33,12 @@ An example of an xml boolean geometry format file follows below.
 			<matrix4x4 m14="5.0" m24="-5.0" />
 		</cylinder>
 	</difference>
-</booleangeometry>
+</fabmetheus>
 
-In the 'booleangeometry' format, all class names are lower case.  The defined geometric objects are cube, cylinder, difference, group, sphere, trianglemesh and union.  The id attribute is not necessary.  The default matrix is a four by four identity matrix.  The attributes of the cube, cylinder and sphere default to one.  The attributes of the vertices in the triangle mesh default to zero.  The boolean solids are difference, intersection and union.  The difference solid is the first solid minus the remaining solids.  The combined_shape.xml example in the xml_models folder in the models folder is pasted below.
+In the 'fabmetheus' format, all class names are lower case.  The defined geometric objects are cube, cylinder, difference, group, sphere, trianglemesh and union.  The id attribute is not necessary.  The default matrix is a four by four identity matrix.  The attributes of the cube, cylinder and sphere default to one.  The attributes of the vertices in the triangle mesh default to zero.  The boolean solids are difference, intersection and union.  The difference solid is the first solid minus the remaining solids.  The combined_shape.xml example in the xml_models folder in the models folder is pasted below.
 
 <?xml version='1.0' ?>
-<booleangeometry version="2010-03-29">
+<fabmetheus version="2010-03-29">
 	<difference id="cube_cylinder_difference">
 		<matrix4x4 m14="-10.0" m24="20.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
@@ -93,9 +93,9 @@ In the 'booleangeometry' format, all class names are lower case.  The defined ge
 		<face vertex0="3" vertex1="2" vertex2="0" />
 		<face vertex0="3" vertex1="0" vertex2="1" />
 	</trianglemesh>
-</booleangeometry>
+</fabmetheus>
 
-The 'booleangeometry' xml format is the preferred skeinforge format.  When the Interpret button in the Interpret tool in Analyze is clicked, any xml format for which there is a plugin will be converted to the 'booleangeometry' format.
+The 'fabmetheus' xml format is the preferred skeinforge format.  When the Interpret button in the Interpret tool in Analyze is clicked, any xml format for which there is a plugin will be converted to the 'fabmetheus' format.
 
 There is a plugin for the 'Art of Illusion' xml format.  An xml file can be exported from Art of Illusion by going to the "File" menu, then going into the "Export" menu item, then picking the XML choice.  This will bring up the XML file chooser window, choose a place to save the file then click "OK".  Leave the "compressFile" checkbox unchecked.  All the objects from the scene will be exported, the artofillusion plugin will ignore the light and camera.  If you want to fabricate more than one object at a time, you can have multiple objects in the Art of Illusion scene and they will all be carved, then fabricated together.
 

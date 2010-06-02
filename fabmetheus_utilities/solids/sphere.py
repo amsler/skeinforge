@@ -20,9 +20,9 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	group.processShape( Sphere, xmlElement )
+	group.processShape( Sphere, xmlElement, xmlProcessor )
 
 
 class Sphere( cube.Cube ):

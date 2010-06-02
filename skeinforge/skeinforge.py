@@ -212,33 +212,42 @@ import os
 import sys
 
 
-# section, booleansolid threshold = default
-# getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
+# add statements
+# send introduction
+# add lambda, add stack add return, square halfx halfy width height
+# executor _arguments statement return, function within math
+# equation xyz
+# close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
+# _morning named examples
 # del previous, add begin & end if far  get actual path
 # polling
-# equation, x, y, z
+# csv _format, _column, _row, _text
 # getNormal, getIsFlat?
-# arc, pie
+# arc
 # lathe
-# support from top and bottom
 # line, parabolic interpolation if there is no endpoint angle then symmetrical, bysymmetricalplane, bysymmetricalsolid
 # evaluate float( equals, boolean etc )
-# maybe add back running jump
 # transform
-# _morning - polygon, midpointMultiplier, rotationoverside, rotation, spin (float), float sides, profile, round or bevel polygon
-# concatenate
+# polygon, overhang, equation x, y, z
+# mirror axis center & origin, concatenate
 # connect, from and to
 # tube, rotor
 # test translate
+# think about setActualMinimumZ in boolean_carving
 # pyramid
-# round, fillet
+# round extrusion ?, fillet
 # tetroc
 # widen single path to different widths
+# gear, hollow top
+# work out close and radius
+# maybe move and give geometryOutput to cube, cylinder, sphere
+# comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
 # generated_files?
 # creationID, addObject, getTarget, copyXMLElement?
 # maybe not getNewObject, getNew, addToBoolean
 # convert global repository settings to local settings
 # table to dictionary
+# comb documentation
 # check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # remove cool set at end of layer
 # add circling when hot in chamber
@@ -326,7 +335,6 @@ import sys
 #angle shape for overhang extrusions
 # maybe double height shells option _extrusion
 #maybe m111? countdown
-#make stl instead of essentially gts the default format
 #common tool
 #first time tool tip
 #individual tool tip to place in text
@@ -341,13 +349,14 @@ import sys
 
 #Manual
 #10,990
-#11,1776
-#12,3304
-#1,4960
-#2, 7077
-#3, 9598
-#4 12014
-#5 14319
+#11,1776,786
+#12,3304,1528
+#1,4960,1656
+#2, 7077,2117
+#3, 9598,2521
+#4 12014,2305
+#5 14319,2536
+#6 16855
 #85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?
@@ -376,6 +385,7 @@ import sys
 # concept, three perpendicular slices to get display spheres
 # extend lines around short segment after cross hatched boolean
 # concept, teslocracy; donation, postponement, rotate ad network, probably not gutenpedia, cached search options
+# concept, local ad server, every time the program runs it changes the iamge which all the documentation points to from a pool of ads
 # concept, join cross slices, go from vertex to two orthogonal edges, then from edges to each other, if not to a common point, then simplify polygons by removing points which do not change the area much
 # concept, each node is fourfold, use sorted intersectionindexes to find close, connect each double sided edge, don't overlap more than two triangles on an edge
 # concept, diamond cross section loops

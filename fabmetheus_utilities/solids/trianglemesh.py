@@ -138,7 +138,7 @@ def compareAreaDescending( loopArea, otherLoopArea ):
 		return - 1
 	return int( loopArea.area < otherLoopArea.area )
 
-def convertXMLElement( geometryOutput, xmlElement ):
+def convertXMLElement( geometryOutput, xmlElement, xmlProcessor ):
 	"Convert the xml element to a trianglemesh xml element."
 	vertex.addGeometryList( geometryOutput[ 'vertex' ], xmlElement )
 	face.addGeometryList( geometryOutput[ 'face' ], xmlElement )
@@ -445,6 +445,22 @@ def getPath( edges, pathIndexes, loop, z ):
 		path.append( carveIntersection )
 	return path
 
+def getPillarOutput( loops ):
+	"Get pillar output."
+	faces = []
+	vertices = euclidean.getConcatenatedList( loops )
+	for vertexIndex in xrange( len( vertices ) ):
+		vertices[ vertexIndex ].index = vertexIndex
+	addPillarFromConvexLoops( faces, loops )
+	return { 'trianglemesh' : { 'vertex' : vertices, 'face' : faces } }
+
+def getPillarsOutput( loopLists ):
+	"Get pillars output."
+	pillarsOutput = []
+	for loopList in loopLists:
+		pillarsOutput.append( getPillarOutput( loopList ) )
+	return getUnifiedOutput( pillarsOutput )
+
 def getRemainingEdgeTable( edges, vertices, z ):
 	"Get the remaining edge hashtable."
 	remainingEdgeTable = {}
@@ -466,6 +482,14 @@ def getSharedFace( firstEdge, faces, secondEdge ):
 			if firstEdgeFaceIndex == secondEdgeFaceIndex:
 				return faces[ firstEdgeFaceIndex ]
 	return None
+
+def getUnifiedOutput( outputs ):
+	"Get unified output."
+	if len( outputs ) < 1:
+		return { 'trianglemesh' : { 'vertex' : [], 'face' : [] } }
+	if len( outputs ) < 2:
+		return outputs[ 0 ]
+	return { 'union' : outputs }
 
 def getWideAnglePointIndex( loop ):
 	"Get a point index which has a wide enough angle, most point indexes have a wide enough angle, this is just to make sure."
@@ -524,9 +548,9 @@ def isPathAdded( edges, faces, loops, remainingEdgeTable, vertices, z ):
 	loops.append( getPath( edges, pathIndexes, vertices, z ) )
 	return True
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	group.processShape( TriangleMesh, xmlElement )
+	group.processShape( TriangleMesh, xmlElement, xmlProcessor )
 
 
 class EdgePair:

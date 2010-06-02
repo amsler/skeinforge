@@ -58,6 +58,10 @@ def getCarvingFromParser( xmlParser ):
 	xmlParser.getRootElement().xmlProcessor.processChildren( booleanGeometryElement )
 	return booleanGeometryElement.object
 
+def getManipulatorPathsDirectoryPath():
+	"Get the manipulator paths directory path."
+	return os.path.join( geomancer.getSolidsDirectoryPath(), 'manipulator_paths' )
+
 def getManipulatorsDirectoryPath():
 	"Get the manipulators directory path."
 	return os.path.join( geomancer.getSolidsDirectoryPath(), 'manipulators' )
@@ -66,16 +70,25 @@ def getSolidToolsDirectoryPath():
 	"Get the plugins directory path."
 	return os.path.join( geomancer.getSolidsDirectoryPath(), 'solid_tools' )
 
+def getStatementsDirectoryPath():
+	"Get the statements directory path."
+	return os.path.join( geomancer.getSolidsDirectoryPath(), 'statements' )
+
 
 class XMLBooleanGeometryProcessor():
 	"A class to process xml boolean geometry elements."
 	def __init__( self ):
-		"Process the children of the xml element."
+		"Initialize processor."
+		self.functions = []
 		self.namePathDictionary = {}
-		addToNamePathDictionary( geomancer.getCreatorsDirectoryPath(), self.namePathDictionary )
+		addToNamePathDictionary( geomancer.getCreationDirectoryPath(), self.namePathDictionary )
 		addToNamePathDictionary( getManipulatorsDirectoryPath(), self.namePathDictionary )
+		addToNamePathDictionary( getManipulatorPathsDirectoryPath(), self.namePathDictionary )
 		addToNamePathDictionary( geomancer.getSolidsDirectoryPath(), self.namePathDictionary )
 		addToNamePathDictionary( getSolidToolsDirectoryPath(), self.namePathDictionary )
+		addToNamePathDictionary( getStatementsDirectoryPath(), self.namePathDictionary )
+		self.manipulatorPathDictionary = {}
+		addToNamePathDictionary( getManipulatorPathsDirectoryPath(), self.manipulatorPathDictionary )
 
 	def convertXMLElement( self, geometryOutput, xmlElement ):
 		"Convert the xml element."
@@ -90,19 +103,12 @@ class XMLBooleanGeometryProcessor():
 		if pluginModule == None:
 			return None
 		xmlElement.className = lowerClassName
-		return pluginModule.convertXMLElement( geometryOutput[ firstKey ], xmlElement )
-
-	def createChild( self, geometryOutput, parent ):
-		"Create child for the parent."
-		child = xml_simple_parser.XMLElement()
-		child.parent = parent
-		parent.children.append( child )
-		self.convertXMLElement( geometryOutput, child )
+		return pluginModule.convertXMLElement( geometryOutput[ firstKey ], xmlElement, self )
 
 	def createChildren( self, geometryOutput, parent ):
 		"Create children for the parent."
 		for geometryOutputChild in geometryOutput:
-			self.createChild( geometryOutputChild, parent )
+			self.convertXMLElement( geometryOutputChild, xml_simple_parser.XMLElement().getByParent( parent ) )
 
 	def processChildren( self, xmlElement ):
 		"Process the children of the xml element."
@@ -117,4 +123,4 @@ class XMLBooleanGeometryProcessor():
 		pluginModule = gcodec.getModuleWithPath( self.namePathDictionary[ lowerClassName ] )
 		if pluginModule == None:
 			return None
-		return pluginModule.processXMLElement( xmlElement )
+		return pluginModule.processXMLElement( xmlElement, self )

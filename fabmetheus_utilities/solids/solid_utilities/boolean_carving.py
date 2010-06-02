@@ -114,7 +114,7 @@ class BooleanGeometry:
 		"Get extruder loops."
 		rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
 		visibleObjectLoopsList = booleansolid.getVisibleObjectLoopsList( self.importRadius, geomancer.getVisibleObjects( self.archivableObjects ), z )
-		rotatedBoundaryLayer.loops = booleansolid.getJoinedList( visibleObjectLoopsList )
+		rotatedBoundaryLayer.loops = euclidean.getConcatenatedList( visibleObjectLoopsList )
 		if euclidean.isLoopListIntersecting( rotatedBoundaryLayer.loops, z ):
 			rotatedBoundaryLayer.loops = booleansolid.getLoopsUnified( self.importRadius, visibleObjectLoopsList )
 		return rotatedBoundaryLayer

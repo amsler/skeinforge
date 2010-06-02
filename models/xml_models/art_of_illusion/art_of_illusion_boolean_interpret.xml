@@ -1,5 +1,5 @@
 <?xml version='1.0' ?>
-<booleangeometry version="2010-03-29">
+<fabmetheus version="2010-03-29">
 	<difference id="Boolean1">
 		<matrix4x4 m14="-20.1" m24="0.19" />
 		<cube id="Cube 2" halfx="1.36" halfy="3.05" halfz="1.36">
@@ -9,4 +9,4 @@
 			<matrix4x4 m14="-0.425" m24="-0.53" />
 		</cube>
 	</difference>
-</booleangeometry>
+</fabmetheus>

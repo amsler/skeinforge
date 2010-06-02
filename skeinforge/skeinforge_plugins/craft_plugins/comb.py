@@ -11,10 +11,8 @@ Comb bends the extruder travel paths around holes in the slices, to avoid string
 The default 'Activate Comb' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
 ==Settings==
-===Minimum Departure Distance over Perimeter Width===
-Default is zero.
-
-Defines the ratio of the minimum distance that the extruder will travel and loop before leaving a perimeter.  A high value means the extruder will loop many times before leaving, so that the ooze will finish within the perimeter, a low value means the extruder will not loop and the stringers will be thicker.  Since it sometimes loops when there's no need, the default is zero.
+===Running Jump Space===
+Placeholder.
 
 ==Examples==
 
@@ -143,7 +141,6 @@ class CombRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Comb', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb' )
 		self.activateComb = settings.BooleanSetting().getFromValue( 'Activate Comb', self, False )
-		self.minimumDepartureDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Minimum Departure Distance over Perimeter Width (ratio):', self, 50.0, 0.0 )
 		self.executeTitle = 'Comb'
 
 	def execute( self ):
@@ -369,7 +366,6 @@ class CombSkein:
 				self.combInset = 0.7 * perimeterWidth
 				self.betweenInset = 0.4 * perimeterWidth
 				self.uTurnWidth = 0.5 * self.betweenInset
-				self.minimumDepartureDistance = combRepository.minimumDepartureDistanceOverPerimeterWidth.value * perimeterWidth
 			elif firstWord == '(<travelFeedRatePerSecond>':
 				self.travelFeedRatePerMinute = 60.0 * float( splitLine[ 1 ] )
 			self.distanceFeedRate.addLine( line )

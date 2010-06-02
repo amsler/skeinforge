@@ -162,7 +162,7 @@ When selected, raft will not add support material.
 ====Support Minimum Angle====
 Default is sixty degrees.
 
-Defines the minimum angle that a surface overhangs before support material is added.
+Defines the minimum angle that a surface overhangs before support material is added.  This angle is defined from the vertical, so zero is a vertical wall, ten is a wall with a bit of overhang, thirty is the typical safe angle for filament extrusion, sixty is a really high angle for extrusion and ninety is an unsupported horizontal ceiling.
 
 ==Alterations==
 If support material is generated, raft looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Raft does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the craft_plugins folder.

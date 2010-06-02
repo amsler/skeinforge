@@ -100,6 +100,12 @@ class XMLElement:
 		for child in self.children:
 			child.getCopy( idSuffix, parent )
 
+	def getByParent( self, parent ):
+		"Get xmlElement and add it to the parent."
+		self.parent = parent
+		parent.children.append( self )
+		return self
+
 	def getCascadeFloat( self, defaultFloat, key ):
 		"Get the cascade float."
 		return euclidean.getFloatFromValue( self.getCascadeValue( defaultFloat, key ) )
@@ -122,15 +128,13 @@ class XMLElement:
 
 	def getCopy( self, idSuffix, parent ):
 		"Copy the xml element and add it to the parent."
-		copy = XMLElement()
+		copy = XMLElement().getByParent( parent )
 		copy.attributeDictionary = self.attributeDictionary.copy()
 		if idSuffix != '':
 			if 'id' in copy.attributeDictionary:
 				copy.attributeDictionary[ 'id' ] = copy.attributeDictionary[ 'id' ] + idSuffix
 		copy.className = self.className
-		copy.parent = parent
 		copy.text = self.text
-		parent.children.append( copy )
 		copy.addToIDDictionaryIFIDExists()
 		self.copyXMLChildren( idSuffix, copy )
 		return copy
@@ -201,12 +205,10 @@ class XMLElement:
 			return self
 		return self.parent.getRootElement()
 
-	def getShallowCopy( self, dictionary ):
-		"Copy the xml element and overwrite its dictionary."
+	def getShallowCopy( self, attributeDictionary ):
+		"Copy the xml element and set its dictionary."
 		shallowCopy = XMLElement()
-		shallowCopy.attributeDictionary = self.attributeDictionary.copy()
-		for key in dictionary.keys():
-			shallowCopy.attributeDictionary[ key ] = dictionary[ key ]
+		shallowCopy.attributeDictionary = attributeDictionary
 		shallowCopy.children = self.children
 		shallowCopy.className = self.className
 		shallowCopy.idDictionary = self.idDictionary

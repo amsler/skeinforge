@@ -1,9 +1,9 @@
 <?xml version='1.0' ?>
-<booleangeometry version="2010-03-17" p="7.123" z="2.2">
+<fabmetheus version="2010-03-17" p="7.123" z="2.2">
 	<read file="sphere_cylinder_interpret.xml" id="Read Test 1">
 		<matrix4x4 m14="0.6" m24="-1.3" />
 	</read>
-	<read file="art_of_illusion_boolean_interpret.xml" id="Read Test boolean">
+	<read file="extrude.xml" id="Read Test extrude">
 	</read>
 	<read file="box.obj">
 	</read>
@@ -11,4 +11,4 @@
 	</read>
 	<read file="Screw_Holder_Bottom_carve.svg" id="Read Test svg">
 	</read>
-</booleangeometry>
+</fabmetheus>

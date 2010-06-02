@@ -12,13 +12,14 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
     <defaultencoding/>
+    <versioncontrol/>
   </general>
   <kdevscriptproject>
     <run>
       <directoryradio>executable</directoryradio>
     </run>
     <general>
-      <includepatterns>*.py</includepatterns>
+      <includepatterns>*.py,*.xml</includepatterns>
       <excludepatterns>*~,*.pyc</excludepatterns>
     </general>
   </kdevscriptproject>

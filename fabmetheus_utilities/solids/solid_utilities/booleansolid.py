@@ -64,16 +64,13 @@ def addLineLoopsIntersections( loopLoopsIntersections, loops, pointBegin, pointE
 
 def addLineXSegmentIntersection( lineLoopsIntersections, segmentFirstX, segmentSecondX, vector3First, vector3Second, y ):
 	"Add intersections of the line with the x segment."
-	isYAboveFirst = y > vector3First.imag
-	isYAboveSecond = y > vector3Second.imag
-	if isYAboveFirst == isYAboveSecond:
+	xIntersection = euclidean.getXIntersectionIfExists( vector3First, vector3Second, y )
+	if xIntersection == None:
 		return
-	xIntersection = euclidean.getXIntersection( vector3First, vector3Second, y )
-	if xIntersection <= min( segmentFirstX, segmentSecondX ):
+	if xIntersection < min( segmentFirstX, segmentSecondX ):
 		return
-	if xIntersection >= max( segmentFirstX, segmentSecondX ):
-		return
-	lineLoopsIntersections.append( xIntersection )
+	if xIntersection <= max( segmentFirstX, segmentSecondX ):
+		lineLoopsIntersections.append( xIntersection )
 
 def addLoopLoopsIntersections( loop, loopsLoopsIntersections, otherLoops ):
 	"Add intersections of the loop with the other loops."
@@ -114,7 +111,7 @@ def getInBetweenLoopsFromLoops( importRadius, loops ):
 		for pointIndex in xrange( len( loop ) ):
 			pointBegin = loop[ pointIndex ]
 			pointEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
-			intercircle.addPointsFromSegment( pointBegin, pointEnd, inBetweenLoop, importRadius, 0.2123 )
+			intercircle.addPointsFromSegment( pointBegin, pointEnd, inBetweenLoop, importRadius )
 		inBetweenLoops.append( inBetweenLoop )
 	return inBetweenLoops
 
@@ -144,13 +141,6 @@ def getIsInsetPointInsideLoops( inside, loops, pointBegin, pointCenter, pointEnd
 	endMinusCenterWiddershins = complex( - endMinusCenter.imag, endMinusCenter.real )
 	widdershinsNormalized = euclidean.getNormalized( centerMinusBeginWiddershins + endMinusCenterWiddershins ) * radius
 	return euclidean.isPointInsideLoops( loops,  pointCenter + widdershinsNormalized ) == inside
-
-def getJoinedList( originalLists ):
-	"Get the lists as one joined list."
-	concatenatedList = []
-	for originalList in originalLists:
-		concatenatedList += originalList
-	return concatenatedList
 
 def getLoopsDifference( importRadius, loopLists ):
 	"Get difference loops."
@@ -215,7 +205,7 @@ def getLoopsUnified( importRadius, loopLists ):
 	for loopListIndex in xrange( len( loopLists ) ):
 		insetLoops = loopLists[ loopListIndex ]
 		inBetweenInsetLoops = getInBetweenLoopsFromLoops( importRadius, insetLoops )
-		otherLoops = getJoinedList( loopLists[ : loopListIndex ] + loopLists[ loopListIndex + 1 : ] )
+		otherLoops = euclidean.getConcatenatedList( loopLists[ : loopListIndex ] + loopLists[ loopListIndex + 1 : ] )
 		corners += getInsetPointsByInsetLoops( insetLoops, False, otherLoops, radiusSide )
 		allPoints += getInsetPointsByInsetLoops( inBetweenInsetLoops, False, otherLoops, radiusSide )
 	allPoints += corners[ : ]

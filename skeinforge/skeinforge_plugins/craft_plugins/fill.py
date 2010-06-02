@@ -376,7 +376,7 @@ def addAroundGridPoint( arounds, gridPoint, gridPointInsetX, gridPointInsetY, gr
 		for pointIndex in xrange( len( loop ) ):
 			pointFirst = loop[ pointIndex ]
 			pointSecond = loop[ ( pointIndex + 1 ) % len( loop ) ]
-			yIntersection = getYIntersectionIfExists( pointFirst, pointSecond, gridPoint.real )
+			yIntersection = euclidean.getYIntersectionIfExists( pointFirst, pointSecond, gridPoint.real )
 			addYIntersectionPathToList( aroundIndex, pointIndex, gridPoint.imag, yIntersection, aroundIntersectionPaths )
 	if len( aroundIntersectionPaths ) < 2:
 		print( 'This should never happen, aroundIntersectionPaths is less than 2 in fill.' )
@@ -663,30 +663,14 @@ def getWithLeastLength( path, point ):
 			shortestPointIndex = pointIndex
 	return shortestPointIndex
 
-def getYIntersection( firstPoint, secondPoint, x ):
-	"Get where the line crosses x."
-	secondMinusFirst = secondPoint - firstPoint
-	xMinusFirst = x - firstPoint.real
-	return xMinusFirst / secondMinusFirst.real * secondMinusFirst.imag + firstPoint.imag
-
-def getYIntersectionIfExists( complexFirst, complexSecond, x ):
-	"Get the y intersection if it exists."
-	isXAboveFirst = x > complexFirst.real
-	isXAboveSecond = x > complexSecond.real
-	if isXAboveFirst == isXAboveSecond:
-		return None
-	return getYIntersection( complexFirst, complexSecond, x )
-
-def getYIntersectionInsideYSegment( segmentFirstY, segmentSecondY, complexFirst, complexSecond, x ):
+def getYIntersectionInsideYSegment( segmentFirstY, segmentSecondY, beginComplex, endComplex, x ):
 	"Get the y intersection inside the y segment if it does, else none."
-	isXAboveFirst = x > complexFirst.real
-	isXAboveSecond = x > complexSecond.real
-	if isXAboveFirst == isXAboveSecond:
+	yIntersection = euclidean.getYIntersectionIfExists( beginComplex, endComplex, x )
+	if yIntersection == None:
 		return None
-	yIntersection = getYIntersection( complexFirst, complexSecond, x )
-	if yIntersection <= min( segmentFirstY, segmentSecondY ):
+	if yIntersection < min( segmentFirstY, segmentSecondY ):
 		return None
-	if yIntersection < max( segmentFirstY, segmentSecondY ):
+	if yIntersection <= max( segmentFirstY, segmentSecondY ):
 		return yIntersection
 	return None
 

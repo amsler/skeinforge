@@ -262,10 +262,8 @@ def addXIntersectionIndexesFromLoopY( loop, solidIndex, xIntersectionIndexList, 
 	for pointIndex in xrange( len( loop ) ):
 		pointFirst = loop[ pointIndex ]
 		pointSecond = loop[ ( pointIndex + 1 ) % len( loop ) ]
-		isYAboveFirst = y > pointFirst.imag
-		isYAboveSecond = y > pointSecond.imag
-		if isYAboveFirst != isYAboveSecond:
-			xIntersection = getXIntersection( pointFirst, pointSecond, y )
+		xIntersection = getXIntersectionIfExists( pointFirst, pointSecond, y )
+		if xIntersection != None:
 			xIntersectionIndexList.append( XIntersectionIndex( solidIndex, xIntersection ) )
 
 def addXIntersectionIndexesFromLoopListsY( loopLists, xIntersectionIndexList, y ):
@@ -299,10 +297,9 @@ def addXIntersections( loop, xIntersections, y ):
 	for pointIndex in xrange( len( loop ) ):
 		pointFirst = loop[ pointIndex ]
 		pointSecond = loop[ ( pointIndex + 1 ) % len( loop ) ]
-		isYAboveFirst = y > pointFirst.imag
-		isYAboveSecond = y > pointSecond.imag
-		if isYAboveFirst != isYAboveSecond:
-			xIntersections.append( getXIntersection( pointFirst, pointSecond, y ) )
+		xIntersection = getXIntersectionIfExists( pointFirst, pointSecond, y )
+		if xIntersection != None:
+			xIntersections.append( xIntersection )
 
 def addXIntersectionsFromLoopForTable( loop, xIntersectionsTable, width ):
 	"Add the x intersections for a loop into a table."
@@ -370,6 +367,12 @@ def getAngleAroundZAxisDifference( subtractFromVec3, subtractVec3 ):
 	differenceVector = getRoundZAxisByPlaneAngle( subtractVectorMirror, subtractFromVec3 )
 	return math.atan2( differenceVector.y, differenceVector.x )
 
+def getAngleDifferenceByComplex( subtractFromComplex, subtractComplex ):
+	"Get the angle between a pair of normalized complexex."
+	subtractComplexMirror = complex( subtractComplex.real , - subtractComplex.imag )
+	differenceComplex = subtractComplexMirror * subtractFromComplex
+	return math.atan2( differenceComplex.imag, differenceComplex.real )
+
 def getAroundLoop( begin, end, loop ):
 	"Get an arc around a loop."
 	aroundLoop = []
@@ -417,9 +420,9 @@ def getBooleanFromDictionaryDefault( defaultBoolean, dictionary, key ):
 def getBooleanFromValue( value ):
 	"Get boolean from the word."
 	firstCharacter = str( value ).lower().lstrip()[ : 1 ]
-	if firstCharacter == 'f':
-		return False
-	return firstCharacter != '0'
+	if firstCharacter == 't':
+		return True
+	return firstCharacter == '1'
 
 def getBottom( points ):
 	"Get the bottom of the points."
@@ -495,6 +498,13 @@ def getComplexPaths( vector3Paths ):
 	for vector3Path in vector3Paths:
 		complexPaths.append( getComplexPath( vector3Path ) )
 	return complexPaths
+
+def getConcatenatedList( originalLists ):
+	"Get the lists as one concatenated list."
+	concatenatedList = []
+	for originalList in originalLists:
+		concatenatedList += originalList
+	return concatenatedList
 
 def getConnectedPaths( paths, pixelTable, width ):
 	"Get connected paths from paths."
@@ -603,7 +613,7 @@ def getFloatFromValue( value ):
 	try:
 		return float( value )
 	except:
-		print( 'Warning, could not evaluate the float.' )
+		print( 'Warning, in getFloatFromValue in euclidean could not evaluate the float.' )
 		print( value )
 	return None
 
@@ -818,6 +828,18 @@ def getLoopStartingNearest( extrusionHalfWidth, location, loop ):
 		loop = loop[ 1 : ] + [ loop[ 0 ] ]
 	return loop
 
+def getLoopWithoutCloseSequentialPoints( close, loop ):
+	"Get loop without close sequential points."
+	if len( loop ) < 2:
+		return loop
+	lastPoint = loop[ - 1 ]
+	loopWithoutCloseSequentialPoints = []
+	for point in loop:
+		if abs( point - lastPoint ) > close:
+			loopWithoutCloseSequentialPoints.append( point )
+		lastPoint = point
+	return loopWithoutCloseSequentialPoints
+
 def getMaximum( firstComplex, secondComplex ):
 	"Get a complex with each component the maximum of the respective components of a pair of complexes."
 	return complex( max( firstComplex.real, secondComplex.real ), max( firstComplex.imag, secondComplex.imag ) )
@@ -889,10 +911,9 @@ def getNumberOfIntersectionsToLeft( loop, point ):
 	for pointIndex in xrange( len( loop ) ):
 		firstPointComplex = loop[ pointIndex ]
 		secondPointComplex = loop[ ( pointIndex + 1 ) % len( loop ) ]
-		isLeftAboveFirst = point.imag > firstPointComplex.imag
-		isLeftAboveSecond = point.imag > secondPointComplex.imag
-		if isLeftAboveFirst != isLeftAboveSecond:
-			if getXIntersection( firstPointComplex, secondPointComplex, point.imag ) < point.real:
+		xIntersection = getXIntersectionIfExists( firstPointComplex, secondPointComplex, point.imag )
+		if xIntersection != None:
+			if xIntersection < point.real:
 				numberOfIntersectionsToLeft += 1
 	return numberOfIntersectionsToLeft
 
@@ -1314,11 +1335,12 @@ def getWiddershinsUnitPolar( angle ):
 	"Get polar complex from counterclockwise angle from 1, 0."
 	return complex( math.cos( angle ), math.sin( angle ) )
 
-def getXIntersection( firstComplex, secondComplex, y ):
-	"Get where the line crosses y."
-	secondMinusFirstComplex = secondComplex - firstComplex
-	yMinusFirst = y - firstComplex.imag
-	return yMinusFirst * secondMinusFirstComplex.real / secondMinusFirstComplex.imag + firstComplex.real
+def getXIntersectionIfExists( beginComplex, endComplex, y ):
+	"Get the x intersection if it exists."
+	if ( y > beginComplex.imag ) == ( y > endComplex.imag ):
+		return None
+	endMinusBeginComplex = endComplex - beginComplex
+	return ( y - beginComplex.imag ) / endMinusBeginComplex.imag * endMinusBeginComplex.real + beginComplex.real
 
 def getXIntersectionsFromIntersections( xIntersectionIndexList ):
 	"Get x intersections from the x intersection index list, in other words subtract non negative intersections from negatives."
@@ -1344,6 +1366,13 @@ def getXYComplexFromVector3( vector3 ):
 		return None
 	return vector3.dropAxis( 2 )
 
+def getYIntersectionIfExists( beginComplex, endComplex, x ):
+	"Get the y intersection if it exists."
+	if ( x > beginComplex.real ) == ( x > endComplex.real ):
+		return None
+	endMinusBeginComplex = endComplex - beginComplex
+	return ( x - beginComplex.real ) / endMinusBeginComplex.real * endMinusBeginComplex.imag + beginComplex.imag
+
 def getZComponentCrossProduct( vec3First, vec3Second ):
 	"Get z component cross product of a pair of Vector3s."
 	return vec3First.x * vec3Second.y - vec3First.y * vec3Second.x
@@ -1356,16 +1385,14 @@ def isInsideOtherLoops( loopIndex, loops ):
 	"Determine if a loop in a list is inside another loop in that list."
 	return isPathInsideLoops( loops[ : loopIndex ] + loops[ loopIndex + 1 : ], loops[ loopIndex ] )
 
-def isLineIntersectingInsideXSegment( segmentFirstX, segmentSecondX, vector3First, vector3Second, y ):
+def isLineIntersectingInsideXSegment( beginComplex, endComplex, segmentFirstX, segmentSecondX, y ):
 	"Determine if the line is crossing inside the x segment."
-	isYAboveFirst = y > vector3First.imag
-	isYAboveSecond = y > vector3Second.imag
-	if isYAboveFirst == isYAboveSecond:
+	xIntersection = getXIntersectionIfExists( beginComplex, endComplex, y )
+	if xIntersection == None:
 		return False
-	xIntersection = getXIntersection( vector3First, vector3Second, y )
-	if xIntersection <= min( segmentFirstX, segmentSecondX ):
+	if xIntersection < min( segmentFirstX, segmentSecondX ):
 		return False
-	return xIntersection < max( segmentFirstX, segmentSecondX )
+	return xIntersection <= max( segmentFirstX, segmentSecondX )
 
 def isLineIntersectingLoop( loop, pointBegin, pointEnd ):
 	"Determine if the line is intersecting loops."
@@ -1399,7 +1426,7 @@ def isLoopIntersectingInsideXSegment( loop, segmentFirstX, segmentSecondX, segme
 	for pointIndex in xrange( len( rotatedLoop ) ):
 		pointFirst = rotatedLoop[ pointIndex ]
 		pointSecond = rotatedLoop[ ( pointIndex + 1 ) % len( rotatedLoop ) ]
-		if isLineIntersectingInsideXSegment( segmentFirstX, segmentSecondX, pointFirst, pointSecond, y ):
+		if isLineIntersectingInsideXSegment( pointFirst, pointSecond, segmentFirstX, segmentSecondX, y ):
 			return True
 	return False
 
@@ -1437,6 +1464,7 @@ def isLoopListIntersecting( loops, z ):
 			print( "Something will still be printed, but there is no guarantee that it will be the correct shape." )
 			print( 'Once the gcode is saved, you should check over the layer with a z of:' )
 			print( z )
+			a=1/0
 			return True
 	return False
 
@@ -1525,7 +1553,7 @@ def isXSegmentIntersectingPath( path, segmentFirstX, segmentSecondX, segmentYMir
 	for pointIndex in xrange( len( rotatedPath ) - 1 ):
 		pointFirst = rotatedPath[ pointIndex ]
 		pointSecond = rotatedPath[ pointIndex + 1 ]
-		if isLineIntersectingInsideXSegment( segmentFirstX, segmentSecondX, pointFirst, pointSecond, y ):
+		if isLineIntersectingInsideXSegment( pointFirst, pointSecond, segmentFirstX, segmentSecondX, y ):
 			return True
 	return False
 
@@ -2119,16 +2147,27 @@ class SurroundingLoop:
 class XIntersectionIndex:
 	"A class to hold the x intersection position and the index of the loop which intersected."
 	def __init__( self, index, x ):
+		"Initialize."
 		self.index = index
 		self.x = x
 
 	def __cmp__( self, other ):
 		"Get comparison in order to sort x intersections in ascending order of x."
-		if self.x > other.x:
-			return 1
 		if self.x < other.x:
 			return - 1
-		return 0
+		return int( self.x > other.x )
+
+	def __eq__( self, other ):
+		"Determine whether this XIntersectionIndex is identical to other one."
+		if other == None:
+			return False
+		if other.__class__ != self.__class__:
+			return False
+		return self.index == other.index and self.x == other.x
+
+	def __ne__( self, other ):
+		"Determine whether this XIntersectionIndex is not identical to other one."
+		return not self.__eq__( other )
 
 	def __repr__( self ):
 		"Get the string representation of this x intersection."

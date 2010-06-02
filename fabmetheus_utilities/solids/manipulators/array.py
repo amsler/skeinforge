@@ -19,7 +19,7 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def processXMLElement( xmlElement ):
+def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	target = geomancer.getXMLElementByKey( 'target', xmlElement )
 	if target == None:
@@ -41,4 +41,4 @@ def processXMLElement( xmlElement ):
 		euclidean.overwriteDictionary( xmlElement.attributeDictionary, [ 'id' ], [ 'visible' ], lastChild.attributeDictionary )
 		vertexElement = vertex.getUnboundVertexElement( vector3 )
 		matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( vertexElement, vector3Matrix4X4, lastChild )
-	xmlElement.getRootElement().xmlProcessor.processXMLElement( xmlElement )
+	xmlProcessor.processXMLElement( xmlElement )

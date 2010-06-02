@@ -1,5 +1,5 @@
 <?xml version='1.0' ?>
-<booleangeometry version="2010-04-04" comment="" twistprecision="10">
+<fabmetheus version="2010-04-04" overhangangle='35' overhangspan='45' twistprecision="10">
 	<path name="vertex holder">
 		<vertex x="8.8" y="7.7" z="2.9" />
 	</path>
@@ -7,17 +7,28 @@
 		<polygon radius="20" sides="5" />
 		<polygon radius="10" sides="4" />
 	</difference>
+	<!--
 	<extrude id="bracket test" scalepath='[0,0,0],[1,1,1],[0,0,2]' segments="5" target="[[],(0,-30),[20]],[ [5,-3],(5,-25),[12,-3]],[[30],(30,-10),[40]]" toz="3.0" twist="30" y='-40' />
 	<polygon id="polygon test" threesidedpolygon="test" radius="20.0" sides="3" />
-	<!--
 	<extrude id="extrude crooked" name="extrude crooked" path='[0,0,0],[0,45,1],[33,0,2]' target="[0,0,0],[20,0,0],[0,10,0]" segments="5" y="50" toz="3.0" />
+	<polygon id="heptagon" roundoverside='-0.2' segmentcenter='[]' wedgecenter='[]' name="star" radius="20" sides="7" start='1' />
+	<lineation id="pentagon" equation='function.double y' paths='=[math.polygon(7)*20,math.polygon(-11)*10]' name="ring" segmentpath_comment='[[],[0.7,3],[1,0]]' />
+	<overhangremoval paths='ring' name="hang" overhangverticalangle_comment='60' x='50' />
+	<dictionary name="double y" return='=[local.x*2,local.y,local.z]' />
 	-->
-	<polygon id="pentagon" name="star" radius="20" sides="5" />
-	<polygon id="square" name="negative square" radius="10" sides="-4" />
+	<function name="double y">
+		<statement local.x='=local.x*2' />
+		<return return='=[local.x,local.y*2,local.z]' />
+	</function>
+	<square name="square" bottomwidth="40.0" equation='function.double y' height="30.0" interiorangle='100' topwidth="10" />
+	<extrude id="extrude pentagon" segments="5" target="name.square" to="name.vertex holder.vertex.0" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
 	<!--
+	<polygon id="square" name="negative square" radius="10" sides="-4" />
 	<extrude id="extrude pentagon" segments="5" target="name.star, negative square" to="name.vertex holder.vertex.0" tilttox="2" twistpath="[0,0],[1,30],[2,0]" x="40" />
 	-->
-	<extrude id="extrude pentagon" segments="5" target="name.star" to="name.vertex holder.vertex.0" tilttox="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
+	<!--
 	<extrude id="extrude hook" maximumunbuckling='3.0' path='[0],[20],[0,-10],[-5,-5]' segments="5" target="[0,0],[2,3],[0,3]" tilttopz="1" x="80" />
 	<extrude id="extrude difference" target="id.pentagon square" toz="3.0" x="80" y='-80' />
-</booleangeometry>
+	-->
+	<extrude id="mesa" scalepath='[1,1],[1,1,1],[0.5,0.5,1],[0.5,0.5,2]' section="=10*math.polygon({rotationoverside:0.5})" toz="3.0" y='-120' />
+</fabmetheus>

@@ -91,7 +91,7 @@ def getBeginGeometryXMLOutput( xmlElement ):
 		rootElement = xmlElement.getRootElement()
 		attributeDictionary = rootElement.attributeDictionary
 	attributeDictionary[ 'version' ] = '2010-03-29'
-	addBeginXMLTag( attributeDictionary, 0, 'booleangeometry', output )
+	addBeginXMLTag( attributeDictionary, 0, 'fabmetheus', output )
 	return output
 
 def getBeginXMLOutput():
@@ -110,5 +110,5 @@ def getDictionaryWithoutList( dictionary, withoutList ):
 
 def getEndGeometryXMLString( output ):
 	"Get the string representation of this object info."
-	addEndXMLTag( 0, 'booleangeometry', output )
+	addEndXMLTag( 0, 'fabmetheus', output )
 	return output.getvalue()

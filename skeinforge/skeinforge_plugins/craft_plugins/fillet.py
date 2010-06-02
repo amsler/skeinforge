@@ -318,26 +318,22 @@ class ArcSegmentSkein( BevelSkein ):
 		afterPointComplex = afterPoint.dropAxis( 2 )
 		beforePointComplex = beforePoint.dropAxis( 2 )
 		locationComplex = location.dropAxis( 2 )
-		midPoint = 0.5 * ( afterPoint + beforePoint )
-		midPointComplex = midPoint.dropAxis( 2 )
-		midPointMinusLocationComplex = midPointComplex - locationComplex
-		midPointLocationLength = abs( midPointMinusLocationComplex )
-		if midPointLocationLength < 0.01 * self.filletRadius:
+		midpoint = 0.5 * ( afterPoint + beforePoint )
+		midpointComplex = midpoint.dropAxis( 2 )
+		midpointMinusLocationComplex = midpointComplex - locationComplex
+		midpointLocationLength = abs( midpointMinusLocationComplex )
+		if midpointLocationLength < 0.01 * self.filletRadius:
 			self.addLinearMovePoint( self.getCornerFeedRate(), afterPoint )
 			return afterPoint
-		midPointAfterPointLength = abs( midPointComplex - afterPointComplex )
-		midPointCenterLength = midPointAfterPointLength * midPointAfterPointLength / midPointLocationLength
-		radius = math.sqrt( midPointCenterLength * midPointCenterLength + midPointAfterPointLength * midPointAfterPointLength )
-		centerComplex = midPointComplex + midPointMinusLocationComplex * midPointCenterLength / midPointLocationLength
-		center = Vector3( centerComplex.real, centerComplex.imag, midPoint.z )
+		midpointAfterPointLength = abs( midpointComplex - afterPointComplex )
+		midpointCenterLength = midpointAfterPointLength * midpointAfterPointLength / midpointLocationLength
+		radius = math.sqrt( midpointCenterLength * midpointCenterLength + midpointAfterPointLength * midpointAfterPointLength )
+		centerComplex = midpointComplex + midpointMinusLocationComplex * midpointCenterLength / midpointLocationLength
+		center = Vector3( centerComplex.real, centerComplex.imag, midpoint.z )
 		afterCenterComplex = afterPointComplex - centerComplex
-		beforeMinusCenterCenterComplex = beforePointComplex - centerComplex
 		beforeCenter = beforePoint - center
-		beforeCenterComplex = beforeCenter.dropAxis( 2 )
-		subtractComplexMirror = complex( beforeCenterComplex.real , - beforeCenterComplex.imag )
-		differenceComplex = subtractComplexMirror * afterCenterComplex
-		differenceAngle = math.atan2( differenceComplex.imag, differenceComplex.real )
-		self.addArc( differenceAngle, afterPoint, beforeCenter, beforePoint, center )
+		angleDifference = euclidean.getAngleDifferenceByComplex( afterCenterComplex, beforeCenter.dropAxis() )
+		self.addArc( angleDifference, afterPoint, beforeCenter, beforePoint, center )
 		return afterPoint
 
 
