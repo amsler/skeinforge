@@ -85,7 +85,7 @@ from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.solids import trianglemesh
+from fabmetheus_utilities.shapes import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from skeinforge.skeinforge_utilities import skeinforge_craft
 from skeinforge.skeinforge_utilities import skeinforge_polyfile

@@ -355,6 +355,20 @@ def concatenateRemovePath( connectedPaths, pathIndex, paths, pixelTable, segment
 	if nextEndpoint == None:
 		connectedPaths.append( path )
 		return
+	if len( bottomSegmentEndpoint.path ) > 0 and len( nextEndpoint.path ) > 0:
+		bottomEnd = bottomSegmentEndpoint.path[ - 1 ]
+		nextBegin = nextEndpoint.path[ - 1 ]
+		nextMinusBottomNormalized = getNormalized( nextBegin - bottomEnd )
+		if len( bottomSegmentEndpoint.path ) > 1:
+			bottomPenultimate = bottomSegmentEndpoint.path[ - 2 ]
+			if getDotProduct( getNormalized( bottomPenultimate - bottomEnd ), nextMinusBottomNormalized ) > 0.9:
+				connectedPaths.append( path )
+				return
+		if len( nextEndpoint.path ) > 1:
+			nextPenultimate = nextEndpoint.path[ - 2 ]
+			if getDotProduct( getNormalized( nextPenultimate - nextBegin ), - nextMinusBottomNormalized ) > 0.9:
+				connectedPaths.append( path )
+				return
 	nextEndpoint.path.reverse()
 	concatenatedPath = bottomSegmentEndpoint.path + nextEndpoint.path
 	paths[ nextEndpoint.pathIndex ] = concatenatedPath
@@ -1460,11 +1474,6 @@ def isLoopListIntersecting( loops, z ):
 	for loopIndex in xrange( len( loops ) - 1 ):
 		loop = loops[ loopIndex ]
 		if isLoopIntersectingLoops( loop, loops[ loopIndex + 1 : ] ):
-			print( 'Warning, the triangle mesh slice intersects itself.' )
-			print( "Something will still be printed, but there is no guarantee that it will be the correct shape." )
-			print( 'Once the gcode is saved, you should check over the layer with a z of:' )
-			print( z )
-			a=1/0
 			return True
 	return False
 

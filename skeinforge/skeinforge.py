@@ -160,7 +160,7 @@ If the dialog window is too big for the screen, on most Linux window managers yo
 
 If you can't use the graphical interface, you can change the settings for skeinforge by using a text editor or spreadsheet to change the settings in the profiles folder in the .skeinforge folder in your home directory.
 
-Comments and suggestions are welcome, however, I usually won't reply because developing takes all my time and as of the time of this writing I have at least one year of features to implement.
+Comments and suggestions are welcome, however, I usually won't reply because developing takes all my time and as of the time of this writing I have at least three years of features to implement.
 
 I will only answer your questions if you contribute to skeinforge in some way.  Some ways of contributing to skeinforge are in the contributions thread at:
 http://dev.forums.reprap.org/read.php?12,27562
@@ -212,11 +212,14 @@ import os
 import sys
 
 
-# add statements
+# multi level replace
+# import id.import.filename name.import.filename
+# setAttributeDictionaryToMatrix
+# if while else elif
 # send introduction
-# add lambda, add stack add return, square halfx halfy width height
-# executor _arguments statement return, function within math
-# equation xyz
+# scale, rotate manipulator
+# equation radius, xyz
+# look over copy
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # _morning named examples
 # del previous, add begin & end if far  get actual path
@@ -225,10 +228,11 @@ import sys
 # getNormal, getIsFlat?
 # arc
 # lathe
+# getVerticesByKey in geomancer should also get from a geometry string, array along loop or path in process and getManipulated
 # line, parabolic interpolation if there is no endpoint angle then symmetrical, bysymmetricalplane, bysymmetricalsolid
 # evaluate float( equals, boolean etc )
 # transform
-# polygon, overhang, equation x, y, z
+# flip
 # mirror axis center & origin, concatenate
 # connect, from and to
 # tube, rotor
@@ -244,6 +248,7 @@ import sys
 # comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
 # generated_files?
 # creationID, addObject, getTarget, copyXMLElement?
+# drill
 # maybe not getNewObject, getNew, addToBoolean
 # convert global repository settings to local settings
 # table to dictionary

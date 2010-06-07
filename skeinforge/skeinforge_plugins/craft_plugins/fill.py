@@ -413,7 +413,7 @@ def addAroundGridPoint( arounds, gridPoint, gridPointInsetX, gridPointInsetY, gr
 		yIntersectionPaths.sort( compareDistanceFromCenter )
 		yCloseToCenterPaths = [ yIntersectionPaths[ 0 ] ]
 	for yCloseToCenterPath in yCloseToCenterPaths:
-		setIsOutside( yCloseToCenterPath, yIntersectionPaths )
+		setIsOutside( yCloseToCenterPath, aroundIntersectionPaths )
 	if len( yCloseToCenterPaths ) < 2:
 		yCloseToCenterPaths[ 0 ].gridPoint = gridPoint
 		insertGridPointPair( gridPoint, gridPointInsetX, gridPoints, isJunctionWide, paths, pixelTable, yCloseToCenterPaths[ 0 ], width )
@@ -1211,18 +1211,17 @@ class FillSkein:
 		"Add the segments of one line of a grid to the infill."
 		if self.gridRadius == 0.0:
 			return
-		gridWidth = self.gridWidthMultiplier * self.gridRadius
-		gridXStep = int( math.floor( ( begin ) / gridWidth ) ) - 3
-		gridXOffset = offset + gridWidth * float( gridXStep )
+		gridXStep = int( math.floor( ( begin ) / self.gridXStepSize ) ) - 3
+		gridXOffset = offset + self.gridXStepSize * float( gridXStep )
 		while gridXOffset < begin:
 			gridXStep = self.getNextGripXStep( gridXStep )
-			gridXOffset = offset + gridWidth * float( gridXStep )
+			gridXOffset = offset + self.gridXStepSize * float( gridXStep )
 		while gridXOffset < end:
 			gridPointComplex = complex( gridXOffset, y ) * gridRotationAngle
 			if self.isPointInsideLineSegments( gridPointComplex ):
 				gridPoints.append( gridPointComplex )
 			gridXStep = self.getNextGripXStep( gridXStep )
-			gridXOffset = offset + gridWidth * float( gridXStep )
+			gridXOffset = offset + self.gridXStepSize * float( gridXStep )
 
 	def addRemainingGridPoints( self, arounds, gridPointInsetX, gridPointInsetY, gridPoints, isBothOrNone, paths, pixelTable, width ):
 		"Add the remaining grid points to the grid point list."
@@ -1352,8 +1351,8 @@ class FillSkein:
 				endpointSecond = shortenedSegment[ 1 ]
 				begin = min( endpointFirst.point.real, endpointSecond.point.real )
 				end = max( endpointFirst.point.real, endpointSecond.point.real )
-				y = endpointFirst.point.imag
-				offset = self.offsetMultiplier * self.gridRadius * ( round( y / self.gridRadius ) % 2 )
+				y = endpointFirst.point.imag + self.gridRadius * 0.5
+				offset = self.offsetMultiplier * ( round( y / self.gridRadius ) % 2 ) + self.offsetBaseX
 				self.addGridLinePoints( begin, end, gridPoints, gridRotationAngle, offset, y )
 		return gridPoints
 
@@ -1474,11 +1473,13 @@ class FillSkein:
 	def setGridVariables( self, repository ):
 		"Set the grid variables."
 		self.gridRadius = self.interiorExtrusionWidth / self.infillSolidity
-		self.gridWidthMultiplier = 2.0
-		self.offsetMultiplier = 1.0
+		self.gridXStepSize = 2.0 * self.gridRadius
+		self.offsetBaseX = 0.5 * self.gridXStepSize
+ 		self.offsetMultiplier = self.gridRadius
 		if self.repository.infillPatternGridHexagonal.value:
-			self.gridWidthMultiplier = 2.0 / math.sqrt( 3.0 )
-			self.offsetMultiplier = 2.0 / math.sqrt( 3.0 ) * 1.5
+			self.gridXStepSize = 4.0 / 3.0 * self.gridRadius
+			self.offsetMultiplier = 1.5 * self.gridXStepSize
+			self.offsetBaseX = 0.25 * self.gridXStepSize
 		if self.repository.infillPatternGridRectangular.value:
 			halfGridRadiusMinusInteriorExtrusionWidth = 0.5 * ( self.gridRadius - self.interiorExtrusionWidth )
 			self.gridJunctionSeparationAtEnd = halfGridRadiusMinusInteriorExtrusionWidth * repository.gridJunctionSeparationOverOctogonRadiusAtEnd.value

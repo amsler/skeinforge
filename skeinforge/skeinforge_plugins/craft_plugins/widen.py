@@ -55,12 +55,13 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.shapes.solid_utilities import booleansolid
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.solids import trianglemesh
+from fabmetheus_utilities.shapes import trianglemesh
 from skeinforge.skeinforge_utilities import skeinforge_craft
 from skeinforge.skeinforge_utilities import skeinforge_polyfile
 from skeinforge.skeinforge_utilities import skeinforge_profile
@@ -72,32 +73,6 @@ __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __date__ = "$Date: 2008/28/04 $"
 __license__ = "GPL 3.0"
 
-
-def addToPaths( paths, radius, segment ):
-	"Add the segment to the paths."
-	begin = segment[ 0 ].point
-	end = segment[ 1 ].point
-	for path in paths:
-		if abs( begin - path[ - 1 ] ) < radius:
-			path.append( end )
-			return
-	paths.append( [ begin, end ] )
-
-def connectEndPath( endIndex, paths, radius ):
-	"Connect the end path."
-	endPath = paths[ endIndex ]
-	begin = endPath[ 0 ]
-	end = endPath[ - 1 ]
-	for pathIndex in xrange( 0, endIndex ):
-		path = paths[ pathIndex ]
-		if abs( begin - path[ - 1 ] ) < radius:
-			path += endPath[ 1 : ]
-			del paths[ endIndex ]
-			return
-		if abs( end - path[ 0 ] ) < radius:
-			paths[ pathIndex ] = endPath + path[ 1 : ]
-			del paths[ endIndex ]
-			return
 
 def getCraftedText( fileName, text = '', repository = None ):
 	"Widen the preface file or text."
@@ -131,56 +106,15 @@ def getNewRepository():
 	"Get the repository constructor."
 	return WidenRepository()
 
-def getSegmentsFromPoints( loops, pointBegin, pointEnd ):
-	"Get endpoint segments from the beginning and end of a line segment."
-	normalizedSegment = pointEnd - pointBegin
-	normalizedSegmentLength = abs( normalizedSegment )
-	if normalizedSegmentLength == 0.0:
-		return []
-	normalizedSegment /= normalizedSegmentLength
-	segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
-	pointBeginRotated = segmentYMirror * pointBegin
-	pointEndRotated = segmentYMirror * pointEnd
-	xIntersectionIndexList = []
-	xIntersectionIndexList.append( euclidean.XIntersectionIndex( - 1, pointBeginRotated.real ) )
-	xIntersectionIndexList.append( euclidean.XIntersectionIndex( - 1, pointEndRotated.real ) )
-	for loopIndex in xrange( len( loops ) ):
-		rotatedLoop = euclidean.getPointsRoundZAxis( segmentYMirror, loops[ loopIndex ] )
-		euclidean.addXIntersectionIndexesFromLoopY( rotatedLoop, loopIndex, xIntersectionIndexList, pointBeginRotated.imag )
-	segments = euclidean.getSegmentsFromXIntersectionIndexes( xIntersectionIndexList, pointBeginRotated.imag )
-	for segment in segments:
-		for endpoint in segment:
-			endpoint.point *= normalizedSegment
-	return segments
-
-def getWidenedLoop( loop, loopList, outsetLoop, radius, tinyRadius ):
+def getWidenedLoop( loop, loopList, outsetLoop, radius ):
 	"Get the widened loop."
 	intersectingWithinLoops = getIntersectingWithinLoops( loop, loopList, outsetLoop )
 	if len( intersectingWithinLoops ) < 1:
 		return loop
-	widdershinsLoops = [ loop ]
-	for intersectingWithinLoop in intersectingWithinLoops:
-		reversedLoop = intersectingWithinLoop[ : ]
-		reversedLoop.reverse()
-		widdershinsLoops.append( reversedLoop )
-	paths = []
-	for widdershinsLoopIndex in xrange( len( widdershinsLoops ) ):
-		widdershinsLoop = widdershinsLoops[ widdershinsLoopIndex ]
-		for pointIndex in xrange( len( widdershinsLoop ) ):
-			pointBegin = widdershinsLoop[ pointIndex ]
-			pointEnd = widdershinsLoop[ ( pointIndex + 1 ) % len( widdershinsLoop ) ]
-			otherLoops = widdershinsLoops[ : widdershinsLoopIndex ] + widdershinsLoops[ widdershinsLoopIndex + 1 : ]
-			segments = getSegmentsFromPoints( otherLoops, pointBegin, pointEnd )
-			for segment in segments:
-				addToPaths( paths, tinyRadius, segment )
-	for endIndex in xrange( len( paths ) - 1, 0, - 1 ):
-		connectEndPath( endIndex, paths, tinyRadius )
-	widenedLoop = []
-	for path in paths:
-		widenedLoop += path
-	if abs( widenedLoop[ 0 ] - widenedLoop[ - 1 ] ) < tinyRadius:
-		widenedLoop = widenedLoop[ 1 : ]
-	return euclidean.getSimplifiedLoop( widenedLoop, radius )
+	loopsUnified = booleansolid.getLoopsUnified( radius, [ [ loop ], intersectingWithinLoops ] )
+	if len( loopsUnified ) < 1:
+		return loop
+	return euclidean.getLargestLoop( loopsUnified )
 
 def writeOutput( fileName = '' ):
 	"Widen the carving of a gcode file."
@@ -233,7 +167,7 @@ class WidenSkein:
 				self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
 		for widdershinsLoop in widdershinsLoops:
 			outsetLoop = intercircle.getLargestInsetLoopFromLoop( widdershinsLoop, - self.doublePerimeterWidth )
-			widenedLoop = getWidenedLoop( widdershinsLoop, clockwiseInsetLoops, outsetLoop, self.perimeterWidth, self.tinyRadius )
+			widenedLoop = getWidenedLoop( widdershinsLoop, clockwiseInsetLoops, outsetLoop, self.perimeterWidth )
 			self.distanceFeedRate.addGcodeFromLoop( widenedLoop, rotatedBoundaryLayer.z )
 
 	def getCraftedGcode( self, gcodeText, repository ):
@@ -260,7 +194,6 @@ class WidenSkein:
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float( splitLine[ 1 ] )
 				self.doublePerimeterWidth = 2.0 * self.perimeterWidth
-				self.tinyRadius = 0.1 * self.perimeterWidth
 			self.distanceFeedRate.addLine( line )
 
 	def parseLine( self, line ):
