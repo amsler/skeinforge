@@ -385,8 +385,10 @@ def addAroundGridPoint( arounds, gridPoint, gridPointInsetX, gridPointInsetY, gr
 		return
 	yCloseToCenterArounds = getClosestOppositeIntersectionPaths( aroundIntersectionPaths )
 	if len( yCloseToCenterArounds ) < 2:
-		print( 'This should never happen, yCloseToCenterArounds is less than 2 in fill.' )
-		print( gridPoint )
+#		This used to be worth the warning below.
+#		print( 'This should never happen, yCloseToCenterArounds is less than 2 in fill.' )
+#		print( gridPoint )
+#		print( len( yCloseToCenterArounds ) )
 		return
 	segmentFirstY = min( yCloseToCenterArounds[ 0 ].y, yCloseToCenterArounds[ 1 ].y )
 	segmentSecondY = max( yCloseToCenterArounds[ 0 ].y, yCloseToCenterArounds[ 1 ].y )
@@ -1474,12 +1476,11 @@ class FillSkein:
 		"Set the grid variables."
 		self.gridRadius = self.interiorExtrusionWidth / self.infillSolidity
 		self.gridXStepSize = 2.0 * self.gridRadius
-		self.offsetBaseX = 0.5 * self.gridXStepSize
  		self.offsetMultiplier = self.gridRadius
 		if self.repository.infillPatternGridHexagonal.value:
 			self.gridXStepSize = 4.0 / 3.0 * self.gridRadius
 			self.offsetMultiplier = 1.5 * self.gridXStepSize
-			self.offsetBaseX = 0.25 * self.gridXStepSize
+		self.offsetBaseX = 0.25 * self.gridXStepSize
 		if self.repository.infillPatternGridRectangular.value:
 			halfGridRadiusMinusInteriorExtrusionWidth = 0.5 * ( self.gridRadius - self.interiorExtrusionWidth )
 			self.gridJunctionSeparationAtEnd = halfGridRadiusMinusInteriorExtrusionWidth * repository.gridJunctionSeparationOverOctogonRadiusAtEnd.value

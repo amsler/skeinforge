@@ -107,7 +107,7 @@ class TableauRepository:
 		settings.LabelSeparator().getFromRepository( self )
 		settings.LabelDisplay().getFromName( '- Screen Inset -', self )
 		self.screenHorizontalInset = settings.IntSpin().getFromValue( 80, 'Screen Horizontal Inset (pixels):', self, 1000, 100 )
-		self.screenVerticalInset = settings.IntSpin().getFromValue( 120, 'Screen Vertical Inset (pixels):', self, 1000, 200 )
+		self.screenVerticalInset = settings.IntSpin().getFromValue( 120, 'Screen Vertical Inset (pixels):', self, 1000, 220 )
 		settings.LabelSeparator().getFromRepository( self )
 
 	def setToDisplaySave( self, event = None ):
@@ -642,14 +642,16 @@ class TableauWindow:
 		"Set the archive to the display."
 		if self.root.state() != 'normal':
 			return
+		excessExtent = int( self.xScrollbar[ 'width' ] ) * 21 / 15
+		screenSize = self.skein.screenSize
 		xScrollbarCanvasPortion = getScrollbarCanvasPortion( self.xScrollbar )
-		newScreenHorizontalInset = int( self.root.winfo_screenwidth() - round( xScrollbarCanvasPortion * self.skein.screenSize.real ) )
+		newScreenHorizontalInset = int( self.root.winfo_screenwidth() - round( xScrollbarCanvasPortion * screenSize.real ) + excessExtent )
 		if xScrollbarCanvasPortion < .99:
 			self.repository.screenHorizontalInset.value = newScreenHorizontalInset
 		else:
 			self.repository.screenHorizontalInset.value = min( self.repository.screenHorizontalInset.value, newScreenHorizontalInset )
 		yScrollbarCanvasPortion = getScrollbarCanvasPortion( self.yScrollbar )
-		newScreenVerticalInset = int( self.root.winfo_screenheight() - round( yScrollbarCanvasPortion * self.skein.screenSize.imag ) )
+		newScreenVerticalInset = int( self.root.winfo_screenheight() - round( yScrollbarCanvasPortion * screenSize.imag ) + excessExtent )
 		if yScrollbarCanvasPortion < .99:
 			self.repository.screenVerticalInset.value = newScreenVerticalInset
 		else:

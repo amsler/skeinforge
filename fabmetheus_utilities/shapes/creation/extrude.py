@@ -7,8 +7,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
-from fabmetheus_utilities.shapes import trianglemesh
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.shapes.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
@@ -84,39 +84,39 @@ def addTwistPortions( interpolationTwist, remainderPortionDirection, twistPrecis
 	twistSegmentsPlusOne = float( twistSegments + 1 )
 	for twistSegment in xrange( twistSegments ):
 		additionalPortion = portionDifference * float( twistSegment + 1 ) / twistSegmentsPlusOne
-		portionDirection = geomancer.PortionDirection( lastPortionDirection.portion + additionalPortion )
+		portionDirection = evaluate.PortionDirection( lastPortionDirection.portion + additionalPortion )
 		interpolationTwist.portionDirections.append( portionDirection )
 
 def getGeometryOutput( xmlElement ):
 	"Get vector3 vertices from attribute dictionary."
-	paths = geomancer.getPathsByKeys( [ 'crosssection', 'section', 'target' ], xmlElement )
+	paths = evaluate.getPathsByKeys( [ 'crosssection', 'section', 'target' ], xmlElement )
 	if len( euclidean.getConcatenatedList( paths ) ) == 0:
 		print( 'Warning, in extrude there are no paths.' )
 		print( xmlElement.attributeDictionary )
 		return None
 	offsetPathDefault = [ Vector3(), Vector3( 0.0, 0.0, 1.0 ) ]
 	extrude = Extrude()
-	extrude.tiltFollow = geomancer.getEvaluatedBooleanDefault( extrude.tiltFollow, 'tiltfollow', xmlElement )
-	extrude.tiltTop = geomancer.getVector3ByPrefix( 'tilttop', extrude.tiltTop, xmlElement )
-	extrude.maximumUnbuckling = geomancer.getEvaluatedFloatDefault( 5.0, 'maximumunbuckling', xmlElement )
+	extrude.tiltFollow = evaluate.getEvaluatedBooleanDefault( extrude.tiltFollow, 'tiltfollow', xmlElement )
+	extrude.tiltTop = evaluate.getVector3ByPrefix( 'tilttop', extrude.tiltTop, xmlElement )
+	extrude.maximumUnbuckling = evaluate.getEvaluatedFloatDefault( 5.0, 'maximumunbuckling', xmlElement )
 	scalePathDefault = [ Vector3( 1.0, 1.0, 0.0 ), Vector3( 1.0, 1.0, 1.0 ) ]
-	extrude.interpolationDictionary[ 'scale' ] = geomancer.Interpolation().getByPrefixZ( scalePathDefault, 'scale', xmlElement )
+	extrude.interpolationDictionary[ 'scale' ] = evaluate.Interpolation().getByPrefixZ( scalePathDefault, 'scale', xmlElement )
 	if extrude.tiltTop == None:
-		extrude.interpolationDictionary[ 'offset' ] = geomancer.Interpolation().getByPrefixZ( offsetPathDefault, '', xmlElement )
+		extrude.interpolationDictionary[ 'offset' ] = evaluate.Interpolation().getByPrefixZ( offsetPathDefault, '', xmlElement )
 		tiltPathDefault = [ Vector3(), Vector3( 0.0, 0.0, 1.0 ) ]
-		interpolationTilt = geomancer.Interpolation().getByPrefixZ( tiltPathDefault, 'tilt', xmlElement )
+		interpolationTilt = evaluate.Interpolation().getByPrefixZ( tiltPathDefault, 'tilt', xmlElement )
 		extrude.interpolationDictionary[ 'tilt' ] = interpolationTilt
 		for point in interpolationTilt.path:
 			point.x = math.radians( point.x )
 			point.y = math.radians( point.y )
 	else:
 		offsetAlongDefault = [ Vector3(), Vector3( 1.0, 0.0, 0.0 ) ]
-		extrude.interpolationDictionary[ 'offset' ] = geomancer.Interpolation().getByPrefixAlong( offsetAlongDefault, '', xmlElement )
+		extrude.interpolationDictionary[ 'offset' ] = evaluate.Interpolation().getByPrefixAlong( offsetAlongDefault, '', xmlElement )
 	insertTwistPortions( extrude.interpolationDictionary, xmlElement )
-	segments = geomancer.getEvaluatedIntOne( 'segments', xmlElement )
+	segments = evaluate.getEvaluatedIntOne( 'segments', xmlElement )
 	negatives = []
 	positives = []
-	portionDirections = geomancer.getSpacedPortionDirections( extrude.interpolationDictionary )
+	portionDirections = evaluate.getSpacedPortionDirections( extrude.interpolationDictionary )
 	for path in paths:
 		endMultiplier = None
 		if not euclidean.getIsWiddershinsByVector3( path ):
@@ -152,16 +152,16 @@ def getNormals( interpolationOffset, offset, portionDirection ):
 	portionFrom = portionDirection.portion - 0.0001
 	portionTo = portionDirection.portion + 0.0001
 	if portionFrom >= 0.0:
-		normals.append( ( offset - interpolationOffset.getVector3ByPortion( geomancer.PortionDirection( portionFrom ) ) ).getNormalized() )
+		normals.append( ( offset - interpolationOffset.getVector3ByPortion( evaluate.PortionDirection( portionFrom ) ) ).getNormalized() )
 	if portionTo <= 1.0:
-		normals.append( ( interpolationOffset.getVector3ByPortion( geomancer.PortionDirection( portionTo ) ) - offset ).getNormalized() )
+		normals.append( ( interpolationOffset.getVector3ByPortion( evaluate.PortionDirection( portionTo ) ) - offset ).getNormalized() )
 	return normals
 
 def insertTwistPortions( interpolationDictionary, xmlElement ):
 	"Insert twist portions and radian the twist."
-	twist = geomancer.getEvaluatedFloatZero( 'twist', xmlElement )
+	twist = evaluate.getEvaluatedFloatZero( 'twist', xmlElement )
 	twistPathDefault = [ Vector3(), Vector3( 1.0, twist ) ]
-	interpolationTwist = geomancer.Interpolation().getByPrefixX( twistPathDefault, 'twist', xmlElement )
+	interpolationTwist = evaluate.Interpolation().getByPrefixX( twistPathDefault, 'twist', xmlElement )
 	interpolationDictionary[ 'twist' ] = interpolationTwist
 	for point in interpolationTwist.path:
 		point.y = math.radians( point.y )

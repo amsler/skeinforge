@@ -1,28 +1,25 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="7" >
+ <DocsAndViews NumberOfDocuments="6" >
   <Doc0 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge/skeinforge.py" >
-   <View0 Encoding="" line="213" Type="Source" />
+   <View0 Encoding="" line="219" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/models/xml_models/extrude.xml" >
-   <View0 Encoding="UTF-8" line="24" Type="Source" />
+   <View0 Encoding="" line="28" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/shapes/solid_utilities/geomancer.py" >
-   <View0 Encoding="" line="1007" Type="Source" />
+  <Doc2 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/models/xml_models/import.xml" >
+   <View0 Encoding="" line="5" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/shapes/creation/lineation.py" >
-   <View0 Encoding="" line="0" Type="Source" />
+  <Doc3 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/shapes/shape_utilities/evaluate.py" >
+   <View0 Encoding="" line="875" Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/shapes/manipulation_shapes/translate.py" >
-   <View0 Encoding="" line="0" Type="Source" />
+  <Doc4 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/xml_simple_parser.py" >
+   <View0 Encoding="" line="278" Type="Source" />
   </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/shapes/solid_tools/matrix4x4.py" >
-   <View0 Encoding="" Type="Source" />
+  <Doc5 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/shapes/manipulation_shapes/translate.py" >
+   <View0 Encoding="" line="50" Type="Source" />
   </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/shapes/creation/polygon.py" >
-   <View0 Encoding="" line="16" Type="Source" />
-  </Doc6>
  </DocsAndViews>
  <pluginList>
   <kdevbookmarks>

@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -26,8 +26,8 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	if xmlElement.object == None:
 		if 'return' in xmlElement.attributeDictionary:
 			value = xmlElement.attributeDictionary[ 'return' ]
-			xmlElement.object = geomancer.getEvaluatorSplitLine( value, xmlElement )
+			xmlElement.object = evaluate.getEvaluatorSplitWords( value )
 		else:
 			xmlElement.object = []
 	if len( xmlElement.object ) > 0:
-		function.returnValue = geomancer.getEvaluatedExpressionValueBySplitLine( xmlElement.object, xmlElement )
+		function.returnValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object, xmlElement )

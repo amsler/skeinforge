@@ -205,6 +205,14 @@ class Vector3Index:
 		if which == 2:
 			return complex( self.x, self.y )
 
+	def getIsDefault( self ):
+		"Determine if this is the zero vector."
+		if self.x != 0.0:
+			return False
+		if self.y != 0.0:
+			return False
+		return self.z == 0.0
+
 	def getNormalized( self ):
 		"Get the normalized Vector3."
 		magnitude = abs( self )

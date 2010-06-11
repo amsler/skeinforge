@@ -7,8 +7,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_tools import matrix4x4
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_tools import matrix4x4
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
@@ -51,7 +51,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	face = Face()
 	face.index = len( xmlElement.parent.object.faces )
 	for vertexIndexIndex in xrange( 3 ):
-		face.vertexIndexes.append( geomancer.getEvaluatedInt( 'vertex' + str( vertexIndexIndex ), xmlElement ) )
+		face.vertexIndexes.append( evaluate.getEvaluatedInt( 'vertex' + str( vertexIndexIndex ), xmlElement ) )
 	xmlElement.parent.object.faces.append( face )
 
 

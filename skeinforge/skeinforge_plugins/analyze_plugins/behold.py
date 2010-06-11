@@ -122,7 +122,7 @@ Default is one hundred.
 The "Screen Horizontal Inset" determines how much the canvas will be inset in the horizontal direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be.
 
 ====Screen Vertical Inset====
-Default is two hundred.
+Default is two hundred and twenty.
 
 The "Screen Vertical Inset" determines how much the canvas will be inset in the vertical direction from the edge of screen, the higher the number the more it will be inset and the smaller it will be..
 

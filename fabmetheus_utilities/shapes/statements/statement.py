@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -19,10 +19,12 @@ __license__ = "GPL 3.0"
 def getLocalAttribute( xmlElement ):
 	"Get the local attribute if any."
 	for key in xmlElement.attributeDictionary:
-		if key.startswith( 'local.' ):
-			value = xmlElement.attributeDictionary[ key ]
-			return geomancer.KeyValue( key[ len( 'local.' ) : ], geomancer.getEvaluatorSplitLine( value, xmlElement ) )
-	return geomancer.KeyValue()
+		if key[ : 1 ].isalpha():
+			value = evaluate.getEvaluatorSplitWords( xmlElement.attributeDictionary[ key ] )
+			if key.startswith( 'local.' ):
+				return evaluate.KeyValue( key[ len( 'local.' ) : ], value )
+			return evaluate.KeyValue( key, value )
+	return evaluate.KeyValue()
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
@@ -33,5 +35,5 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	if xmlElement.object == None:
 		xmlElement.object = getLocalAttribute( xmlElement )
 	if xmlElement.object.value != None:
-		localValue = geomancer.getEvaluatedExpressionValueBySplitLine( xmlElement.object.value, xmlElement )
+		localValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.value, xmlElement )
 		function.localTable[ xmlElement.object.key ] = localValue

@@ -30,8 +30,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import boolean_carving
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_utilities import boolean_carving
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from fabmetheus_utilities import xml_simple_parser
@@ -60,23 +60,27 @@ def getCarvingFromParser( xmlParser ):
 
 def getManipulationDirectoryPath():
 	"Get the manipulation directory path."
-	return os.path.join( geomancer.getShapesDirectoryPath(), 'manipulation' )
+	return os.path.join( evaluate.getShapesDirectoryPath(), 'manipulation' )
 
 def getManipulationPathsDirectoryPath():
 	"Get the manipulation paths directory path."
-	return os.path.join( geomancer.getShapesDirectoryPath(), 'manipulation_paths' )
+	return os.path.join( evaluate.getShapesDirectoryPath(), 'manipulation_paths' )
 
 def getManipulationShapesDirectoryPath():
 	"Get the manipulation shapes directory path."
-	return os.path.join( geomancer.getShapesDirectoryPath(), 'manipulation_shapes' )
+	return os.path.join( evaluate.getShapesDirectoryPath(), 'manipulation_shapes' )
+
+def getSolidsDirectoryPath():
+	"Get the plugins directory path."
+	return os.path.join( evaluate.getShapesDirectoryPath(), 'solids' )
 
 def getSolidToolsDirectoryPath():
 	"Get the plugins directory path."
-	return os.path.join( geomancer.getShapesDirectoryPath(), 'solid_tools' )
+	return os.path.join( evaluate.getShapesDirectoryPath(), 'shape_tools' )
 
 def getStatementsDirectoryPath():
 	"Get the statements directory path."
-	return os.path.join( geomancer.getShapesDirectoryPath(), 'statements' )
+	return os.path.join( evaluate.getShapesDirectoryPath(), 'statements' )
 
 
 class XMLBooleanGeometryProcessor():
@@ -89,11 +93,11 @@ class XMLBooleanGeometryProcessor():
 		self.manipulationShapeDictionary = {}
 		addToNamePathDictionary( getManipulationShapesDirectoryPath(), self.manipulationShapeDictionary )
 		self.namePathDictionary = {}
-		addToNamePathDictionary( geomancer.getCreationDirectoryPath(), self.namePathDictionary )
+		addToNamePathDictionary( evaluate.getCreationDirectoryPath(), self.namePathDictionary )
 		addToNamePathDictionary( getManipulationDirectoryPath(), self.namePathDictionary )
 		self.namePathDictionary.update( self.manipulationPathDictionary )
 		self.namePathDictionary.update( self.manipulationShapeDictionary )
-		addToNamePathDictionary( geomancer.getShapesDirectoryPath(), self.namePathDictionary )
+		addToNamePathDictionary( getSolidsDirectoryPath(), self.namePathDictionary )
 		addToNamePathDictionary( getSolidToolsDirectoryPath(), self.namePathDictionary )
 		addToNamePathDictionary( getStatementsDirectoryPath(), self.namePathDictionary )
 

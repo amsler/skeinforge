@@ -30,9 +30,9 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import booleansolid
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
-from fabmetheus_utilities.shapes import trianglemesh
+from fabmetheus_utilities.shapes.shape_utilities import booleansolid
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.shapes.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import xml_simple_writer
@@ -82,7 +82,7 @@ class BooleanGeometry:
 
 	def getCarveRotatedBoundaryLayers( self ):
 		"Get the rotated boundary layers."
-		vertices = geomancer.getVerticesFromArchivableObjects( self.archivableObjects )
+		vertices = evaluate.getVerticesFromArchivableObjects( self.archivableObjects )
 		if len( vertices ) < 1:
 			return []
 		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, - 9999999999.9 )
@@ -113,7 +113,7 @@ class BooleanGeometry:
 	def getExtruderPaths( self, shouldPrintWarning, z ):
 		"Get extruder loops."
 		rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
-		visibleObjectLoopsList = booleansolid.getVisibleObjectLoopsList( self.importRadius, geomancer.getVisibleObjects( self.archivableObjects ), z )
+		visibleObjectLoopsList = booleansolid.getVisibleObjectLoopsList( self.importRadius, evaluate.getVisibleObjects( self.archivableObjects ), z )
 		rotatedBoundaryLayer.loops = euclidean.getConcatenatedList( visibleObjectLoopsList )
 		if euclidean.isLoopListIntersecting( rotatedBoundaryLayer.loops, z ):
 			rotatedBoundaryLayer.loops = booleansolid.getLoopsUnified( self.importRadius, visibleObjectLoopsList )

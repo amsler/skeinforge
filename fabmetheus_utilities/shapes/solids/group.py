@@ -7,11 +7,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_tools.dictionary import Dictionary
-from fabmetheus_utilities.shapes.solid_tools import path
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_tools.dictionary import Dictionary
+from fabmetheus_utilities.shapes.shape_tools import path
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities import euclidean
-from fabmetheus_utilities.shapes.solid_tools import matrix4x4
+from fabmetheus_utilities.shapes.shape_tools import matrix4x4
 from fabmetheus_utilities import xml_simple_parser
 
 
@@ -36,8 +36,8 @@ def processShape( archivableClass, xmlElement, xmlProcessor ):
 	"Get any new elements and process the shape."
 	if xmlElement == None:
 		return
-	archivableObject = geomancer.getArchivableObject( archivableClass, xmlElement )
-	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( xmlElement, xmlElement.object.matrix4X4, xmlElement )
+	archivableObject = evaluate.getArchivableObject( archivableClass, xmlElement )
+	matrix4x4.setXMLElementDictionaryToOtherElementDictionary( xmlElement, xmlElement.object.matrix4X4, xmlElement )
 	xmlProcessor.processChildren( xmlElement )
 
 def processXMLElement( xmlElement, xmlProcessor ):
@@ -64,7 +64,7 @@ class Group( Dictionary ):
 
 	def getLoops( self, importRadius, z ):
 		"Get loops sliced through shape."
-		visibleObjects = geomancer.getVisibleObjects( self.archivableObjects )
+		visibleObjects = evaluate.getVisibleObjects( self.archivableObjects )
 		loops = []
 		for visibleObject in visibleObjects:
 			loops += visibleObject.getLoops( importRadius, z )
@@ -76,7 +76,7 @@ class Group( Dictionary ):
 
 	def getVertices( self ):
 		"Get all vertices."
-		return geomancer.getVerticesFromArchivableObjects( self.archivableObjects )
+		return evaluate.getVerticesFromArchivableObjects( self.archivableObjects )
 
 	def getVisible( self ):
 		"Get visible."

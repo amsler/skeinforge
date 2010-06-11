@@ -11,7 +11,7 @@ import __init__
 
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities.shapes import trianglemesh
+from fabmetheus_utilities.shapes.solids import trianglemesh
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 import cStringIO
 import math

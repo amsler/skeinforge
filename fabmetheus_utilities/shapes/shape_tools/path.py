@@ -7,10 +7,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_tools.dictionary import Dictionary
-from fabmetheus_utilities.shapes.solid_tools import vertex
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
-from fabmetheus_utilities.shapes.solid_tools import matrix4x4
+from fabmetheus_utilities.shapes.shape_tools.dictionary import Dictionary
+from fabmetheus_utilities.shapes.shape_tools import vertex
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.shapes.shape_tools import matrix4x4
 from fabmetheus_utilities import xml_simple_writer
 
 
@@ -31,7 +31,7 @@ def convertXMLElementRename( geometryOutput, xmlElement, xmlProcessor ):
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	geomancer.processArchivable( Path, xmlElement, xmlProcessor )
+	evaluate.processArchivable( Path, xmlElement, xmlProcessor )
 
 
 class Path( Dictionary ):

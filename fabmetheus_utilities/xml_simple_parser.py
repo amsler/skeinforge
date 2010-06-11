@@ -50,6 +50,7 @@ class XMLElement:
 		self.children = []
 		self.className = ''
 		self.idDictionary = {}
+		self.importName = ''
 		self.object = None
 		self.nameDictionary = {}
 		self.parent = None
@@ -78,10 +79,11 @@ class XMLElement:
 
 	def addToIDDictionaryIFIDExists( self ):
 		"Add to the id dictionary if the id key exists in the attribute dictionary."
+		self.importName = self.getCascadeImportName()
 		if 'id' in self.attributeDictionary:
-			self.addToIDDictionary( self.attributeDictionary[ 'id' ], self )
+			self.addToIDDictionary( self.importName + self.attributeDictionary[ 'id' ], self )
 		if 'name' in self.attributeDictionary:
-			self.addToNameDictionary( self.attributeDictionary[ 'name' ], self )
+			self.addToNameDictionary( self.importName + self.attributeDictionary[ 'name' ], self )
 
 	def addToNameDictionary( self, name, xmlElement ):
 		"Add to the id dictionary of all the parents."
@@ -106,17 +108,32 @@ class XMLElement:
 		parent.children.append( self )
 		return self
 
+	def getCascadeElement( self, key ):
+		"Get the cascade element."
+		if key in self.attributeDictionary:
+			return self
+		if self.parent == None:
+			return None
+		return self.parent.getCascadeElement( key )
+
 	def getCascadeFloat( self, defaultFloat, key ):
 		"Get the cascade float."
 		return euclidean.getFloatFromValue( self.getCascadeValue( defaultFloat, key ) )
 
+	def getCascadeImportName( self ):
+		"Get the cascade import file name."
+		if self.importName != '':
+			return self.importName
+		if self.parent == None:
+			return ''
+		return self.parent.getCascadeImportName()
+
 	def getCascadeValue( self, defaultValue, key ):
 		"Get the cascade value."
-		if key in self.attributeDictionary:
-			return self.attributeDictionary[ key ]
-		if self.parent == None:
+		cascadeElement = self.getCascadeElement( key )
+		if cascadeElement == None:
 			return defaultValue
-		return self.parent.getCascadeValue( defaultValue, key )
+		return cascadeElement.attributeDictionary[ key ]
 
 	def getChildrenWithClassName( self, className ):
 		"Get the children which have the given class name."
@@ -212,6 +229,7 @@ class XMLElement:
 		shallowCopy.children = self.children
 		shallowCopy.className = self.className
 		shallowCopy.idDictionary = self.idDictionary
+		shallowCopy.importName = self.importName
 		shallowCopy.object = self.object
 		shallowCopy.nameDictionary = self.nameDictionary
 		shallowCopy.parent = self.parent
@@ -236,6 +254,14 @@ class XMLElement:
 		if self.parent == None:
 			return None
 		return self.parent.getXMLElementByID( idKey )
+
+	def getXMLElementByImportID( self, idKey ):
+		"Get the xml element by import file name and id."
+		return self.getXMLElementByID( self.importName + idKey )
+
+	def getXMLElementByImportName( self, idKey ):
+		"Get the xml element by import file name and name."
+		return self.getXMLElementByName( self.importName + idKey )
 
 	def getXMLElementByName( self, name ):
 		"Get the xml element by name."
@@ -268,7 +294,7 @@ class XMLSimpleParser:
 		return self.rootElement
 
 	def parseLine( self, line ):
-		"Parse a gcode line and add it to the inset skein."
+		"Parse an xml line and add it to the xml tree."
 		lineStripped = line.lstrip()
 		if len( lineStripped ) < 1:
 			return

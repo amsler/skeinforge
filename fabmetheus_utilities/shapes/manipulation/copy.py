@@ -7,8 +7,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_tools import matrix4x4
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_tools import matrix4x4
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities import euclidean
 
 
@@ -20,7 +20,7 @@ __license__ = "GPL 3.0"
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	target = geomancer.getXMLElementByKey( 'target', xmlElement )
+	target = evaluate.getXMLElementByKey( 'target', xmlElement )
 	if target == None:
 		print( 'Warning, translate could not get target.' )
 		return
@@ -30,6 +30,6 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	matrix4x4.setAttributeDictionaryToMatrix( target.attributeDictionary, targetMatrix4X4Copy )
 	euclidean.overwriteDictionary( translateDictionary, [], [ 'visible' ], xmlElement.attributeDictionary )
 	xmlElement.className = target.className
-	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( xmlElement, targetMatrix4X4Copy, xmlElement )
+	matrix4x4.setXMLElementDictionaryToOtherElementDictionary( xmlElement, targetMatrix4X4Copy, xmlElement )
 	target.copyXMLChildren( xmlElement.getIDSuffix(), xmlElement )
 	xmlProcessor.processXMLElement( xmlElement )

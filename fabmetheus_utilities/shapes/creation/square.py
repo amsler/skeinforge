@@ -8,8 +8,8 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.shapes.creation import lineation
-from fabmetheus_utilities.shapes.solid_tools import path
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_tools import path
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -24,12 +24,12 @@ __license__ = "GPL 3.0"
 def getGeometryOutput( xmlElement ):
 	"Get vector3 vertices from attribute dictionary."
 	halfX = 1.0
-	halfX = geomancer.getEvaluatedFloatDefault( halfX, 'halfx', xmlElement )
-	halfX = 0.5 * geomancer.getEvaluatedFloatDefault( halfX / 0.5, 'width', xmlElement )
-	bottomHalfX = geomancer.getEvaluatedFloatDefault( halfX, 'bottomhalfx', xmlElement )
-	bottomHalfX = 0.5 * geomancer.getEvaluatedFloatDefault( halfX / 0.5, 'bottomwidth', xmlElement )
-	topHalfX = geomancer.getEvaluatedFloatDefault( halfX, 'tophalfx', xmlElement )
-	topHalfX = 0.5 * geomancer.getEvaluatedFloatDefault( halfX / 0.5, 'topwidth', xmlElement )
+	halfX = evaluate.getEvaluatedFloatDefault( halfX, 'halfx', xmlElement )
+	halfX = 0.5 * evaluate.getEvaluatedFloatDefault( halfX / 0.5, 'width', xmlElement )
+	bottomHalfX = evaluate.getEvaluatedFloatDefault( halfX, 'bottomhalfx', xmlElement )
+	bottomHalfX = 0.5 * evaluate.getEvaluatedFloatDefault( halfX / 0.5, 'bottomwidth', xmlElement )
+	topHalfX = evaluate.getEvaluatedFloatDefault( halfX, 'tophalfx', xmlElement )
+	topHalfX = 0.5 * evaluate.getEvaluatedFloatDefault( halfX / 0.5, 'topwidth', xmlElement )
 	halfY = halfX
 	if '_arguments' in xmlElement.attributeDictionary:
 		arguments = xmlElement.attributeDictionary[ '_arguments' ]
@@ -39,9 +39,9 @@ def getGeometryOutput( xmlElement ):
 			halfY = 0.5 * euclidean.getFloatFromValue( arguments[ 1 ] )
 		else:
 			halfY = halfX
-	halfY = geomancer.getEvaluatedFloatDefault( halfY, 'halfy', xmlElement )
-	halfY = 0.5 * geomancer.getEvaluatedFloatDefault( halfY / 0.5, 'height', xmlElement )
-	interiorAngle = geomancer.getEvaluatedFloatDefault( 90.0, 'interiorangle', xmlElement )
+	halfY = evaluate.getEvaluatedFloatDefault( halfY, 'halfy', xmlElement )
+	halfY = 0.5 * evaluate.getEvaluatedFloatDefault( halfY / 0.5, 'height', xmlElement )
+	interiorAngle = evaluate.getEvaluatedFloatDefault( 90.0, 'interiorangle', xmlElement )
 	topRight = complex( topHalfX, halfY )
 	topLeft = complex( - topHalfX, halfY )
 	bottomLeft = complex( - bottomHalfX, - halfY )

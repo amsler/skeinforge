@@ -7,9 +7,9 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_tools import matrix4x4
-from fabmetheus_utilities.shapes.solid_tools import vertex
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_tools import matrix4x4
+from fabmetheus_utilities.shapes.shape_tools import vertex
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities import euclidean
 
 
@@ -21,7 +21,7 @@ __license__ = "GPL 3.0"
 
 def getManipulatedPaths( close, loop, prefix, xmlElement ):
 	"Get array path."
-	arrayPaths = geomancer.getPathsByKeys( [ prefix + 'path', prefix + 'paths' ], xmlElement )
+	arrayPaths = evaluate.getPathsByKeys( [ prefix + 'path', prefix + 'paths' ], xmlElement )
 	manipulatedByPaths = []
 	for arrayPath in arrayPaths:
 		for arrayPoint in arrayPath:
@@ -30,7 +30,7 @@ def getManipulatedPaths( close, loop, prefix, xmlElement ):
 				manipulatedByPath.append( point + arrayPoint )
 			manipulatedByPaths.append( manipulatedByPath )
 	manipulatedByVertices = []
-	vertices = geomancer.getVerticesByKey( prefix + 'vertices', xmlElement )
+	vertices = evaluate.getVerticesByKey( prefix + 'vertices', xmlElement )
 	for vertex in vertices:
 		manipulatedByVertex = []
 		for point in loop:
@@ -45,12 +45,12 @@ def getManipulatedPaths( close, loop, prefix, xmlElement ):
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	target = geomancer.getXMLElementByKey( 'target', xmlElement )
+	target = evaluate.getXMLElementByKey( 'target', xmlElement )
 	if target == None:
 		print( 'Warning, array could not get target for:' )
 		print( xmlElement )
 		return
-	vertices = geomancer.getVerticesByKey( 'vertices', xmlElement )
+	vertices = evaluate.getVerticesByKey( 'vertices', xmlElement )
 	if len( vertices ) == 0:
 		print( 'Warning, array could not get vertices for:' )
 		print( xmlElement )
@@ -65,5 +65,5 @@ def processXMLElement( xmlElement, xmlProcessor ):
 		lastChild = target.getCopy( xmlElement.getIDSuffix( vector3Index ), xmlElement )
 		euclidean.overwriteDictionary( xmlElement.attributeDictionary, [ 'id' ], [ 'visible' ], lastChild.attributeDictionary )
 		vertexElement = vertex.getUnboundVertexElement( vector3 )
-		matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( vertexElement, vector3Matrix4X4, lastChild )
+		matrix4x4.setXMLElementDictionaryToOtherElementDictionary( vertexElement, vector3Matrix4X4, lastChild )
 	xmlProcessor.processXMLElement( xmlElement )

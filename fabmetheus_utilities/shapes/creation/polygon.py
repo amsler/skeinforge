@@ -8,8 +8,8 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.shapes.creation import lineation
-from fabmetheus_utilities.shapes.solid_tools import path
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_tools import path
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -24,18 +24,20 @@ __license__ = "GPL 3.0"
 def getGeometryOutput( xmlElement ):
 	"Get vector3 vertices from attribute dictionary."
 	if '_arguments' in xmlElement.attributeDictionary:
-		xmlElement.attributeDictionary[ 'sides' ] = xmlElement.attributeDictionary[ '_arguments' ][ 0 ]
-	sides = geomancer.getEvaluatedFloatDefault( 4.0, 'sides', xmlElement )
+		arguments = xmlElement.attributeDictionary[ '_arguments' ]
+		if len( arguments ) > 0:
+			xmlElement.attributeDictionary[ 'sides' ] = arguments[ 0 ]
+	sides = evaluate.getEvaluatedFloatDefault( 4.0, 'sides', xmlElement )
 	if sides == None:
 		sides = 3
 	sideAngle = 2.0 * math.pi / float( sides )
-	radiusXY = geomancer.RadiusXY().getByRadius( getRadiusFromXMLElement( sideAngle, xmlElement ), xmlElement )
+	radiusXY = evaluate.RadiusXY().getByRadius( getRadiusFromXMLElement( sideAngle, xmlElement ), xmlElement )
 	loop = []
 	sidesCeiling = int( math.ceil( abs( sides ) ) )
-	start = geomancer.getEvaluatedIntZero( 'start', xmlElement )
+	start = evaluate.getEvaluatedIntZero( 'start', xmlElement )
 	start = getWrappedInteger( start, sidesCeiling )
-	extent = geomancer.getEvaluatedIntDefault( sidesCeiling - start, 'extent', xmlElement )
-	end = geomancer.getEvaluatedIntDefault( start + extent, 'end', xmlElement )
+	extent = evaluate.getEvaluatedIntDefault( sidesCeiling - start, 'extent', xmlElement )
+	end = evaluate.getEvaluatedIntDefault( start + extent, 'end', xmlElement )
 	end = getWrappedInteger( end, sidesCeiling )
 	for side in xrange( start, min( end, sidesCeiling ) ):
 		angle = float( side ) * sideAngle
@@ -52,11 +54,11 @@ def getRadiusFromApothem( apothem, sideAngle ):
 def getRadiusFromXMLElement( sideAngle, xmlElement ):
 	"Get radius from attribute dictionary."
 	if 'radius' in xmlElement.attributeDictionary:
-		return geomancer.getEvaluatedFloatOne( 'radius', xmlElement )
+		return evaluate.getEvaluatedFloatOne( 'radius', xmlElement )
 	if 'apothem' in xmlElement.attributeDictionary:
-		return getRadiusFromApothem( geomancer.getEvaluatedFloatOne( 'apothem', xmlElement ), sideAngle )
+		return getRadiusFromApothem( evaluate.getEvaluatedFloatOne( 'apothem', xmlElement ), sideAngle )
 	if 'inradius' in xmlElement.attributeDictionary:
-		return getRadiusFromApothem( geomancer.getEvaluatedFloatOne( 'inradius', xmlElement ), sideAngle )
+		return getRadiusFromApothem( evaluate.getEvaluatedFloatOne( 'inradius', xmlElement ), sideAngle )
 	return 1.0
 
 def getWrappedInteger( integer, modulo ):

@@ -8,10 +8,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
-from fabmetheus_utilities.shapes import cube
-from fabmetheus_utilities.shapes import group
-from fabmetheus_utilities.shapes import trianglemesh
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.shapes.solids import cube
+from fabmetheus_utilities.shapes.solids import group
+from fabmetheus_utilities.shapes.solids import trianglemesh
+from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
 
@@ -41,7 +42,7 @@ class Cylinder( cube.Cube ):
 		imaginaryRadius = self.radiusZ
 		if self.radiusZ == None:
 			imaginaryRadius = self.radiusY
-		sides = max( int( geomancer.getSides( max( imaginaryRadius, self.radiusX ), self.xmlElement ) ), 3 )
+		sides = max( int( evaluate.getSides( max( imaginaryRadius, self.radiusX ), self.xmlElement ) ), 3 )
 		sideAngle = 2.0 * math.pi / float( sides )
 		for side in xrange( sides ):
 			angle = float( side ) * sideAngle
@@ -62,19 +63,15 @@ class Cylinder( cube.Cube ):
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.height = geomancer.getEvaluatedFloatOne( 'height', self.xmlElement )
-		radius = geomancer.getEvaluatedFloatOne( 'radius', self.xmlElement )
-		self.radiusX = geomancer.getEvaluatedFloatDefault( radius, 'radiusx', self.xmlElement )
-		self.radiusY = geomancer.getEvaluatedFloatDefault( radius, 'radiusy', self.xmlElement )
-		self.radiusZ = geomancer.getEvaluatedFloatDefault( radius, 'radiusz', self.xmlElement )
-		self.topOverBottom = geomancer.getEvaluatedFloatOne( 'topoverbottom', self.xmlElement )
-		if 'radiusz' not in self.xmlElement.attributeDictionary:
-			self.radiusZ = None
+		radius = evaluate.getVector3ByPrefix( 'radius', Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
+		radius = evaluate.getVector3ByPrefix( 'size', radius, self.xmlElement )
+		self.height = evaluate.getEvaluatedFloatDefault( radius.z + radius.z, 'height', self.xmlElement )
+		self.radiusX = radius.x
+		self.radiusY = radius.y
+		self.radiusZ = None
+		self.topOverBottom = evaluate.getEvaluatedFloatOne( 'topoverbottom', self.xmlElement )
 		self.xmlElement.attributeDictionary[ 'height' ] = self.height
 		self.xmlElement.attributeDictionary[ 'radiusx' ] = self.radiusX
-		if self.radiusZ == None:
-			self.xmlElement.attributeDictionary[ 'radiusy' ] = self.radiusY
-		else:
-			self.xmlElement.attributeDictionary[ 'radiusz' ] = self.radiusZ
+		self.xmlElement.attributeDictionary[ 'radiusy' ] = self.radiusY
 		self.xmlElement.attributeDictionary[ 'topoverbottom' ] = self.topOverBottom
 		self.createShape()

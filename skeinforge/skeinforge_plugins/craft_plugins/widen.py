@@ -55,13 +55,13 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import booleansolid
+from fabmetheus_utilities.shapes.shape_utilities import booleansolid
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.shapes import trianglemesh
+from fabmetheus_utilities.shapes.solids import trianglemesh
 from skeinforge.skeinforge_utilities import skeinforge_craft
 from skeinforge.skeinforge_utilities import skeinforge_polyfile
 from skeinforge.skeinforge_utilities import skeinforge_profile

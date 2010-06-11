@@ -30,16 +30,15 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_tools import face
-from fabmetheus_utilities.shapes.solid_tools import matrix4x4
-from fabmetheus_utilities.shapes.solid_utilities import boolean_carving
-from fabmetheus_utilities.shapes.solid_utilities import booleansolid
-from fabmetheus_utilities.shapes.solid_utilities import solid
-from fabmetheus_utilities.shapes import cube
-from fabmetheus_utilities.shapes import cylinder
-from fabmetheus_utilities.shapes import group
-from fabmetheus_utilities.shapes import sphere
-from fabmetheus_utilities.shapes import trianglemesh
+from fabmetheus_utilities.shapes.shape_tools import face
+from fabmetheus_utilities.shapes.shape_tools import matrix4x4
+from fabmetheus_utilities.shapes.shape_utilities import boolean_carving
+from fabmetheus_utilities.shapes.shape_utilities import booleansolid
+from fabmetheus_utilities.shapes.solids import cube
+from fabmetheus_utilities.shapes.solids import cylinder
+from fabmetheus_utilities.shapes.solids import group
+from fabmetheus_utilities.shapes.solids import sphere
+from fabmetheus_utilities.shapes.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 
@@ -71,7 +70,7 @@ def getCarvableObject( globalObject, object, xmlElement ):
 	transformXMLElement = getTransformXMLElement( coords, 'transformFrom' )
 	if len( transformXMLElement.attributeDictionary ) < 16:
 		transformXMLElement = getTransformXMLElement( coords, 'transformTo' )
-	matrix4x4.setXMLElementMatrixToMatrixAttributeDictionary( transformXMLElement, object.object.matrix4X4, object )
+	matrix4x4.setXMLElementDictionaryToOtherElementDictionary( transformXMLElement, object.object.matrix4X4, object )
 	return archivableObject
 
 def getTransformXMLElement( coords, transformName ):
@@ -120,9 +119,10 @@ class Cube( cube.Cube ):
 	"An Art of Illusion Cube object."
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.halfX = float( self.xmlElement.attributeDictionary[ 'halfx' ] )
-		self.halfY = float( self.xmlElement.attributeDictionary[ 'halfy' ] )
-		self.halfZ = float( self.xmlElement.attributeDictionary[ 'halfz' ] )
+		self.half = Vector3(
+			float( self.xmlElement.attributeDictionary[ 'halfx' ] ),
+			float( self.xmlElement.attributeDictionary[ 'halfy' ] ),
+			float( self.xmlElement.attributeDictionary[ 'halfz' ] ) )
 		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [] )
 		self.createShape()
 
@@ -157,9 +157,10 @@ class Sphere( sphere.Sphere ):
 	"An Art of Illusion Sphere object."
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object."
-		self.radiusX = float( self.xmlElement.attributeDictionary[ 'rx' ] )
-		self.radiusY = float( self.xmlElement.attributeDictionary[ 'ry' ] )
-		self.radiusZ = float( self.xmlElement.attributeDictionary[ 'rz' ] )
+		self.radius = Vector3(
+			float( self.xmlElement.attributeDictionary[ 'rx' ] ),
+			float( self.xmlElement.attributeDictionary[ 'ry' ] ),
+			float( self.xmlElement.attributeDictionary[ 'rz' ] ) )
 		self.xmlElement.attributeDictionary[ 'radiusx' ] = self.xmlElement.attributeDictionary[ 'rx' ]
 		self.xmlElement.attributeDictionary[ 'radiusy' ] = self.xmlElement.attributeDictionary[ 'ry' ]
 		self.xmlElement.attributeDictionary[ 'radiusz' ] = self.xmlElement.attributeDictionary[ 'rz' ]

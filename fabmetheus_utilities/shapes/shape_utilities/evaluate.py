@@ -22,10 +22,7 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-powerToken = '__PoweR_syMbol__toKen___For_DouBle_asterisk__'
-
-
-def addEvaluator( evaluators, word, xmlElement ):
+def addEvaluator( evaluators, nextWord, word, xmlElement ):
 	"Get the evaluator."
 	global globalSplitDictionary
 	if word in globalSplitDictionary:
@@ -35,8 +32,16 @@ def addEvaluator( evaluators, word, xmlElement ):
 		evaluators.append( FunctionEvaluator( word, xmlElement ) )
 		return
 	if word.startswith( 'local.' ):
-		evaluators.append( LocalEvaluator( word, xmlElement ) )
+		evaluators.append( LocalEvaluator( word[ len( 'local.' ) : ], xmlElement ) )
 		return
+	if word[ : 1 ].isalpha():
+		if not gcodec.getStartsWithByList( word, [ 'cascade.', 'element.', 'name.', 'id.', 'parent.', 'root.', 'vertex.' ] ):
+			if nextWord == '(':
+				evaluators.append( FunctionEvaluator( word, xmlElement ) )
+				return
+			if nextWord != ':':
+				evaluators.append( LocalEvaluator( word, xmlElement ) )
+				return
 	evaluators.append( NumericEvaluator( word, xmlElement ) )
 
 def addKeys( fromKeys, toKeys ):
@@ -180,6 +185,18 @@ def getCreationDirectoryPath():
 	"Get the creation directory path."
 	return os.path.join( getShapesDirectoryPath(), 'creation' )
 
+def getDictionarySplitWords( dictionary, value ):
+	"Get split line for evaluators."
+	splitToken = getUniqueToken( value, '_s7T' )
+	for dictionaryKey in dictionary.keys():
+		value = value.replace( dictionaryKey, splitToken + dictionaryKey + splitToken )
+	dictionarySplitWords = []
+	for word in value.split( splitToken ):
+		strippedWord = word.strip()
+		if strippedWord != '':
+			dictionarySplitWords.append( strippedWord )
+	return dictionarySplitWords
+
 def getEvaluatedBooleanDefault( defaultBoolean, key, xmlElement ):
 	"Get the evaluated boolean as a float."
 	if key in xmlElement.attributeDictionary:
@@ -201,15 +218,23 @@ def getEvaluatedDictionary( evaluationKeys, xmlElement ):
 				evaluatedDictionary[ key ] = value
 	return evaluatedDictionary
 
+def getEvaluatedElementValue( value, xmlElement ):
+	"Evaluate the self value."
+	return getEvaluatedLinkValueByLookingInDictionary( value[ len( 'element.' ) : ], xmlElement )
+
 def getEvaluatedExpressionValue( value, xmlElement ):
 	"Evaluate the expression value."
-	return getEvaluatedExpressionValueBySplitLine( getEvaluatorSplitLine( value, xmlElement ), xmlElement )
+	return getEvaluatedExpressionValueBySplitLine( getEvaluatorSplitWords( value ), xmlElement )
 
-def getEvaluatedExpressionValueBySplitLine( splitLine, xmlElement ):
+def getEvaluatedExpressionValueBySplitLine( words, xmlElement ):
 	"Evaluate the expression value."
 	evaluators = []
-	for word in splitLine:
-		addEvaluator( evaluators, word, xmlElement )
+	for wordIndex, word in enumerate( words ):
+		nextWord = ''
+		nextWordIndex = wordIndex + 1
+		if nextWordIndex < len( words ):
+			nextWord = words[ nextWordIndex ]
+		addEvaluator( evaluators, nextWord, word, xmlElement )
 	while getBracketsExist( evaluators ):
 		pass
 	evaluatedExpressionValueEvaluators = getEvaluatedExpressionValueEvaluators( evaluators )
@@ -221,7 +246,7 @@ def getEvaluatedExpressionValueEvaluators( evaluators ):
 	"Evaluate the expression value from the numeric and operation evaluators."
 	for evaluatorIndex in xrange( len( evaluators ) - 2, - 1, - 1 ):
 		evaluators[ evaluatorIndex ].executeMinus( evaluators, evaluatorIndex )
-	for operationLevel in [ 60, 40, 20, 10, 0 ]:
+	for operationLevel in [ 60, 40, 20, 15, 10, 0 ]:
 		evaluateOperationLevel( evaluators, operationLevel )
 	return evaluators
 
@@ -277,11 +302,13 @@ def getEvaluatedIDValue( value, xmlElement ):
 	keyValue = KeyValue().getByDot( value[ len( 'id.' ) : ] )
 	if keyValue.value == None:
 		return value
-	idElement = xmlElement.getXMLElementByID( keyValue.key )
+	idElement = xmlElement.getXMLElementByImportID( keyValue.key )
 	return getEvaluatedLinkValueByLookingInDictionary( keyValue.value, idElement )
 
 def getEvaluatedLinkValue( value, xmlElement ):
 	"Get the evaluated link value."
+	if value.startswith( 'element.' ):
+		return getEvaluatedElementValue( value, xmlElement )
 	if value.startswith( 'id.' ):
 		return getEvaluatedIDValue( value, xmlElement )
 	if value.startswith( 'name.' ):
@@ -290,8 +317,6 @@ def getEvaluatedLinkValue( value, xmlElement ):
 		return getEvaluatedParentValue( value, xmlElement )
 	if value.startswith( 'root.' ):
 		return getEvaluatedRootValue( value, xmlElement )
-	if value.startswith( 'self.' ):
-		return getEvaluatedSelfValue( value, xmlElement )
 	if value.startswith( 'vertex.' ):
 		return getEvaluatedVertexValue( value, xmlElement )
 	if getStartsWithCurlyEqualRoundSquare( value ):
@@ -299,7 +324,7 @@ def getEvaluatedLinkValue( value, xmlElement ):
 	return value
 
 def getEvaluatedLinkValueByLookingInDictionary( value, xmlElement ):
-	"Evaluate the parent value."
+	"Evaluate the link value."
 	if value in xmlElement.attributeDictionary:
 		value = str( xmlElement.attributeDictionary[ value ] )
 	return getEvaluatedLinkValue( value.lstrip(), xmlElement )
@@ -309,7 +334,7 @@ def getEvaluatedNameValue( value, xmlElement ):
 	keyValue = KeyValue().getByDot( value[ len( 'name.' ) : ] )
 	if keyValue.value == None:
 		return value
-	nameElement = xmlElement.getXMLElementByName( keyValue.key )
+	nameElement = xmlElement.getXMLElementByImportName( keyValue.key )
 	return getEvaluatedLinkValueByLookingInDictionary( keyValue.value, nameElement )
 
 def getEvaluatedParentValue( value, xmlElement ):
@@ -319,10 +344,6 @@ def getEvaluatedParentValue( value, xmlElement ):
 def getEvaluatedRootValue( value, xmlElement ):
 	"Evaluate the parent value."
 	return getEvaluatedLinkValueByLookingInDictionary( value[ len( 'root.' ) : ], xmlElement.getRootElement() )
-
-def getEvaluatedSelfValue( value, xmlElement ):
-	"Evaluate the self value."
-	return getEvaluatedLinkValueByLookingInDictionary( value[ len( 'self.' ) : ], xmlElement )
 
 def getEvaluatedValue( key, xmlElement ):
 	"Get the evaluated value."
@@ -350,22 +371,22 @@ def getEvaluatedVertexValue( value, xmlElement ):
 	vector3 = getVector3FromXMLElement( vertexElements[ vertexIndex ] )
 	return str( vector3 )
 
-def getEvaluatorSplitLine( value, xmlElement ):
-	"Get split line for evaluators."
+def getEvaluatorSplitWords( value ):
+	"Get split words for evaluators."
 	if value.startswith( '=' ):
 		value = value[ len( '=' ) : ]
-	splitToken = getUniqueToken( value, '_SpliT_' )
-	global powerToken
-	value = value.replace( '**', powerToken ).replace( '{', '(' ).replace( '}', ')' )
+	value = value.replace( '{', '(' ).replace( '}', ')' )
+	global globalDictionaryOperatorBegin
+	beginSplitWords = getDictionarySplitWords( globalDictionaryOperatorBegin, value )
 	global globalSplitDictionaryOperator
-	for splitDictionaryOperatorKey in globalSplitDictionaryOperator.keys():
-		value = value.replace( splitDictionaryOperatorKey, splitToken + splitDictionaryOperatorKey + splitToken )
-	evaluatorSplitLine = []
-	for word in value.split( splitToken ):
-		strippedWord = word.strip()
-		if strippedWord != '':
-			evaluatorSplitLine.append( strippedWord )
-	return evaluatorSplitLine
+	evaluatorSplitWords = []
+	for beginSplitWord in beginSplitWords:
+		if beginSplitWord in globalDictionaryOperatorBegin:
+			evaluatorSplitWords.append( beginSplitWord )
+		else:
+			dictionarySplitWords = getDictionarySplitWords( globalSplitDictionaryOperator, beginSplitWord )
+			evaluatorSplitWords += dictionarySplitWords
+	return evaluatorSplitWords
 
 def getFloatIfFloat( value ):
 	'Get value as float if its string is a float.'
@@ -398,7 +419,7 @@ def getFunctionByValue( value, xmlElement ):
 	if xmlElement.object == None:
 		if 'return' in xmlElement.attributeDictionary:
 			value = xmlElement.attributeDictionary[ 'return' ]
-			xmlElement.object = getEvaluatorSplitLine( value, xmlElement )
+			xmlElement.object = getEvaluatorSplitWords( value )
 		else:
 			xmlElement.object = []
 	return Function( xmlElement.object, xmlElement )
@@ -561,6 +582,8 @@ def getSplitDictionary():
 	"Get split dictionary."
 	global globalSplitDictionaryOperator
 	splitDictionary = globalSplitDictionaryOperator.copy()
+	global globalDictionaryOperatorBegin
+	splitDictionary.update( globalDictionaryOperatorBegin )
 	addPrefixDictionary( splitDictionary, globalMathConstantDictionary.keys(), 'math.', ConstantEvaluator )
 	pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( getCreationDirectoryPath() )
 	addPrefixDictionary( splitDictionary, pluginFileNames, 'math.', CreationEvaluator )
@@ -607,6 +630,9 @@ def getVector3ByKey( key, vector3, xmlElement ):
 	vector3String = str( value ).strip()
 	floatList = getFloatListFromBracketedString( vector3String )
 	if floatList == None:
+		if getTypeLength( value ) == - 1:
+			floatValue = float( value )
+			return Vector3( floatValue, floatValue, floatValue )
 		return vector3
 	return getVector3ByFloatList( getVector3IfNone( vector3 ), floatList )
 
@@ -684,12 +710,12 @@ def getXMLElementByKey( key, xmlElement ):
 def getXMLElementByValue( value, xmlElement ):
 	"Get the xml element by value."
 	if value.startswith( 'id.' ):
-		return xmlElement.getXMLElementByID( value[ len( 'id.' ) : ] )
+		return xmlElement.getXMLElementByImportID( value[ len( 'id.' ) : ] )
 	if value.startswith( 'name.' ):
-		return xmlElement.getXMLElementByName( value[ len( 'name.' ) : ] )
+		return xmlElement.getXMLElementByImportName( value[ len( 'name.' ) : ] )
 	if value.startswith( 'parent.' ):
 		return xmlElement.parent
-	return xmlElement.getXMLElementByName( value )
+	return xmlElement.getXMLElementByImportName( value )
 
 def processArchivable( archivableClass, xmlElement, xmlProcessor ):
 	"Get any new elements and process the archivable."
@@ -818,6 +844,24 @@ class AdditionEvaluator( Evaluator ):
 		return leftValue + rightValue
 
 
+class EqualEvaluator( AdditionEvaluator ):
+	'Class to compare two evaluators.'
+	def executeOperation( self, evaluators, evaluatorIndex, operationLevel ):
+		'Operate on two evaluators.'
+		if operationLevel == 15:
+			self.executePair( evaluators, evaluatorIndex )
+
+	def getBooleanFromValuePair( self, leftValue, rightValue ):
+		'Compare two values.'
+		return leftValue == rightValue
+
+	def getValueFromValuePair( self, leftValue, rightValue ):
+		'Get value from comparison.'
+		if self.getBooleanFromValuePair( leftValue, rightValue ):
+			return 1.0
+		return 0.0
+
+
 class ConstantEvaluator( Evaluator ):
 	'Class to evaluate a string.'
 	def __init__( self, word, xmlElement ):
@@ -849,6 +893,7 @@ class CreationEvaluator( Evaluator ):
 				dictionary[ '_arguments' ] = self.withinValues
 			else:
 				dictionary = self.withinValues
+		dictionary[ '_fromCreationEvaluator' ] = 'true'
 		self.value = pluginModule.getGeometryOutput( self.xmlElement.getShallowCopy( dictionary ) )
 		convertToFloatList( self.value )
 
@@ -906,7 +951,7 @@ class EquationResult:
 		if value.startswith( 'function.' ):
 			self.function = getFunctionByValue( value, xmlElement )
 			return
-		self.function = Function( getEvaluatorSplitLine( value, xmlElement ), {}, xmlElement )
+		self.function = Function( getEvaluatorSplitWords( value ), {}, xmlElement )
 
 	def getReturnValue( self, vertex ):
 		"Get return value."
@@ -1010,6 +1055,21 @@ class FunctionEvaluator( CreationEvaluator ):
 			print( self.function.xmlElement.attributeDictionary )
 			print( parameterWords )
 			print( self.withinValues )
+
+
+class GreaterEvaluator( EqualEvaluator ):
+	'Class to compare two evaluators.'
+	def getBooleanFromValuePair( self, leftValue, rightValue ):
+		'Compare two values.'
+		return leftValue > rightValue
+
+
+class GreaterEqualEvaluator( EqualEvaluator ):
+	'Class to compare two evaluators.'
+	def getBooleanFromValuePair( self, leftValue, rightValue ):
+		'Compare two values.'
+		return leftValue >= rightValue
+
 
 class Interpolation:
 	"Class to interpolate a path."
@@ -1150,6 +1210,20 @@ class KeyValue:
 		return self.getByCharacter( '=', line )
 
 
+class LessEvaluator( EqualEvaluator ):
+	'Class to compare two evaluators.'
+	def getBooleanFromValuePair( self, leftValue, rightValue ):
+		'Compare two values.'
+		return leftValue < rightValue
+
+
+class LessEqualEvaluator( EqualEvaluator ):
+	'Class to compare two evaluators.'
+	def getBooleanFromValuePair( self, leftValue, rightValue ):
+		'Compare two values.'
+		return leftValue <= rightValue
+
+
 class ListEvaluator( AdditionEvaluator ):
 	'Class to join two evaluators.'
 	def __init__( self, word, xmlElement ):
@@ -1185,9 +1259,8 @@ class LocalEvaluator( CreationEvaluator ):
 		if len( functions ) < 1:
 			return
 		localTable = functions[ - 1 ].localTable
-		suffix = word[ len( 'local.' ) : ]
-		if suffix in localTable:
-			self.value = localTable[ suffix ]
+		if word in localTable:
+			self.value = localTable[ word ]
 
 	def executeMath( self, evaluators, evaluatorIndex, withinEvaluators ):
 		'Evaluate the math statement and delete the evaluators.'
@@ -1224,6 +1297,13 @@ class MultiplicationEvaluator( DivisionEvaluator ):
 	def getValueFromValuePair( self, leftValue, rightValue ):
 		'Multiply two values.'
 		return leftValue * rightValue
+
+
+class NotEqualEvaluator( EqualEvaluator ):
+	'Class to compare two evaluators.'
+	def getBooleanFromValuePair( self, leftValue, rightValue ):
+		'Compare two values.'
+		return leftValue != rightValue
 
 
 class NumericEvaluator( Evaluator ):
@@ -1314,23 +1394,33 @@ class SubtractionEvaluator( AdditionEvaluator ):
 		return value
 
 
+globalDictionaryOperatorBegin = {
+	'==' : EqualEvaluator,
+	'>=' : GreaterEqualEvaluator,
+	'<=' : LessEqualEvaluator,
+	'!=' : NotEqualEvaluator,
+	'<>' : NotEqualEvaluator,
+	'**' : PowerEvaluator }
+
 globalSplitDictionaryOperator = {
-		'+' : AdditionEvaluator,
-		':' : DictionaryEvaluator,
-		'/' : DivisionEvaluator,
-		'(' : Evaluator,
-		')' : Evaluator,
-		'[' : Evaluator,
-		']' : Evaluator,
-		',' : ListEvaluator,
-		'*' : MultiplicationEvaluator,
-		powerToken : PowerEvaluator,
-		'-' : SubtractionEvaluator }
+	'+' : AdditionEvaluator,
+	':' : DictionaryEvaluator,
+	'/' : DivisionEvaluator,
+	'(' : Evaluator,
+	')' : Evaluator,
+	'[' : Evaluator,
+	']' : Evaluator,
+	'>' : GreaterEvaluator,
+	'<' : LessEvaluator,
+	',' : ListEvaluator,
+	'*' : MultiplicationEvaluator,
+	'-' : SubtractionEvaluator }
+
 #Constants from: http://www.physlink.com/reference/MathConstants.cfm
 globalMathConstantDictionary = {
-		'e' : math.e,
-		'euler' : 0.5772156649015328606065120,
-		'golden' : 1.6180339887498948482045868,
-		'pi' : math.pi }
+	'e' : math.e,
+	'euler' : 0.5772156649015328606065120,
+	'golden' : 1.6180339887498948482045868,
+	'pi' : math.pi }
 #If anyone wants to add stuff, more constants are at: http://en.wikipedia.org/wiki/Mathematical_constant
 globalSplitDictionary = getSplitDictionary()

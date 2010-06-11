@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities import xml_simple_parser
 
 
@@ -42,4 +42,4 @@ def getUnboundVertexElement( vertex ):
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	xmlElement.parent.object.vertices.append( geomancer.getVector3FromXMLElement( xmlElement ) )
+	xmlElement.parent.object.vertices.append( evaluate.getVector3FromXMLElement( xmlElement ) )

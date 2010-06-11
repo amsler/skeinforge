@@ -25,6 +25,7 @@ from fabmetheus_utilities import euclidean
 import cStringIO
 import os
 import sys
+import traceback
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -32,7 +33,6 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-#getFileTextInFileDirectory might not be needed anymore
 def addLineAndNewlineIfNecessary( line, output ):
 	"Add the line and if the line does not end with a newline add a newline."
 	output.write( line )
@@ -190,14 +190,13 @@ def getModuleWithDirectoryPath( directoryPath, fileName ):
 		return folderPluginsModule
 	except Exception, why:
 		sys.path = originalSystemPath
-		print( why )
+		print( '' )
+		print( 'Exception traceback in getModuleWithDirectoryPath in gcodec:' )
+		print( traceback.print_exc( file = sys.stdout ) )
 		print( '' )
 		print( 'That error means; could not import a module with the fileName ' + fileName )
 		print( 'and an absolute directory name of ' + directoryPath )
 		print( '' )
-		print( 'The plugin could not be imported.  So to run ' + fileName + ' directly and at least get a more informative error message,' )
-		print( 'in a shell in the ' + directoryPath + ' folder type ' )
-		print( '> python ' + fileName + '.py' )
 	return None
 
 def getModuleWithPath( path ):
@@ -264,6 +263,13 @@ def getSplitLineBeforeBracketSemicolon( line ):
 	if bracketIndex > 0:
 		return line[ : bracketIndex ].split()
 	return line.split()
+
+def getStartsWithByList( word, wordPrefixes ):
+	"Determine if the word starts with a prefix in a list."
+	for wordPrefix in wordPrefixes:
+		if word.startswith( wordPrefix ):
+			return True
+	return False
 
 def getStringFromCharacterSplitLine( character, splitLine ):
 	"Get the string after the first occurence of the character in the split line."

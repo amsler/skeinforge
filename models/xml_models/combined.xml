@@ -10,7 +10,7 @@
 	</difference>
 	<intersection id="cube_cylinder_intersection">
 		<matrix4x4 x="-10" z="5" />
-		<cube id="Cube 5" half="5" halfy="6">
+		<cube id="Cube 5" size="6">
 		</cube>
 		<cylinder id="Cylinder 5" height="10" radiusx="5" radiusy="5">
 			<matrix4x4 x="5" y="-5" />
@@ -18,15 +18,15 @@
 	</intersection>
 	<union id="cube_cylinder_union">
 		<matrix4x4 x="-10" y="-20" z="5" />
-		<cube id="Cube 5" halfx="5" halfy="5" halfz="5">
+		<cube id="Cube 5" half="[5,6,5]">
 		</cube>
-		<cylinder id="Cylinder 5" height="10" radius="5">
+		<cylinder id="Cylinder 5" size='5'>
 			<matrix4x4 x="5" y="-5" />
 		</cylinder>
 	</union>
 	<group id="sphere_tetrahedron_group">
 		<matrix4x4 x="10" y="-20" z="5" />
-			<sphere id="Group Sphere 5" radius="5" radiusx="6">
+			<sphere id="Group Sphere 5" radius="5">
 			</sphere>
 			<trianglemesh id="Group Tetrahedron 5">
 				<matrix4x4 x="15" />
@@ -40,7 +40,7 @@
 				<face vertex0="3" vertex1="0" vertex2="1" />
 			</trianglemesh>
 	</group>
-	<sphere id="Sphere 5" radiusx="5" radiusy="5" radiusz="5">
+	<sphere id="Sphere 5" radius="[5,7,5]">
 		<matrix4x4 x="10" z="5" />
 	</sphere>
 	<trianglemesh id="Tetrahedron 5">

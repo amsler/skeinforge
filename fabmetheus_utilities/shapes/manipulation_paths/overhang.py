@@ -8,9 +8,9 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.shapes.creation import lineation
-from fabmetheus_utilities.shapes.solid_tools import path
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
-from fabmetheus_utilities.shapes import group
+from fabmetheus_utilities.shapes.shape_tools import path
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.shapes.solids import group
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -106,7 +106,7 @@ def getManipulatedPaths( close, loop, prefix, xmlElement ):
 		return [ loop ]
 	overhangAngle = math.radians( xmlElement.getCascadeFloat( 45.0, 'overhangangle' ) )
 	overhangPlaneAngle = euclidean.getWiddershinsUnitPolar( 0.5 * math.pi - overhangAngle )
-	overhangVerticalAngle = math.radians( geomancer.getEvaluatedFloatZero( prefix + 'verticalangle', xmlElement ) )
+	overhangVerticalAngle = math.radians( evaluate.getEvaluatedFloatZero( prefix + 'verticalangle', xmlElement ) )
 	if overhangVerticalAngle != 0.0:
 		overhangVerticalCosine = abs( math.cos( overhangVerticalAngle ) )
 		if overhangVerticalCosine == 0.0:

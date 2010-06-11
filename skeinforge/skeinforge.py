@@ -32,6 +32,8 @@ http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge
 There is also a forum thread about how to contribute to skeinforge development at:
 http://dev.forums.reprap.org/read.php?12,27562
 
+I will only reply to emails from contributors or to complete bug reports.
+
 ===Documentation===
 There is a manual at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge
@@ -160,7 +162,7 @@ If the dialog window is too big for the screen, on most Linux window managers yo
 
 If you can't use the graphical interface, you can change the settings for skeinforge by using a text editor or spreadsheet to change the settings in the profiles folder in the .skeinforge folder in your home directory.
 
-Comments and suggestions are welcome, however, I usually won't reply because developing takes all my time and as of the time of this writing I have at least three years of features to implement.
+Comments and suggestions are welcome, however, I won't reply unless you are a contributor because developing takes all my time and as of the time of this writing I have at least three years of features to implement.
 
 I will only answer your questions if you contribute to skeinforge in some way.  Some ways of contributing to skeinforge are in the contributions thread at:
 http://dev.forums.reprap.org/read.php?12,27562
@@ -201,28 +203,34 @@ To run only fill for example, type in the skeinforge_plugins folder which fill i
 from __future__ import absolute_import
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from skeinforge.skeinforge_utilities import skeinforge_craft
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from skeinforge.skeinforge_utilities import skeinforge_polyfile
 from skeinforge.skeinforge_utilities import skeinforge_profile
 import os
 import sys
 
 
-# multi level replace
-# import id.import.filename name.import.filename
+# add cascade
+# look at closePaths in fill with trapezoid
 # setAttributeDictionaryToMatrix
+#matrix4x4.setAttributeDictionaryToMatrix( target.attributeDictionary, targetMatrix4X4 )
+#	if target.object != None:
+#		target.object.matrix4X4 = targetMatrix4X4
 # if while else elif
-# send introduction
+# bottom float to cube, sphere, cylinder input, bottomplane cascade, bottomsolid cascade
 # scale, rotate manipulator
-# equation radius, xyz
+# numeric evaluate strings in dictionaries, also xmlelement, combine xmlelement with csvelement
+# send introduction
+# equation get rid of function check, radius, xyz, targetequation radius xyz give index
 # look over copy
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # _morning named examples
 # del previous, add begin & end if far  get actual path
+# creator shape matrix
 # polling
 # csv _format, _column, _row, _text
 # getNormal, getIsFlat?

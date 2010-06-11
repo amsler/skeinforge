@@ -8,8 +8,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_tools import matrix4x4
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.shape_tools import matrix4x4
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import xml_simple_writer
 import cStringIO
@@ -23,7 +23,7 @@ __license__ = "GPL 3.0"
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	geomancer.processArchivable( Dictionary, xmlElement, xmlProcessor )
+	evaluate.processArchivable( Dictionary, xmlElement, xmlProcessor )
 
 
 class Dictionary:
@@ -43,7 +43,7 @@ class Dictionary:
 		"Add xml for this object."
 		attributeDictionaryCopy = {}
 		if self.xmlElement != None:
-			attributeDictionaryCopy = geomancer.getEvaluatedDictionary( [], self.xmlElement )
+			attributeDictionaryCopy = evaluate.getEvaluatedDictionary( [], self.xmlElement )
 		euclidean.removeListFromDictionary( attributeDictionaryCopy, matrix4x4.getMatrixKeys() )
 		euclidean.removeTrueFromDictionary( attributeDictionaryCopy, 'visible' )
 		xml_simple_writer.addBeginXMLTag( attributeDictionaryCopy, depth, self.getXMLClassName(), output )

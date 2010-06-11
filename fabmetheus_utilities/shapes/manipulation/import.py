@@ -8,8 +8,8 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
-from fabmetheus_utilities.shapes import group
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
+from fabmetheus_utilities.shapes.solids import group
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities.xml_simple_parser import XMLSimpleParser
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -41,34 +41,44 @@ def getXMLFromFileName( fileName ):
 def getXMLFromXMLFileName( fileName ):
 	"Get xml text from xml text."
 	xmlText = gcodec.getFileText( fileName )
-	xmlText = str( BooleanGeometryParser( xmlText ) )
+	xmlText = str( FabmetheusParser( xmlText ) )
 	if xmlText != '':
 		return xmlText
 	return getXMLFromCarvingFileName( fileName )
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	fileName = geomancer.getEvaluatedValue( 'file', xmlElement )
+	fileName = evaluate.getEvaluatedValue( 'file', xmlElement )
 	if fileName == None:
 		return
 	parserFileName = xmlElement.getRootElement().parser.fileName
 	absoluteFileName = gcodec.getAbsoluteFolderPath( parserFileName, fileName )
 	xmlText = getXMLFromFileName( absoluteFileName )
 	if xmlText == '':
-		print( 'The file %s could not be found in the folder which the xml boolean geometry file is in.' % fileName )
+		print( 'The file %s could not be found in the folder which the fabmetheus xml file is in.' % fileName )
 		return
+	oldImportName = xmlElement.importName
+	if '_importname' in xmlElement.attributeDictionary:
+		xmlElement.importName = xmlElement.attributeDictionary[ '_importname' ]
+	else:
+		xmlElement.importName = gcodec.getUntilDot( fileName )
+		xmlElement.attributeDictionary[ '_importname' ] = xmlElement.importName
 	XMLSimpleParser( parserFileName, xmlElement, xmlText )
+	xmlElement.importName = oldImportName
 	group.processShape( group.Group, xmlElement, xmlProcessor )
-	baseNameUntilDot = gcodec.getUntilDot( os.path.basename( absoluteFileName ) )
-	xmlElement.attributeDictionary[ 'id' ] = baseNameUntilDot
-	xmlElement.addToIDDictionaryIFIDExists()
+
+def updateAttributeDictionariesRecursively( updateDictionary, xmlElement ):
+	"Update the attribute dictionaries recursively."
+	xmlElement.attributeDictionary.update( updateDictionary )
+	for child in xmlElement.children:
+		updateAttributeDictionariesRecursively( updateDictionary, child )
 
 
-class BooleanGeometryParser:
+class FabmetheusParser:
 	"A simple xml parser."
 	def __init__( self, xmlText ):
 		"Add empty lists."
-		self.isInBooleanGeometry = False
+		self.isInFabmetheus = False
 		self.lines = gcodec.getTextLines( xmlText )
 		self.output = cStringIO.StringIO()
 		for line in self.lines:
@@ -79,19 +89,19 @@ class BooleanGeometryParser:
 		return self.output.getvalue()
 
 	def parseLine( self, line ):
-		"Parse a gcode line and add it to the inset skein."
+		"Parse a fabmetheus line and add it to the xml output."
 		line = line.lstrip()
 		if len( line ) < 1:
 			return
 		if line[ : len( '</' ) ] == '</':
 			lineAfterEndTagSymbol = line[ len( '</' ) : ].lstrip()
 			if lineAfterEndTagSymbol[ : len( 'fabmetheus' ) ] == 'fabmetheus':
-				self.isInBooleanGeometry = False
+				self.isInFabmetheus = False
 				return
 		if line[ : len( '<' ) ] == '<':
 			lineAfterBeginTagSymbol = line[ len( '<' ) : ].lstrip()
 			if lineAfterBeginTagSymbol[ : len( 'fabmetheus' ) ] == 'fabmetheus':
-				self.isInBooleanGeometry = True
+				self.isInFabmetheus = True
 				return
-		if self.isInBooleanGeometry:
+		if self.isInFabmetheus:
 			self.output.write( line + '\n' )

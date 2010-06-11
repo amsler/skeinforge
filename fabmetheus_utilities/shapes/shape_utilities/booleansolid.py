@@ -30,9 +30,9 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.group import Group
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
-from fabmetheus_utilities.shapes import trianglemesh
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.shapes.solids import group
+from fabmetheus_utilities.shapes.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
@@ -220,7 +220,7 @@ def getVisibleObjectLoopsList( importRadius, visibleObjects, z ):
 	return visibleObjectLoopsList
 
 
-class BooleanSolid( Group ):
+class BooleanSolid( group.Group ):
 	"A boolean solid object."
 	def getDifference( self, importRadius, visibleObjectLoopsList ):
 		"Get subtracted loops sliced through shape."
@@ -232,7 +232,7 @@ class BooleanSolid( Group ):
 
 	def getLoops( self, importRadius, z ):
 		"Get loops sliced through shape."
-		visibleObjects = geomancer.getVisibleObjects( self.archivableObjects )
+		visibleObjects = evaluate.getVisibleObjects( self.archivableObjects )
 		if len( visibleObjects ) < 1:
 			return []
 		visibleObjectLoopsList = getVisibleObjectLoopsList( importRadius, visibleObjects, z )
@@ -245,7 +245,7 @@ class BooleanSolid( Group ):
 
 	def getPaths( self ):
 		"Get all paths."
-		importRadius = self.xmlElement.getCascadeFloat( 5.0 * geomancer.getPrecision( self.xmlElement ), 'importradius' )
+		importRadius = self.xmlElement.getCascadeFloat( 5.0 * evaluate.getPrecision( self.xmlElement ), 'importradius' )
 		return euclidean.getVector3Paths( self.getLoopsFromObjectLoopsList( importRadius, self.getComplexPathLists() ) )
 
 	def getUnion( self, importRadius, visibleObjectLoopsList ):

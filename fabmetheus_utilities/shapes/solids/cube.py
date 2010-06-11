@@ -30,10 +30,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
-from fabmetheus_utilities.shapes import group
-from fabmetheus_utilities.shapes import trianglemesh
-from fabmetheus_utilities import euclidean
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.shapes.solids import group
+from fabmetheus_utilities.shapes.solids import trianglemesh
+from fabmetheus_utilities.vector3 import Vector3
+
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
@@ -54,17 +55,19 @@ class Cube( trianglemesh.TriangleMesh ):
 
 	def createShape( self ):
 		"Create the shape."
-		square = [ complex( - self.halfX, - self.halfY ), complex( self.halfX, - self.halfY ), complex( self.halfX, self.halfY ), complex( - self.halfX, self.halfY ) ]
-		bottomTopSquare = trianglemesh.getAddIndexedLoops( square, self.vertices, [ - self.halfZ, self.halfZ ] )
+		square = [
+			complex( - self.half.x, - self.half.y ),
+			complex( self.half.x, - self.half.y ),
+			complex( self.half.x, self.half.y ),
+			complex( - self.half.x, self.half.y ) ]
+		bottomTopSquare = trianglemesh.getAddIndexedLoops( square, self.vertices, [ - self.half.z, self.half.z ] )
 		trianglemesh.addPillarFromConvexLoops( self.faces, bottomTopSquare )
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		half = geomancer.getEvaluatedFloatOne( 'half', self.xmlElement )
-		self.halfX = geomancer.getEvaluatedFloatDefault( half, 'halfx', self.xmlElement )
-		self.halfY = geomancer.getEvaluatedFloatDefault( half, 'halfy', self.xmlElement )
-		self.halfZ = geomancer.getEvaluatedFloatDefault( half, 'halfz', self.xmlElement )
-		self.xmlElement.attributeDictionary[ 'halfx' ] = self.halfX
-		self.xmlElement.attributeDictionary[ 'halfy' ] = self.halfY
-		self.xmlElement.attributeDictionary[ 'halfz' ] = self.halfZ
+		self.half = evaluate.getVector3ByPrefix( 'half', Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
+		self.half = evaluate.getVector3ByPrefix( 'size', self.half, self.xmlElement )
+		self.xmlElement.attributeDictionary[ 'halfx' ] = self.half.x
+		self.xmlElement.attributeDictionary[ 'halfy' ] = self.half.y
+		self.xmlElement.attributeDictionary[ 'halfz' ] = self.half.z
 		self.createShape()

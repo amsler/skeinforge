@@ -7,9 +7,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.solid_tools import path
-from fabmetheus_utilities.shapes.solid_utilities import geomancer
-from fabmetheus_utilities.shapes import group
+from fabmetheus_utilities.shapes.shape_tools import matrix4x4
+from fabmetheus_utilities.shapes.shape_tools import path
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.shapes.solids import group
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -54,8 +55,8 @@ def getBevelPath( begin, center, close, end, radius ):
 
 def getFloatByPrefixSide( prefix, side, xmlElement ):
 	"Get float by prefix and side."
-	floatByDenominatorPrefix = geomancer.getEvaluatedFloatZero( prefix, xmlElement )
-	return floatByDenominatorPrefix + geomancer.getEvaluatedFloatZero( prefix + 'overside', xmlElement ) * side
+	floatByDenominatorPrefix = evaluate.getEvaluatedFloatZero( prefix, xmlElement )
+	return floatByDenominatorPrefix + evaluate.getEvaluatedFloatZero( prefix + 'overside', xmlElement ) * side
 
 def getGeometryOutput( xmlElement ):
 	"Get geometry output from paths."
@@ -63,7 +64,7 @@ def getGeometryOutput( xmlElement ):
 
 def getGeometryOutputByEquation( sideLoop, xmlElement ):
 	"Get geometry output by manipulation."
-	geomancer.alterVerticesByEquation( sideLoop.loop, xmlElement )
+	evaluate.alterVerticesByEquation( sideLoop.loop, xmlElement )
 	sideLoop.loop = euclidean.getLoopWithoutCloseSequentialPoints( sideLoop.close, sideLoop.loop )
 	sideLoop.loop = getSegmentLoop( sideLoop.close, sideLoop.loop, xmlElement )
 	sideLoop.loop = getBevelLoop( sideLoop.close, sideLoop.loop, sideLoop.sideLength, xmlElement )
@@ -73,7 +74,7 @@ def getGeometryOutputByEquation( sideLoop, xmlElement ):
 def getGeometryOutputByFunction( manipulationFunction, xmlElement ):
 	"Get geometry output from paths and manipulationFunction."
 	geometryOutput = []
-	paths = geomancer.getPathsByKeys( [ 'path', 'paths', 'target' ], xmlElement )
+	paths = evaluate.getPathsByKeys( [ 'path', 'paths', 'target' ], xmlElement )
 	for path in paths:
 		sideLoop = SideLoop( path )
 		geometryOutput += getGeometryOutputByLoop( manipulationFunction, sideLoop, xmlElement )
@@ -131,7 +132,7 @@ def getRoundLoop( close, loop, sideLength, xmlElement ):
 	if radius == 0.0:
 		return loop
 	roundLoop = []
-	sidesPerRadian = 0.5 / math.pi * geomancer.getSides( sideLength, xmlElement )
+	sidesPerRadian = 0.5 / math.pi * evaluate.getSides( sideLength, xmlElement )
 	for pointIndex in xrange( len( loop ) ):
 		begin = loop[ ( pointIndex + len( loop ) - 1 ) % len( loop ) ]
 		center = loop[ pointIndex ]
@@ -180,11 +181,11 @@ def getRoundPath( begin, center, close, end, radius, sidesPerRadian ):
 
 def getSegmentLoop( close, loop, xmlElement ):
 	"Get segment loop."
-	path = geomancer.getPathByPrefix( getSegmentPathDefault(), 'segment', xmlElement )
+	path = evaluate.getPathByPrefix( getSegmentPathDefault(), 'segment', xmlElement )
 	if path == getSegmentPathDefault():
 		return loop
 	path = getXNormalizedVector3Path( path )
-	segmentCenter = geomancer.getVector3ByKey( 'segmentcenter', None, xmlElement )
+	segmentCenter = evaluate.getVector3ByKey( 'segmentcenter', None, xmlElement )
 	if euclidean.getIsWiddershinsByVector3( loop ):
 		path = path[ : : - 1 ]
 		for point in path:
@@ -280,6 +281,21 @@ def processXMLElementByGeometry( geometryOutput, xmlElement, xmlProcessor ):
 		path.convertXMLElementRename( geometryOutput, xmlElement, xmlProcessor )
 	xmlProcessor.processXMLElement( xmlElement )
 
+def transformIfFromCreationEvaluator( path, xmlElement ):
+	"Transform the path if the xmlElement came from a CreationEvaluator."
+	if not evaluate.getEvaluatedBooleanDefault( False, '_fromCreationEvaluator', xmlElement ):
+		return
+	xmlElementMatrix = matrix4x4.Matrix4X4().getFromXMLElement( xmlElement )
+	if xmlElementMatrix.getIsDefault():
+		return
+	for point in path:
+		point.setToVector3( matrix4x4.getVector3TransformedByMatrix( xmlElementMatrix.matrixTetragrid, point ) )
+
+def transformIfFromCreationEvaluatorByPaths( paths, xmlElement ):
+	"Transform the paths if the xmlElement came from a CreationEvaluator."
+	for path in paths:
+		transformIfFromCreationEvaluator( path, xmlElement )
+
 
 class SideLoop:
 	"Class to handle loop, side angle and side length."
@@ -296,11 +312,11 @@ class SideLoop:
 
 	def centerRotate( self, xmlElement ):
 		"Add a wedge center and rotate."
-		wedgeCenter = geomancer.getVector3ByKey( 'wedgecenter', None, xmlElement )
+		wedgeCenter = evaluate.getVector3ByKey( 'wedgecenter', None, xmlElement )
 		if wedgeCenter != None:
 			self.loop.append( wedgeCenter )
-		rotation = math.radians( geomancer.getEvaluatedFloatZero( 'rotation', xmlElement ) )
-		rotation += geomancer.getEvaluatedFloatZero( 'rotationoverside', xmlElement ) * self.sideAngle
+		rotation = math.radians( evaluate.getEvaluatedFloatZero( 'rotation', xmlElement ) )
+		rotation += evaluate.getEvaluatedFloatZero( 'rotationoverside', xmlElement ) * self.sideAngle
 		if rotation != 0.0:
 			planeRotation = euclidean.getWiddershinsUnitPolar( rotation )
 			for vertex in self.loop:
@@ -308,7 +324,7 @@ class SideLoop:
 				vertex.x = rotatedComplex.real
 				vertex.y = rotatedComplex.imag
 		if 'clockwise' in xmlElement.attributeDictionary:
-			isClockwise = euclidean.getBooleanFromValue( geomancer.getEvaluatedValueObliviously( 'clockwise', xmlElement ) )
+			isClockwise = euclidean.getBooleanFromValue( evaluate.getEvaluatedValueObliviously( 'clockwise', xmlElement ) )
 			if isClockwise == euclidean.getIsWiddershinsByVector3( self.loop ):
 				self.loop.reverse()
 
@@ -316,11 +332,13 @@ class SideLoop:
 		"Get loop manipulated by the plugins in the manipulation paths folder."
 		xmlProcessor = xmlElement.getRootElement().xmlProcessor
 		loops = self.getManipulationPluginLoopsByDictionary( [ self.loop ], xmlProcessor.manipulationPathDictionary, xmlElement )
-		return self.getManipulationPluginLoopsByDictionary( loops, xmlProcessor.manipulationShapeDictionary, xmlElement )
+		loops = self.getManipulationPluginLoopsByDictionary( loops, xmlProcessor.manipulationShapeDictionary, xmlElement )
+		transformIfFromCreationEvaluatorByPaths( loops, xmlElement )
+		return loops
 
 	def getManipulationPluginLoopsByDictionary( self, loops, manipulationPathDictionary, xmlElement ):
 		"Get loop manipulated by the plugins in the manipulation paths folder."
-		matchingPlugins = geomancer.getMatchingPlugins( manipulationPathDictionary, xmlElement )
+		matchingPlugins = evaluate.getMatchingPlugins( manipulationPathDictionary, xmlElement )
 		for matchingPlugin in matchingPlugins:
 			matchingLoops = []
 			prefix = matchingPlugin.__name__ + '.'
