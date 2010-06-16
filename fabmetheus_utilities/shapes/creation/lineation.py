@@ -78,19 +78,19 @@ def getGeometryOutputByFunction( manipulationFunction, xmlElement ):
 	for path in paths:
 		sideLoop = SideLoop( path )
 		geometryOutput += getGeometryOutputByLoop( manipulationFunction, sideLoop, xmlElement )
-	return geometryOutput
+	return getUnpackedLoops( geometryOutput )
 
 def getGeometryOutputByLoop( manipulationFunction, sideLoop, xmlElement ):
 	"Get geometry output by side loop."
 	sideLoop.centerRotate( xmlElement )
 	if manipulationFunction == None:
-		return getGeometryOutputByEquation( sideLoop, xmlElement )
+		return getUnpackedLoops( getGeometryOutputByEquation( sideLoop, xmlElement ) )
 	loops = manipulationFunction( sideLoop.close, sideLoop.loop, '', xmlElement )
-	geometryOutputByLoop = []
+	geometryOutput = []
 	for loop in loops:
 		sideLoop.loop = loop
-		geometryOutputByLoop += getGeometryOutputByEquation( sideLoop, xmlElement )
-	return geometryOutputByLoop
+		geometryOutput += getGeometryOutputByEquation( sideLoop, xmlElement )
+	return getUnpackedLoops( geometryOutput )
 
 def getMinimumRadius( beginComplexSegmentLength, endComplexSegmentLength, radius ):
 	"Get minimum radius."
@@ -210,6 +210,14 @@ def getSegmentPath( loop, path, pointIndex, segmentCenter ):
 	end = loop[ ( pointIndex + 2 ) % len( loop ) ]
 	return getWedgePath( begin, centerBegin, centerEnd, centerEndMinusBegin, end, path )
 
+def getUnpackedLoops( loops ):
+	"Get unpacked loops."
+	if len( loops ) == 1:
+		firstLoop = loops[ 0 ]
+		if firstLoop.__class__ == list:
+			return firstLoop
+	return loops
+
 def getWedgePath( begin, centerBegin, centerEnd, centerEndMinusBegin, end, path ):
 	"Get segment path."
 	beginComplex = begin.dropAxis()
@@ -281,9 +289,9 @@ def processXMLElementByGeometry( geometryOutput, xmlElement, xmlProcessor ):
 		path.convertXMLElementRename( geometryOutput, xmlElement, xmlProcessor )
 	xmlProcessor.processXMLElement( xmlElement )
 
-def transformIfFromCreationEvaluator( path, xmlElement ):
-	"Transform the path if the xmlElement came from a CreationEvaluator."
-	if not evaluate.getEvaluatedBooleanDefault( False, '_fromCreationEvaluator', xmlElement ):
+def transformIfFromEvaluatorCreation( path, xmlElement ):
+	"Transform the path if the xmlElement came from a EvaluatorCreation."
+	if not evaluate.getEvaluatedBooleanDefault( False, '_fromEvaluatorCreation', xmlElement ):
 		return
 	xmlElementMatrix = matrix4x4.Matrix4X4().getFromXMLElement( xmlElement )
 	if xmlElementMatrix.getIsDefault():
@@ -291,10 +299,10 @@ def transformIfFromCreationEvaluator( path, xmlElement ):
 	for point in path:
 		point.setToVector3( matrix4x4.getVector3TransformedByMatrix( xmlElementMatrix.matrixTetragrid, point ) )
 
-def transformIfFromCreationEvaluatorByPaths( paths, xmlElement ):
-	"Transform the paths if the xmlElement came from a CreationEvaluator."
+def transformIfFromEvaluatorCreationByPaths( paths, xmlElement ):
+	"Transform the paths if the xmlElement came from a EvaluatorCreation."
 	for path in paths:
-		transformIfFromCreationEvaluator( path, xmlElement )
+		transformIfFromEvaluatorCreation( path, xmlElement )
 
 
 class SideLoop:
@@ -330,10 +338,10 @@ class SideLoop:
 
 	def getManipulationPluginLoops( self, xmlElement ):
 		"Get loop manipulated by the plugins in the manipulation paths folder."
-		xmlProcessor = xmlElement.getRootElement().xmlProcessor
+		xmlProcessor = xmlElement.getRoot().xmlProcessor
 		loops = self.getManipulationPluginLoopsByDictionary( [ self.loop ], xmlProcessor.manipulationPathDictionary, xmlElement )
 		loops = self.getManipulationPluginLoopsByDictionary( loops, xmlProcessor.manipulationShapeDictionary, xmlElement )
-		transformIfFromCreationEvaluatorByPaths( loops, xmlElement )
+		transformIfFromEvaluatorCreationByPaths( loops, xmlElement )
 		return loops
 
 	def getManipulationPluginLoopsByDictionary( self, loops, manipulationPathDictionary, xmlElement ):

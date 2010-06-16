@@ -66,7 +66,7 @@ class Cube( trianglemesh.TriangleMesh ):
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
 		self.half = evaluate.getVector3ByPrefix( 'half', Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
-		self.half = evaluate.getVector3ByPrefix( 'size', self.half, self.xmlElement )
+		self.half = evaluate.getVector3ThroughSizeDiameter( self.half, self.xmlElement )
 		self.xmlElement.attributeDictionary[ 'halfx' ] = self.half.x
 		self.xmlElement.attributeDictionary[ 'halfy' ] = self.half.y
 		self.xmlElement.attributeDictionary[ 'halfz' ] = self.half.z

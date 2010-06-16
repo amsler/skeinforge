@@ -64,7 +64,7 @@ class Cylinder( cube.Cube ):
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
 		radius = evaluate.getVector3ByPrefix( 'radius', Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
-		radius = evaluate.getVector3ByPrefix( 'size', radius, self.xmlElement )
+		radius = evaluate.getVector3ThroughSizeDiameter( radius, self.xmlElement )
 		self.height = evaluate.getEvaluatedFloatDefault( radius.z + radius.z, 'height', self.xmlElement )
 		self.radiusX = radius.x
 		self.radiusY = radius.y

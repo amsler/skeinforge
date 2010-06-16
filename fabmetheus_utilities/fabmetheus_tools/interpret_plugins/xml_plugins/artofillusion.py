@@ -52,7 +52,7 @@ __license__ = "GPL 3.0"
 def getCarvingFromParser( xmlParser ):
 	"Get the carving for the parser."
 	booleanGeometry = boolean_carving.BooleanGeometry()
-	artOfIllusionElement = xmlParser.getRootElement()
+	artOfIllusionElement = xmlParser.getRoot()
 	euclidean.removeListFromDictionary( artOfIllusionElement.attributeDictionary, [ 'fileversion', 'xmlns:bf' ] )
 	sceneElement = artOfIllusionElement.getFirstChildWithClassName( 'Scene' )
 	xmlElements = sceneElement.getFirstChildWithClassName( 'objects' ).getChildrenWithClassName( 'bf:Elem' )
@@ -79,7 +79,7 @@ def getTransformXMLElement( coords, transformName ):
 	if len( transformXMLElement.attributeDictionary ) < 16:
 		if 'bf:ref' in transformXMLElement.attributeDictionary:
 			idReference = transformXMLElement.attributeDictionary[ 'bf:ref' ]
-			return coords.getRootElement().getSubChildWithID( idReference )
+			return coords.getRoot().getSubChildWithID( idReference )
 	return transformXMLElement
 
 def processXMLElement( archivableObjects, xmlElement ):

@@ -247,7 +247,7 @@ def getPathInFabmetheus( subName = '' ):
 
 def getPathInSkeinforge( subName = '' ):
 	"Get the skeinforge directory path."
-	path = getPathInFabmetheus( 'skeinforge' )
+	path = getPathInFabmetheus( 'skeinforge_application' )
 	if subName == '':
 		return path
 	return os.path.join( path, subName )
@@ -1151,7 +1151,7 @@ class HelpPageRepository:
 		if self.repository.openWikiManualHelpPage == None:
 			self.repository.openLocalHelpPage()
 			return
-		from skeinforge.skeinforge_utilities import skeinforge_help
+		from skeinforge_application.skeinforge_utilities import skeinforge_help
 		helpRepository = getReadRepository( skeinforge_help.HelpRepository() )
 		if helpRepository.wikiManualPrimary.value:
 			self.repository.openWikiManualHelpPage()

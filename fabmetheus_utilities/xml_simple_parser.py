@@ -31,9 +31,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import xml_simple_writer
+import cStringIO
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -58,9 +60,7 @@ class XMLElement:
 
 	def __repr__( self ):
 		"Get the string representation of this XML element."
-		output = xml_simple_writer.getBeginXMLOutput()
-		self.addXML( 0, output )
-		return output.getvalue()
+		return str( self.attributeDictionary )
 
 	def addAttribute( self, beforeQuote, withinQuote ):
 		"Add the attribute to the dictionary."
@@ -178,7 +178,7 @@ class XMLElement:
 			if parent == None:
 				return parent
 			return parent.parent
-		self.parent = parent
+		self.setParentAddToChildren( parent )
 		self.className = line[ 1 : line.replace( '>', ' ' ).find( ' ' ) ]
 		lastWord = line[ - 2 : ]
 		splitLine = line.replace( '">', '" > ' ).split()
@@ -197,14 +197,11 @@ class XMLElement:
 				beforeQuote = ''
 				lastQuoteCharacter = None
 				withinQuote = ''
-			if character == '"' or character == "'":
 				character = ''
 			if lastQuoteCharacter == None:
 				beforeQuote += character
 			else:
 				withinQuote += character
-		if self.parent != None:
-			self.parent.children.append( self )
 		self.addToIDDictionaryIFIDExists()
 		if lastWord == '/>':
 			return parent
@@ -216,11 +213,11 @@ class XMLElement:
 			return parent
 		return self
 
-	def getRootElement( self ):
+	def getRoot( self ):
 		"Get the root element."
 		if self.parent == None:
 			return self
-		return self.parent.getRootElement()
+		return self.parent.getRoot()
 
 	def getShallowCopy( self, attributeDictionary ):
 		"Copy the xml element and set its dictionary."
@@ -247,6 +244,14 @@ class XMLElement:
 				return subChildWithID
 		return None
 
+	def getValueByKey( self, key ):
+		"Get value by the key."
+		if key in evaluate.globalElementValueDictionary:
+			return evaluate.globalElementValueDictionary[ key ]( self )
+		if key in self.attributeDictionary:
+			return evaluate.getEvaluatedLinkValue( self.attributeDictionary[ key ], self )
+		return None
+
 	def getXMLElementByID( self, idKey ):
 		"Get the xml element by id."
 		if idKey in self.idDictionary:
@@ -259,9 +264,9 @@ class XMLElement:
 		"Get the xml element by import file name and id."
 		return self.getXMLElementByID( self.importName + idKey )
 
-	def getXMLElementByImportName( self, idKey ):
+	def getXMLElementByImportName( self, nameKey ):
 		"Get the xml element by import file name and name."
-		return self.getXMLElementByName( self.importName + idKey )
+		return self.getXMLElementByName( self.importName + nameKey )
 
 	def getXMLElementByName( self, name ):
 		"Get the xml element by name."
@@ -271,11 +276,18 @@ class XMLElement:
 			return None
 		return self.parent.getXMLElementByName( name )
 
+	def setParentAddToChildren( self, parent ):
+		"Set the parent and add this to its children."
+		self.parent = parent
+		if self.parent != None:
+			self.parent.children.append( self )
+
 
 class XMLSimpleParser:
 	"A simple xml parser."
 	def __init__( self, fileName, parent, xmlText ):
 		"Add empty lists."
+		self.commentString = None
 		self.fileName = fileName
 		self.isInComment = False
 		self.parent = parent
@@ -289,7 +301,7 @@ class XMLSimpleParser:
 		"Get the string representation of this parser."
 		return str( self.rootElement )
 
-	def getRootElement( self ):
+	def getRoot( self ):
 		"Get the root element."
 		return self.rootElement
 
@@ -302,12 +314,17 @@ class XMLSimpleParser:
 			if lineStripped.startswith( '<?xml' ):
 				return
 		if lineStripped[ : len( '<!--' ) ] == '<!--':
-			self.isInComment = True
-		if self.isInComment:
+			self.commentString = ''
+		if self.commentString != None:
+			self.commentString += line + '\n'
 			if lineStripped.find( '-->' ) != - 1:
-				self.isInComment = False
+				xmlElement = XMLElement()
+				xmlElement.attributeDictionary[ 'comment' ] = self.commentString
+				xmlElement.className = 'comment'
+				xmlElement.setParentAddToChildren( self.parent )
+				self.commentString = None
 				return
-		if self.isInComment:
+		if self.commentString != None:
 			return
 		xmlElement = XMLElement()
 		self.parent = xmlElement.getParentParseReplacedLine( lineStripped, self.parent )

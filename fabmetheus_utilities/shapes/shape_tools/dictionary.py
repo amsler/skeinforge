@@ -46,10 +46,15 @@ class Dictionary:
 			attributeDictionaryCopy = evaluate.getEvaluatedDictionary( [], self.xmlElement )
 		euclidean.removeListFromDictionary( attributeDictionaryCopy, matrix4x4.getMatrixKeys() )
 		euclidean.removeTrueFromDictionary( attributeDictionaryCopy, 'visible' )
-		xml_simple_writer.addBeginXMLTag( attributeDictionaryCopy, depth, self.getXMLClassName(), output )
-		self.addXMLInnerSection( depth + 1, output )
-		self.addXMLArchivableObjects( depth + 1, output )
-		xml_simple_writer.addEndXMLTag( depth, self.getXMLClassName(), output )
+		innerOutput = cStringIO.StringIO()
+		self.addXMLInnerSection( depth + 1, innerOutput )
+		self.addXMLArchivableObjects( depth + 1, innerOutput )
+		if len( innerOutput.getvalue() ) > 0:
+			xml_simple_writer.addBeginXMLTag( attributeDictionaryCopy, depth, self.getXMLClassName(), output )
+			output.write( innerOutput.getvalue() )
+			xml_simple_writer.addEndXMLTag( depth, self.getXMLClassName(), output )
+		else:
+			xml_simple_writer.addClosedXMLTag( attributeDictionaryCopy, depth, self.getXMLClassName(), output )
 
 	def addXMLArchivableObjects( self, depth, output ):
 		"Add xml for this object."

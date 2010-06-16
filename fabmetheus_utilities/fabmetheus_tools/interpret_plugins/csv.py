@@ -47,7 +47,7 @@ def getCarving( fileName = '' ):
 	if csvText == '':
 		return None
 	csvParser = CSVSimpleParser( fileName, None, csvText )
-	lowerClassName = csvParser.getRootElement().className.lower()
+	lowerClassName = csvParser.getRoot().className.lower()
 	pluginModule = gcodec.getModuleWithDirectoryPath( getPluginsDirectoryPath(), lowerClassName )
 	if pluginModule == None:
 		return None

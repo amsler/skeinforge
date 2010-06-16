@@ -1,41 +1,64 @@
 <?xml version='1.0' ?>
 <fabmetheus version='2010-04-06' sill='=2+1' lala='7' tra='3' gaga='7'>
-	<dictionary function='=math.degrees(math.pi)' />
-	<dictionary kapow='=4**-2' />
-	<dictionary order='=-2+1+parent.tra*root.sill' />
-	<dictionary bracket='=2*(3+1)' compoundbracket='=2*(8/(1+1))' withoutbracket='=2*3+1' />
-	<dictionary five='=4+1' element='=element.five*2' />
-	<dictionary e='math.e' evaluatede='=math.e' euler='=math.euler' golden='=math.golden' />
-	<dictionary name='name test' power='=math.pow(4,-3)' />
+	<!--
+		Boolean
+	-->
+	<dictionary andfalsefalse='=false and false' andfalsetrue='=false and true' andtruetrue='=true and true' />
+	<dictionary orfalsefalse='=false or false' orfalsetrue='=false or true' ortruetrue='=true or true' />
+	<dictionary notfalse='=not false' nottrue='=not true' />
 	<!--
 		Comparison
-		-->
+	-->
 	<dictionary equalTo1and0='=1==0' equalTo1and1='=1==1' equalTo1and2='=1==2' />
 	<dictionary greaterThan1and0='=1>0' greaterThan1and1='=1>1' greaterThan1and2='=1>2' />
 	<dictionary greaterThanOrEqualTo1and0='=1>=0' greaterThanOrEqualTo1and1='=1>=1' greaterThanOrEqualTo1and2='=1>=2' />
 	<dictionary lessThan1and0='=1<0' lessThan1and1='=1<1' lessThan1and2='=1<2' />
 	<dictionary lessThanOrEqualTo1and0='=1<=0' lessThanOrEqualTo1and1='=1<=1' lessThanOrEqualTo1and2='=1<=2' />
-				<dictionary notEqualTo1and0='=1!=0' notEqualTo1and1='=1!=1' notEqualTo1and2='=1<>2' />
+	<dictionary notEqualTo1and0='=1!=0' notEqualTo1and1='=1!=1' notEqualTo1and2='=1!=2' />
+	<dictionary function='=math.degrees(math.pi)' />
+	<dictionary id='kapow' kapow='=4**-2' />
+	<dictionary bracket='=2*(3+1)' compoundbracket='=2*(8/(1+1))' withoutbracket='=2*3+1' />
+	<dictionary e='math.e' evaluatede='=math.e' euler='=math.euler' golden='=math.golden' />
+	<dictionary name='name test' power='=math.pow(4,-3)' />
+	<dictionary name='name sin' power='=math.sin(0.1)' />
+	<dictionary name='name number' power='=3' />
+	<dictionary p='=math.polygon(5.2)' />
+	<dictionary p='=math.polygon()*5' />
+	<function id="triple" parameters='number' >
+		<statement number='=number*3' />
+		<return return='=number' />
+	</function>
+	<dictionary a='=triple(4)' />
+	<dictionary a='[1,2]+[2,3]' />
+	<dictionary idkapow='=id.kapow' />
+	<dictionary a='=3' element='=element.a' />
+	<dictionary d='=-{1:2}' />
+	<dictionary n='name.name test.power' />
+	<dictionary five='=4+1' element='=element.five*2' />
+	<dictionary order='=-2+1+parent.tra*root.sill' />
 	<path id='zeropath' y='1' >
 		<vertex x='4' y='6' />
 		<vertex x='4' y='5' />
 		<dictionary a='=4+' />
+		<dictionary booleantrue='=true' />
 		<dictionary a='=4**' />
 		<dictionary z='=[]' />
-		<dictionary z='=[5]' />
-		<dictionary z='=["zog"]' />
-		<dictionary v='vertex.0' />
+		<dictionary listfive='=[5]' />
+		<dictionary zog='=["zog"]' />
+		<dictionary vertex0='vertex[0]' />
 		<dictionary r='="whip"+2' />
 		<dictionary q='parent.vertex.=parent.tra-2' />
-		<dictionary n='name.name test.power' />
-		<dictionary v='parent.vertex.0' />
-		<dictionary v='parent.vertex.y' />
+		<dictionary v='parent.vertex' />
+		<dictionary v='parent.vertex[1]' />
 		<dictionary z='id.zeropath.vertex.y' />
 		<dictionary t='parent.parent.tra' />
 		<dictionary t='parent.parent.wean' />
-		<dictionary v='=math.pow(parent.vertex.0)' />
-		<dictionary a='[1,2]+(2,3)' />
+		<dictionary parentvertex='parent.vertex' />
+		<dictionary v='parent.vertex[0]' />
+		<dictionary mathpowvertex='=math.pow(parent.vertex[0])' />
+		<dictionary dictionarykey='{"e":"roo"}["e"]' />
 		<dictionary a='[1,2,7]-(2,3)' />
+		<dictionary m='=[1,2][1]' />
 		<dictionary m='=2*[1,2,7]' />
 		<dictionary m='=-[1,2,7]' />
 		<dictionary m='[[1,2],[7,6]]' />
@@ -44,7 +67,6 @@
 		<dictionary m25='[2,4]*[[1,2],[7,6]]' />
 		<dictionary m='[[2,4],[3,5]]*[[1,2],[7,6]]' />
 		<dictionary a='[1,,2]' />
-		<dictionary d='=-{1:2}' />
 		<dictionary d='=-{1:2,3:[4,5]}*2' />
 		<dictionary d='=4**{1:2,2:3}' />
 		<dictionary m='{"f":5}' />

@@ -52,10 +52,10 @@ def addToNamePathDictionary( directoryPath, namePathDictionary ):
 
 def getCarvingFromParser( xmlParser ):
 	"Get the carving for the parser."
-	booleanGeometryElement = xmlParser.getRootElement()
+	booleanGeometryElement = xmlParser.getRoot()
 	booleanGeometryElement.object = boolean_carving.BooleanGeometry()
-	xmlParser.getRootElement().xmlProcessor = XMLBooleanGeometryProcessor()
-	xmlParser.getRootElement().xmlProcessor.processChildren( booleanGeometryElement )
+	xmlParser.getRoot().xmlProcessor = XMLBooleanGeometryProcessor()
+	xmlParser.getRoot().xmlProcessor.processChildren( booleanGeometryElement )
 	return booleanGeometryElement.object
 
 def getManipulationDirectoryPath():

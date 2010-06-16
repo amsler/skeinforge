@@ -627,8 +627,7 @@ def getFloatFromValue( value ):
 	try:
 		return float( value )
 	except:
-		print( 'Warning, in getFloatFromValue in euclidean could not evaluate the float.' )
-		print( value )
+		pass
 	return None
 
 def getFourSignificantFigures( number ):

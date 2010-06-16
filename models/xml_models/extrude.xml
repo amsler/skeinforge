@@ -15,7 +15,7 @@
 	<dictionary name="double y" return='=[x*2,y,z]' />
 	-->
 	<lineation paths='=math.polygon(7)*20,math.polygon(-11)*10' name="ring" translate='true' translate.deltax='40' />
-	<function name="double y">
+	<function id="doubley" parameters='x,y,z' >
 		<statement x='=x*2' />
 		<return return='=[x,y*2,z]' />
 	</function>
@@ -23,10 +23,10 @@
 		<statement number='=number*3' />
 		<return return='=number' />
 	</function>
-	<square name="square" bottomwidth="40.0" equation='function.double y' height="30.0" interiorangle='100' topwidth="10" />
+	<square name="square" bottomwidth="40.0" equation='doubley(x,y,z)' height="30.0" interiorangle='100' topwidth="10" />
 	<extrude id="extrude pentagon" segments="5" target="name.square" to="name.vertex holder.vertex.0" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
 	<function name="minus80" parameters='u=-80' return='=u*2' />
-	<extrude id="mesa" scalepath='[1,1],[1,1,1],[0.5,0.5,1],[0.5,0.5,2]' section="=math.polygon({rotationoverside:0.5,radius:10,radiusy:20,x:30})" toz="3.0" y='=function.name.triple(-20)' />
+	<extrude id="mesa" scalepath='[1,1],[1,1,1],[0.5,0.5,1],[0.5,0.5,2]' section="=math.polygon({rotationoverside:0.5,radius:10,radiusy:20,x:30})" toz="3.0" y='=name.triple(-20)' />
 	<translate target='id.mesa' deltax='50' />
 	<!--
 	<overhang paths='ring' name="hang" verticalangle_comment='60' x='50' array='true' array.path='[[],[50,0,0]]' />

@@ -67,7 +67,7 @@ class Sphere( cube.Cube ):
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
 		self.radius = evaluate.getVector3ByPrefix( 'radius', Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
-		self.radius = evaluate.getVector3ByPrefix( 'size', self.radius, self.xmlElement )
+		self.radius = evaluate.getVector3ThroughSizeDiameter( self.radius, self.xmlElement )
 		self.xmlElement.attributeDictionary[ 'radiusx' ] = self.radius.x
 		self.xmlElement.attributeDictionary[ 'radiusy' ] = self.radius.y
 		self.xmlElement.attributeDictionary[ 'radiusz' ] = self.radius.z

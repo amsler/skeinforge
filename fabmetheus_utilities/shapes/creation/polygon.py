@@ -28,8 +28,6 @@ def getGeometryOutput( xmlElement ):
 		if len( arguments ) > 0:
 			xmlElement.attributeDictionary[ 'sides' ] = arguments[ 0 ]
 	sides = evaluate.getEvaluatedFloatDefault( 4.0, 'sides', xmlElement )
-	if sides == None:
-		sides = 3
 	sideAngle = 2.0 * math.pi / float( sides )
 	radiusXY = evaluate.RadiusXY().getByRadius( getRadiusFromXMLElement( sideAngle, xmlElement ), xmlElement )
 	loop = []

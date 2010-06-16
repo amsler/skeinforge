@@ -205,6 +205,10 @@ class Vector3Index:
 		if which == 2:
 			return complex( self.x, self.y )
 
+	def getFloatList( self ):
+		"Get the vector as a list of floats."
+		return [ float( self.x ), float( self.y ), float( self.z ) ]
+
 	def getIsDefault( self ):
 		"Determine if this is the zero vector."
 		if self.x != 0.0:

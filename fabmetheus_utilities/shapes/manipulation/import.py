@@ -51,7 +51,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	fileName = evaluate.getEvaluatedValue( 'file', xmlElement )
 	if fileName == None:
 		return
-	parserFileName = xmlElement.getRootElement().parser.fileName
+	parserFileName = xmlElement.getRoot().parser.fileName
 	absoluteFileName = gcodec.getAbsoluteFolderPath( parserFileName, fileName )
 	xmlText = getXMLFromFileName( absoluteFileName )
 	if xmlText == '':
@@ -61,7 +61,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	if '_importname' in xmlElement.attributeDictionary:
 		xmlElement.importName = xmlElement.attributeDictionary[ '_importname' ]
 	else:
-		xmlElement.importName = gcodec.getUntilDot( fileName )
+		xmlElement.importName = gcodec.getUntilDot( fileName ) + '|'
 		xmlElement.attributeDictionary[ '_importname' ] = xmlElement.importName
 	XMLSimpleParser( parserFileName, xmlElement, xmlText )
 	xmlElement.importName = oldImportName

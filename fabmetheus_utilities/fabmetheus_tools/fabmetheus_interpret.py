@@ -26,8 +26,8 @@ import __init__
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
-from skeinforge.skeinforge_utilities import skeinforge_polyfile
-from skeinforge.skeinforge_utilities import skeinforge_profile
+from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
+from skeinforge_application.skeinforge_utilities import skeinforge_profile
 import os
 import time
 

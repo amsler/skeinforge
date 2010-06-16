@@ -123,7 +123,7 @@ def getCarving( fileName = '' ):
 	if xmlText == '':
 		return None
 	xmlParser = XMLSimpleParser( fileName, None, xmlText )
-	lowerClassName = xmlParser.getRootElement().className.lower()
+	lowerClassName = xmlParser.getRoot().className.lower()
 	pluginModule = gcodec.getModuleWithDirectoryPath( getPluginsDirectoryPath(), lowerClassName )
 	if pluginModule == None:
 		return None

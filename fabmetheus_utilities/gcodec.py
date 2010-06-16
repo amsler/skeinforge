@@ -188,11 +188,11 @@ def getModuleWithDirectoryPath( directoryPath, fileName ):
 		folderPluginsModule = __import__( fileName )
 		sys.path = originalSystemPath
 		return folderPluginsModule
-	except Exception, why:
+	except:
 		sys.path = originalSystemPath
 		print( '' )
 		print( 'Exception traceback in getModuleWithDirectoryPath in gcodec:' )
-		print( traceback.print_exc( file = sys.stdout ) )
+		traceback.print_exc( file = sys.stdout )
 		print( '' )
 		print( 'That error means; could not import a module with the fileName ' + fileName )
 		print( 'and an absolute directory name of ' + directoryPath )
