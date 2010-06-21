@@ -34,6 +34,6 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	function = functions[ - 1 ]
 	if xmlElement.object == None:
 		xmlElement.object = getLocalAttribute( xmlElement )
-	if xmlElement.object.value != None:
-		localValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.value, xmlElement )
-		function.localTable[ xmlElement.object.key ] = localValue
+	if xmlElement.object.keyTuple[ 1 ] != None:
+		localValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.keyTuple[ 1 ], xmlElement )
+		function.localTable[ xmlElement.object.keyTuple[ 0 ] ] = localValue

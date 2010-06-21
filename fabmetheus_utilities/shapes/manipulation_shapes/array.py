@@ -19,6 +19,10 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
+def getVerticesByKey( key, xmlElement ):
+	"Get the vertices by key."
+	return euclidean.getConcatenatedList( evaluate.getPathsByKey( key, xmlElement ) )
+
 def getManipulatedPaths( close, loop, prefix, xmlElement ):
 	"Get array path."
 	arrayPaths = evaluate.getPathsByKeys( [ prefix + 'path', prefix + 'paths' ], xmlElement )
@@ -30,7 +34,7 @@ def getManipulatedPaths( close, loop, prefix, xmlElement ):
 				manipulatedByPath.append( point + arrayPoint )
 			manipulatedByPaths.append( manipulatedByPath )
 	manipulatedByVertices = []
-	vertices = evaluate.getVerticesByKey( prefix + 'vertices', xmlElement )
+	vertices = getVerticesByKey( prefix + 'vertices', xmlElement )
 	for vertex in vertices:
 		manipulatedByVertex = []
 		for point in loop:
@@ -50,7 +54,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 		print( 'Warning, array could not get target for:' )
 		print( xmlElement )
 		return
-	vertices = evaluate.getVerticesByKey( 'vertices', xmlElement )
+	vertices = getVerticesByKey( 'vertices', xmlElement )
 	if len( vertices ) == 0:
 		print( 'Warning, array could not get vertices for:' )
 		print( xmlElement )

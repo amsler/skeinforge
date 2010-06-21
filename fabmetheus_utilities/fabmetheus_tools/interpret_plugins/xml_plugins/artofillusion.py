@@ -32,7 +32,7 @@ import __init__
 
 from fabmetheus_utilities.shapes.shape_tools import face
 from fabmetheus_utilities.shapes.shape_tools import matrix4x4
-from fabmetheus_utilities.shapes.shape_utilities import boolean_carving
+from fabmetheus_utilities.shapes.shape_utilities import boolean_geometry
 from fabmetheus_utilities.shapes.shape_utilities import booleansolid
 from fabmetheus_utilities.shapes.solids import cube
 from fabmetheus_utilities.shapes.solids import cylinder
@@ -51,7 +51,7 @@ __license__ = "GPL 3.0"
 
 def getCarvingFromParser( xmlParser ):
 	"Get the carving for the parser."
-	booleanGeometry = boolean_carving.BooleanGeometry()
+	booleanGeometry = boolean_geometry.BooleanGeometry()
 	artOfIllusionElement = xmlParser.getRoot()
 	euclidean.removeListFromDictionary( artOfIllusionElement.attributeDictionary, [ 'fileversion', 'xmlns:bf' ] )
 	sceneElement = artOfIllusionElement.getFirstChildWithClassName( 'Scene' )

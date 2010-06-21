@@ -30,7 +30,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.shape_utilities import boolean_carving
+from fabmetheus_utilities.shapes.shape_utilities import boolean_geometry
 from fabmetheus_utilities.shapes.shape_utilities import evaluate
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -53,9 +53,10 @@ def addToNamePathDictionary( directoryPath, namePathDictionary ):
 def getCarvingFromParser( xmlParser ):
 	"Get the carving for the parser."
 	booleanGeometryElement = xmlParser.getRoot()
-	booleanGeometryElement.object = boolean_carving.BooleanGeometry()
-	xmlParser.getRoot().xmlProcessor = XMLBooleanGeometryProcessor()
-	xmlParser.getRoot().xmlProcessor.processChildren( booleanGeometryElement )
+	booleanGeometryElement.object = boolean_geometry.BooleanGeometry()
+	root = xmlParser.getRoot()
+	root.xmlProcessor = XMLBooleanGeometryProcessor()
+	root.xmlProcessor.processChildren( booleanGeometryElement )
 	return booleanGeometryElement.object
 
 def getManipulationDirectoryPath():

@@ -764,6 +764,14 @@ def getIntersectionOfXIntersectionsTables( xIntersectionsTables ):
 			intersectionOfXIntersectionsTables[ firstIntersectionTableKey ] = xIntersections
 	return intersectionOfXIntersectionsTables
 
+def getIntFromValue( value ):
+	"Get the value as an int."
+	try:
+		return int( value )
+	except:
+		pass
+	return None
+
 def getIsWiddershinsByVector3( polygon ):
 	"Determine if the polygon goes round in the widdershins direction."
 	return isWiddershins( getComplexPath( polygon ) )

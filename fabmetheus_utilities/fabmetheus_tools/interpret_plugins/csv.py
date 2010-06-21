@@ -132,13 +132,13 @@ class CSVSimpleParser( xml_simple_parser.XMLSimpleParser ):
 		self.extraLeadingTabCount = None
 		self.lines = gcodec.getTextLines( csvText )
 		self.oldCSVElement = None
-		self.rootElement = None
+		self.root = None
 		for line in self.lines:
 			self.parseLine( line )
 
 	def getNewCSVElement( self, leadingTabCount, lineStripped ):
 		"Get a new csv element."
-		if self.rootElement != None and self.extraLeadingTabCount == None:
+		if self.root != None and self.extraLeadingTabCount == None:
 			self.extraLeadingTabCount = 1 - leadingTabCount
 		if self.extraLeadingTabCount != None:
 			leadingTabCount += self.extraLeadingTabCount
@@ -158,9 +158,9 @@ class CSVSimpleParser( xml_simple_parser.XMLSimpleParser ):
 		leadingTabCount = leadingPart.count( '\t' )
 		if lineStripped[ : len( '_' ) ] == '_':
 			self.getNewCSVElement( leadingTabCount, lineStripped )
-			if self.rootElement == None:
-				self.rootElement = self.oldCSVElement
-				self.rootElement.parser = self
+			if self.root == None:
+				self.root = self.oldCSVElement
+				self.root.parser = self
 			return
 		if self.continueFunction != None:
 			self.continueFunction( line, lineStripped )

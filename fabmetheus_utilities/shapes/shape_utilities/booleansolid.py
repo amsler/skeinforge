@@ -254,7 +254,10 @@ class BooleanSolid( group.Group ):
 
 	def getXMLClassName( self ):
 		"Get xml class name."
-		return self.operationFunction.__name__.lower()[ len( 'get' ) : ]
+		lowerName = self.operationFunction.__name__.lower()
+		if lowerName == 'reversearchivableobjects':
+			return 'difference'
+		return lowerName[ len( 'get' ) : ]
 
 	def reverseArchivableObjects( self, importRadius, visibleObjectLoopsList ):
 		"Reverse the archivable objects and set the operation function."

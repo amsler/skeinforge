@@ -214,31 +214,31 @@ import os
 import sys
 
 
-# list range list and dictionary
-# add remaining get vertices xmlelement   nextWord == ':': #if in local table, add cascade, rename boolean_carving boolean_geometry
+# classify more of evaluate.xml
+# maybe rename shapes > geometry
+# modulo %
+# don't remove spaces inside quotes
 # import. valueByKey
-# true string, dict key
-# view profile 1 mm thickness
-# integer / float numeric
-# print
-# if while else elif
+# if else elif while for
 # getExecutionorder, move round and bevel to manipulation_paths
 # bottom float to cube, sphere, cylinder input, bottomplane cascade, bottomsolid cascade
 # translate rectangle or polar
+# view profile 1 mm thickness
 # scale, rotate manipulator
-# concatenate ||
-# numeric evaluate strings in dictionaries, also xmlelement, combine xmlelement with csvelement
+# append, delete, copy
+# numeric evaluate strings in dictionaries, also xmlelement, combine xmlelement with csvelement, csv _format, _column, _row, _text
 # send introduction
 # equation get rid of function check, angle + radius and xyz, equation rectangular and equation polar, xyz, targetequation radius xyz give index, equation as plugin
 # axis xy.
-# look over copy
+# look over copy module
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # _morning named examples
 # del previous, add begin & end if far  get actual path
 # creator shape matrix
 # polling
-# csv _format, _column, _row, _text
 # getNormal, getIsFlat?
+# probably not individual attribute import
+# maybe rename shapes folder geometry
 # arc
 # lathe
 # remove getIsXMLElement if it is still unnecessary
@@ -250,7 +250,7 @@ import sys
 # connect, from and to
 # tube, rotor
 # test translate
-# think about setActualMinimumZ in boolean_carving
+# think about setActualMinimumZ in boolean_geometry
 # pyramid
 # round extrusion ?, fillet
 # tetroc

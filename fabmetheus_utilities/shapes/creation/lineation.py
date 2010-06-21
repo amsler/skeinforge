@@ -338,7 +338,7 @@ class SideLoop:
 
 	def getManipulationPluginLoops( self, xmlElement ):
 		"Get loop manipulated by the plugins in the manipulation paths folder."
-		xmlProcessor = xmlElement.getRoot().xmlProcessor
+		xmlProcessor = xmlElement.getXMLProcessor()
 		loops = self.getManipulationPluginLoopsByDictionary( [ self.loop ], xmlProcessor.manipulationPathDictionary, xmlElement )
 		loops = self.getManipulationPluginLoopsByDictionary( loops, xmlProcessor.manipulationShapeDictionary, xmlElement )
 		transformIfFromEvaluatorCreationByPaths( loops, xmlElement )

@@ -1,6 +1,6 @@
 <?xml version='1.0' ?>
 <fabmetheus version="2010-04-04" overhangangle='35' overhangspan='45' twistprecision="10">
-	<path name="vertex holder">
+	<path name="vertex_holder">
 		<vertex x="8.8" y="7.7" z="2.9" />
 	</path>
 	<difference id="pentagon square">
@@ -24,7 +24,7 @@
 		<return return='=number' />
 	</function>
 	<square name="square" bottomwidth="40.0" equation='doubley(x,y,z)' height="30.0" interiorangle='100' topwidth="10" />
-	<extrude id="extrude pentagon" segments="5" target="name.square" to="name.vertex holder.vertex.0" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
+	<extrude id="extrude pentagon" segments="5" target="name.square" to="name.vertex_holder.vertex[0]" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
 	<function name="minus80" parameters='u=-80' return='=u*2' />
 	<extrude id="mesa" scalepath='[1,1],[1,1,1],[0.5,0.5,1],[0.5,0.5,2]' section="=math.polygon({rotationoverside:0.5,radius:10,radiusy:20,x:30})" toz="3.0" y='=name.triple(-20)' />
 	<translate target='id.mesa' deltax='50' />
@@ -33,7 +33,7 @@
 	<extrude target="name.hang" toz="3.0" x="80" y='-80' />
 		<lineation overhangremoval='true' paths='ring' name="hang" overhang.verticalangle_comment='60' x='50' />
 	<polygon id="square" name="negative square" radius="10" sides="-4" />
-	<extrude id="extrude pentagon" segments="5" target="name.star, negative square" to="name.vertex holder.vertex.0" tilttox="2" twistpath="[0,0],[1,30],[2,0]" x="40" />
+	<extrude id="extrude pentagon" segments="5" target="name.star, negative square" to="name.vertex_holder.vertex.0" tilttox="2" twistpath="[0,0],[1,30],[2,0]" x="40" />
 	-->
 	<!--
 	<extrude id="extrude hook" maximumunbuckling='3.0' path='[0],[20],[0,-10],[-5,-5]' segments="5" target="[0,0],[2,3],[0,3]" tilttopz="1" x="80" />

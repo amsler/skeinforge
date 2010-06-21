@@ -108,14 +108,6 @@ class XMLElement:
 		parent.children.append( self )
 		return self
 
-	def getCascadeElement( self, key ):
-		"Get the cascade element."
-		if key in self.attributeDictionary:
-			return self
-		if self.parent == None:
-			return None
-		return self.parent.getCascadeElement( key )
-
 	def getCascadeFloat( self, defaultFloat, key ):
 		"Get the cascade float."
 		return euclidean.getFloatFromValue( self.getCascadeValue( defaultFloat, key ) )
@@ -130,10 +122,11 @@ class XMLElement:
 
 	def getCascadeValue( self, defaultValue, key ):
 		"Get the cascade value."
-		cascadeElement = self.getCascadeElement( key )
-		if cascadeElement == None:
+		if key in self.attributeDictionary:
+			return self.attributeDictionary[ key ]
+		if self.parent == None:
 			return defaultValue
-		return cascadeElement.attributeDictionary[ key ]
+		return self.parent.getCascadeValue( defaultValue, key )
 
 	def getChildrenWithClassName( self, className ):
 		"Get the children which have the given class name."
@@ -276,6 +269,10 @@ class XMLElement:
 			return None
 		return self.parent.getXMLElementByName( name )
 
+	def getXMLProcessor( self ):
+		"Get the xmlProcessor."
+		return self.getRoot().xmlProcessor
+
 	def setParentAddToChildren( self, parent ):
 		"Set the parent and add this to its children."
 		self.parent = parent
@@ -291,7 +288,7 @@ class XMLSimpleParser:
 		self.fileName = fileName
 		self.isInComment = False
 		self.parent = parent
-		self.rootElement = None
+		self.root = None
 		self.xmlText = xmlText
 		self.lines = gcodec.getTextLines( xmlText )
 		for line in self.lines:
@@ -299,18 +296,18 @@ class XMLSimpleParser:
 	
 	def __repr__( self ):
 		"Get the string representation of this parser."
-		return str( self.rootElement )
+		return str( self.root )
 
 	def getRoot( self ):
 		"Get the root element."
-		return self.rootElement
+		return self.root
 
 	def parseLine( self, line ):
 		"Parse an xml line and add it to the xml tree."
 		lineStripped = line.lstrip()
 		if len( lineStripped ) < 1:
 			return
-		if self.rootElement == None:
+		if self.root == None:
 			if lineStripped.startswith( '<?xml' ):
 				return
 		if lineStripped[ : len( '<!--' ) ] == '<!--':
@@ -328,6 +325,6 @@ class XMLSimpleParser:
 			return
 		xmlElement = XMLElement()
 		self.parent = xmlElement.getParentParseReplacedLine( lineStripped, self.parent )
-		if self.rootElement == None:
-			self.rootElement = xmlElement
-			self.rootElement.parser = self
+		if self.root == None:
+			self.root = xmlElement
+			self.root.parser = self
