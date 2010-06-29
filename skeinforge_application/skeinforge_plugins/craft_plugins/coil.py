@@ -56,7 +56,7 @@ from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.shapes.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -100,7 +100,7 @@ class CoilRepository:
 	"A class to handle the coil settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge.skeinforge_plugins.craft_plugins.coil.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.coil.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Coil', self, '' )
 		self.activateCoil = settings.BooleanSetting().getFromValue( 'Activate Coil', self, True )
 		self.minimumToolDistance = settings.FloatSpin().getFromValue( 10.0, 'Minimum Tool Distance (millimeters):', self, 50.0, 20.0 )

@@ -11,4 +11,5 @@
 	</import>
 	<import file="Screw_Holder_Bottom_carve.svg" id="Import Test svg">
 	</import>
+	<dictionary testImport="id.ee.mesa.toz" />
 </fabmetheus>

@@ -85,7 +85,7 @@ from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.shapes.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -242,14 +242,6 @@ def isIntersectingWithinLists( loop, loopLists ):
 			return True
 	return False
 
-def isSegmentInsideAround( aroundLists, segment ):
-	"Determine if the segment is inside an around."
-	midpoint = 0.5 * ( segment[ 0 ].point + segment[ 1 ].point )
-	for aroundList in aroundLists:
-		if euclidean.isPointInsideLoops( aroundList, midpoint ):
-			return True
-	return False
-
 def writeOutput( fileName = '' ):
 	"Inset the carving of a gcode file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
@@ -261,7 +253,7 @@ class InsetRepository:
 	"A class to handle the inset settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge.skeinforge_plugins.craft_plugins.inset.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.inset.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Inset', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Inset' )
 		self.addCustomCodeForTemperatureReading = settings.BooleanSetting().getFromValue( 'Add Custom Code for Temperature Reading', self, True )

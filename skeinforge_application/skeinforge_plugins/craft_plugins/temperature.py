@@ -150,7 +150,7 @@ class TemperatureRepository:
 	"A class to handle the temperature settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge.skeinforge_plugins.craft_plugins.temperature.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.temperature.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Temperature', self, '' )
 		self.activateTemperature = settings.BooleanSetting().getFromValue( 'Activate Temperature:', self, True )
 		settings.LabelSeparator().getFromRepository( self )

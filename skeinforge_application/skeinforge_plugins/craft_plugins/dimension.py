@@ -129,7 +129,7 @@ class DimensionRepository:
 	"A class to handle the dimension settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge.skeinforge_plugins.craft_plugins.dimension.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.dimension.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Dimension', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Dimension' )
 		self.activateDimension = settings.BooleanSetting().getFromValue( 'Activate Dimension', self, False )

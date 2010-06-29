@@ -105,7 +105,7 @@ class LashRepository:
 	"A class to handle the lash settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.craft_plugins.lash.html', '', self )
+		settings.addListsToRepository( 'skeinforge_plugins.craft_plugins.lash.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Lash', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash' )
 		self.activateLash = settings.BooleanSetting().getFromValue( 'Activate Lash', self, False )

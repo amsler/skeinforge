@@ -30,15 +30,15 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.shape_tools import face
-from fabmetheus_utilities.shapes.shape_tools import matrix4x4
-from fabmetheus_utilities.shapes.shape_utilities import boolean_geometry
-from fabmetheus_utilities.shapes.shape_utilities import booleansolid
-from fabmetheus_utilities.shapes.solids import cube
-from fabmetheus_utilities.shapes.solids import cylinder
-from fabmetheus_utilities.shapes.solids import group
-from fabmetheus_utilities.shapes.solids import sphere
-from fabmetheus_utilities.shapes.solids import trianglemesh
+from fabmetheus_utilities.geometry.geometry_tools import face
+from fabmetheus_utilities.geometry.geometry_tools import matrix4x4
+from fabmetheus_utilities.geometry.geometry_utilities import boolean_geometry
+from fabmetheus_utilities.geometry.geometry_utilities import booleansolid
+from fabmetheus_utilities.geometry.solids import cube
+from fabmetheus_utilities.geometry.solids import cylinder
+from fabmetheus_utilities.geometry.solids import group
+from fabmetheus_utilities.geometry.solids import sphere
+from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 

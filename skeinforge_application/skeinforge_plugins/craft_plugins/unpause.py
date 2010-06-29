@@ -110,7 +110,7 @@ class UnpauseRepository:
 	"A class to handle the unpause settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.craft_plugins.unpause.html', '', self )
+		settings.addListsToRepository( 'skeinforge_plugins.craft_plugins.unpause.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Unpause' )
 		self.activateUnpause = settings.BooleanSetting().getFromValue( 'Activate Unpause', self, False )

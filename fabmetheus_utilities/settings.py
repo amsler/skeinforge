@@ -229,15 +229,6 @@ def getGlobalRepositoryDialogValues():
 	global globalRepositoryDialogListTable
 	return euclidean.getListTableElements( globalRepositoryDialogListTable )
 
-def getPathFromFileNameHelp( fileNameHelp ):
-	"Get the directory path from file name help."
-	skeinforgePath = getPathInSkeinforge()
-	splitFileNameHelps = fileNameHelp.split( '.' )
-	splitFileNameDirectoryNames = splitFileNameHelps[ : - 1 ]
-	for splitFileNameDirectoryName in splitFileNameDirectoryNames:
-		skeinforgePath = os.path.join( skeinforgePath, splitFileNameDirectoryName )
-	return skeinforgePath
-
 def getPathInFabmetheus( subName = '' ):
 	"Get the path in the fabmetheus directory."
 	path = os.path.dirname( os.path.dirname( os.path.abspath( __file__ ) ) )
@@ -251,6 +242,15 @@ def getPathInSkeinforge( subName = '' ):
 	if subName == '':
 		return path
 	return os.path.join( path, subName )
+
+def getPathInSkeinforgeFromFileNameHelp( fileNameHelp ):
+	"Get the directory path from file name help."
+	skeinforgePath = getPathInSkeinforge()
+	splitFileNameHelps = fileNameHelp.split( '.' )
+	splitFileNameDirectoryNames = splitFileNameHelps[ : - 1 ]
+	for splitFileNameDirectoryName in splitFileNameDirectoryNames:
+		skeinforgePath = os.path.join( skeinforgePath, splitFileNameDirectoryName )
+	return skeinforgePath
 
 def getPathInSkeinforgePlugins( subName = '' ):
 	"Get the skeinforge plugins directory path."
@@ -1759,7 +1759,7 @@ class ToolDialog:
 		"Display the tool repository dialog."
 		global globalRepositoryDialogListTable
 		for repositoryDialog in globalRepositoryDialogListTable:
-			if getPathFromFileNameHelp( repositoryDialog.repository.fileNameHelp ) == self.path:
+			if getPathInSkeinforgeFromFileNameHelp( repositoryDialog.repository.fileNameHelp ) == self.path:
 				liftRepositoryDialogs( globalRepositoryDialogListTable[ repositoryDialog ] )
 				return
 		self.repositoryDialog = getDisplayedDialogFromPath( self.path )
@@ -1832,9 +1832,9 @@ class WindowVisibilities:
 		if not self.isActive:
 			return
 		self.value = []
-		ownPath = getPathFromFileNameHelp( self.repository.fileNameHelp )
+		ownPath = getPathInSkeinforgeFromFileNameHelp( self.repository.fileNameHelp )
 		for repositoryDialog in globalRepositoryDialogListTable.keys():
-			keyPath = getPathFromFileNameHelp( repositoryDialog.repository.fileNameHelp )
+			keyPath = getPathInSkeinforgeFromFileNameHelp( repositoryDialog.repository.fileNameHelp )
 			if keyPath != ownPath:
 				if keyPath not in self.value:
 					self.value.append( keyPath )

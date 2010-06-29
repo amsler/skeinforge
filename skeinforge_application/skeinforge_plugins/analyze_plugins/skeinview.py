@@ -147,13 +147,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import display_line
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import tableau
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_move
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import display_line
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import tableau
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_move
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 import os
 import sys
@@ -203,7 +203,7 @@ class SkeinviewRepository( tableau.TableauRepository ):
 	"A class to handle the skeinview settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.analyze_plugins.skeinview.html', '', self )
+		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.skeinview.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Skeinview', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview' )
 		self.activateSkeinview = settings.BooleanSetting().getFromValue( 'Activate Skeinview', self, True )

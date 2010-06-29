@@ -55,13 +55,13 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.shape_utilities import booleansolid
+from fabmetheus_utilities.geometry.geometry_utilities import booleansolid
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.shapes.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import trianglemesh
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
@@ -102,6 +102,13 @@ def getIsIntersectingWithinLoop( loop, otherLoop, outsetLoop ):
 		return True
 	return euclidean.isPathInsideLoop( otherLoop, loop ) != euclidean.isPathInsideLoop( otherLoop, outsetLoop )
 
+def getIsPointInsideALoop( loops, point ):
+	"Determine if a point is inside a loop of a loop list."
+	for loop in loops:
+		if euclidean.isPointInsideLoop( loop, point ):
+			return True
+	return False
+
 def getNewRepository():
 	"Get the repository constructor."
 	return WidenRepository()
@@ -127,7 +134,7 @@ class WidenRepository:
 	"A class to handle the widen settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge.skeinforge_plugins.craft_plugins.widen.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.widen.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Widen', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Widen' )
 		self.activateWiden = settings.BooleanSetting().getFromValue( 'Activate Widen:', self, False )
@@ -158,7 +165,7 @@ class WidenSkein:
 			if euclidean.isWiddershins( loop ):
 				otherLoops = loops[ : loopIndex ] + loops[ loopIndex + 1 : ]
 				leftPoint = euclidean.getLeftPoint( loop )
-				if euclidean.isPointInsideLoops( otherLoops, leftPoint ):
+				if getIsPointInsideALoop( otherLoops, leftPoint ):
 					self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
 				else:
 					widdershinsLoops.append( loop )

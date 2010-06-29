@@ -31,7 +31,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.shapes.shape_utilities import evaluate
+from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import xml_simple_writer
@@ -53,8 +53,8 @@ class XMLElement:
 		self.className = ''
 		self.idDictionary = {}
 		self.importName = ''
-		self.object = None
 		self.nameDictionary = {}
+		self.object = None
 		self.parent = None
 		self.text = ''
 
@@ -71,25 +71,21 @@ class XMLElement:
 		key = beforeQuote[ : lastEqualIndex ].strip()
 		self.attributeDictionary[ key ] = withinQuote
 
-	def addToIDDictionary( self, idHint, xmlElement ):
-		"Add to the id dictionary of all the parents."
-		if self.parent != None:
-			self.parent.idDictionary[ idHint ] = xmlElement
-			self.parent.addToIDDictionary( idHint, xmlElement )
+	def addToIDDictionary( self, idKey, xmlElement ):
+		"Add to the id dictionary of all the XMLProcessor."
+		self.getRoot().idDictionary[ idKey ] = xmlElement
 
 	def addToIDDictionaryIFIDExists( self ):
 		"Add to the id dictionary if the id key exists in the attribute dictionary."
 		self.importName = self.getCascadeImportName()
 		if 'id' in self.attributeDictionary:
-			self.addToIDDictionary( self.importName + self.attributeDictionary[ 'id' ], self )
+			self.addToIDDictionary( self.getImportNameWithDot() + self.attributeDictionary[ 'id' ], self )
 		if 'name' in self.attributeDictionary:
-			self.addToNameDictionary( self.importName + self.attributeDictionary[ 'name' ], self )
+			self.addToNameDictionary( self.getImportNameWithDot() + self.attributeDictionary[ 'name' ], self )
 
 	def addToNameDictionary( self, name, xmlElement ):
-		"Add to the id dictionary of all the parents."
-		if self.parent != None:
-			self.parent.nameDictionary[ name ] = xmlElement
-			self.parent.addToNameDictionary( name, xmlElement )
+		"Add to the name dictionary of all the XMLProcessor."
+		self.getRoot().nameDictionary[ name ] = xmlElement
 
 	def addXML( self, depth, output ):
 		"Add xml for this object."
@@ -164,6 +160,12 @@ class XMLElement:
 		if elementIndex == None:
 			return '_%s' % suffix
 		return '_%s_%s' % ( suffix, elementIndex )
+
+	def getImportNameWithDot( self ):
+		"Get import name with dot."
+		if self.importName == '':
+			return ''
+		return self.importName + '.'
 
 	def getParentParseReplacedLine( self, line, parent ):
 		"Parse replaced line."
@@ -247,27 +249,25 @@ class XMLElement:
 
 	def getXMLElementByID( self, idKey ):
 		"Get the xml element by id."
-		if idKey in self.idDictionary:
-			return self.idDictionary[ idKey ]
-		if self.parent == None:
-			return None
-		return self.parent.getXMLElementByID( idKey )
+		idDictionary = self.getRoot().idDictionary
+		if idKey in idDictionary:
+			return idDictionary[ idKey ]
+		return None
 
 	def getXMLElementByImportID( self, idKey ):
 		"Get the xml element by import file name and id."
-		return self.getXMLElementByID( self.importName + idKey )
+		return self.getXMLElementByID( self.getImportNameWithDot() + idKey )
 
-	def getXMLElementByImportName( self, nameKey ):
+	def getXMLElementByImportName( self, name ):
 		"Get the xml element by import file name and name."
-		return self.getXMLElementByName( self.importName + nameKey )
+		return self.getXMLElementByName( self.getImportNameWithDot() + name )
 
 	def getXMLElementByName( self, name ):
 		"Get the xml element by name."
-		if name in self.nameDictionary:
-			return self.nameDictionary[ name ]
-		if self.parent == None:
-			return None
-		return self.parent.getXMLElementByName( name )
+		nameDictionary = self.getRoot().nameDictionary
+		if name in nameDictionary:
+			return nameDictionary[ name ]
+		return None
 
 	def getXMLProcessor( self ):
 		"Get the xmlProcessor."

@@ -117,7 +117,7 @@ class StatisticRepository:
 	"A class to handle the statistics settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.analyze_plugins.statistic.html', '', self )
+		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.statistic.html', '', self )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic' )
 		self.activateStatistic = settings.BooleanSetting().getFromValue( 'Activate Statistic', self, True )
 		settings.LabelSeparator().getFromRepository( self )

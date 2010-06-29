@@ -14,10 +14,10 @@ Default is 0.2.
 
 Defines the ratio of the amount each end of the loop is clipped over the perimeter width.  The total gap will therefore be twice the clip.  If the ratio is too high loops will have a gap, if the ratio is too low there will be a bulge at the loop ends.
 
-===Connect Loops===
-Default is on.
+===Maximum Connection Distance Over Perimeter Width===
+Default is ten.
 
-When selected, clip will connect nearby loops, combining them into a spiral.
+Defines the ratio of the maximum connection distance between loops over the perimeter width.  If the ratio is zero, nothing will be done.  If it is ratio greater than zero, clip will connect nearby loops, combining them into a spiral.  For loop connection, nearby means that the distance between a pair of loops is smaller or equal to the maximum connection distance.
 
 ==Examples==
 The following examples clip the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and clip.py.
@@ -103,12 +103,12 @@ class ClipRepository:
 	"A class to handle the clip settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge.skeinforge_plugins.craft_plugins.clip.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.clip.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Clip', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Clip' )
 		self.activateClip = settings.BooleanSetting().getFromValue( 'Activate Clip', self, True )
 		self.clipOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.1, 'Clip Over Perimeter Width (ratio):', self, 0.8, 0.5 )
-		self.connectLoops = settings.BooleanSetting().getFromValue( 'Connect Loops', self, True )
+		self.maximumConnectionDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Maximum Connection Distance Over Perimeter Width (ratio):', self, 20.0, 10.0 )
 		self.executeTitle = 'Clip'
 
 	def execute( self ):
@@ -172,7 +172,7 @@ class ClipSkein:
 #			self.addGcodeFromThreadZ( self.loopPath.path, self.loopPath.z )
 			for point in self.loopPath.path:
 				self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.feedRateMinute, point, self.loopPath.z )
-		if self.getNextThreadIsACloseLoop( self.loopPath.path ):
+		if self.getNextThreadIsACloseLoop( self.loopPath.path ) and self.maximumConnectionDistance > 0.0:
 			self.oldWiddershins = euclidean.isWiddershins( self.loopPath.path )
 		else:
 			self.oldWiddershins = None
@@ -188,12 +188,14 @@ class ClipSkein:
 		segmentLength = abs( segment )
 		if segmentLength <= 0.0:
 			return True
+		if segmentLength > self.maximumConnectionDistance:
+			return False
 		segment /= segmentLength
 		distance = self.connectingStepLength
 		segmentEndLength = segmentLength - self.connectingStepLength
 		while distance < segmentEndLength:
 			alongPoint = distance * segment + path[ - 1 ]
-			if not euclidean.isPointInsideLoops( self.boundaryLoops, alongPoint ):
+			if not euclidean.isPointInsideLoopsZone( self.boundaryLoops, alongPoint ):
 				return False
 			distance += self.connectingStepLength
 #		removedLayerPixelTable = self.layerPixelTable.copy()
@@ -283,9 +285,11 @@ class ClipSkein:
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float( splitLine[ 1 ] )
+				absolutePerimeterWidth = abs( self.perimeterWidth )
 				self.clipLength = clipRepository.clipOverPerimeterWidth.value * self.perimeterWidth
-				self.layerPixelWidth = 0.1 * self.perimeterWidth
-				self.connectingStepLength = 0.5 * self.perimeterWidth
+				self.connectingStepLength = 0.5 * absolutePerimeterWidth
+				self.layerPixelWidth = 0.1 * absolutePerimeterWidth
+				self.maximumConnectionDistance = clipRepository.maximumConnectionDistanceOverPerimeterWidth.value * absolutePerimeterWidth
 			elif firstWord == '(<travelFeedRatePerSecond>':
 				self.travelFeedRatePerMinute = 60.0 * float( splitLine[ 1 ] )
 			self.distanceFeedRate.addLine( line )

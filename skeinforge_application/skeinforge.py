@@ -214,20 +214,15 @@ import os
 import sys
 
 
+# getExecutionOrder, move round and bevel to manipulation_paths
 # classify more of evaluate.xml
-# maybe rename shapes > geometry
-# modulo %
-# don't remove spaces inside quotes
-# import. valueByKey
-# if else elif while for
-# getExecutionorder, move round and bevel to manipulation_paths
 # bottom float to cube, sphere, cylinder input, bottomplane cascade, bottomsolid cascade
 # translate rectangle or polar
 # view profile 1 mm thickness
 # scale, rotate manipulator
 # append, delete, copy
 # numeric evaluate strings in dictionaries, also xmlelement, combine xmlelement with csvelement, csv _format, _column, _row, _text
-# send introduction
+# send introduction to crnsdoo
 # equation get rid of function check, angle + radius and xyz, equation rectangular and equation polar, xyz, targetequation radius xyz give index, equation as plugin
 # axis xy.
 # look over copy module
@@ -237,11 +232,8 @@ import sys
 # creator shape matrix
 # polling
 # getNormal, getIsFlat?
-# probably not individual attribute import
 # maybe rename shapes folder geometry
-# arc
-# lathe
-# remove getIsXMLElement if it is still unnecessary
+# circle
 # getVerticesByKey in geomancer should also get from a geometry string, array along loop or path in process and getManipulated
 # line, parabolic interpolation if there is no endpoint angle then symmetrical, bysymmetricalplane, bysymmetricalsolid
 # transform
@@ -250,6 +242,7 @@ import sys
 # connect, from and to
 # tube, rotor
 # test translate
+# lathe
 # think about setActualMinimumZ in boolean_geometry
 # pyramid
 # round extrusion ?, fillet

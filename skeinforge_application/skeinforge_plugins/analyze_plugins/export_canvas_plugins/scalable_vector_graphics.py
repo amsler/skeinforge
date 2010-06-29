@@ -42,7 +42,7 @@ class ScalableVectorGraphicsRepository:
 	"A class to handle the export settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', '', self )
+		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', '', self )
 		self.fileExtension = settings.StringSetting().getFromValue( 'File Extension:', self, '' )
 		self.svgProgram = settings.StringSetting().getFromValue( 'Scalable Vector Graphics Program:', self, 'netscape' )
 

@@ -1526,12 +1526,12 @@ def isPointInsideLoop( loop, point ):
 	"Determine if a point is inside another loop."
 	return getNumberOfIntersectionsToLeft( loop, point ) % 2 == 1
 
-def isPointInsideLoops( loops, point ):
-	"Determine if a point is inside a loop list."
+def isPointInsideLoopsZone( loops, point ):
+	"Determine if a point is inside a zone of a loop list."
+	numberOfIntersectionsToLeft = 0
 	for loop in loops:
-		if isPointInsideLoop( loop, point ):
-			return True
-	return False
+		numberOfIntersectionsToLeft += getNumberOfIntersectionsToLeft( loop, point )
+	return numberOfIntersectionsToLeft % 2 == 1
 
 def isSegmentCompletelyInX( segment, xFirst, xSecond ):
 	"Determine if the segment overlaps within x."

@@ -239,14 +239,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import display_line
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import tableau
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_move
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_rotate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import display_line
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import tableau
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_move
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_rotate
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 import math
 import sys
@@ -303,7 +303,7 @@ class BeholdRepository( tableau.TableauRepository ):
 	"A class to handle the behold settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_plugins.analyze_plugins.behold.html', '', self )
+		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.behold.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Behold', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold' )
 		self.activateBehold = settings.BooleanSetting().getFromValue( 'Activate Behold', self, True )

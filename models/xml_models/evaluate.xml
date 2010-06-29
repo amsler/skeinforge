@@ -6,7 +6,8 @@
 	<dictionary additionfloat='=2.0+3.0' additionint='=2+3' />
 	<dictionary divisionfloat='=2.0/3.0' divisionint='=2/3' />
 	<dictionary minus='=-3' />
-	<dictionary multiplication='=2*3' />
+	<dictionary moduloNineFive='=9%5' />
+	<dictionary id='s ix' multiplicationTwoThree='=2*3' />
 	<dictionary powerfloat='=2.0**3.0' powerint='=2**3' />
 	<dictionary subtractionfloat='=2.0-3.0' subtractionint='=2-3' />
 	<!--
@@ -27,7 +28,7 @@
 	<!--
 		Constant
 		-->
-	<dictionary e='math.e' evaluatede='=math.e' euler='=math.euler' golden='=math.golden' />
+	<dictionary pi='math.pi' e='=math.e' euler='=math.euler' golden='=math.golden' />
 	<!--
 		Dictionary
 		-->
@@ -40,7 +41,7 @@
 		-->
 	<dictionary cascadeeight='=cascade.eight' />
 	<dictionary element='=element.elementtestvalue' elementtestvalue='4' />
-	<dictionary idninenumber='=id.nine.number' />
+	<dictionary idSixMultiplicationTwoThree='=id."s ix".multiplicationTwoThree' />
 	<dictionary namefivenumber='=name.five.number' />
 	<dictionary parentseven='=parent.seven' />
 	<dictionary rootseven='=root.seven' />
@@ -63,7 +64,6 @@
 	<!--
 		Value
 		-->
-	<dictionary id='nine' number='9' />
 	<dictionary name='five' number='5' />
 	<path id='triangle' test='3' >
 		<vertex x='2' y='3' />
@@ -77,7 +77,26 @@
 	<dictionary p='=math.polygon(5.2)' />
 	<dictionary p='=math.polygon()*5' />
 	<function id="triple" parameters='number' >
+		<print _localdictionary='first print' />
 		<statement number='=number*3' />
+		<statement count='=1' />
+		<for index='integer' in='{1:"one",2:"two",3:"three"}' value='numericWord'>
+			<print _localdictionary='' />
+		</for>
+		<if condition='0'>
+			<print ifWorks='' />
+		</if>
+		<elif condition='0'>
+			<print elifWorks='' />
+		</elif>
+		<else>
+			<print elseWorks='' />
+		</else>
+		<statement count='=5' />
+		<while condition='count<8'>
+			<statement count='=count+1' />
+			<print count='' />
+		</while>
 		<return return='=number' />
 	</function>
 	<dictionary triple4='=triple(4)' />
@@ -102,7 +121,7 @@
 		<dictionary parentvertex='parent.vertex' />
 		<dictionary v='parent.vertex[0]' />
 		<dictionary mathpowvertex='=math.pow(parent.vertex[0])' />
-		<dictionary dictionarykey='{"e":"roo"}["e"]' />
+		<dictionary dictionaryvalue='{"e":"ru"}["e"]' />
 		<dictionary a='[1,2,7]-(2,3)' />
 		<dictionary m='=2*[1,2,7]' />
 		<dictionary m='=-[1,2,7]' />
