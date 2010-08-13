@@ -1,6 +1,7 @@
 """
 This page is in the table of contents.
-Some filaments warp too much and to prevent this you have to print the object in a temperature regulated chamber or on a temperature regulated bed. The chamber tool allows you to control the bed and chamber temperature.
+Some filaments contract too much and to prevent this you have to print the object in a temperature regulated chamber or on a temperature regulated bed. The chamber tool allows you to control the bed and chamber temperature and the holding pressure.  The gcodes are also described at:
+http://reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
 
 The chamber manual page is at:
 http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber
@@ -12,17 +13,17 @@ The default 'Activate Chamber' checkbox is on.  When it is on, the functions des
 ===Bed Temperature===
 Default is 60C.
 
-Defines the print_bed temperature in Celcius by adding an M115 command.
+Defines the print_bed temperature in Celcius by adding an M140 command.
 
 ===Chamber Temperature===
 Default is 30C.
 
-Defines the chamber temperature in Celcius by adding an M116 command.
+Defines the chamber temperature in Celcius by adding an M141 command.
 
 ===Holding Force===
 Default is zero.
 
-Defines the holding force of a mechanism, like a vacuum table or electromagnet, to hold the bed surface or object, by adding an M117 command.
+Defines the holding pressure of a mechanism, like a vacuum table or electromagnet, to hold the bed surface or object, by adding an M142 command.  The holding pressure is in bar. For hardware which only has on/off holding, when the holding pressure is zero, turn off holding, when the holding pressure is greater than zero, turn on holding. 
 
 ==Heated Beds==
 ===Bothacker===
@@ -184,13 +185,13 @@ class ChamberRepository:
 	"A class to handle the chamber settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.chamber.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.chamber.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Chamber', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber' )
 		self.activateChamber = settings.BooleanSetting().getFromValue( 'Activate Chamber:', self, True )
 		self.bedTemperature = settings.FloatSpin().getFromValue( 20.0, 'Bed Temperature (Celcius):', self, 90.0, 60.0 )
 		self.chamberTemperature = settings.FloatSpin().getFromValue( 20.0, 'Chamber Temperature (Celcius):', self, 90.0, 30.0 )
-		self.holdingForce = settings.FloatSpin().getFromValue( 0.0, 'Holding Force (float):', self, 100.0, 0.0 )
+		self.holdingForce = settings.FloatSpin().getFromValue( 0.0, 'Holding Force (bar):', self, 100.0, 0.0 )
 		self.executeTitle = 'Chamber'
 
 	def execute( self ):
@@ -237,9 +238,9 @@ class ChamberSkein:
 		firstWord = splitLine[ 0 ]
 		if firstWord == '(<extrusion>)':
 			self.distanceFeedRate.addLine( line )
-			self.distanceFeedRate.addParameter( 'M115', self.chamberRepository.bedTemperature.value ) # Set bed temperature.
-			self.distanceFeedRate.addParameter( 'M116', self.chamberRepository.chamberTemperature.value ) # Set chamber temperature.
-			self.distanceFeedRate.addParameter( 'M117', self.chamberRepository.holdingForce.value ) # Set holding force.
+			self.distanceFeedRate.addParameter( 'M140', self.chamberRepository.bedTemperature.value ) # Set bed temperature.
+			self.distanceFeedRate.addParameter( 'M141', self.chamberRepository.chamberTemperature.value ) # Set chamber temperature.
+			self.distanceFeedRate.addParameter( 'M142', self.chamberRepository.holdingForce.value ) # Set holding pressure.
 			return
 		self.distanceFeedRate.addLine( line )
 

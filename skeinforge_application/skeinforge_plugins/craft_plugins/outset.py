@@ -94,7 +94,7 @@ class OutsetRepository:
 	"A class to handle the outset settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.outset.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.outset.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Outset', self, '' )
 		self.activateOutset = settings.BooleanSetting().getFromValue( 'Activate Outset:', self, True )
 		self.executeTitle = 'Outset'
@@ -116,7 +116,7 @@ class OutsetSkein:
 
 	def addGcodeFromRemainingLoop( self, loop, radius, z ):
 		"Add the remainder of the loop."
-		boundary = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, radius )
+		boundary = intercircle.getLargestInsetLoopFromLoopRegardless( loop, radius )
 		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
 		self.distanceFeedRate.addPerimeterBlock( loop, z )
 		self.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )

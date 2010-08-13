@@ -1,7 +1,7 @@
 <?xml version='1.0' ?>
 <fabmetheus version="2010-03-17" p="7.123" z="2.2">
 	<sphere id="Sphere 5" radiusx="5.0" radiusy="5.0" radiusz="5.0">
-		<matrix4x4 m14="10.0" m34="5.0" />
+		<matrix m14="10.0" m34="5.0" />
 		<dictionary id="dictionary test" t="2">
 			<dictionary id="sub" t="3" />
 		</dictionary>

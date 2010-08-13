@@ -166,7 +166,7 @@ class MillRepository:
 	"A class to handle the mill settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.mill.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.mill.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Mill', self, '' )
 		self.activateMill = settings.BooleanSetting().getFromValue( 'Activate Mill', self, True )
 		settings.LabelDisplay().getFromName( '- Add Loops -', self )

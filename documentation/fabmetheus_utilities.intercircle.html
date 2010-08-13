@@ -29,6 +29,7 @@
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
 <dt><font face="helvetica, arial"><a href="fabmetheus_utilities.intercircle.html#BoundingLoop">BoundingLoop</a>
+</font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.intercircle.html#CenterOutset">CenterOutset</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.intercircle.html#CircleIntersection">CircleIntersection</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.intercircle.html#CircleNode">CircleNode</a>
 </font></dt></dl>
@@ -57,6 +58,18 @@
 <dl><dt><a name="BoundingLoop-isOverlappingAnotherInList"><strong>isOverlappingAnotherInList</strong></a>(self, boundingLoops)</dt><dd><tt>Determine&nbsp;if&nbsp;this&nbsp;bounding&nbsp;loop&nbsp;is&nbsp;intersecting&nbsp;another&nbsp;bounding&nbsp;loop&nbsp;in&nbsp;a&nbsp;list.</tt></dd></dl>
 
 <dl><dt><a name="BoundingLoop-isRectangleMissingAnother"><strong>isRectangleMissingAnother</strong></a>(self, anotherBoundingLoop)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;rectangle&nbsp;of&nbsp;this&nbsp;bounding&nbsp;loop&nbsp;is&nbsp;missing&nbsp;the&nbsp;rectangle&nbsp;of&nbsp;another&nbsp;bounding&nbsp;loop.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CenterOutset">class <strong>CenterOutset</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;hold&nbsp;a&nbsp;center&nbsp;and&nbsp;an&nbsp;outset.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="CenterOutset-__init__"><strong>__init__</strong></a>(self, center, outset)</dt><dd><tt>Set&nbsp;the&nbsp;center&nbsp;and&nbsp;outset.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -104,11 +117,14 @@
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-addCircleIntersectionLoop"><strong>addCircleIntersectionLoop</strong></a>(circleIntersectionPaths, circleIntersections)</dt><dd><tt>Add&nbsp;a&nbsp;circle&nbsp;intersection&nbsp;loop.</tt></dd></dl>
+ <dl><dt><a name="-addEndCap"><strong>addEndCap</strong></a>(begin, end, points, radius)</dt><dd><tt>Get&nbsp;a&nbsp;pair&nbsp;of&nbsp;side&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-addOrbits"><strong>addOrbits</strong></a>(distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChangeTime, z)</dt><dd><tt>Add&nbsp;orbits&nbsp;with&nbsp;the&nbsp;extruder&nbsp;off.</tt></dd></dl>
  <dl><dt><a name="-addOrbitsIfLarge"><strong>addOrbitsIfLarge</strong></a>(distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChangeTime, z)</dt><dd><tt>Add&nbsp;orbits&nbsp;with&nbsp;the&nbsp;extruder&nbsp;off&nbsp;if&nbsp;the&nbsp;orbits&nbsp;are&nbsp;large&nbsp;enough.</tt></dd></dl>
  <dl><dt><a name="-addPointsFromSegment"><strong>addPointsFromSegment</strong></a>(pointBegin, pointEnd, points, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Add&nbsp;point&nbsp;complexes&nbsp;between&nbsp;the&nbsp;endpoints&nbsp;of&nbsp;a&nbsp;segment.</tt></dd></dl>
- <dl><dt><a name="-getAroundsFromLoop"><strong>getAroundsFromLoop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;loop,&nbsp;later&nbsp;combine&nbsp;with&nbsp;get&nbsp;arounds.</tt></dd></dl>
+ <dl><dt><a name="-getAroundsFromLoop"><strong>getAroundsFromLoop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getAroundsFromLoops"><strong>getAroundsFromLoops</strong></a>(loops, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-getAroundsFromPath"><strong>getAroundsFromPath</strong></a>(path, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;path.</tt></dd></dl>
+ <dl><dt><a name="-getAroundsFromPaths"><strong>getAroundsFromPaths</strong></a>(paths, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getAroundsFromPoints"><strong>getAroundsFromPoints</strong></a>(points, radius)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getCentersFromCircleNodes"><strong>getCentersFromCircleNodes</strong></a>(circleNodes, radius)</dt><dd><tt>Get&nbsp;the&nbsp;complex&nbsp;centers&nbsp;of&nbsp;the&nbsp;circle&nbsp;intersection&nbsp;loops&nbsp;from&nbsp;circle&nbsp;nodes.</tt></dd></dl>
  <dl><dt><a name="-getCentersFromIntersectionLoop"><strong>getCentersFromIntersectionLoop</strong></a>(circleIntersectionLoop, radius)</dt><dd><tt>Get&nbsp;the&nbsp;centers&nbsp;from&nbsp;the&nbsp;intersection&nbsp;loop.</tt></dd></dl>
@@ -120,18 +136,23 @@
  <dl><dt><a name="-getCircleIntersectionsFromCircleNodes"><strong>getCircleIntersectionsFromCircleNodes</strong></a>(circleNodes)</dt><dd><tt>Get&nbsp;all&nbsp;the&nbsp;circle&nbsp;intersections&nbsp;which&nbsp;exist&nbsp;between&nbsp;all&nbsp;the&nbsp;circle&nbsp;nodes.</tt></dd></dl>
  <dl><dt><a name="-getCircleNodesFromLoop"><strong>getCircleNodesFromLoop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;circle&nbsp;nodes&nbsp;from&nbsp;every&nbsp;point&nbsp;on&nbsp;a&nbsp;loop&nbsp;and&nbsp;between&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getCircleNodesFromPoints"><strong>getCircleNodesFromPoints</strong></a>(points, radius)</dt><dd><tt>Get&nbsp;the&nbsp;circle&nbsp;nodes&nbsp;from&nbsp;a&nbsp;path.</tt></dd></dl>
+ <dl><dt><a name="-getDecreasingRadiuses"><strong>getDecreasingRadiuses</strong></a>(radius)</dt><dd><tt>Get&nbsp;the&nbsp;decreasing&nbsp;radiuses&nbsp;for&nbsp;getting&nbsp;the&nbsp;largest&nbsp;inset&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getInsetFromClockwiseLoop"><strong>getInsetFromClockwiseLoop</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;loop&nbsp;inset&nbsp;from&nbsp;clockwise&nbsp;loop,&nbsp;out&nbsp;from&nbsp;widdershins&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getInsetFromClockwiseTriple"><strong>getInsetFromClockwiseTriple</strong></a>(aheadAbsolute, behindAbsolute, center, radius)</dt><dd><tt>Get&nbsp;loop&nbsp;inset&nbsp;from&nbsp;clockwise&nbsp;triple,&nbsp;out&nbsp;from&nbsp;widdershins&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getInsetLoopsFromLoop"><strong>getInsetLoopsFromLoop</strong></a>(inset, loop, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;inset&nbsp;loops,&nbsp;which&nbsp;might&nbsp;overlap.</tt></dd></dl>
  <dl><dt><a name="-getInsetLoopsFromLoops"><strong>getInsetLoopsFromLoops</strong></a>(inset, loops)</dt><dd><tt>Get&nbsp;the&nbsp;inset&nbsp;loops,&nbsp;which&nbsp;might&nbsp;overlap.</tt></dd></dl>
  <dl><dt><a name="-getInsetSeparateLoopsFromLoops"><strong>getInsetSeparateLoopsFromLoops</strong></a>(inset, loops, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;separate&nbsp;inset&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getIntersectionAtInset"><strong>getIntersectionAtInset</strong></a>(ahead, behind, inset)</dt><dd><tt>Get&nbsp;circle&nbsp;intersection&nbsp;loop&nbsp;at&nbsp;inset&nbsp;from&nbsp;segment.</tt></dd></dl>
+ <dl><dt><a name="-getLargestCenterOutsetLoopFromLoop"><strong>getLargestCenterOutsetLoopFromLoop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;largest&nbsp;circle&nbsp;outset&nbsp;loop&nbsp;from&nbsp;the&nbsp;loop.</tt></dd></dl>
+ <dl><dt><a name="-getLargestCenterOutsetLoopFromLoopRegardless"><strong>getLargestCenterOutsetLoopFromLoopRegardless</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;the&nbsp;largest&nbsp;circle&nbsp;outset&nbsp;loop&nbsp;from&nbsp;the&nbsp;loop,&nbsp;even&nbsp;if&nbsp;the&nbsp;radius&nbsp;has&nbsp;to&nbsp;be&nbsp;shrunk&nbsp;and&nbsp;even&nbsp;if&nbsp;there&nbsp;is&nbsp;still&nbsp;no&nbsp;outset&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getLargestInsetLoopFromLoop"><strong>getLargestInsetLoopFromLoop</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;the&nbsp;largest&nbsp;inset&nbsp;loop&nbsp;from&nbsp;the&nbsp;loop.</tt></dd></dl>
- <dl><dt><a name="-getLargestInsetLoopFromLoopNoMatterWhat"><strong>getLargestInsetLoopFromLoopNoMatterWhat</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;the&nbsp;largest&nbsp;inset&nbsp;loop&nbsp;from&nbsp;the&nbsp;loop,&nbsp;even&nbsp;if&nbsp;the&nbsp;radius&nbsp;has&nbsp;to&nbsp;be&nbsp;shrunk&nbsp;and&nbsp;even&nbsp;if&nbsp;there&nbsp;is&nbsp;still&nbsp;no&nbsp;inset&nbsp;loop.</tt></dd></dl>
+ <dl><dt><a name="-getLargestInsetLoopFromLoopRegardless"><strong>getLargestInsetLoopFromLoopRegardless</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;the&nbsp;largest&nbsp;inset&nbsp;loop&nbsp;from&nbsp;the&nbsp;loop,&nbsp;even&nbsp;if&nbsp;the&nbsp;radius&nbsp;has&nbsp;to&nbsp;be&nbsp;shrunk&nbsp;and&nbsp;even&nbsp;if&nbsp;there&nbsp;is&nbsp;still&nbsp;no&nbsp;inset&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getLoopsFromLoopsDirection"><strong>getLoopsFromLoopsDirection</strong></a>(isWiddershins, loops)</dt><dd><tt>Get&nbsp;the&nbsp;loops&nbsp;going&nbsp;round&nbsp;in&nbsp;a&nbsp;given&nbsp;direction.</tt></dd></dl>
  <dl><dt><a name="-getPointsFromLoop"><strong>getPointsFromLoop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;from&nbsp;every&nbsp;point&nbsp;on&nbsp;a&nbsp;loop&nbsp;and&nbsp;between&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getPointsFromLoops"><strong>getPointsFromLoops</strong></a>(loops, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;from&nbsp;every&nbsp;point&nbsp;on&nbsp;a&nbsp;loop&nbsp;and&nbsp;between&nbsp;points.</tt></dd></dl>
+ <dl><dt><a name="-getPointsFromPath"><strong>getPointsFromPath</strong></a>(path, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;from&nbsp;every&nbsp;point&nbsp;on&nbsp;a&nbsp;path&nbsp;and&nbsp;between&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getSimplifiedInsetFromClockwiseLoop"><strong>getSimplifiedInsetFromClockwiseLoop</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;loop&nbsp;inset&nbsp;from&nbsp;clockwise&nbsp;loop,&nbsp;out&nbsp;from&nbsp;widdershins&nbsp;loop.</tt></dd></dl>
+ <dl><dt><a name="-getWiddershinsByLength"><strong>getWiddershinsByLength</strong></a>(begin, end, length)</dt><dd><tt>Get&nbsp;the&nbsp;widdershins&nbsp;by&nbsp;length.</tt></dd></dl>
  <dl><dt><a name="-getWithoutIntersections"><strong>getWithoutIntersections</strong></a>(loop)</dt><dd><tt>Get&nbsp;loop&nbsp;without&nbsp;intersections.</tt></dd></dl>
  <dl><dt><a name="-isLargeSameDirection"><strong>isLargeSameDirection</strong></a>(inset, loop, radius)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;inset&nbsp;is&nbsp;in&nbsp;the&nbsp;same&nbsp;direction&nbsp;as&nbsp;the&nbsp;loop&nbsp;and&nbsp;it&nbsp;is&nbsp;large&nbsp;enough.</tt></dd></dl>
  <dl><dt><a name="-isLoopIntersectingLoop"><strong>isLoopIntersectingLoop</strong></a>(anotherLoop, loop)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;a&nbsp;loop&nbsp;is&nbsp;intersecting&nbsp;another&nbsp;loop.</tt></dd></dl>

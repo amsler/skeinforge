@@ -50,6 +50,11 @@ Default is 2 mm.
 
 Defines the width of the perimeter.
 
+===SVG Viewer===
+Default is webbrowser.
+
+If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector graphics file will be sent to the default browser to be opened.  If the 'SVG Viewer' is set to a program name, the scalable vector graphics file will be sent to that program to be opened.
+
 ==Examples==
 The following examples chop the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and chop.py.
 
@@ -131,15 +136,11 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Chop a GNU Triangulated Surface file.  If no fileName is specified, chop the first GNU Triangulated Surface file in this folder."
-	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypesWithoutWords( fabmetheus_interpret.getImportPluginFileNames() )
-		if len( unmodified ) == 0:
-			print( "There are no carvable files in this folder." )
-			return
-		fileName = unmodified[ 0 ]
 	startTime = time.time()
 	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being chopped.' )
-	chopGcode = getCraftedText( fileName )
+	repository = ChopRepository()
+	settings.getReadRepository( repository )
+	chopGcode = getCraftedText( fileName, '', repository )
 	if chopGcode == '':
 		return
 	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_chop.svg'
@@ -149,14 +150,14 @@ def writeOutput( fileName = '' ):
 	gcodec.writeFileText( suffixFileName, chopGcode )
 	print( 'The chopped file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	print( 'It took %s to chop the file.' % euclidean.getDurationString( time.time() - startTime ) )
-	settings.openWebPage( suffixFileName )
+	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 
 class ChopRepository:
 	"A class to handle the chop settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.chop.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.chop.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '' )
 		self.addExtraTopLayerIfNecessary = settings.BooleanSetting().getFromValue( 'Add Extra Top Layer if Necessary', self, True )
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
@@ -169,6 +170,9 @@ class ChopRepository:
 		self.correctMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Correct Mesh', self, True )
 		self.unprovenMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Unproven Mesh', self, False )
 		self.perimeterWidth = settings.FloatSpin().getFromValue( 0.4, 'Perimeter Width (mm):', self, 4.0, 2.0 )
+		settings.LabelSeparator().getFromRepository( self )
+		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
+		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Chop'
 
 	def execute( self ):

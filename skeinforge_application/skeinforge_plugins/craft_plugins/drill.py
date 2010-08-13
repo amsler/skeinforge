@@ -121,7 +121,7 @@ class DrillRepository:
 	"A class to handle the drill settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.drill.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.drill.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Drill', self, '' )
 		self.activateDrill = settings.BooleanSetting().getFromValue( 'Activate Drill', self, True )
 		self.drillingMarginOnBottom = settings.FloatSpin().getFromValue( 0.0, 'Drilling Margin on Bottom (millimeters):', self, 5.0, 1.0 )

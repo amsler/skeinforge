@@ -11,8 +11,8 @@ from fabmetheus_utilities.geometry.geometry_tools.dictionary import Dictionary
 from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import euclidean
-from fabmetheus_utilities.geometry.geometry_tools import matrix4x4
-from fabmetheus_utilities import xml_simple_parser
+from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
+from fabmetheus_utilities import xml_simple_reader
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -29,20 +29,21 @@ def convertXMLElementRenameByPaths( geometryOutput, xmlElement, xmlProcessor ):
 	"Convert the xml element to a group xml element and add paths."
 	xmlElement.className = 'group'
 	for geometryOutputChild in geometryOutput:
-		pathElement = xml_simple_parser.XMLElement().getByParent( xmlElement )
+		pathElement = xml_simple_reader.XMLElement()
+		pathElement.setParentAddToChildren( xmlElement )
 		path.convertXMLElementRename( geometryOutputChild, pathElement, xmlProcessor )
 
-def processShape( archivableClass, xmlElement, xmlProcessor ):
+def processShape(archivableClass, xmlElement, xmlProcessor):
 	"Get any new elements and process the shape."
 	if xmlElement == None:
 		return
-	archivableObject = evaluate.getArchivableObject( archivableClass, xmlElement )
-	matrix4x4.setXMLElementDictionaryToOtherElementDictionary( xmlElement, xmlElement.object.matrix4X4, xmlElement )
-	xmlProcessor.processChildren( xmlElement )
+	archivableObject = evaluate.getArchivableObject(archivableClass, xmlElement)
+	matrix.setXMLElementDictionaryToOtherElementDictionary(xmlElement, xmlElement.object.matrix4X4, 'matrix.', xmlElement)
+	xmlProcessor.processChildren(xmlElement)
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	processShape( Group, xmlElement, xmlProcessor )
+	processShape(Group, xmlElement, xmlProcessor)
 
 
 class Group( Dictionary ):
@@ -50,7 +51,7 @@ class Group( Dictionary ):
 	def __init__( self ):
 		"Add empty lists."
 		Dictionary.__init__( self )
-		self.matrix4X4 = matrix4x4.Matrix4X4()
+		self.matrix4X4 = matrix.Matrix()
 
 	def addXMLInnerSection( self, depth, output ):
 		"Add xml inner section for this object."
@@ -70,9 +71,9 @@ class Group( Dictionary ):
 			loops += visibleObject.getLoops( importRadius, z )
 		return loops
 
-	def getMatrixChain( self ):
-		"Get the matrix chain."
-		return self.matrix4X4.getOtherTimesSelf( self.xmlElement.parent.object.getMatrixChain() )
+	def getMatrixChainTetragrid(self):
+		"Get the matrix chain tetragrid."
+		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).matrixTetragrid
 
 	def getVertices( self ):
 		"Get all vertices."

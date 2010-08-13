@@ -92,16 +92,20 @@ def addLoopXSegmentIntersections( lineLoopsIntersections, loop, segmentFirstX, s
 		pointSecond = rotatedLoop[ ( pointIndex + 1 ) % len( rotatedLoop ) ]
 		addLineXSegmentIntersection( lineLoopsIntersections, segmentFirstX, segmentSecondX, pointFirst, pointSecond, y )
 
-def directLoops( isWiddershins, loops ):
-	"Directed the loops."
-	for loop in loops:
-		if euclidean.isWiddershins( loop ) != isWiddershins:
-			loop.reverse()
+def directLoop(isWiddershins, loop):
+	"Direct the loop."
+	if euclidean.isWiddershins( loop ) != isWiddershins:
+		loop.reverse()
 
-def directLoopLists( isWiddershins, loopLists ):
-	"Directed the loop lists."
+def directLoops(isWiddershins, loops):
+	"Direct the loops."
+	for loop in loops:
+		directLoop(isWiddershins, loop)
+
+def directLoopLists(isWiddershins, loopLists):
+	"Direct the loop lists."
 	for loopList in loopLists:
-		directLoops( isWiddershins, loopList )
+		directLoops(isWiddershins, loopList)
 
 def getInBetweenLoopsFromLoops( importRadius, loops ):
 	"Get the in between loops from loops."
@@ -254,13 +258,4 @@ class BooleanSolid( group.Group ):
 
 	def getXMLClassName( self ):
 		"Get xml class name."
-		lowerName = self.operationFunction.__name__.lower()
-		if lowerName == 'reversearchivableobjects':
-			return 'difference'
-		return lowerName[ len( 'get' ) : ]
-
-	def reverseArchivableObjects( self, importRadius, visibleObjectLoopsList ):
-		"Reverse the archivable objects and set the operation function."
-		self.archivableObjects.reverse()
-		self.operationFunction = self.getDifference
-		self.getDifference( importRadius, visibleObjectLoopsList )
+		return self.operationFunction.__name__.lower()[ len( 'get' ) : ]

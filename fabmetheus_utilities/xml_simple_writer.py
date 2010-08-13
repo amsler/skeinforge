@@ -17,28 +17,41 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def addBeginXMLTag( attributeDictionary, depth, name, output ):
+def addBeginEndInnerXMLTag( attributeDictionary, className, depth, innerText, output, text = '' ):
+	"Add the begin and end xml tag and the inner text if any."
+	if len( innerText ) > 0:
+		addBeginXMLTag( attributeDictionary, className, depth, output, text )
+		output.write( innerText )
+		addEndXMLTag( className, depth, output )
+	else:
+		addClosedXMLTag( attributeDictionary, className, depth, output, text )
+
+def addBeginXMLTag( attributeDictionary, className, depth, output, text = '' ):
 	"Add the begin xml tag."
 	depthStart = '\t' * depth
-	output.write( '%s<%s%s>\n' % ( depthStart, name, getAttributeDictionaryString( attributeDictionary ) ) )
+	output.write( '%s<%s%s>%s\n' % ( depthStart, className, getAttributeDictionaryString( attributeDictionary ), text ) )
 
-def addClosedXMLTag( attributeDictionary, depth, name, output ):
+def addClosedXMLTag( attributeDictionary, className, depth, output, text = '' ):
 	"Add the closed xml tag."
 	depthStart = '\t' * depth
-	output.write( '%s<%s%s />\n' % ( depthStart, name, getAttributeDictionaryString( attributeDictionary ) ) )
+	attributeDictionaryString = getAttributeDictionaryString( attributeDictionary )
+	if len( text ) > 0:
+		output.write( '%s<%s%s >%s</%s>\n' % ( depthStart, className, attributeDictionaryString, text, className ) )
+	else:
+		output.write( '%s<%s%s />\n' % ( depthStart, className, attributeDictionaryString ) )
 
-def addEndXMLTag( depth, name, output ):
+def addEndXMLTag( className, depth, output ):
 	"Add the end xml tag."
 	depthStart = '\t' * depth
-	output.write( '%s</%s>\n' % ( depthStart, name ) )
+	output.write( '%s</%s>\n' % ( depthStart, className ) )
 
 def addXMLFromLoopComplexZ( attributeDictionary, depth, loop, output, z ):
 	"Add xml from loop."
-	addBeginXMLTag( attributeDictionary, depth, 'path', output )
+	addBeginXMLTag( attributeDictionary, 'path', depth, output )
 	for pointComplexIndex in xrange( len( loop ) ):
 		pointComplex = loop[ pointComplexIndex ]
 		addXMLFromXYZ( depth + 1, pointComplexIndex, output, pointComplex.real, pointComplex.imag, z )
-	addEndXMLTag( depth, 'path', output )
+	addEndXMLTag( 'path', depth, output )
 
 def addXMLFromObjects( depth, objects, output ):
 	"Add xml from objects."
@@ -60,7 +73,7 @@ def addXMLFromXYZ( depth, index, output, x, y, z ):
 		attributeDictionary[ 'y' ] = str( y )
 	if z != 0.0:
 		attributeDictionary[ 'z' ] = str( z )
-	addClosedXMLTag( attributeDictionary, depth, 'vertex', output )
+	addClosedXMLTag( attributeDictionary, 'vertex', depth, output )
 
 def compareAttributeKeyAscending( key, otherKey ):
 	"Get comparison in order to sort attribute keys in ascending order, with the id key first."
@@ -91,7 +104,7 @@ def getBeginGeometryXMLOutput( xmlElement ):
 		root = xmlElement.getRoot()
 		attributeDictionary = root.attributeDictionary
 	attributeDictionary[ 'version' ] = '2010-03-29'
-	addBeginXMLTag( attributeDictionary, 0, 'fabmetheus', output )
+	addBeginXMLTag( attributeDictionary, 'fabmetheus', 0, output )
 	return output
 
 def getBeginXMLOutput():
@@ -110,5 +123,5 @@ def getDictionaryWithoutList( dictionary, withoutList ):
 
 def getEndGeometryXMLString( output ):
 	"Get the string representation of this object info."
-	addEndXMLTag( 0, 'fabmetheus', output )
+	addEndXMLTag( 'fabmetheus', 0, output )
 	return output.getvalue()

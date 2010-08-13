@@ -214,48 +214,61 @@ import os
 import sys
 
 
-# getExecutionOrder, move round and bevel to manipulation_paths
-# classify more of evaluate.xml
-# bottom float to cube, sphere, cylinder input, bottomplane cascade, bottomsolid cascade
-# translate rectangle or polar
-# view profile 1 mm thickness
-# scale, rotate manipulator
-# append, delete, copy
-# numeric evaluate strings in dictionaries, also xmlelement, combine xmlelement with csvelement, csv _format, _column, _row, _text
-# send introduction to crnsdoo
-# equation get rid of function check, angle + radius and xyz, equation rectangular and equation polar, xyz, targetequation radius xyz give index, equation as plugin
-# axis xy.
-# look over copy module
-# close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
-# _morning named examples
-# del previous, add begin & end if far  get actual path
-# creator shape matrix
-# polling
-# getNormal, getIsFlat?
-# maybe rename shapes folder geometry
+# big save
+# maybe rename geometry_tools to geometry_basics, split geometry into geometry_tools and geometry_plugins
+# maybe transformPath..
+# matrix into manipulation & process?
+# try to get rid of comment if possible
+# maybe submanipulate meaning call getManipulation from getGeometryOutputByFunction, bring back manipulateTarget? for solids, maybe manipulate around elements
 # circle
+# classify more of evaluate.xml
+# view profile 1 mm thickness
+# flip axis center & origin
+# mirror axis center & origin, concatenate
+# grid within bounds and row/column, maybe subgrid or subarray
+# append, delete, copy
+# _getAccessibleDictionary, _getAccessibleFunctions
+# Vector2 & Vector3 also maybe in list
+# combine xmlelement with csvelement, csv _format, _column, _row, _text
+# send introduction to crnsdoo
+# matrix rotate around axis http://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
+# svg element calls svg_reader, what does open svg path & text mean?
+# curve, relative, control type - parabolic cubic circular, between
+# pixel, voxel, surfaxel/boxel, lattice, mesh
+# quadratic, cubic vertexes; distance in equation
+# array? targetequation radius xyz give index
+# connectionfrom, to, connect, xaxis
+# bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
+# look over copy module
+# maybe in svgReader if loop intersection with previous union else add
+# close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
+# del previous, add begin & end if far  get actual path
+# polling
+# svgCanvas with xmlWriter
+# getNormal, getIsFlat?
 # getVerticesByKey in geomancer should also get from a geometry string, array along loop or path in process and getManipulated
 # line, parabolic interpolation if there is no endpoint angle then symmetrical, bysymmetricalplane, bysymmetricalsolid
 # transform
-# flip
-# mirror axis center & origin, concatenate
-# connect, from and to
+# mesh. for cube, then cyliner, then sphere after lathe
 # tube, rotor
 # test translate
 # lathe
 # think about setActualMinimumZ in boolean_geometry
 # pyramid
+# only parse svg once, do not parse again if yAxisPointingUpward="true"
 # round extrusion ?, fillet
 # tetroc
-# widen single path to different widths
+# widen ( outline? ) single path to different widths
 # gear, hollow top
 # boolean loop corner outset
 # work out close and radius
+# voronoi average location intersection looped inset intercircles
 # maybe move and give geometryOutput to cube, cylinder, sphere
 # comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
 # generated_files?
 # creationID, addObject, getTarget, copyXMLElement?
 # drill
+# dovetail
 # maybe not getNewObject, getNew, addToBoolean
 # convert global repository settings to local settings
 # table to dictionary
@@ -302,7 +315,7 @@ import sys
 # layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
 # option of surrounding lines in display
 # maybe add connecting line in display line
-# maybe check inset loops to see if they have are smaller, but this would be slow
+# maybe check inset loops to see if they are smaller, but this would be slow
 # maybe status bar
 # maybe measurement ruler mouse tool
 # search rss from blogs, add search links for common materials, combine created on or progress bar with searchable help
@@ -368,7 +381,9 @@ import sys
 #3, 9598,2521
 #4 12014,2305
 #5 14319,2536
-#6 16855
+#6 16855,3226
+#7 20081, 2189
+#8 22270
 #85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?
@@ -389,14 +404,15 @@ import sys
 #pipe clamp lathe
 # square tube driller & cutter
 
-# archihedron
+# archihedrongagglevoteindexium
+# outline images
 # look from top of intersection circle plane to look for next, add a node; tree out until all are stepped on then connect, when more than three intersections are close
 # when loading a file, we should have a preview of the part and orientation in space
 # second (and most important in my opinion) would be the ability to rotate the part on X/Y/Z axis to chose it's orientation
 # third, a routine to detect the largest face and orient the part accordingly. Mat http://reprap.kumy.net/
 # concept, three perpendicular slices to get display spheres
 # extend lines around short segment after cross hatched boolean
-# concept, teslocracy; donation, postponement, rotate ad network, probably not gutenpedia, cached search options
+# concept, teslocracy or citizendium; donation, postponement, rotate ad network, cached search options
 # concept, local ad server, every time the program runs it changes the iamge which all the documentation points to from a pool of ads
 # concept, join cross slices, go from vertex to two orthogonal edges, then from edges to each other, if not to a common point, then simplify polygons by removing points which do not change the area much
 # concept, each node is fourfold, use sorted intersectionindexes to find close, connect each double sided edge, don't overlap more than two triangles on an edge
@@ -409,10 +425,12 @@ import sys
 # concept, interlaced bricks at corners ( length proportional to corner angle )
 # concept, new links to archi, import links to archi and adds skeinforge tool menu item, back on skeinforge named execute tool is added
 # concept, trnsnt
+# concept, indexium expand condense remove, single text
 # concept, inscribed key silencer
 # concept, spreadsheet to python and/or javascript
 # concept, blog, frequent updates, mix associated news
-# concept, limited python, only string, no import, open, exec, eval, locals, globals, __,
+# concept, range voting for posters, informative, complainer, funny, insightful, rude, spammer, literacy,  troll?
+# concept, intermittent cloud with multiple hash functions
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -483,10 +501,8 @@ class SkeinforgeRepository:
 	"A class to handle the skeinforge settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '' )
-		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
-		self.createdOnLabel = settings.LabelDisplay().getFromName( 'Created On: ' + versionText, self )
 		self.profileType = settings.MenuButtonDisplay().getFromName( 'Profile Type: ', self )
 		self.profileSelection = settings.MenuButtonDisplay().getFromName( 'Profile Selection: ', self )
 		addToProfileMenu( self.profileSelection, self.profileType, self )
@@ -496,6 +512,8 @@ class SkeinforgeRepository:
 		skeinforgeSearch.column += 2
 		webSearch = settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_web.html', 'Web', self )
 		webSearch.column += 4
+		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
+		self.version = settings.LabelDisplay().getFromName( 'Version: ' + versionText, self )
 		settings.LabelDisplay().getFromName( '', self )
 		importantFileNames = [ 'craft', 'profile' ]
 		getRadioPluginsAddPluginGroupFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )

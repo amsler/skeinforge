@@ -345,7 +345,7 @@ class ProfileRepository:
 	"A class to handle the profile entities."
 	def __init__( self ):
 		"Set the default entities, execute title & repository fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_utilities.skeinforge_profile.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_utilities.skeinforge_profile.html', '', self )
 		importantFileNames = [ 'extrusion' ]
 		self.craftRadios = settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		ProfilePluginRadioButtonsSaveListener().getFromRadioPlugins( self.craftRadios, self )

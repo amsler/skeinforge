@@ -10,7 +10,7 @@ import __init__
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.geometry.solids import group
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.xml_simple_parser import XMLSimpleParser
+from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 import cStringIO
@@ -32,20 +32,6 @@ def getXMLFromCarvingFileName( fileName ):
 	carving.addXML( 0, output )
 	return output.getvalue()
 
-def getXMLFromFileName( fileName ):
-	"Get xml text from xml text."
-	if fileName.endswith( '.xml' ):
-		return getXMLFromXMLFileName( fileName )
-	return getXMLFromCarvingFileName( fileName )
-
-def getXMLFromXMLFileName( fileName ):
-	"Get xml text from xml text."
-	xmlText = gcodec.getFileText( fileName )
-	xmlText = str( FabmetheusParser( xmlText ) )
-	if xmlText != '':
-		return xmlText
-	return getXMLFromCarvingFileName( fileName )
-
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	fileName = evaluate.getEvaluatedValue( 'file', xmlElement )
@@ -53,7 +39,11 @@ def processXMLElement( xmlElement, xmlProcessor ):
 		return
 	parserFileName = xmlElement.getRoot().parser.fileName
 	absoluteFileName = gcodec.getAbsoluteFolderPath( parserFileName, fileName )
-	xmlText = getXMLFromFileName( absoluteFileName )
+	xmlText = ''
+	if fileName.endswith( '.xml' ):
+		xmlText = gcodec.getFileText( absoluteFileName )
+	else:
+		xmlText = getXMLFromCarvingFileName( absoluteFileName )
 	if xmlText == '':
 		print( 'The file %s could not be found in the folder which the fabmetheus xml file is in.' % fileName )
 		return
@@ -62,47 +52,16 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	else:
 		xmlElement.importName = gcodec.getUntilDot( fileName )
 		xmlElement.attributeDictionary[ '_importname' ] = xmlElement.importName
-	XMLSimpleParser( parserFileName, xmlElement, xmlText )
+	XMLSimpleReader( parserFileName, xmlElement, xmlText )
+	originalChildren = xmlElement.children[ : ]
+	xmlElement.children = []
+	for child in originalChildren:
+		for subchild in child.children:
+			subchild.setParentAddToChildren( xmlElement )
+		for attributeDictionaryKey in child.attributeDictionary.keys():
+			if attributeDictionaryKey != 'version':
+				xmlElement.attributeDictionary[ attributeDictionaryKey ] = child.attributeDictionary[ attributeDictionaryKey ]
 	group.processShape( group.Group, xmlElement, xmlProcessor )
 	root = xmlElement.getRoot()
 	root.idDictionary[ xmlElement.importName ] = evaluate.ElementID( xmlElement )
 	root.nameDictionary[ xmlElement.importName ] = evaluate.ElementName( xmlElement )
-
-def updateAttributeDictionariesRecursively( updateDictionary, xmlElement ):
-	"Update the attribute dictionaries recursively."
-	xmlElement.attributeDictionary.update( updateDictionary )
-	for child in xmlElement.children:
-		updateAttributeDictionariesRecursively( updateDictionary, child )
-
-
-class FabmetheusParser:
-	"A simple xml parser."
-	def __init__( self, xmlText ):
-		"Add empty lists."
-		self.isInFabmetheus = False
-		self.lines = gcodec.getTextLines( xmlText )
-		self.output = cStringIO.StringIO()
-		for line in self.lines:
-			self.parseLine( line )
-	
-	def __repr__( self ):
-		"Get the string representation of this parser."
-		return self.output.getvalue()
-
-	def parseLine( self, line ):
-		"Parse a fabmetheus line and add it to the xml output."
-		line = line.lstrip()
-		if len( line ) < 1:
-			return
-		if line[ : len( '</' ) ] == '</':
-			lineAfterEndTagSymbol = line[ len( '</' ) : ].lstrip()
-			if lineAfterEndTagSymbol[ : len( 'fabmetheus' ) ] == 'fabmetheus':
-				self.isInFabmetheus = False
-				return
-		if line[ : len( '<' ) ] == '<':
-			lineAfterBeginTagSymbol = line[ len( '<' ) : ].lstrip()
-			if lineAfterBeginTagSymbol[ : len( 'fabmetheus' ) ] == 'fabmetheus':
-				self.isInFabmetheus = True
-				return
-		if self.isInFabmetheus:
-			self.output.write( line + '\n' )

@@ -58,7 +58,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the statistic dialog.
 
 
->>> statistic.analyzeFile( 'Screw Holder_penultimate.gcode' )
+>>> statistic.getWindowAnalyzeFile( 'Screw Holder_penultimate.gcode' )
 The statistics file is saved as Screw Holder_penultimate_statistic.txt
 
 """
@@ -82,11 +82,15 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def analyzeFile( fileName ):
-	"Write statistics for a gcode file."
-	analyzeFileGivenText( fileName, gcodec.getFileText( fileName ) )
+def getNewRepository():
+	"Get the repository constructor."
+	return StatisticRepository()
 
-def analyzeFileGivenText( fileName, gcodeText, repository = None ):
+def getWindowAnalyzeFile( fileName ):
+	"Write statistics for a gcode file."
+	return getWindowAnalyzeFileGivenText( fileName, gcodec.getFileText( fileName ) )
+
+def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
 	"Write statistics for a gcode file."
 	print( '' )
 	print( '' )
@@ -100,24 +104,20 @@ def analyzeFileGivenText( fileName, gcodeText, repository = None ):
 	if repository.saveStatistics.value:
 		gcodec.writeFileMessageEnd( '.txt', fileName, statisticGcode, 'The statistics file is saved as ' )
 
-def getNewRepository():
-	"Get the repository constructor."
-	return StatisticRepository()
-
 def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 	"Write statistics for a skeinforge gcode file, if 'Write Statistics File for Skeinforge Chain' is selected."
 	repository = settings.getReadRepository( StatisticRepository() )
 	if gcodeText == '':
 		gcodeText = gcodec.getFileText( fileNameSuffix )
 	if repository.activateStatistic.value:
-		analyzeFileGivenText( fileNameSuffix, gcodeText, repository )
+		getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
 class StatisticRepository:
 	"A class to handle the statistics settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.statistic.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html', '', self )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic' )
 		self.activateStatistic = settings.BooleanSetting().getFromValue( 'Activate Statistic', self, True )
 		settings.LabelSeparator().getFromRepository( self )
@@ -136,7 +136,7 @@ class StatisticRepository:
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
 		for fileName in fileNames:
-			analyzeFile( fileName )
+			getWindowAnalyzeFile( fileName )
 
 
 class StatisticSkein:
@@ -351,7 +351,7 @@ class StatisticSkein:
 def main():
 	"Display the statistics dialog."
 	if len( sys.argv ) > 1:
-		analyzeFile( ' '.join( sys.argv[ 1 : ] ) )
+		getWindowAnalyzeFile( ' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

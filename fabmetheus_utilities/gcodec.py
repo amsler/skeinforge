@@ -41,6 +41,21 @@ def addLineAndNewlineIfNecessary( line, output ):
 	if not line.endswith( '\n' ):
 		output.write( '\n' )
 
+def addXMLLine( line, xmlLines ):
+	"Get the all the xml lines of a text."
+	strippedLine = line.strip()
+	if strippedLine[ : len( '<!--' ) ] == '<!--':
+		endIndex = line.find( '-->' )
+		if endIndex != - 1:
+			endIndex += len( '-->' )
+			commentLine = line[ : endIndex ]
+			remainderLine = line[ endIndex : ].strip()
+			if len( remainderLine ) > 0:
+				xmlLines.append( commentLine )
+				xmlLines.append( remainderLine )
+				return
+	xmlLines.append( line )
+
 def createInitFile():
 	"Create the __init__.py file."
 	fileText = '__all__ = ' + str( getPythonFileNamesExceptInit() )
@@ -284,11 +299,11 @@ def getSummarizedFileName( fileName ):
 		return os.path.basename( fileName )
 	return fileName
 
-def getTextIfEmpty( fileName, text ):
+def getTextIfEmpty(fileName, text):
 	"Get the text from a file if it the text is empty."
 	if text != '':
 		return text
-	return getFileText( fileName )
+	return getFileText(fileName)
 
 def getTextLines( text ):
 	"Get the all the lines of text of a text."
@@ -317,6 +332,77 @@ def getWithoutBracketsEqualTab( line ):
 	line = line.replace( '(<', '' )
 	line = line.replace( '>', '' )
 	return line.replace( '\t', '' )
+
+def getXMLTagSplitLines(combinedLine):
+	"Get the xml lines split at a tag."
+	characterIndex = 0
+	lastWord = None
+	splitIndexes = []
+	tagEnd = False
+	while characterIndex < len(combinedLine):
+		character = combinedLine[characterIndex]
+		if character == '"':
+			lastWord = '"'
+		elif character == "'":
+			lastWord = "'"
+		elif combinedLine[characterIndex : characterIndex + len('<!--')] == '<!--':
+			lastWord = '-->'
+		elif combinedLine[characterIndex : characterIndex + len('<![CDATA[')] == '<![CDATA[':
+			lastWord = ']]>'
+		if lastWord != None:
+			characterIndex = combinedLine.find(lastWord, characterIndex + 1)
+			if characterIndex == -1:
+				return [combinedLine]
+			character = None
+			lastWord = None
+		if character == '>':
+			tagEnd = True
+		elif character == '<':
+			if tagEnd:
+				if combinedLine[characterIndex : characterIndex + 2] != '</':
+					splitIndexes.append(characterIndex)
+		characterIndex += 1
+	if len(splitIndexes) < 1:
+		return [combinedLine]
+	xmlTagSplitLines = []
+	lastSplitIndex = 0
+	for splitIndex in splitIndexes:
+		xmlTagSplitLines.append(combinedLine[lastSplitIndex : splitIndex])
+		lastSplitIndex = splitIndex
+	xmlTagSplitLines.append(combinedLine[lastSplitIndex :])
+	return xmlTagSplitLines
+
+def getXMLLines( text ):
+	"Get the all the xml lines of a text."
+	accumulatedOutput = None
+	textLines = getTextLines( text )
+	combinedLines = []
+	lastWord = '>'
+	for textLine in textLines:
+		strippedLine = textLine.strip()
+		firstCharacter = None
+		lastCharacter = None
+		if len( strippedLine ) > 1:
+			firstCharacter = strippedLine[ 0 ]
+			lastCharacter = strippedLine[ - 1 ]
+		if firstCharacter == '<' and lastCharacter != '>' and accumulatedOutput == None:
+			accumulatedOutput = cStringIO.StringIO()
+			accumulatedOutput.write( textLine )
+			if strippedLine[ : len( '<!--' ) ] == '<!--':
+				lastWord = '-->'
+		else:
+			if accumulatedOutput == None:
+				addXMLLine( textLine, combinedLines )
+			else:
+				accumulatedOutput.write( '\n' + textLine )
+				if strippedLine[ - len( lastWord ) : ] == lastWord:
+					addXMLLine( accumulatedOutput.getvalue(), combinedLines )
+					accumulatedOutput = None
+					lastWord = '>'
+	xmlLines = []
+	for combinedLine in combinedLines:
+		xmlLines += getXMLTagSplitLines(combinedLine)
+	return xmlLines
 
 def indexOfStartingWithSecond( letter, splitLine ):
 	"Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found"

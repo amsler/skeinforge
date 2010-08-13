@@ -133,7 +133,7 @@ class GcodeStepRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		#Set the default settings.
-		settings.addListsToRepository( 'skeinforge_plugins.craft_plugins.export_plugins.gcode_step.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.gcode_step.html', '', self )
 		self.addFeedRateEvenWhenUnchanging = settings.BooleanSetting().getFromValue( 'Add Feed Rate Even When Unchanging', self, True )
 		self.addSpaceBetweenWords = settings.BooleanSetting().getFromValue( 'Add Space Between Words', self, True )
 		self.addZEvenWhenUnchanging = settings.BooleanSetting().getFromValue( 'Add Z Even When Unchanging', self, True )

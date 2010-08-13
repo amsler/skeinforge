@@ -2,43 +2,45 @@
 <!--Created with Sketsa SVG Editor (http://www.kiyut.com)-->
 <svg contentScriptType="text/ecmascript"
 	baseProfile="full" zoomAndPan="magnify" contentStyleType="text/css"
-width="999px"
-height="999px"
+	width="999px"
+	height="999px"
 	onload="init()"
 	preserveAspectRatio="xMidYMid meet"
 	xmlns="http://www.w3.org/2000/svg" version="1.0"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	xmlns:slice="http://www.reprap.org/slice">
+	<metadata>
+		<slice:layers id="sliceData" javascriptControlBoxWidth='640' layerThickness="0.2" minX="0" maxX="61" minY="-5" maxY="50" minZ="0" maxZ="1" margin="20" noJavascriptControlBoxHeight='110' template="svg_layer" textHeight='22.5' version="0.1"/>
+	</metadata>
 	<script type="text/ecmascript"><![CDATA[
-//Meta data variables 
-units='mm';
-<!--replaceLineWith_sliceVariableLines-->
+mD = document.getElementsByTagNameNS( 'http://www.reprap.org/slice', 'layers' )[ 0 ];
 sliceMinX = 0;
 sliceMaxX = 0;
 sliceMinY = 0;
 sliceMaxY = 0;
 sliceMinZ = 0;
 sliceMaxZ = 0;
+units='mm';
 
 //Control var's
 currentLayer = 0; //Number of currently viewed layer (zero index)
-javascriptControlBoxX = 510;
-javascriptControlBoxY = 95;
+javascriptControlBoxWidth = mD.getAttribute( 'javascriptControlBoxWidth' ) * 1;
+javascriptControlBoxHeight = 95;
 sliding = false;
 
 //Display var's
-margin = 20;
+margin = mD.getAttribute( 'margin' ) * 1;
 scale = 1; //unitScale * zoomScale
 sliceDimensionX = null;
 sliceDimensionY = null;
 sliceDimensionZ = null;
-svgMinWidth = javascriptControlBoxX + 2 * margin; //Width of control box and margins
-textHeight = 22.5;
+svgMinWidth = javascriptControlBoxWidth + 2 * margin; //Width of control box and margins
+textHeight = mD.getAttribute( 'textHeight' ) * 1.0;
 unitScale = 3.7;
 zoomScale = 1; //Default 1:1 may need smaller scale for large objects
 
 //No javascript control var
-noJavascriptControlBoxY = 110;
+noJavascriptControlBoxHeight = mD.getAttribute( 'noJavascriptControlBoxHeight' ) * 1;
 
 var layers = [];
 
@@ -77,7 +79,6 @@ function init() {
 	document.getElementById( 'noJavascriptControls' ).setAttributeNS( null, 'visibility', 'hidden' )
 
 	//Get meta data
-	mD = document.getElementsByTagNameNS( 'http://www.reprap.org/slice', 'layers' )[ 0 ];
 	sliceMinX = mD.getAttribute( 'minX' ) * 1;
 	sliceMaxX = mD.getAttribute( 'maxX' ) * 1;
 	sliceMinY = mD.getAttribute( 'minY' ) * 1;
@@ -96,7 +97,7 @@ function init() {
 
 	//Find only layer groups
 	for ( var i = 0; i < allGroups.length; i++ ) {
-		if ( allGroups[ i ].id.indexOf( 'z' ) == 0 ) {
+		if ( allGroups[ i ].id.indexOf( 'z:' ) == 0 ) {
 			layers.push( allGroups[ i ] );
 		}
 	}
@@ -175,7 +176,7 @@ function viewAll() {
 	//Set svg size and view port
 	width = margin + ( sliceDimensionX * unitScale ) + margin;
 	width = Math.max( width, svgMinWidth );
-	height = layers.length * ( margin + sliceDimensionY * unitScale + textHeight ) + 3 * margin + textHeight + noJavascriptControlBoxY;
+	height = layers.length * ( margin + sliceDimensionY * unitScale + textHeight ) + 3 * margin + textHeight + noJavascriptControlBoxHeight;
 	setSVG( width,height );
 
 	//move and show all layers 
@@ -204,7 +205,7 @@ function viewSingle() {
 	//Set svg size and view port
 	width = margin + ( sliceDimensionX * scale ) + margin;
 	width = Math.max( width, svgMinWidth );
-	height = margin + ( sliceDimensionY * scale ) + margin + javascriptControlBoxY + margin;
+	height = margin + ( sliceDimensionY * scale ) + margin + javascriptControlBoxHeight + margin;
 	setSVG( width,height );
 
 	//move and hide all layers 
@@ -234,27 +235,24 @@ function viewSingle() {
 
 	<title>replaceWith_Title</title>
 	<desc></desc>
-	<metadata>
-		<slice:layers id="sliceData" template = "svg_layer" version="0.1" layerThickness="0.2" minX="0" maxX="61" minY="-5" maxY="50" minZ="0" maxZ="1"/>
-	</metadata>
+
 	<!--Begin Layer Data   -->
 	<g id="layerData" fill="#556B2F" stroke="#00F" stroke-width="0.54px" font-weight="bold" font-family="Arial" font-size="15px">
-<!--Beginning of path section-->
-<!--replaceLineWith_boundaryLayerLines--> 		<g id="z 0.1" transform="translate(20, 242)">
-<!--replaceLineWith_emptyString--> 			<text y="15" fill="#000" stroke="none">Layer 1, z 0.1</text>
-<!--replaceLineWith_emptyString--> 			<path transform="scale(3.7, -3.7) translate(0, 5)" d="M 0 -5 L 50 0 L60 50 L 5 50 z M 5 3 L5 15 L15 15 L15 5 z"/>
-<!--replaceLineWith_emptyString--> 		</g>
-<!--End of path section-->
+		<!--id="sliceElementTemplate" must be there or else the slice template will not be found-->
+		<g id="sliceElementTemplate" transform="translate(20, 242)">
+ 			<text y="15" fill="#000" stroke="none">Layer 1, z:0.1</text>
+ 			<path transform="scale(3.7, -3.7) translate(0, 5)" d="M 0 -5 L 50 0 L60 50 L 5 50 z M 5 3 L5 15 L15 15 L15 5 z"/>
+		</g>
 	</g>
 	<!--End Layer Data-->
 
-	<!--Button to change from all to single-->
-	<g font-weight="bold" font-family="Arial" font-size="15px">
+	<!--id="beginningOfControlSection" must be there or else the control box will be carved-->
+	<g id="beginningOfControlSection" font-weight="bold" font-family="Arial" font-size="15px">
+		<!--Button to change from all to single-->
 		<text id="buttonSingle" fill="darkslateblue" visibility="hidden" onclick="viewSingle()">[Single View]</text>
-
-	<!--Control box for single slice layout-->
+		<!--Control box for single slice layout-->
 		<g id="javascriptControls" visibility="hidden" fill="#000">
-			<rect width="510" height="90" stroke="gray" stroke-width="4px" fill="silver"/>	
+			<rect width="640" height="90" stroke="gray" stroke-width="4px" fill="silver"/>	
 			<g>
 				<path stroke="#000" stroke-width="3" d="M 20 20 h5 l-5 -10 l-5 10 h5 v35 h35 v-5 l10 5 l-10 5 v-5 h-35 z"/>
 				<text x="25" y="20">Y</text>
@@ -276,7 +274,7 @@ function viewSingle() {
 				<text y="40" x="153" onclick="changeScale(zoomScale*2)" fill="darkslateblue">&gt;</text>
 				<text y="60" id="layerThickness" >Layer Thickness: </text>
 			</g>
-			<g transform="translate(290, 0)">
+			<g transform="translate(320, 0)">
 				<text y="40">X</text>
 				<text y="60">Y</text>
 				<text y="80">Z</text>
@@ -284,26 +282,25 @@ function viewSingle() {
 				<text id="minX" x="20" y="40">0.0</text>
 				<text id="minY" x="20" y="60">0.0</text>
 				<text id="minZ" x="20" y="80">0.0</text>
-				<text x="80" y="20">Max</text>
-				<text id="maxX" x="80" y="40">0.0</text>
-				<text id="maxY" x="80" y="60">0.0</text>
-				<text id="maxZ" x="80" y="80">0.0</text>
-				<text x="140" y="20">Dimension</text>
-				<text id="dimX" x="140" y="40">0.0</text>
-				<text id="dimY" x="140" y="60">0.0</text>
-				<text id="dimZ" x="140" y="80">0.0</text>
+				<text x="120" y="20">Max</text>
+				<text id="maxX" x="120" y="40">0.0</text>
+				<text id="maxY" x="120" y="60">0.0</text>
+				<text id="maxZ" x="120" y="80">0.0</text>
+				<text x="220" y="20">Dimension</text>
+				<text id="dimX" x="220" y="40">0.0</text>
+				<text id="dimY" x="220" y="60">0.0</text>
+				<text id="dimZ" x="220" y="80">0.0</text>
 			</g>
 		</g>
 	</g>
-
 	<!--No Javascript Control box   -->
-<!--replaceLineWith_noJavascriptControls--> <g id="noJavascriptControls" fill="#000" transform="translate(20, 1400)">
-		<rect width="300" height="110" stroke="gray" stroke-width="4px" fill="silver"/>
+	<g id="noJavascriptControls" fill="#000" transform="translate(20, 1400)">
+		<rect width="640" height="110" stroke="gray" stroke-width="4px" fill="silver"/>
 		<g transform="translate(10, 0)">
 			<g transform="translate(0, 20)">
 				<text x="120">Min</text>
-				<text x="170">Max</text>
-				<text x="220">Dimension</text>
+				<text x="220">Max</text>
+				<text x="320">Dimension</text>
 				<path stroke="#000" stroke-width="3" d="M 5 40 h5 l-5 -10 l-5 10 h5 v35 h35 v-5 l10 5 l-10 5 v-5 h-35 z"/>
 				<text x="3" y="20" font-weight="bold">Y</text>
 				<text x="60" y="80" font-weight="bold">X</text>
@@ -312,22 +309,21 @@ function viewSingle() {
 			<g transform="translate(100, 40)">
 				<text>X</text>
 				<text id="minXNoJavascript" x="20">replaceWith_minX</text>
-				<text id="maxXNoJavascript" x="70">replaceWith_maxX</text>
-				<text id="dimXNoJavascript" x="120">replaceWith_dimX</text>
+				<text id="maxXNoJavascript" x="120">replaceWith_maxX</text>
+				<text id="dimXNoJavascript" x="220">replaceWith_dimX</text>
 			</g>
 			<g transform="translate(100, 60)">
 				<text>Y</text>
 				<text id="minYNoJavascript" x="20">replaceWith_minY</text>
-				<text id="maxYNoJavascript" x="70">replaceWith_maxY</text>
-				<text id="dimYNoJavascript" x="120">replaceWith_dimY</text>
+				<text id="maxYNoJavascript" x="120">replaceWith_maxY</text>
+				<text id="dimYNoJavascript" x="220">replaceWith_dimY</text>
 			</g>
 			<g transform="translate(100, 80)">
 				<text>Z</text>
 				<text id="minZNoJavascript" x="20">replaceWith_minZ</text>
-				<text id="maxZNoJavascript" x="70">replaceWith_maxZ</text>
-				<text id="dimZNoJavascript" x="120">replaceWith_dimZ</text>
+				<text id="maxZNoJavascript" x="120">replaceWith_maxZ</text>
+				<text id="dimZNoJavascript" x="220">replaceWith_dimZ</text>
 			</g>
 		</g>
 	</g>
-	<!--End Controls-->
 </svg>

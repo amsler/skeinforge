@@ -129,10 +129,14 @@ Default is three millimeters.
 Default is 1 percent.
 
 ===Support===
+Good articles on support material are at:
+http://davedurant.wordpress.com/2010/07/31/skeinforge-support-part-1/
+http://davedurant.wordpress.com/2010/07/31/skeinforge-support-part-2/
+
 ====Support Cross Hatch====
 Default is off.
 
-When selected, the support material will cross hatched.
+When selected, the support material will cross hatched.  Cross hatching the support makes it stronger and harder to remove, which is why the default is off.
 
 ====Support Flow Rate over Operating Flow Rate====
 Default is 0.9.
@@ -309,7 +313,7 @@ class RaftRepository:
 	"A class to handle the raft settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.raft.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.raft.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Raft', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Raft' )
 		self.activateRaft = settings.BooleanSetting().getFromValue( 'Activate Raft', self, True )

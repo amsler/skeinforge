@@ -230,7 +230,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the behold dialog.
 
 
->>> behold.analyzeFile( 'Screw Holder_penultimate.gcode' )
+>>> behold.getWindowAnalyzeFile( 'Screw Holder_penultimate.gcode' )
 This brings up the behold viewer to view the gcode file.
 
 """
@@ -257,20 +257,6 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def analyzeFile( fileName ):
-	"Behold a gcode file."
-	gcodeText = gcodec.getFileText( fileName )
-	analyzeFileGivenText( fileName, gcodeText )
-
-def analyzeFileGivenText( fileName, gcodeText, repository = None ):
-	"Display a beholded gcode file for a gcode file."
-	if gcodeText == '':
-		return ''
-	if repository == None:
-		repository = settings.getReadRepository( BeholdRepository() )
-	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, repository )
-	skeinWindow.updateDeiconify()
-
 def compareLayerSequence( first, second ):
 	"Get comparison in order to sort skein panes in ascending order of layer zone index then sequence index."
 	if first.layerZoneIndex < second.layerZoneIndex:
@@ -285,6 +271,21 @@ def getNewRepository():
 	"Get the repository constructor."
 	return BeholdRepository()
 
+def getWindowAnalyzeFile( fileName ):
+	"Behold a gcode file."
+	gcodeText = gcodec.getFileText( fileName )
+	return getWindowAnalyzeFileGivenText( fileName, gcodeText )
+
+def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
+	"Display a beholded gcode file for a gcode file."
+	if gcodeText == '':
+		return None
+	if repository == None:
+		repository = settings.getReadRepository( BeholdRepository() )
+	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, repository )
+	skeinWindow.updateDeiconify()
+	return skeinWindow
+
 def getWindowGivenTextRepository( fileName, gcodeText, repository ):
 	"Display the gcode text in a behold viewer."
 	skein = BeholdSkein()
@@ -296,14 +297,14 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 	repository = settings.getReadRepository( BeholdRepository() )
 	if repository.activateBehold.value:
 		gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
-		analyzeFileGivenText( fileNameSuffix, gcodeText, repository )
+		getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
 class BeholdRepository( tableau.TableauRepository ):
 	"A class to handle the behold settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.behold.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.behold.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Behold', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold' )
 		self.activateBehold = settings.BooleanSetting().getFromValue( 'Activate Behold', self, True )
@@ -359,7 +360,7 @@ class BeholdRepository( tableau.TableauRepository ):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			analyzeFile( fileName )
+			getWindowAnalyzeFile( fileName )
 
 
 class BeholdSkein:
@@ -635,7 +636,7 @@ class SkeinWindow( tableau.TableauWindow ):
 	def __init__( self, repository, skein ):
 		"Initialize the skein window."
 		self.arrowshape = ( 24, 30, 9 )
-		self.addCanvasMenuRootScrollSkein( repository, skein, '_behold', 'Behold Viewer' )
+		self.addCanvasMenuRootScrollSkein( repository, skein, '_behold', 'Behold' )
 		self.center = 0.5 * self.screenSize
 		self.motionStippleName = 'gray75'
 		halfCenter = 0.5 * self.center.real
@@ -873,7 +874,7 @@ class SkeinWindow( tableau.TableauWindow ):
 def main():
 	"Display the behold dialog."
 	if len( sys.argv ) > 1:
-		analyzeFile( ' '.join( sys.argv[ 1 : ] ) )
+		tableau.startMainLoopFromWindow( getWindowAnalyzeFile( ' '.join( sys.argv[ 1 : ] ) ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

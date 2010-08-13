@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.geometry_tools import matrix4x4
+from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import euclidean
 
@@ -25,11 +25,11 @@ def processXMLElement( xmlElement, xmlProcessor ):
 		print( 'Warning, translate could not get target.' )
 		return
 	translateDictionary = xmlElement.attributeDictionary.copy()
-	targetMatrix4X4Copy = matrix4x4.Matrix4X4().getFromXMLElement( target )
+	targetMatrixCopy = matrix.getFromObjectOrXMLElement(target)
 	xmlElement.attributeDictionary = target.attributeDictionary.copy()
-	matrix4x4.setAttributeDictionaryToMatrix( target.attributeDictionary, targetMatrix4X4Copy )
+	matrix.setAttributeDictionaryToMatrix( target.attributeDictionary, targetMatrixCopy )
 	euclidean.overwriteDictionary( translateDictionary, [], [ 'visible' ], xmlElement.attributeDictionary )
 	xmlElement.className = target.className
-	matrix4x4.setXMLElementDictionaryToOtherElementDictionary( xmlElement, targetMatrix4X4Copy, xmlElement )
+	matrix.setXMLElementDictionaryToOtherElementDictionary( xmlElement, targetMatrixCopy, 'matrix.', xmlElement )
 	target.copyXMLChildren( xmlElement.getIDSuffix(), xmlElement )
 	xmlProcessor.processXMLElement( xmlElement )

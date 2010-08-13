@@ -37,42 +37,6 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def analyzeFile( fileName ):
-	"Get file interpretion."
-	startTime = time.time()
-	carving = getCarving( fileName )
-	if carving == None:
-		return ''
-	interpretGcode = str( carving )
-	if interpretGcode == '':
-		return
-	repository = settings.getReadRepository( InterpretRepository() )
-	if repository.printInterpretion.value:
-		print( interpretGcode )
-	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_interpret.' + carving.getInterpretationSuffix()
-	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
-	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
-	gcodec.writeFileText( suffixFileName, interpretGcode )
-	print( 'The interpret file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took %s to interpret the file.' % euclidean.getDurationString( time.time() - startTime ) )
-	textProgram = repository.textProgram.value
-	if textProgram == '':
-		return
-	if textProgram == 'webbrowser':
-		settings.openWebPage( suffixFileName )
-		return
-	textFilePath = '"' + os.path.normpath( suffixFileName ) + '"' # " to send in file name with spaces
-	shellCommand = textProgram + ' ' + textFilePath
-	print( 'Sending the shell command:' )
-	print( shellCommand )
-	commandResult = os.system( shellCommand )
-	if commandResult != 0:
-		print( 'It may be that the system could not find the %s program.' % textProgram )
-		print( 'If so, try installing the %s program or look for another one, like Open Office which can be found at:' % textProgram )
-		print( 'http://www.openoffice.org/' )
-		print( 'Open office writer can then be started from the command line with the command "soffice -writer".' )
-
 def getCarving( fileName ):
 	"Get carving."
 	pluginModule = getInterpretPlugin( fileName )
@@ -137,12 +101,48 @@ def getTranslatorFileTypeTuples():
 	fileTypeTuples.sort()
 	return fileTypeTuples
 
+def getWindowAnalyzeFile( fileName ):
+	"Get file interpretion."
+	startTime = time.time()
+	carving = getCarving( fileName )
+	if carving == None:
+		return None
+	interpretGcode = str( carving )
+	if interpretGcode == '':
+		return None
+	repository = settings.getReadRepository( InterpretRepository() )
+	if repository.printInterpretion.value:
+		print( interpretGcode )
+	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_interpret.' + carving.getInterpretationSuffix()
+	suffixDirectoryName = os.path.dirname( suffixFileName )
+	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
+	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
+	gcodec.writeFileText( suffixFileName, interpretGcode )
+	print( 'The interpret file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print( 'It took %s to interpret the file.' % euclidean.getDurationString( time.time() - startTime ) )
+	textProgram = repository.textProgram.value
+	if textProgram == '':
+		return None
+	if textProgram == 'webbrowser':
+		settings.openWebPage( suffixFileName )
+		return None
+	textFilePath = '"' + os.path.normpath( suffixFileName ) + '"' # " to send in file name with spaces
+	shellCommand = textProgram + ' ' + textFilePath
+	print( 'Sending the shell command:' )
+	print( shellCommand )
+	commandResult = os.system( shellCommand )
+	if commandResult != 0:
+		print( 'It may be that the system could not find the %s program.' % textProgram )
+		print( 'If so, try installing the %s program or look for another one, like Open Office which can be found at:' % textProgram )
+		print( 'http://www.openoffice.org/' )
+		print( 'Open office writer can then be started from the command line with the command "soffice -writer".' )
+
 
 class InterpretRepository:
 	"A class to handle the interpret settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.interpret.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.interpret.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Interpret', self, '' )
 		self.activateInterpret = settings.BooleanSetting().getFromValue( 'Activate Interpret', self, False )
 		self.printInterpretion = settings.BooleanSetting().getFromValue( 'Print Interpretion', self, False )
@@ -153,4 +153,4 @@ class InterpretRepository:
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			analyzeFile( fileName )
+			getWindowAnalyzeFile( fileName )

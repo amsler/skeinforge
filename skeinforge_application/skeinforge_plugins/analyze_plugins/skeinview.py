@@ -138,7 +138,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the skeinview dialog.
 
 
->>> skeinview.analyzeFile( 'Screw Holder_penultimate.gcode' )
+>>> skeinview.getWindowAnalyzeFile( 'Screw Holder_penultimate.gcode' )
 This brings up the skeinview viewer to view each layer of a gcode file.
 
 """
@@ -163,20 +163,6 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def analyzeFile( fileName ):
-	"Display a gcode file in a skeinview window."
-	gcodeText = gcodec.getFileText( fileName )
-	analyzeFileGivenText( fileName, gcodeText )
-
-def analyzeFileGivenText( fileName, gcodeText, repository = None ):
-	"Display a gcode file in a skeinview window given the text."
-	if gcodeText == '':
-		return
-	if repository == None:
-		repository = settings.getReadRepository( SkeinviewRepository() )
-	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, repository )
-	skeinWindow.updateDeiconify()
-
 def getNewRepository():
 	"Get the repository constructor."
 	return SkeinviewRepository()
@@ -184,6 +170,21 @@ def getNewRepository():
 def getRankIndex( rulingSeparationWidthMillimeters, screenOrdinate ):
 	"Get rank index."
 	return int( round( screenOrdinate / rulingSeparationWidthMillimeters ) )
+
+def getWindowAnalyzeFile( fileName ):
+	"Display a gcode file in a skeinview window."
+	gcodeText = gcodec.getFileText( fileName )
+	return getWindowAnalyzeFileGivenText( fileName, gcodeText )
+
+def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
+	"Display a gcode file in a skeinview window given the text."
+	if gcodeText == '':
+		return None
+	if repository == None:
+		repository = settings.getReadRepository( SkeinviewRepository() )
+	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, repository )
+	skeinWindow.updateDeiconify()
+	return skeinWindow
 
 def getWindowGivenTextRepository( fileName, gcodeText, repository ):
 	"Display a gcode file in a skeinview window given the text and settings."
@@ -196,14 +197,14 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 	repository = settings.getReadRepository( SkeinviewRepository() )
 	if repository.activateSkeinview.value:
 		gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
-		analyzeFileGivenText( fileNameSuffix, gcodeText, repository )
+		getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
 class SkeinviewRepository( tableau.TableauRepository ):
 	"A class to handle the skeinview settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.skeinview.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.skeinview.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Skeinview', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview' )
 		self.activateSkeinview = settings.BooleanSetting().getFromValue( 'Activate Skeinview', self, True )
@@ -232,7 +233,7 @@ class SkeinviewRepository( tableau.TableauRepository ):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			analyzeFile( fileName )
+			getWindowAnalyzeFile( fileName )
 
 
 class SkeinviewSkein:
@@ -386,7 +387,7 @@ class SkeinviewSkein:
 class SkeinWindow( tableau.TableauWindow ):
 	def __init__( self, repository, skein ):
 		"Initialize the skein window.setWindowNewMouseTool"
-		self.addCanvasMenuRootScrollSkein( repository, skein, '_skeinview', 'Skeinview Viewer' )
+		self.addCanvasMenuRootScrollSkein( repository, skein, '_skeinview', 'Skeinview' )
 		horizontalRulerBoundingBox = ( 0, 0, int( skein.screenSize.real ), self.rulingExtent )
 		self.horizontalRulerCanvas = settings.Tkinter.Canvas( self.root, width = self.canvasWidth, height = self.rulingExtent, scrollregion = horizontalRulerBoundingBox )
 		self.horizontalRulerCanvas.grid( row = 0, column = 2, columnspan = 96, sticky = settings.Tkinter.E + settings.Tkinter.W )
@@ -553,7 +554,7 @@ class SkeinWindow( tableau.TableauWindow ):
 def main():
 	"Display the skeinview dialog."
 	if len( sys.argv ) > 1:
-		analyzeFile( ' '.join( sys.argv[ 1 : ] ) )
+		tableau.startMainLoopFromWindow( getWindowAnalyzeFile( ' '.join( sys.argv[ 1 : ] ) ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

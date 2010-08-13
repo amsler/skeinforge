@@ -61,6 +61,11 @@ Default is 1.8.
 
 Defines the ratio of the extrusion perimeter width to the layer thickness.  The higher the value the more the perimeter will be inset, the default is 1.8.  A ratio of one means the extrusion is a circle, a typical ratio of 1.8 means the extrusion is a wide oval.  These values should be measured from a test extrusion line.
 
+===SVG Viewer===
+Default is webbrowser.
+
+If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector graphics file will be sent to the default browser to be opened.  If the 'SVG Viewer' is set to a program name, the scalable vector graphics file will be sent to that program to be opened.
+
 ==Examples==
 The following examples carve the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and carve.py.
 
@@ -108,7 +113,6 @@ from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from fabmetheus_utilities import svg_writer
-from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
@@ -145,21 +149,23 @@ def writeOutput( fileName = '' ):
 	"Carve a GNU Triangulated Surface file."
 	startTime = time.time()
 	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being carved.' )
-	carveGcode = getCraftedText( fileName )
+	repository = CarveRepository()
+	settings.getReadRepository( repository )
+	carveGcode = getCraftedText( fileName, '', repository )
 	if carveGcode == '':
 		return
 	suffixFileName = gcodec.getFilePathWithUnderscoredBasename( fileName, '_carve.svg' )
 	gcodec.writeFileText( suffixFileName, carveGcode )
 	print( 'The carved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	print( 'It took %s to carve the file.' % euclidean.getDurationString( time.time() - startTime ) )
-	settings.openWebPage( suffixFileName )
+	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 
 class CarveRepository:
 	"A class to handle the carve settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.carve.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.carve.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Carve' )
 		self.bridgeThicknessMultiplier = settings.FloatSpin().getFromValue( 0.8, 'Bridge Thickness Multiplier (ratio):', self, 1.2, 1.0 )
@@ -177,6 +183,9 @@ class CarveRepository:
 		self.correctMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Correct Mesh', self, True )
 		self.unprovenMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Unproven Mesh', self, False )
 		self.perimeterWidthOverThickness = settings.FloatSpin().getFromValue( 1.4, 'Perimeter Width over Thickness (ratio):', self, 2.2, 1.8 )
+		settings.LabelSeparator().getFromRepository( self )
+		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
+		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Carve'
 
 	def execute( self ):

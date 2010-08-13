@@ -7,14 +7,14 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.geometry_tools import matrix4x4
+from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities import xml_simple_parser
+from fabmetheus_utilities import xml_simple_reader
 from fabmetheus_utilities import xml_simple_writer
 import cmath
 import cStringIO
@@ -30,7 +30,7 @@ __license__ = "GPL 3.0"
 def addGeometryList( faces, xmlElement ):
 	"Add vertex elements to an xml element."
 	for face in faces:
-		faceElement = xml_simple_parser.XMLElement()
+		faceElement = xml_simple_reader.XMLElement()
 		face.addToAttributeDictionary( faceElement.attributeDictionary )
 		faceElement.className = 'face'
 		faceElement.parent = xmlElement
@@ -104,7 +104,7 @@ class Face:
 		"Add the xml for this object."
 		attributeDictionary = {}
 		self.addToAttributeDictionary( attributeDictionary )
-		xml_simple_writer.addClosedXMLTag( attributeDictionary, depth, 'face', output )
+		xml_simple_writer.addClosedXMLTag( attributeDictionary, 'face', depth, output )
 
 	def getFromEdgeIndexes( self, edgeIndexes, edges, faceIndex ):
 		"Initialize from edge indices."

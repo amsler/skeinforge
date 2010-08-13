@@ -1,5 +1,5 @@
 <?xml version='1.0' ?>
-<fabmetheus version="2010-04-04" overhangangle='35' overhangspan='45' twistprecision="10">
+<fabmetheus version="2010-04-04" overhang.supportangle='35' overhang.span='45' twistprecision="10">
 	<path name="vertex_holder">
 		<vertex x="8.8" y="7.7" z="2.9" />
 	</path>
@@ -11,27 +11,30 @@
 	<extrude id="bracket test" scalepath='[0,0,0],[1,1,1],[0,0,2]' segments="5" target="[[],(0,-30),[20]],[ [5,-3],(5,-25),[12,-3]],[[30],(30,-10),[40]]" toz="3.0" twist="30" y='-40' />
 	<polygon id="polygon test" threesidedpolygon="test" radius="20.0" sides="3" />
 	<extrude id="extrude crooked" name="extrude crooked" path='[0,0,0],[0,45,1],[33,0,2]' target="[0,0,0],[20,0,0],[0,10,0]" segments="5" y="50" toz="3.0" />
-	<polygon id="heptagon" roundoverside='-0.2' segmentcenter='[]' wedgecenter='[]' name="star" radius="20" sides="7" start='1' />
+	<polygon id="heptagon" roundoverside='-0.2' segmentcenter='[]' wedge.center='[]' name="star" radius="20" sides="7" start='1' />
 	<dictionary name="double y" return='=[x*2,y,z]' />
 	-->
-	<lineation paths='=math.polygon(7)*20,math.polygon(-11)*10' name="ring" translate='true' translate.deltax='40' />
+	<lineation paths='=creation.polygon(7)*20,creation.polygon(-11)*10' name="ring" translate='true' translate.rectangular.x='40' />
 	<function id="doubley" parameters='x,y,z' >
 		<statement x='=x*2' />
 		<return return='=[x,y*2,z]' />
+	</function>
+	<function name="half" parameters='number' >
+		<return return='=0.5*number' />
 	</function>
 	<function name="triple" parameters='number' >
 		<statement number='=number*3' />
 		<return return='=number' />
 	</function>
-	<square name="square" bottomwidth="40.0" equation='doubley(x,y,z)' height="30.0" interiorangle='100' topwidth="10" />
-	<extrude id="extrude pentagon" segments="5" target="name.square" to="name.vertex_holder.vertex[0]" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
+	<square name="square" bottomwidth="40.0" equation.polar='[radius*1.5,azimuth+20]' height="30.0" interiorangle='100' comment_overhang.activate='true' comment_segment.path='[[],[0.5,0.2],[1,0]]' comment_segment.center='[]' comment_segment.start='2' topwidth="10" comment_wedge.center='[]' />
+	<wedge name="wedgeSeven" target='=creation.polygon(7)*20' center='[]' />
+	<extrude id="extrude pentagon" segments="5" target="name.wedgeSeven" to="name.vertex_holder.vertex[0]" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
 	<function name="minus80" parameters='u=-80' return='=u*2' />
-	<extrude id="mesa" scalepath='[1,1],[1,1,1],[0.5,0.5,1],[0.5,0.5,2]' section="=math.polygon({rotationoverside:0.5,radius:10,radiusy:20,x:30})" toz="3.0" y='=name.triple(-20)' />
-	<translate target='id.mesa' deltax='50' />
+	<extrude id="mesa" scalepath='[1,1],[1,1,1],[0.5,0.5,1],[0.5,0.5,2]' equation.rectangular='{"x":x+20}' section="=creation.polygon({rotate.z:20,rotationoverside:0.5,radius:10,diameter.y:40,scale.rectangular.x:2})" to.z="3.0" qqqtranslate.rectangular.y='=name.triple(-20)' matrix.matrix='[[1.0,0.0,0.0,22.2],[0.0, 1.0, 0.0, 77.0]]' />
+	<translate target='id.mesa' rectangular.x='50' />
 	<!--
-	<overhang paths='ring' name="hang" verticalangle_comment='60' x='50' array='true' array.path='[[],[50,0,0]]' />
 	<extrude target="name.hang" toz="3.0" x="80" y='-80' />
-		<lineation overhangremoval='true' paths='ring' name="hang" overhang.verticalangle_comment='60' x='50' />
+	<lineation paths='ring' name="hang" overhang.inclination_comment='60' x='50' />
 	<polygon id="square" name="negative square" radius="10" sides="-4" />
 	<extrude id="extrude pentagon" segments="5" target="name.star, negative square" to="name.vertex_holder.vertex.0" tilttox="2" twistpath="[0,0],[1,30],[2,0]" x="40" />
 	-->

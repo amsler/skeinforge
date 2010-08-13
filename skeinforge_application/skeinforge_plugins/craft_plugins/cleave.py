@@ -45,6 +45,11 @@ Default is two millimeters.
 
 Defines the width of the perimeter.
 
+===SVG Viewer===
+Default is webbrowser.
+
+If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector graphics file will be sent to the default browser to be opened.  If the 'SVG Viewer' is set to a program name, the scalable vector graphics file will be sent to that program to be opened.
+
 ==Examples==
 The following examples cleave the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and cleave.py.
 
@@ -126,15 +131,11 @@ def getNewRepository():
 
 def writeOutput( fileName = '' ):
 	"Cleave a GNU Triangulated Surface file.  If no fileName is specified, cleave the first GNU Triangulated Surface file in this folder."
-	if fileName == '':
-		unmodified = gcodec.getFilesWithFileTypesWithoutWords( fabmetheus_interpret.getImportPluginFileNames() )
-		if len( unmodified ) == 0:
-			print( "There are no carvable files in this folder." )
-			return
-		fileName = unmodified[ 0 ]
 	startTime = time.time()
 	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being cleaved.' )
-	cleaveGcode = getCraftedText( fileName )
+	repository = CleaveRepository()
+	settings.getReadRepository( repository )
+	cleaveGcode = getCraftedText( fileName, '', repository )
 	if cleaveGcode == '':
 		return
 	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_cleave.svg'
@@ -144,14 +145,14 @@ def writeOutput( fileName = '' ):
 	gcodec.writeFileText( suffixFileName, cleaveGcode )
 	print( 'The cleaved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	print( 'It took %s to cleave the file.' % euclidean.getDurationString( time.time() - startTime ) )
-	settings.openWebPage( suffixFileName )
+	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 
 class CleaveRepository:
 	"A class to handle the cleave settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.cleave.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.cleave.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Cleaved', self, '' )
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
@@ -163,6 +164,9 @@ class CleaveRepository:
 		self.correctMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Correct Mesh', self, True )
 		self.unprovenMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Unproven Mesh', self, False )
 		self.perimeterWidth = settings.FloatSpin().getFromValue( 0.4, 'Perimeter Width (mm):', self, 4.0, 2.0 )
+		settings.LabelSeparator().getFromRepository( self )
+		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
+		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Cleave'
 
 	def execute( self ):

@@ -18,8 +18,10 @@ __license__ = "GPL 3.0"
 
 def processChildrenByIndexValue( function, index, indexValue, value, xmlElement ):
 	"Process children by index value."
-	function.localDictionary[ indexValue.indexName ] = index
-	function.localDictionary[ indexValue.valueName ] = value
+	if indexValue.indexName != '':
+		function.localDictionary[ indexValue.indexName ] = index
+	if indexValue.valueName != '':
+		function.localDictionary[ indexValue.valueName ] = value
 	function.processChildren( xmlElement )
 
 def processXMLElement( xmlElement, xmlProcessor ):
@@ -34,7 +36,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 		return
 	function = xmlProcessor.functions[ - 1 ]
 	inValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.inSplitWords, xmlElement )
-	if inValue.__class__ == list:
+	if inValue.__class__ == list or inValue.__class__ == str:
 		for index, value in enumerate( inValue ):
 			processChildrenByIndexValue( function, index, xmlElement.object, value, xmlElement )
 		return
@@ -50,10 +52,10 @@ class IndexValue:
 	def __init__( self, xmlElement ):
 		"Initialize."
 		self.inSplitWords = None
-		self.indexName = '_index'
+		self.indexName = ''
 		if 'index' in xmlElement.attributeDictionary:
 			self.indexName = xmlElement.attributeDictionary[ 'index' ]
-		self.valueName = '_value'
+		self.valueName = ''
 		if 'value' in xmlElement.attributeDictionary:
 			self.valueName = xmlElement.attributeDictionary[ 'value' ]
 		if 'in' in xmlElement.attributeDictionary:

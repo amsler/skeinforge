@@ -128,8 +128,8 @@ class BooleanGeometry:
 		"Return the suffix for a boolean carving."
 		return 'xml'
 
-	def getMatrixChain( self ):
-		"Get the matrix chain."
+	def getMatrixChainTetragrid(self):
+		"Get the matrix chain tetragrid."
 		return None
 
 	def getZAddExtruderPaths( self, z ):

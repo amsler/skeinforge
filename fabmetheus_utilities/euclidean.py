@@ -382,7 +382,7 @@ def getAngleAroundZAxisDifference( subtractFromVec3, subtractVec3 ):
 	return math.atan2( differenceVector.y, differenceVector.x )
 
 def getAngleDifferenceByComplex( subtractFromComplex, subtractComplex ):
-	"Get the angle between a pair of normalized complexex."
+	"Get the angle between a pair of normalized complexes."
 	subtractComplexMirror = complex( subtractComplex.real , - subtractComplex.imag )
 	differenceComplex = subtractComplexMirror * subtractFromComplex
 	return math.atan2( differenceComplex.imag, differenceComplex.real )
@@ -498,6 +498,35 @@ def getClippedLoopPath( clip, loopPath ):
 		newUltimatePoint = penultimateClippedPoint + segment * remainingLength / segmentLength
 		loopPath = [ newUltimatePoint ] + loopPath
 	return getClippedAtEndLoopPath( clip, loopPath )
+
+def getComplexByCommaString( valueCommaString ):
+	"Get the commaString as a complex."
+	try:
+		splitLine = valueCommaString.replace( ',', ' ' ).split()
+		return complex( float( splitLine[ 0 ] ), float( splitLine[ 1 ] ) )
+	except:
+		pass
+	return None
+
+def getComplexDefaultByDictionary( defaultComplex, dictionary, key ):
+	"Get the value as a complex."
+	if key in dictionary:
+		return complex( dictionary[ key ].strip().replace( '(', '' ).replace( ')', '' ) )
+	return defaultComplex
+
+def getComplexDefaultByDictionaryKeys( defaultComplex, dictionary, keyX, keyY ):
+	"Get the value as a complex."
+	x = getFloatDefaultByDictionary( defaultComplex.real, dictionary, keyX )
+	y = getFloatDefaultByDictionary( defaultComplex.real, dictionary, keyY )
+	return complex( x, y )
+
+def getComplexByWords(words, wordIndex=0):
+	"Get the complex by the first two words."
+	try:
+		return complex(float(words[wordIndex]), float(words[wordIndex + 1]))
+	except:
+		pass
+	return None
 
 def getComplexPath( vector3Path ):
 	"Get the complex path from the vector3 path."
@@ -621,6 +650,15 @@ def getFillOfSurroundings( surroundingLoops ):
 	for surroundingLoop in surroundingLoops:
 		fillOfSurroundings += surroundingLoop.getFillLoops()
 	return fillOfSurroundings
+
+def getFloatDefaultByDictionary( defaultFloat, dictionary, key ):
+	"Get the value as a float."
+	evaluatedFloat = None
+	if key in dictionary:
+		evaluatedFloat = getFloatFromValue( dictionary[ key ] )
+	if evaluatedFloat == None:
+		return defaultFloat
+	return evaluatedFloat
 
 def getFloatFromValue( value ):
 	"Get the value as a float."
@@ -1657,6 +1695,12 @@ def removeListFromDictionary( dictionary, keys ):
 	for key in keys:
 		removeElementFromDictionary( dictionary, key )
 
+def removePrefixFromDictionary( dictionary, prefix ):
+	'Remove the attributes starting with the prefix from the dictionary.'
+	for key in dictionary.keys():
+		if key.startswith( prefix ):
+			del dictionary[ key ]
+
 def removePixelTableFromPixelTable( pixelTableToBeRemoved, pixelTableToBeRemovedFrom ):
 	"Remove pixel from the pixel table."
 	removeListFromDictionary( pixelTableToBeRemovedFrom, pixelTableToBeRemoved.keys() )
@@ -2034,10 +2078,10 @@ class RotatedLoopLayer:
 		if len( self.loops ) == 1:
 			xml_simple_writer.addXMLFromLoopComplexZ( {}, depth, self.loops[ 0 ], output, self.z )
 			return
-		xml_simple_writer.addBeginXMLTag( {}, depth, 'group', output )
+		xml_simple_writer.addBeginXMLTag( {}, 'group', depth, output )
 		for loop in self.loops:
 			xml_simple_writer.addXMLFromLoopComplexZ( {}, depth + 1, loop, output, self.z )
-		xml_simple_writer.addEndXMLTag( depth, 'group', output )
+		xml_simple_writer.addEndXMLTag( 'group', depth, output )
 
 	def getCopyAtZ( self, z ):
 		"Get a raised copy."

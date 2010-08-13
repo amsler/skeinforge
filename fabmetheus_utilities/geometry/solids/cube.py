@@ -56,18 +56,18 @@ class Cube( trianglemesh.TriangleMesh ):
 	def createShape( self ):
 		"Create the shape."
 		square = [
-			complex( - self.half.x, - self.half.y ),
-			complex( self.half.x, - self.half.y ),
-			complex( self.half.x, self.half.y ),
-			complex( - self.half.x, self.half.y ) ]
-		bottomTopSquare = trianglemesh.getAddIndexedLoops( square, self.vertices, [ - self.half.z, self.half.z ] )
+			complex( - self.inradius.x, - self.inradius.y ),
+			complex( self.inradius.x, - self.inradius.y ),
+			complex( self.inradius.x, self.inradius.y ),
+			complex( - self.inradius.x, self.inradius.y ) ]
+		bottomTopSquare = trianglemesh.getAddIndexedLoops( square, self.vertices, [ - self.inradius.z, self.inradius.z ] )
 		trianglemesh.addPillarFromConvexLoops( self.faces, bottomTopSquare )
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.half = evaluate.getVector3ByPrefix( 'half', Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
-		self.half = evaluate.getVector3ThroughSizeDiameter( self.half, self.xmlElement )
-		self.xmlElement.attributeDictionary[ 'halfx' ] = self.half.x
-		self.xmlElement.attributeDictionary[ 'halfy' ] = self.half.y
-		self.xmlElement.attributeDictionary[ 'halfz' ] = self.half.z
+		self.inradius = evaluate.getVector3ByPrefixes( [ 'demisize', 'inradius' ], Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
+		self.inradius = evaluate.getVector3ByMultiplierPrefix( 2.0, 'size', self.inradius, self.xmlElement )
+		self.xmlElement.attributeDictionary[ 'inradius.x' ] = self.inradius.x
+		self.xmlElement.attributeDictionary[ 'inradius.y' ] = self.inradius.y
+		self.xmlElement.attributeDictionary[ 'inradius.z' ] = self.inradius.z
 		self.createShape()

@@ -156,7 +156,7 @@ class Binary16ByteRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		#Set the default settings.
-		settings.addListsToRepository( 'skeinforge_plugins.craft_plugins.export_plugins.binary_16_byte.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.binary_16_byte.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Binary 16 Byte', self, '' )
 		self.feedRateStepLength = settings.FloatSpin().getFromValue( 0.0, 'Feed Rate Step Length (millimeters/second)', self, 1.0, 0.1 )
 		self.fileExtension = settings.StringSetting().getFromValue( 'File Extension:', self, 'bin' )

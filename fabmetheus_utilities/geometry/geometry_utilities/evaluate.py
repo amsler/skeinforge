@@ -28,15 +28,6 @@ def addPrefixDictionary( dictionary, keys, prefix, value ):
 	for key in keys:
 		dictionary[ prefix + key ] = value
 
-def addSpacedPortionDirection( portionDirection, spacedPortionDirections ):
-	"Add spaced portion directions."
-	lastSpacedPortionDirection = spacedPortionDirections[ - 1 ]
-	if portionDirection.portion - lastSpacedPortionDirection.portion > 0.003:
-		spacedPortionDirections.append( portionDirection )
-		return
-	if portionDirection.directionReversed > lastSpacedPortionDirection.directionReversed:
-		spacedPortionDirections.append( portionDirection )
-
 def addToPathsRecursively( paths, vector3Lists ):
 	"Add to vector3 paths recursively."
 	if vector3Lists.__class__ == Vector3:
@@ -51,29 +42,11 @@ def addToPathsRecursively( paths, vector3Lists ):
 	if len( path ) > 0:
 		paths.append( path )
 
-def alterVerticesByEquation( vertices, xmlElement ):
-	"Alter vertices by an equation."
-	if 'equation' in xmlElement.attributeDictionary:
-		equationResult = EquationResult( 'equation', xmlElement )
-		for vertex in vertices:
-			returnValue = equationResult.getReturnValue( vertex )
-			if returnValue == None:
-				print( 'Warning, returnValue in alterVerticesByEquation in evaluate is None for:' )
-				print( xmlElement )
-			else:
-				getVector3ByFloatList( vertex, returnValue )
-		equationResult.function.reset()
-#later do xyz
-
-def comparePortionDirection( portionDirection, otherPortionDirection ):
-	"Comparison in order to sort portion directions in ascending order of portion then direction."
-	if portionDirection.portion > otherPortionDirection.portion:
-		return 1
-	if portionDirection.portion < otherPortionDirection.portion:
+def compareExecutionOrderAscending( module, otherModule ):
+	"Get comparison in order to sort modules in ascending execution order."
+	if module.globalExecutionOrder < otherModule.globalExecutionOrder:
 		return - 1
-	if portionDirection.directionReversed < otherPortionDirection.directionReversed:
-		return - 1
-	return portionDirection.directionReversed > otherPortionDirection.directionReversed
+	return int( module.globalExecutionOrder > otherModule.globalExecutionOrder )
 
 def convertToFloatLists( dictionary ):
 	'Recursively convert any Vector3 values to float lists.'
@@ -157,6 +130,10 @@ def getCreationDirectoryPath():
 	"Get the creation directory path."
 	return os.path.join( getGeometryDirectoryPath(), 'creation' )
 
+def getCreationToolsDirectoryPath():
+	"Get the creation tools directory path."
+	return os.path.join( getGeometryDirectoryPath(), 'creation_tools' )
+
 def getDictionarySplitWords( dictionary, value ):
 	"Get split line for evaluators."
 	if getIsQuoted( value ):
@@ -183,6 +160,30 @@ def getElementIDByElement( xmlElement ):
 def getElementNameByElement( xmlElement ):
 	"Get the xmlElement."
 	return ElementName( xmlElement )
+
+def getEndIndexConvertEquationValue( bracketEndIndex, evaluatorIndex, evaluators ):
+	'Get the bracket end index and convert the equation value evaluators into a string.'
+	evaluator = evaluators[ evaluatorIndex ]
+	if evaluator.__class__ != EvaluatorValue:
+		return bracketEndIndex
+	if not evaluator.word.startswith( 'equation.' ):
+		return bracketEndIndex
+	if evaluators[ evaluatorIndex + 1 ].word != ':':
+		return bracketEndIndex
+	valueBeginIndex = evaluatorIndex + 2
+	equationValueString = ''
+	for valueEvaluatorIndex in xrange( valueBeginIndex, len( evaluators ) ):
+		valueEvaluator = evaluators[ valueEvaluatorIndex ]
+		if valueEvaluator.word == ',' or valueEvaluator.word == '}':
+			if equationValueString == '':
+				return bracketEndIndex
+			else:
+				evaluators[ valueBeginIndex ] = EvaluatorValue( equationValueString )
+				valueDeleteIndex = valueBeginIndex + 1
+				del evaluators[ valueDeleteIndex : valueEvaluatorIndex ]
+			return bracketEndIndex - valueEvaluatorIndex + valueDeleteIndex
+		equationValueString += valueEvaluator.word
+	return bracketEndIndex
 
 def getEvaluatedBooleanDefault( defaultBoolean, key, xmlElement ):
 	"Get the evaluated boolean as a float."
@@ -322,7 +323,7 @@ def getEvaluatedValue( key, xmlElement ):
 def getEvaluatedValueObliviously( key, xmlElement ):
 	"Get the evaluated value."
 	value = str( xmlElement.attributeDictionary[ key ] ).strip()
-	if key == 'id':
+	if key == 'id' or key == 'name':
 		return value
 	return getEvaluatedLinkValue( value, xmlElement )
 
@@ -432,9 +433,15 @@ def getFloatListListsByPaths( paths ):
 			floatListList.append( point.getFloatList() )
 	return floatListLists
 
+def getFromCreationEvaluatorPlugins( namePathDictionary, xmlElement ):
+	"Get the creation evaluator plugins if the xmlElement is from the creation evaluator."
+	if getEvaluatedBooleanDefault( False, '_fromCreationEvaluator', xmlElement ):
+		return getMatchingPlugins( namePathDictionary, xmlElement )
+	return []
+
 def getGeometryDirectoryPath():
 	"Get the geometry directory path."
-	return settings.getPathInFabmetheus( os.path.join( 'fabmetheus_utilities', 'geometry' ) )
+	return settings.getPathInFabmetheusUtilities('geometry')
 
 def getKeys( repository ):
 	'Get keys for repository.'
@@ -477,10 +484,14 @@ def getIsQuoted( word ):
 def getMatchingPlugins( namePathDictionary, xmlElement ):
 	"Get the plugins whose names are in the attribute dictionary."
 	matchingPlugins = []
+	namePathDictionaryCopy = namePathDictionary.copy()
 	for key in xmlElement.attributeDictionary:
-		if key in namePathDictionary:
-			if euclidean.getBooleanFromValue( getEvaluatedValueObliviously( key, xmlElement ) ):
-				pluginModule = gcodec.getModuleWithPath( namePathDictionary[ key ] )
+		dotIndex = key.find( '.' )
+		if dotIndex > - 1:
+			keyUntilDot = key[ : dotIndex ]
+			if keyUntilDot in namePathDictionaryCopy:
+				pluginModule = gcodec.getModuleWithPath( namePathDictionaryCopy[ keyUntilDot ] )
+				del namePathDictionaryCopy[ keyUntilDot ]
 				if pluginModule != None:
 					matchingPlugins.append( pluginModule )
 	return matchingPlugins
@@ -529,7 +540,7 @@ def getPathByList( vertexList ):
 		vertexList = [ vertexList ]
 	path = []
 	for floatList in vertexList:
-		vector3 = getVector3ByFloatList( Vector3(), floatList )
+		vector3 = getVector3ByFloatList( floatList, Vector3() )
 		path.append( vector3 )
 	return path
 
@@ -598,19 +609,6 @@ def getSides( radius, xmlElement ):
 	"Get the nunber of poygon sides."
 	return math.sqrt( 0.5 * radius * math.pi * math.pi / getPrecision( xmlElement ) )
 
-def getSpacedPortionDirections( interpolationDictionary ):
-	"Get sorted portion directions."
-	portionDirections = []
-	for interpolationDictionaryValue in interpolationDictionary.values():
-		portionDirections += interpolationDictionaryValue.portionDirections
-	portionDirections.sort( comparePortionDirection )
-	if len( portionDirections ) < 1:
-		return []
-	spacedPortionDirections = [ portionDirections[ 0 ] ]
-	for portionDirection in portionDirections[ 1 : ]:
-		addSpacedPortionDirection( portionDirection, spacedPortionDirections )
-	return spacedPortionDirections
-
 def getSplitDictionary():
 	"Get split dictionary."
 	global globalSplitDictionaryOperator
@@ -625,8 +623,10 @@ def getSplitDictionary():
 	splitDictionary[ 'not' ] = EvaluatorNot
 	splitDictionary[ 'true' ] = EvaluatorTrue
 	splitDictionary[ 'True' ] = EvaluatorTrue
-	pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( getCreationDirectoryPath() )
-	addPrefixDictionary( splitDictionary, pluginFileNames, 'math.', EvaluatorCreation )
+	creationFileNames = gcodec.getPluginFileNamesFromDirectoryPath( getCreationDirectoryPath() )
+	addPrefixDictionary( splitDictionary, creationFileNames, 'creation.', EvaluatorCreation )
+	creationToolsFileNames = gcodec.getPluginFileNamesFromDirectoryPath( getCreationToolsDirectoryPath() )
+	addPrefixDictionary( splitDictionary, creationToolsFileNames, 'creation.', EvaluatorCreationTool )
 	functionNameString = 'acos asin atan atan2 ceil cos cosh degrees exp fabs floor fmod frexp hypot ldexp log log10 modf pow radians sin sinh sqrt tan tanh'
 	addPrefixDictionary( splitDictionary, functionNameString.split(), 'math.', EvaluatorMath )
 	return splitDictionary
@@ -676,7 +676,29 @@ def getValueByKeysXMLElement( keys, xmlElement ):
 			return None
 	return xmlElement
 
-def getVector3ByFloatList( vector3, floatList ):
+def getVector3ByDictionary( dictionary, vector3 ):
+	"Get vector3 by dictionary."
+	if 'x' in dictionary:
+		vector3.x = euclidean.getFloatFromValue( dictionary[ 'x' ] )
+	if 'y' in dictionary:
+		vector3.y = euclidean.getFloatFromValue( dictionary[ 'y' ] )
+	if 'z' in dictionary:
+		vector3.z = euclidean.getFloatFromValue( dictionary[ 'z' ] )
+	return vector3
+
+def getVector3ByDictionaryListValue( value, vector3 ):
+	"Get vector3 by dictionary, list or value."
+	if value.__class__ == dict:
+		return getVector3ByDictionary( value, vector3 )
+	if value.__class__ == list:
+		return getVector3ByFloatList( value, vector3 )
+	floatFromValue = euclidean.getFloatFromValue( value )
+	if floatFromValue ==  None:
+		return vector3
+	vector3.setToXYZ( floatFromValue, floatFromValue, floatFromValue )
+	return vector3
+
+def getVector3ByFloatList( floatList, vector3 ):
 	"Get vector3 by float list."
 	if len( floatList ) > 0:
 		vector3.x = euclidean.getFloatFromValue( floatList[ 0 ] )
@@ -686,35 +708,45 @@ def getVector3ByFloatList( vector3, floatList ):
 		vector3.z = euclidean.getFloatFromValue( floatList[ 2 ] )
 	return vector3
 
-def getVector3ByKey( key, vector3, xmlElement ):
-	"Get vector3 by key and xml element."
-	value = getEvaluatedValue( key, xmlElement )
-	if value == None:
+def getVector3ByMultiplierPrefix( multiplier, prefix, vector3, xmlElement ):
+	"Get vector3 from multiplier, prefix and xml element."
+	if multiplier == 0.0:
 		return vector3
-	vector3String = str( value ).strip()
-	floatList = getFloatListFromBracketedString( vector3String )
-	if floatList == None:
-		if getTypeLength( value ) == - 1:
-			floatValue = float( value )
-			return Vector3( floatValue, floatValue, floatValue )
+	oldMultipliedValueVector3 = vector3 * multiplier
+	vector3ByPrefix = getVector3ByPrefix( prefix, oldMultipliedValueVector3.copy(), xmlElement )
+	if vector3ByPrefix == oldMultipliedValueVector3:
 		return vector3
-	return getVector3ByFloatList( getVector3IfNone( vector3 ), floatList )
+	return vector3ByPrefix / multiplier
+
+def getVector3ByMultiplierPrefixes( multiplier, prefixes, vector3, xmlElement ):
+	"Get vector3 from multiplier, prefixes and xml element."
+	for prefix in prefixes:
+		vector3 = getVector3ByMultiplierPrefix( multiplier, prefix, vector3, xmlElement )
+	return vector3
 
 def getVector3ByPrefix( prefix, vector3, xmlElement ):
 	"Get vector3 from prefix and xml element."
-	vector3 = getVector3ByKey( prefix, vector3, xmlElement )
-	x = getEvaluatedFloat( prefix + 'x', xmlElement )
+	value = getEvaluatedValue( prefix, xmlElement )
+	if value != None:
+		vector3 = getVector3ByDictionaryListValue( value, vector3 )
+	x = getEvaluatedFloat( prefix + '.x', xmlElement )
 	if x != None:
 		vector3 = getVector3IfNone( vector3 )
 		vector3.x = x
-	y = getEvaluatedFloat( prefix + 'y', xmlElement )
+	y = getEvaluatedFloat( prefix + '.y', xmlElement )
 	if y != None:
 		vector3 = getVector3IfNone( vector3 )
 		vector3.y = y
-	z = getEvaluatedFloat( prefix + 'z', xmlElement )
+	z = getEvaluatedFloat( prefix + '.z', xmlElement )
 	if z != None:
 		vector3 = getVector3IfNone( vector3 )
 		vector3.z = z
+	return vector3
+
+def getVector3ByPrefixes( prefixes, vector3, xmlElement ):
+	"Get vector3 from prefixes and xml element."
+	for prefix in prefixes:
+		vector3 = getVector3ByPrefix( prefix, vector3, xmlElement )
 	return vector3
 
 def getVector3FromXMLElement( xmlElement ):
@@ -733,16 +765,17 @@ def getVector3ListsRecursively( floatLists ):
 		return Vector3()
 	firstElement = floatLists[ 0 ]
 	if firstElement.__class__ != list:
-		return getVector3ByFloatList( Vector3(), floatLists )
+		return getVector3ByFloatList( floatLists, Vector3() )
 	vector3ListsRecursively = []
 	for floatList in floatLists:
 		vector3ListsRecursively.append( getVector3ListsRecursively( floatList ) )
 	return vector3ListsRecursively
 
-def getVector3ThroughSizeDiameter( vector3, xmlElement ):
-	"Get vector3 from prefix and xml element."
-	vector3 = getVector3ByPrefix( 'size', vector3, xmlElement )
-	return 0.5 * getVector3ByPrefix( 'diameter', vector3 + vector3, xmlElement )
+def getVector3RemoveByPrefix( prefix, vector3, xmlElement ):
+	"Get vector3 from prefix and xml element, then remove prefix attributes from dictionary."
+	vector3RemoveByPrefix = getVector3ByPrefix( prefix, vector3, xmlElement )
+	euclidean.removePrefixFromDictionary( xmlElement.attributeDictionary, prefix )
+	return vector3RemoveByPrefix
 
 def getVertexByElement( xmlElement ):
 	"Get the vertex list."
@@ -1098,6 +1131,8 @@ class EvaluatorBracketCurly( Evaluator ):
 	'Class to evaluate a string.'
 	def executeBracket( self, bracketBeginIndex, bracketEndIndex, evaluators ):
 		'Execute the bracket.'
+		for evaluatorIndex in xrange( bracketEndIndex - 3, bracketBeginIndex, - 1 ):
+			bracketEndIndex = getEndIndexConvertEquationValue( bracketEndIndex, evaluatorIndex, evaluators )
 		evaluatedExpressionValueEvaluators = getBracketEvaluators( bracketBeginIndex, bracketEndIndex, evaluators )
 		self.value = {}
 		for evaluatedExpressionValueEvaluator in evaluatedExpressionValueEvaluators:
@@ -1172,14 +1207,24 @@ class EvaluatorConcatenate( Evaluator ):
 			return
 		leftValue = evaluators[ leftIndex ].value
 		rightValue = evaluators[ rightIndex ].value
-		if leftValue.__class__ != list:
-			del evaluators[ leftIndex : rightIndex + 1 ]
+		if leftValue.__class__ == list and rightValue.__class__ == list:
+			evaluators[ leftIndex ].value = leftValue + rightValue
+			del evaluators[ evaluatorIndex : evaluatorIndex + 2 ]
 			return
-		if rightValue.__class__ != list:
-			del evaluators[ leftIndex : evaluatorIndex + 2 ]
+		if leftValue.__class__ == list and rightValue.__class__ == int:
+			if rightValue > 0:
+				originalList = leftValue[ : ]
+				for copyIndex in xrange( rightValue - 1 ):
+					leftValue += originalList
+				evaluators[ leftIndex ].value = leftValue
+				del evaluators[ evaluatorIndex : evaluatorIndex + 2 ]
 			return
-		evaluators[ leftIndex ].value = leftValue + rightValue
-		del evaluators[ evaluatorIndex : evaluatorIndex + 2 ]
+		if leftValue.__class__ == dict and rightValue.__class__ == dict:
+			leftValue.update( rightValue )
+			evaluators[ leftIndex ].value = leftValue
+			del evaluators[ evaluatorIndex : evaluatorIndex + 2 ]
+			return
+		del evaluators[ leftIndex : evaluatorIndex + 2 ]
 
 
 class EvaluatorConstant( Evaluator ):
@@ -1201,7 +1246,7 @@ class EvaluatorCreation( Evaluator ):
 
 	def executeFunction( self, evaluators, evaluatorIndex, nextEvaluator ):
 		'Execute the function.'
-		pluginModule = gcodec.getModuleWithPath( os.path.join( getCreationDirectoryPath(), self.getFunctionName() ) )
+		pluginModule = gcodec.getModuleWithPath( os.path.join( self.getDirectoryPath(), self.getFunctionName() ) )
 		if pluginModule == None:
 			print( 'Warning, the EvaluatorCreation in evaluate can not get a pluginModule for:' )
 			print( self.getFunctionName() )
@@ -1215,14 +1260,25 @@ class EvaluatorCreation( Evaluator ):
 			dictionary = firstArgument
 		else:
 			dictionary[ '_arguments' ] = nextEvaluator.arguments
-		dictionary[ '_fromEvaluatorCreation' ] = 'true'
+		dictionary[ '_fromCreationEvaluator' ] = 'true'
 		nextEvaluator.value = pluginModule.getGeometryOutput( self.xmlElement.getShallowCopy( dictionary ) )
 		convertToFloatLists( nextEvaluator.value )
 		del evaluators[ evaluatorIndex ]
 
+	def getDirectoryPath( self ):
+		'Get the creation directory path.'
+		return getCreationDirectoryPath()
+
 	def getFunctionName( self ):
 		'Get the function name.'
-		return self.word[ len( 'math.' ) : ].lower()
+		return self.word[ len( 'creation.' ) : ].lower()
+
+
+class EvaluatorCreationTool( EvaluatorCreation ):
+	'Creation tool evaluator class.'
+	def getDirectoryPath( self ):
+		'Get the creation tools directory path.'
+		return getCreationToolsDirectoryPath()
 
 
 class EvaluatorDictionary( Evaluator ):
@@ -1391,6 +1447,10 @@ class EvaluatorMath( EvaluatorCreation ):
 		print( nextEvaluator )
 		del evaluators[ evaluatorIndex ]
 
+	def getFunctionName( self ):
+		'Get the function name.'
+		return self.word[ len( 'math.' ) : ].lower()
+
 
 class EvaluatorModulo( EvaluatorDivision ):
 	'Class to modulo two evaluators.'
@@ -1475,22 +1535,6 @@ class EvaluatorValue( Evaluator ):
 		self.word = str( word )
 
 
-class EquationResult:
-	"Class to get equation results."
-	def __init__( self, key, xmlElement ):
-		"Initialize."
-		self.function = Function( getEvaluatorSplitWords( xmlElement.attributeDictionary[ key ] ), xmlElement )
-
-	def getReturnValue( self, vertex ):
-		"Get return value."
-		if self.function == None:
-			return vertex
-		self.function.localDictionary[ 'x' ] = vertex.x
-		self.function.localDictionary[ 'y' ] = vertex.y
-		self.function.localDictionary[ 'z' ] = vertex.z
-		return self.function.getReturnValueWithoutDeletion()
-
-
 class Function:
 	"Class to get equation results."
 	def __init__( self, evaluatorSplitLine, xmlElement ):
@@ -1531,115 +1575,6 @@ class Function:
 	def reset( self ):
 		"Reset functions."
 		del self.xmlElement.getXMLProcessor().functions[ - 1 ]
-
-
-class Interpolation:
-	"Class to interpolate a path."
-	def __init__( self ):
-		"Set index."
-		self.interpolationIndex = 0
-
-	def getByDistances( self ):
-		"Get by distances."
-		beginDistance = self.distances[ 0 ]
-		self.interpolationLength = self.distances[ - 1 ] - beginDistance
-		self.close = abs( 0.000001 * self.interpolationLength )
-		self.portionDirections = []
-		oldDistance = beginDistance - self.interpolationLength
-		for distance in self.distances:
-			portionDirection = PortionDirection( distance / self.interpolationLength )
-			if abs( distance - oldDistance ) < self.close:
-				portionDirection.directionReversed = True
-			self.portionDirections.append( portionDirection )
-			oldDistance = distance
-		return self
-
-	def getByPrefixAlong( self, path, prefix, xmlElement ):
-		"Get interpolation from prefix and xml element along the path."
-		if len( path ) < 2:
-			print( 'Warning, path is too small in evaluate in Interpolation.' )
-			return
-		self.path = getPathByPrefix( path, prefix, xmlElement )
-		self.distances = [ 0.0 ]
-		previousPoint = self.path[ 0 ]
-		for point in self.path[ 1 : ]:
-			distanceDifference = abs( point - previousPoint )
-			self.distances.append( self.distances[ - 1 ] + distanceDifference )
-			previousPoint = point
-		return self.getByDistances()
-
-	def getByPrefixX( self, path, prefix, xmlElement ):
-		"Get interpolation from prefix and xml element in the z direction."
-		if len( path ) < 2:
-			print( 'Warning, path is too small in evaluate in Interpolation.' )
-			return
-		self.path = getPathByPrefix( path, prefix, xmlElement )
-		self.distances = []
-		for point in self.path:
-			self.distances.append( point.x )
-		return self.getByDistances()
-
-	def getByPrefixZ( self, path, prefix, xmlElement ):
-		"Get interpolation from prefix and xml element in the z direction."
-		if len( path ) < 2:
-			print( 'Warning, path is too small in evaluate in Interpolation.' )
-			return
-		self.path = getPathByPrefix( path, prefix, xmlElement )
-		self.distances = []
-		for point in self.path:
-			self.distances.append( point.z )
-		return self.getByDistances()
-
-	def getComparison( self, first, second ):
-		"Compare the first with the second."
-		if abs( second - first ) < self.close:
-			return 0
-		if second > first:
-			return 1
-		return - 1
-
-	def getComplexByPortion( self, portionDirection ):
-		"Get complex from z portion."
-		self.setInterpolationIndexFromTo( portionDirection )
-		return self.oneMinusInnerPortion * self.fromVertex.dropAxis( 2 ) + self.innerPortion * self.toVertex.dropAxis( 2 )
-
-	def getInnerPortion( self ):
-		"Get inner x portion."
-		fromDistance = self.distances[ self.interpolationIndex ]
-		innerLength = self.distances[ self.interpolationIndex + 1 ] - fromDistance
-		if abs( innerLength ) == 0.0:
-			return 0.0
-		return ( self.absolutePortion - fromDistance ) / innerLength
-
-	def getVector3ByPortion( self, portionDirection ):
-		"Get vector3 from z portion."
-		self.setInterpolationIndexFromTo( portionDirection )
-		return self.oneMinusInnerPortion * self.fromVertex + self.innerPortion * self.toVertex
-
-	def getYByPortion( self, portionDirection ):
-		"Get y from x portion."
-		self.setInterpolationIndexFromTo( portionDirection )
-		return self.oneMinusInnerPortion * self.fromVertex.y + self.innerPortion * self.toVertex.y
-
-	def setInterpolationIndex( self, portionDirection ):
-		"Set the interpolation index."
-		self.absolutePortion = self.distances[ 0 ] + self.interpolationLength * portionDirection.portion
-		interpolationIndexes = range( 0, len( self.distances ) - 1 )
-		if portionDirection.directionReversed:
-			interpolationIndexes.reverse()
-		for self.interpolationIndex in interpolationIndexes:
-			begin = self.distances[ self.interpolationIndex ]
-			end = self.distances[ self.interpolationIndex + 1 ]
-			if self.getComparison( begin, self.absolutePortion ) != self.getComparison( end, self.absolutePortion ):
-				return
-
-	def setInterpolationIndexFromTo( self, portionDirection ):
-		"Set the interpolation index, the from vertex and the to vertex."
-		self.setInterpolationIndex( portionDirection )
-		self.innerPortion = self.getInnerPortion()
-		self.oneMinusInnerPortion = 1.0 - self.innerPortion
-		self.fromVertex = self.path[ self.interpolationIndex ]
-		self.toVertex = self.path[ self.interpolationIndex + 1 ]
 
 
 class KeyValue:
@@ -1750,38 +1685,6 @@ class ModuleXMLElement:
 		"Process the else statement."
 		if self.elseElement != None:
 			self.pluginModule.processElse( self.elseElement, xmlProcessor )
-
-
-class PortionDirection:
-	"Class to hold a portion and direction."
-	def __init__( self, portion ):
-		"Initialize."
-		self.directionReversed = False
-		self.portion = portion
-
-	def __repr__( self ):
-		"Get the string representation of this PortionDirection."
-		return '%s: %s' % ( self.portion, self.directionReversed )
-
-
-class RadiusXY:
-	'Class to get a radius.'
-	def __repr__( self ):
-		"Get the string representation of this RadiusXY."
-		return '%s, %s, %s' % ( self.radius, self.radiusX, self.radiusY )
-
-	def getByRadius( self, radius, xmlElement ):
-		'Get by radius.'
-		self.radius = radius
-		self.radiusX = getEvaluatedFloatDefault( self.radius, 'radiusx', xmlElement )
-		self.radiusY = getEvaluatedFloatDefault( self.radius, 'radiusy', xmlElement )
-		if self.radiusX != radius or self.radiusY != radius:
-			self.radius = math.sqrt( self.radiusX * self.radiusY )
-		return self
-
-	def getByXMLElement( self, xmlElement ):
-		'Get by xmlElement.'
-		return self.getByRadius( getEvaluatedFloatDefault( 1.0, 'radius', xmlElement ), xmlElement )
 
 
 globalDictionaryOperatorBegin = {

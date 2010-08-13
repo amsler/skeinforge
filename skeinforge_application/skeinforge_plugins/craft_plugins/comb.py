@@ -50,6 +50,11 @@ The comb tool has created the file:
 """
 
 from __future__ import absolute_import
+try:
+	import psyco
+	psyco.full()
+except:
+	pass
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
@@ -137,7 +142,7 @@ class CombRepository:
 	"A class to handle the comb settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.comb.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.comb.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Comb', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb' )
 		self.activateComb = settings.BooleanSetting().getFromValue( 'Activate Comb', self, False )
@@ -246,7 +251,7 @@ class CombSkein:
 		shortestPath = paths[ int( euclidean.getPathLength( paths[ 1 ] ) < euclidean.getPathLength( paths[ 0 ] ) ) ]
 		if not euclidean.isWiddershins( shortestPath ):
 			shortestPath.reverse()
-		loopAround = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( shortestPath, - self.combInset )
+		loopAround = intercircle.getLargestInsetLoopFromLoopRegardless( shortestPath, - self.combInset )
 		endMinusBegin = points[ 3 ] - points[ 0 ]
 		endMinusBegin = 1.3 * self.combInset * euclidean.getNormalized( endMinusBegin )
 		aroundPaths = getPathsByIntersectedLoop( points[ 0 ] - endMinusBegin, points[ 3 ] + endMinusBegin, loopAround )

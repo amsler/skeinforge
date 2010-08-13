@@ -26,11 +26,11 @@ An example of an xml boolean geometry format file follows below.
 <?xml version='1.0' ?>
 <fabmetheus version="2010-03-29">
 	<difference id="cube_cylinder_difference">
-		<matrix4x4 m14="-10.0" m24="20.0" m34="5.0" />
+		<matrix m14="-10.0" m24="20.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
 		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
-			<matrix4x4 m14="5.0" m24="-5.0" />
+			<matrix m14="5.0" m24="-5.0" />
 		</cylinder>
 	</difference>
 </fabmetheus>
@@ -40,35 +40,35 @@ In the 'fabmetheus' format, all class names are lower case.  The defined geometr
 <?xml version='1.0' ?>
 <fabmetheus version="2010-03-29">
 	<difference id="cube_cylinder_difference">
-		<matrix4x4 m14="-10.0" m24="20.0" m34="5.0" />
+		<matrix m14="-10.0" m24="20.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
 		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
-			<matrix4x4 m14="5.0" m24="-5.0" />
+			<matrix m14="5.0" m24="-5.0" />
 		</cylinder>
 	</difference>
 	<intersection id="cube_cylinder_intersection">
-		<matrix4x4 m14="-10.0" m34="5.0" />
+		<matrix m14="-10.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
 		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
-			<matrix4x4 m14="5.0" m24="-5.0" />
+			<matrix m14="5.0" m24="-5.0" />
 		</cylinder>
 	</intersection>
 	<union id="cube_cylinder_union">
-		<matrix4x4 m14="-10.0" m24="-20.0" m34="5.0" />
+		<matrix m14="-10.0" m24="-20.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
 		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
-			<matrix4x4 m14="5.0" m24="-5.0" />
+			<matrix m14="5.0" m24="-5.0" />
 		</cylinder>
 	</union>
 	<group id="sphere_tetrahedron_group">
-		<matrix4x4 m14="10.0" m24="-20.0" m34="5.0" />
+		<matrix m14="10.0" m24="-20.0" m34="5.0" />
 		<sphere id="Group Sphere 5" radiusx="5.0" radiusy="5.0" radiusz="5.0">
 		</sphere>
 		<trianglemesh id="Group Tetrahedron 5">
-			<matrix4x4 m14="15.0" />
+			<matrix m14="15.0" />
 			<vertex x="-5.0" y="-5.0" z="-5.0" />
 			<vertex x="5.0" y="-5.0" z="-5.0" />
 			<vertex y="5.0" z="-5.0" />
@@ -80,10 +80,10 @@ In the 'fabmetheus' format, all class names are lower case.  The defined geometr
 		</trianglemesh>
 	</group>
 	<sphere id="Sphere 5" radiusx="5.0" radiusy="5.0" radiusz="5.0">
-		<matrix4x4 m14="10.0" m34="5.0" />
+		<matrix m14="10.0" m34="5.0" />
 	</sphere>
 	<trianglemesh id="Tetrahedron 5">
-		<matrix4x4 m14="10.0" m24="20.0" m34="5.0" />
+		<matrix m14="10.0" m24="20.0" m34="5.0" />
 		<vertex x="-5.0" y="-5.0" z="-5.0" />
 		<vertex x="5.0" y="-5.0" z="-5.0" />
 		<vertex y="5.0" z="-5.0" />
@@ -106,7 +106,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.xml_simple_parser import XMLSimpleParser
+from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import gcodec
 import os
 import sys
@@ -122,7 +122,7 @@ def getCarving( fileName = '' ):
 	xmlText = gcodec.getFileText( fileName )
 	if xmlText == '':
 		return None
-	xmlParser = XMLSimpleParser( fileName, None, xmlText )
+	xmlParser = XMLSimpleReader( fileName, None, xmlText )
 	lowerClassName = xmlParser.getRoot().className.lower()
 	pluginModule = gcodec.getModuleWithDirectoryPath( getPluginsDirectoryPath(), lowerClassName )
 	if pluginModule == None:

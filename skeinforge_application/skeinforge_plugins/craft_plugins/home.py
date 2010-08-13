@@ -98,7 +98,7 @@ class HomeRepository:
 	"A class to handle the home settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_plugins.craft_plugins.home.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.home.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Home', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_home' )
 		self.activateHome = settings.BooleanSetting().getFromValue( 'Activate Home', self, True )

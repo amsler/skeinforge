@@ -30,8 +30,14 @@
 		-->
 	<dictionary pi='math.pi' e='=math.e' euler='=math.euler' golden='=math.golden' />
 	<!--
+		Creation
+		-->
+	<dictionary polygonFivePointTwo='=creation.polygon(5.2)' />
+	<dictionary polygonFive='=creation.polygon({equation.spherical.elevation:"revolutions*30.0",revolutions:2})*7' />
+	<!--
 		Dictionary
 		-->
+	<dictionary concatenate='{ 0 : "Zero" } || { 1 : "One" }' />
 	<dictionary range5one='{ 0 : "Zero", 1 : "One", 2 : "Two", 3 : "Three", 4 : "Four" }[ 1 ]' />
 	<dictionary range5one='{ 0 : "Zero", 1 : "One", 2 : "Two", 3 : "Three", 4 : "Four" }[ :4:2 ]' />
 	<dictionary range5onecomma3='{ 0 : "Zero", 1 : "One", 2 : "Two", 3 : "Three", 4 : "Four" }[ 1, 3 ]' />
@@ -49,13 +55,14 @@
 	<!--
 		List
 		-->
+	<dictionary concatenate='[0,1]||[0,1,2]' />
+	<dictionary concatenatethree='[0,1]||3' />
+	<dictionary copy='[0,1,2,3,4][ : ]' />
+	<dictionary copy='[0,1,2,3,4][]' />
 	<dictionary range5one='[0,1,2,3,4][ 1 ]' />
 	<dictionary range5onecomma3='[0,1,2,3,4][ 1, 3 ]' />
 	<dictionary range5onethrough3='[0,1,2,3,4][ 3 : -1 : -1 ]' />
 	<dictionary reverse5='[0,1,2,3,4][ : : -1 ]' />
-	<dictionary concatenate='[0,1]||[0,1,2]' />
-	<dictionary copy='[0,1,2,3,4][ : ]' />
-	<dictionary copy='[0,1,2,3,4][]' />
 	<!--
 		Math
 		-->
@@ -74,28 +81,25 @@
 	<dictionary id='kapow' kapow='=4**-2' />
 	<dictionary bracket='=2*(3+1)' compoundbracket='=2*(8/(1+1))' withoutbracket='=2*3+1' />
 	<dictionary name='name number' power='=3' />
-	<dictionary p='=math.polygon(5.2)' />
-	<dictionary p='=math.polygon()*5' />
+	<dictionary p='=creation.polygon(5.2)' />
+	<dictionary p='=creation.polygon()*5' />
 	<function id="triple" parameters='number' >
-		<print _localdictionary='first print' />
 		<statement number='=number*3' />
 		<statement count='=1' />
 		<for index='integer' in='{1:"one",2:"two",3:"three"}' value='numericWord'>
-			<print _localdictionary='' />
 		</for>
+		<comment_for index='integer' in='abc' value='letter'>
+			<comment_print _localdictionary='' />
+		</comment_for>
 		<if condition='0'>
-			<print ifWorks='' />
 		</if>
 		<elif condition='0'>
-			<print elifWorks='' />
 		</elif>
 		<else>
-			<print elseWorks='' />
 		</else>
 		<statement count='=5' />
 		<while condition='count<8'>
 			<statement count='=count+1' />
-			<print count='' />
 		</while>
 		<return return='=number' />
 	</function>
@@ -136,8 +140,6 @@
 		<dictionary m='{"f":5}' />
 		<dictionary m='=2+{3:5}*{6:2,3:3}' />
 		<dictionaryc m='{"f":5}*{"v":[2,2],"f":[4,5]}' />
-		<dictionary p='=math.polygon(5.2)' />
-		<dictionary p='=math.polygon()*5' />
 	</path>
 	<polygon sides='1' five='5' radius='=element.five*2' />
 	<polygon sides='pside' radius='wow' />

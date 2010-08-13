@@ -69,7 +69,6 @@ def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	repository.menuEntities = []
 	repository.saveCloseTitle = 'Save and Close'
 	repository.windowPosition = WindowPosition().getFromValue( repository, '0+0' )
-	WindowVisibilities().getFromRepository( repository )
 	for setting in repository.archive:
 		setting.repository = repository
 
@@ -93,6 +92,12 @@ def addPluginsToMenu( directoryPath, menu, pluginFileNames ):
 	"Add plugins to the menu."
 	for pluginFileName in pluginFileNames:
 		ToolDialog().addPluginToMenu( menu, os.path.join( directoryPath, pluginFileName ) )
+
+def addToNamePathDictionary(directoryPath, namePathDictionary):
+	"Add to the name path dictionary."
+	pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath(directoryPath)
+	for pluginFileName in pluginFileNames:
+		namePathDictionary[pluginFileName] = os.path.join(directoryPath, pluginFileName)
 
 def cancelRepository( repository ):
 	"Read the repository then set all the entities to the read archive values."
@@ -120,7 +125,7 @@ def getAlongWayHexadecimalColor( beginBrightness, colorWidth, difference, endCol
 	"Get a color along the way from begin brightness to the end color."
 	alongWay = 1.0
 	if wayLength != 0.0:
-		alongWay = math.sqrt( min( 1.0, abs( float( difference ) / float( wayLength ) ) ) )
+		alongWay = 0.4 + 0.6 * min( 1.0, abs( float( difference ) / float( wayLength ) ) )
 	hexadecimalColor = '#'
 	oneMinusAlongWay = 1.0 - alongWay
 	for primaryIndex in xrange( 3 ):
@@ -236,21 +241,28 @@ def getPathInFabmetheus( subName = '' ):
 		return path
 	return os.path.join( path, subName )
 
+def getPathInFabmetheusUtilities(subName=''):
+	"Get the path in the fabmetheus utilities directory."
+	path = getPathInFabmetheus('fabmetheus_utilities')
+	if subName == '':
+		return path
+	return os.path.join(path, subName)
+
+def getPathInFabmetheusFromFileNameHelp( fileNameHelp ):
+	"Get the directory path from file name help."
+	fabmetheusPath = getPathInFabmetheus()
+	splitFileNameHelps = fileNameHelp.split( '.' )
+	splitFileNameDirectoryNames = splitFileNameHelps[ : - 1 ]
+	for splitFileNameDirectoryName in splitFileNameDirectoryNames:
+		fabmetheusPath = os.path.join( fabmetheusPath, splitFileNameDirectoryName )
+	return fabmetheusPath
+
 def getPathInSkeinforge( subName = '' ):
 	"Get the skeinforge directory path."
 	path = getPathInFabmetheus( 'skeinforge_application' )
 	if subName == '':
 		return path
 	return os.path.join( path, subName )
-
-def getPathInSkeinforgeFromFileNameHelp( fileNameHelp ):
-	"Get the directory path from file name help."
-	skeinforgePath = getPathInSkeinforge()
-	splitFileNameHelps = fileNameHelp.split( '.' )
-	splitFileNameDirectoryNames = splitFileNameHelps[ : - 1 ]
-	for splitFileNameDirectoryName in splitFileNameDirectoryNames:
-		skeinforgePath = os.path.join( skeinforgePath, splitFileNameDirectoryName )
-	return skeinforgePath
 
 def getPathInSkeinforgePlugins( subName = '' ):
 	"Get the skeinforge plugins directory path."
@@ -377,6 +389,22 @@ def makeDirectory( directory ):
 		os.makedirs( directory )
 	except OSError:
 		print( 'Skeinforge can not make the directory %s so give it read/write permission for that directory and the containing directory.' % directory )
+
+def openSVGPage( fileName, svgViewer ):
+	"Open svg page with an svg program."
+	if svgViewer == '':
+		return
+	if svgViewer == 'webbrowser':
+		openWebPage( fileName )
+		return
+	filePath = '"' + os.path.normpath( fileName ) + '"' # " to send in file name with spaces
+	shellCommand = svgViewer + ' ' + filePath
+	commandResult = os.system( shellCommand )
+	if commandResult != 0:
+		print( 'It may be that the system could not find the %s program.' % svgViewer )
+		print( 'If so, try installing the %s program or look for another svg viewer, like Netscape which can be found at:' % svgViewer )
+		print( 'http://www.netscape.org/' )
+		print( '' )
 
 def openWebPage( webPagePath ):
 	"Open a web page in a browser."
@@ -1759,7 +1787,7 @@ class ToolDialog:
 		"Display the tool repository dialog."
 		global globalRepositoryDialogListTable
 		for repositoryDialog in globalRepositoryDialogListTable:
-			if getPathInSkeinforgeFromFileNameHelp( repositoryDialog.repository.fileNameHelp ) == self.path:
+			if getPathInFabmetheusFromFileNameHelp( repositoryDialog.repository.fileNameHelp ) == self.path:
 				liftRepositoryDialogs( globalRepositoryDialogListTable[ repositoryDialog ] )
 				return
 		self.repositoryDialog = getDisplayedDialogFromPath( self.path )
@@ -1799,57 +1827,6 @@ class WindowPosition( StringSetting ):
 		"Set the window position."
 		movedGeometryString = '%sx%s+%s' % ( self.root.winfo_reqwidth(), self.root.winfo_reqheight(), self.value )
 		self.root.geometry( movedGeometryString )
-
-
-class WindowVisibilities:
-	"A class to read & write window visibilities and display them."
-	def addToDialog( self, gridPosition ):
-		"Add this to the dialog."
-		if self.repository.repositoryDialog == None:
-			self.isActive = False
-			return
-		self.isActive = self.repository.repositoryDialog.isFirst
-		if self.isActive:
-			self.repository.repositoryDialog.openDialogListeners.append( self )
-
-	def getFromRepository( self, repository ):
-		"Initialize."
-		self.isActive = False
-		self.name = 'WindowVisibilities'
-		self.repository = repository
-		repository.archive.append( self )
-		repository.displayEntities.append( self )
-		self.value = []
-		return self
-
-	def openDialog( self ):
-		"Create the display button."
-		for item in self.value:
-			getDisplayedDialogFromPath( item )
-
-	def setToDisplay( self ):
-		"Set the string to the window position."
-		if not self.isActive:
-			return
-		self.value = []
-		ownPath = getPathInSkeinforgeFromFileNameHelp( self.repository.fileNameHelp )
-		for repositoryDialog in globalRepositoryDialogListTable.keys():
-			keyPath = getPathInSkeinforgeFromFileNameHelp( repositoryDialog.repository.fileNameHelp )
-			if keyPath != ownPath:
-				if keyPath not in self.value:
-					self.value.append( keyPath )
-
-	def setStateToValue( self ):
-		"Do nothing because the window visibility is not to be cancelled."
-		pass
-
-	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
-		"Set the value to the second and later words of a split line."
-		self.value = splitLine[ 1 : ]
-
-	def writeToArchiveWriter( self, archiveWriter ):
-		"Write tab separated name and list to the archive writer."
-		writeValueListToArchiveWriter( archiveWriter, self )
 
 
 class RepositoryDialog:

@@ -100,7 +100,7 @@ class CoilRepository:
 	"A class to handle the coil settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.coil.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.coil.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Coil', self, '' )
 		self.activateCoil = settings.BooleanSetting().getFromValue( 'Activate Coil', self, True )
 		self.minimumToolDistance = settings.FloatSpin().getFromValue( 10.0, 'Minimum Tool Distance (millimeters):', self, 50.0, 20.0 )

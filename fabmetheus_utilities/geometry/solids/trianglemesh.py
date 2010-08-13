@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import face
-from fabmetheus_utilities.geometry.geometry_tools import matrix4x4
+from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
 from fabmetheus_utilities.geometry.geometry_tools import vertex
 from fabmetheus_utilities.geometry.solids import group
 from fabmetheus_utilities import xml_simple_writer
@@ -659,13 +659,13 @@ class TriangleMesh( group.Group ):
 				loop.reverse()
 		return loops
 
-	def getVertices( self ):
+	def getVertices(self):
 		"Get all vertices."
 		if self.xmlElement == None:
 			return self.vertices
 		if self.transformedVertices == None:
 			self.setEdgesForAllFaces()
-			self.transformedVertices = matrix4x4.getTransformedVector3s( self.getMatrixChain().matrixTetragrid, self.vertices )
+			self.transformedVertices = matrix.getTransformedVector3s(self.getMatrixChainTetragrid(), self.vertices)
 		return self.transformedVertices
 
 	def getZAddExtruderPaths( self, z ):

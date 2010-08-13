@@ -48,7 +48,7 @@ class AnalyzeRepository:
 	"A class to handle the analyze settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge.skeinforge_utilities.skeinforge_analyze.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_utilities.skeinforge_analyze.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Analyze', self, '' )
 		importantFileNames = [ 'skeinview', 'behold', 'statistic' ]
 		settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )

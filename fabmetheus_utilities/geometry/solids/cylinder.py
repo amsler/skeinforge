@@ -36,42 +36,30 @@ class Cylinder( cube.Cube ):
 
 	def createShape( self ):
 		"Create the shape."
-		halfHeight = 0.5 * self.height
 		polygonBottom = []
 		polygonTop = []
-		imaginaryRadius = self.radiusZ
-		if self.radiusZ == None:
-			imaginaryRadius = self.radiusY
-		sides = max( int( evaluate.getSides( max( imaginaryRadius, self.radiusX ), self.xmlElement ) ), 3 )
+		sides = max( int( evaluate.getSides( max( self.inradius.x, self.inradius.y ), self.xmlElement ) ), 3 )
 		sideAngle = 2.0 * math.pi / float( sides )
 		for side in xrange( sides ):
 			angle = float( side ) * sideAngle
 			unitComplex = euclidean.getWiddershinsUnitPolar( angle )
-			pointBottom = complex( unitComplex.real * self.radiusX, unitComplex.imag * imaginaryRadius )
+			pointBottom = complex( unitComplex.real * self.inradius.x, unitComplex.imag * self.inradius.y )
 			polygonBottom.append( pointBottom )
 			if self.topOverBottom > 0.0:
 				polygonTop.append( pointBottom * self.topOverBottom )
 		if self.topOverBottom <= 0.0:
 			polygonTop.append( complex() )
-		bottomTopPolygon = [ trianglemesh.getAddIndexedLoop( polygonBottom, self.vertices, - halfHeight ), trianglemesh.getAddIndexedLoop( polygonTop, self.vertices, halfHeight ) ]
+		bottomTopPolygon = [ trianglemesh.getAddIndexedLoop( polygonBottom, self.vertices, - self.inradius.z ), trianglemesh.getAddIndexedLoop( polygonTop, self.vertices, self.inradius.z ) ]
 		trianglemesh.addPillarFromConvexLoops( self.faces, bottomTopPolygon )
-		if self.radiusZ != None:
-			for vertex in self.vertices:
-				oldY = vertex.y
-				vertex.y = vertex.z
-				vertex.z = oldY
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		radius = evaluate.getVector3ByPrefix( 'radius', Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
-		radius = evaluate.getVector3ThroughSizeDiameter( radius, self.xmlElement )
-		self.height = evaluate.getEvaluatedFloatDefault( radius.z + radius.z, 'height', self.xmlElement )
-		self.radiusX = radius.x
-		self.radiusY = radius.y
-		self.radiusZ = None
+		self.inradius = evaluate.getVector3ByPrefixes( [ 'demisize', 'inradius', 'radius' ], Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
+		self.inradius = evaluate.getVector3ByMultiplierPrefixes( 2.0, [ 'diameter', 'size' ], self.inradius, self.xmlElement )
+		self.inradius.z = 0.5 * evaluate.getEvaluatedFloatDefault( self.inradius.z + self.inradius.z, 'height', self.xmlElement )
 		self.topOverBottom = evaluate.getEvaluatedFloatOne( 'topoverbottom', self.xmlElement )
-		self.xmlElement.attributeDictionary[ 'height' ] = self.height
-		self.xmlElement.attributeDictionary[ 'radiusx' ] = self.radiusX
-		self.xmlElement.attributeDictionary[ 'radiusy' ] = self.radiusY
+		self.xmlElement.attributeDictionary[ 'height' ] = self.inradius.z + self.inradius.z
+		self.xmlElement.attributeDictionary[ 'radius.x' ] = self.inradius.x
+		self.xmlElement.attributeDictionary[ 'radius.y' ] = self.inradius.y
 		self.xmlElement.attributeDictionary[ 'topoverbottom' ] = self.topOverBottom
 		self.createShape()

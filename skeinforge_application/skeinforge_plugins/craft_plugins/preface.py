@@ -86,20 +86,18 @@ The preface tool has created the file:
 """
 
 from __future__ import absolute_import
-try:
-	import psyco
-	psyco.full()
-except:
-	pass
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
 from datetime import date
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.svg_reader import SVGReader
+from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
+from fabmetheus_utilities import svg_writer
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
@@ -140,7 +138,7 @@ class PrefaceRepository:
 	"A class to handle the preface settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.preface.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.preface.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Preface', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Preface' )
 		self.meta = settings.StringSetting().getFromValue( 'Meta:', self, '' )
@@ -170,10 +168,9 @@ class PrefaceSkein:
 	def __init__( self ):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
-		self.layerThickness = None
 		self.lineIndex = 0
 		self.oldLocation = None
-		self.rotatedBoundaryLayers = []
+		self.svgReader = SVGReader()
 
 	def addFromUpperLowerFile( self, fileName ):
 		"Add lines of text from the fileName or the lowercase fileName, if there is no file by the original fileName in the directory."
@@ -187,7 +184,7 @@ class PrefaceSkein:
 		self.distanceFeedRate.addTagBracketedLine( 'creation', 'skeinforge' ) # GCode formatted comment
 		absoluteFilePathUntilDot = os.path.abspath( __file__ )[ : os.path.abspath( __file__ ).rfind( '.' ) ]
 		if absoluteFilePathUntilDot == '/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/preface': #is this script on Enrique's computer?
-			gcodec.writeFileText( gcodec.getVersionFileName(), date.today().isoformat() )
+			gcodec.writeFileText( gcodec.getVersionFileName(), date.today().isoformat().replace( '-', '.' )[ 2 : ] )
 		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
 		self.distanceFeedRate.addTagBracketedLine( 'version', versionText ) # GCode formatted comment
 		self.distanceFeedRate.addLine( '(<extruderInitialization>)' ) # GCode formatted comment
@@ -202,41 +199,17 @@ class PrefaceSkein:
 		craftTypeName = skeinforge_profile.getCraftTypeName()
 		self.distanceFeedRate.addTagBracketedLine( 'craftTypeName', craftTypeName )
 		self.distanceFeedRate.addTagBracketedLine( 'decimalPlacesCarried', self.distanceFeedRate.decimalPlacesCarried )
-		self.distanceFeedRate.addTagBracketedLine( 'layerThickness', self.distanceFeedRate.getRounded( self.layerThickness ) )
+		layerThickness = float( self.svgReader.sliceDictionary[ 'layerThickness' ] )
+		self.distanceFeedRate.addTagBracketedLine( 'layerThickness', self.distanceFeedRate.getRounded( layerThickness ) )
 		if self.prefaceRepository.meta.value:
 			self.distanceFeedRate.addTagBracketedLine( 'meta', self.prefaceRepository.meta.value )
-		self.distanceFeedRate.addTagBracketedLine( 'perimeterWidth', self.distanceFeedRate.getRounded( self.perimeterWidth ) )
+		perimeterWidth = float( self.svgReader.sliceDictionary[ 'perimeterWidth' ] )
+		self.distanceFeedRate.addTagBracketedLine( 'perimeterWidth', self.distanceFeedRate.getRounded( perimeterWidth ) )
 		self.distanceFeedRate.addTagBracketedLine( 'profileName', skeinforge_profile.getProfileName( craftTypeName ) )
-		self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'carve' )
+		self.distanceFeedRate.addTagBracketedLine( 'procedureDone', self.svgReader.sliceDictionary[ 'procedureDone' ] )
 		self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'preface' )
 		self.distanceFeedRate.addLine( '(</extruderInitialization>)' ) # Initialization is finished, extrusion is starting.
 		self.distanceFeedRate.addLine( '(<extrusion>)' ) # Initialization is finished, extrusion is starting.
-
-	def addPathData( self, line ):
-		"Add the data from the path line."
-		line = line.replace( '"', ' ' )
-		splitLine = line.split()
-		if splitLine[ 1 ] != 'transform=':
-			return
-		line = line.lower()
-		line = line.replace( 'm', ' ' )
-		line = line.replace( 'l', ' ' )
-		line = line.replace( '/>', ' ' )
-		splitLine = line.split()
-		if 'd=' not in splitLine:
-			return
-		splitLine = splitLine[ splitLine.index( 'd=' ) + 1 : ]
-		pathSequence = []
-		for word in splitLine:
-			if word == 'z':
-				loop = []
-				for pathSequenceIndex in xrange( 0, len( pathSequence ), 2 ):
-					coordinate = complex( pathSequence[ pathSequenceIndex ], pathSequence[ pathSequenceIndex + 1 ] )
-					loop.append( coordinate )
-				self.rotatedBoundaryLayer.loops.append( loop )
-				pathSequence = []
-			else:
-				pathSequence.append( float( word ) )
 
 	def addPreface( self, rotatedBoundaryLayer ):
 		"Add preface to the carve layer."
@@ -247,11 +220,6 @@ class PrefaceSkein:
 			self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
 		self.distanceFeedRate.addLine( '(</layer>)' )
 
-	def addRotatedLoopLayer( self, z ):
-		"Add rotated loop layer."
-		self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
-		self.rotatedBoundaryLayers.append( self.rotatedBoundaryLayer )
-
 	def addShutdownToOutput( self ):
 		"Add shutdown gcode to the output."
 		self.distanceFeedRate.addLine( '(</extrusion>)' ) # GCode formatted comment
@@ -259,67 +227,16 @@ class PrefaceSkein:
 			self.distanceFeedRate.addLine( 'M103' ) # Turn extruder motor off.
 		self.addFromUpperLowerFile( self.prefaceRepository.nameOfEndFile.value ) # Add an end file if it exists.
 
-	def addTextData( self, line ):
-		"Add the data from the text line."
-		if line.find( 'layerThickness' ) != - 1:
-			return
-		line = line.replace( '>', ' ' )
-		line = line.replace( '<', ' ' )
-		line = line.replace( ',', ' ' )
-		splitLine = line.split()
-		if 'Layer' not in splitLine:
-			return
-		splitLine = splitLine[ splitLine.index( 'Layer' ) + 1 : ]
-		if 'z' not in splitLine:
-			return
-		zIndex = splitLine.index( 'z' )
-		self.addRotatedLoopLayer( float( splitLine[ zIndex + 1 ] ) )
-
 	def getCraftedGcode( self, prefaceRepository, gcodeText ):
 		"Parse gcode text and store the bevel gcode."
 		self.prefaceRepository = prefaceRepository
-		gcodeText = gcodeText.replace( '\t', ' ' )
-		gcodeText = gcodeText.replace( ';', ' ' )
-		self.lines = gcodec.getTextLines( gcodeText )
-		self.parseInitialization()
-		if self.layerThickness == None:
-			return ''
+		self.svgReader.parseSVG( '', gcodeText )
+		self.distanceFeedRate.decimalPlacesCarried = int( self.svgReader.sliceDictionary[ 'decimalPlacesCarried' ] )
 		self.addInitializationToOutput()
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			self.parseLine( lineIndex )
-		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
+		for rotatedBoundaryLayer in self.svgReader.rotatedLoopLayers:
 			self.addPreface( rotatedBoundaryLayer )
 		self.addShutdownToOutput()
 		return self.distanceFeedRate.output.getvalue()
-
-	def parseInitialization( self ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ].lstrip()
-			splitLine = gcodec.getWithoutBracketsEqualTab( line ).split()
-			firstWord = gcodec.getFirstWord( splitLine )
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
-			if firstWord == 'layerThickness':
-				self.layerThickness = float( splitLine[ 1 ] )
-			elif firstWord == 'extrusionStart':
-				return
-			elif firstWord == 'perimeterWidth':
-				self.perimeterWidth = float( splitLine[ 1 ] )
-
-	def parseLine( self, lineIndex ):
-		"Parse a gcode line and add it to the preface skein."
-		line = self.lines[ lineIndex ].lstrip()
-		splitLine = line.split()
-		if len( splitLine ) < 1:
-			return
-		firstWord = splitLine[ 0 ]
-		if firstWord == '(<bridgeRotation>' or firstWord == '<!--bridgeRotation-->':
-			secondWordWithoutBrackets = splitLine[ 1 ].replace( '(', '' ).replace( ')', '' )
-			self.rotatedBoundaryLayer.rotation = complex( secondWordWithoutBrackets )
-		elif firstWord == '<path':
-			self.addPathData( line )
-		elif firstWord == '<text':
-			self.addTextData( line )
 
 
 def main():

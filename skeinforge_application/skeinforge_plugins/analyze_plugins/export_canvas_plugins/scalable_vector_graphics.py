@@ -2,7 +2,7 @@
 This page is in the table of contents.
 Scalable vector graphics is an export canvas plugin to export the canvas to a scalable vector graphics (.svg) file.
 
-When the export menu item in the file menu in an analyze viewer tool, like skeinview or behold is clicked, the postscript dialog will be displayed.  When the 'Export to Scalable Vector Graphics' button on that dialog is clicked, the canvas will be exported as a scalable vector graphics file.  If the 'Scalable Vector Graphics Program' is set the default 'webbrowser', the scalable vector graphics file will be sent to the default browser to be opened.  If the 'Scalable Vector Graphics Program' is set to a program name, the scalable vector graphics file will be sent to that program to be opened.
+When the export menu item in the file menu in an analyze viewer tool, like skeinview or behold is clicked, the postscript dialog will be displayed.  When the 'Export to Scalable Vector Graphics' button on that dialog is clicked, the canvas will be exported as a scalable vector graphics file.  If the 'Scalable Vector Graphics Program' is set to the default 'webbrowser', the scalable vector graphics file will be sent to the default browser to be opened.  If the 'Scalable Vector Graphics Program' is set to a program name, the scalable vector graphics file will be sent to that program to be opened.
 
 If furthermore the 'File Extension' is set to a file extension, the scalable vector graphics file will be sent to the program, along with the file extension for the converted output.  The default is blank because some systems do not have an image conversion program; if you have or will install an image conversion program, a common 'File Extension' is png.  A good open source conversion program is Image Magick, which is available at:
 http://www.imagemagick.org/script/index.php
@@ -42,9 +42,9 @@ class ScalableVectorGraphicsRepository:
 	"A class to handle the export settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', '', self )
+		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', '', self )
 		self.fileExtension = settings.StringSetting().getFromValue( 'File Extension:', self, '' )
-		self.svgProgram = settings.StringSetting().getFromValue( 'Scalable Vector Graphics Program:', self, 'netscape' )
+		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
 
 	def addCanvasLineToOutput( self, canvasLinesOutput, objectIDNumber ):
 		"Add the canvas line to the output."
@@ -80,23 +80,23 @@ class ScalableVectorGraphicsRepository:
 			parseLineReplace( firstWordTable, line, output )
 		gcodec.writeFileText( svgFileName, output.getvalue() )
 		fileExtension = self.fileExtension.value
-		svgProgram = self.svgProgram.value
-		if svgProgram == '':
+		svgViewer = self.svgViewer.value
+		if svgViewer == '':
 			return
-		if svgProgram == 'webbrowser':
+		if svgViewer == 'webbrowser':
 			settings.openWebPage( svgFileName )
 			return
 		svgFilePath = '"' + os.path.normpath( svgFileName ) + '"' # " to send in file name with spaces
-		shellCommand = svgProgram + ' ' + svgFilePath
+		shellCommand = svgViewer + ' ' + svgFilePath
 		print( '' )
 		if fileExtension == '':
 			print( 'Sending the shell command:' )
 			print( shellCommand )
 			commandResult = os.system( shellCommand )
 			if commandResult != 0:
-				print( 'It may be that the system could not find the %s program.' % svgProgram )
-				print( 'If so, try installing the %s program or look for another one, like the Gnu Image Manipulation Program (Gimp) which can be found at:' % svgProgram )
-				print( 'http://www.gimp.org/' )
+				print( 'It may be that the system could not find the %s program.' % svgViewer )
+				print( 'If so, try installing the %s program or look for another svg viewer, like Netscape which can be found at:' % svgViewer )
+				print( 'http://www.netscape.org/' )
 			return
 		convertedFileName = gcodec.getFilePathWithUnderscoredBasename( svgFilePath, '.' + fileExtension + '"' )
 		shellCommand += ' ' + convertedFileName
@@ -104,8 +104,8 @@ class ScalableVectorGraphicsRepository:
 		print( shellCommand )
 		commandResult = os.system( shellCommand )
 		if commandResult != 0:
-			print( 'The %s program could not convert the svg to the %s file format.' % ( svgProgram, fileExtension ) )
-			print( 'Try installing the %s program or look for another one, like Image Magick which can be found at:' % svgProgram )
+			print( 'The %s program could not convert the svg to the %s file format.' % ( svgViewer, fileExtension ) )
+			print( 'Try installing the %s program or look for another one, like Image Magick which can be found at:' % svgViewer )
 			print( 'http://www.imagemagick.org/script/index.php' )
 
 	def getCanvasLinesOutput( self ):

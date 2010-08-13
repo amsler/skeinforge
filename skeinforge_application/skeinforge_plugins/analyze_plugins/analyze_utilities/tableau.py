@@ -48,6 +48,13 @@ def setStateNormalDisabled( active, widget ):
 	else:
 		widget.config( state = settings.Tkinter.DISABLED )
 
+def startMainLoopFromWindow( tableauWindow ):
+	"Display the tableau window and start the main loop."
+	if tableauWindow == None:
+		print( 'Warning, tableauWindow in startMainLoopFromWindow in tableau is none, so the window will not be displayed.' )
+	else:
+		tableauWindow.root.mainloop()
+
 
 class ColoredLine:
 	"A colored index line."
@@ -128,7 +135,7 @@ class TableauWindow:
 
 	def addCanvasMenuRootScrollSkein( self, repository, skein, suffix, title ):
 		"Add the canvas, menu bar, scroll bar, skein panes, tableau repository, root and skein."
-		self.imagesDirectoryPath = settings.getPathInFabmetheus( os.path.join( 'fabmetheus_utilities', 'images' ) )
+		self.imagesDirectoryPath = settings.getPathInFabmetheusUtilities('images')
 		self.movementTextID = None
 		self.mouseInstantButtons = []
 		self.photoImages = {}

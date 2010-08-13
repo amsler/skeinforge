@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities import xml_simple_parser
+from fabmetheus_utilities import xml_simple_reader
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -35,7 +35,7 @@ def addVertexToAttributeDictionary( attributeDictionary, vertex ):
 
 def getUnboundVertexElement( vertex ):
 	"Add vertex element to an xml element."
-	vertexElement = xml_simple_parser.XMLElement()
+	vertexElement = xml_simple_reader.XMLElement()
 	addVertexToAttributeDictionary( vertexElement.attributeDictionary, vertex )
 	vertexElement.className = 'vertex'
 	return vertexElement

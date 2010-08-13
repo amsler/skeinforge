@@ -600,9 +600,9 @@ def getExtraFillLoops( insideLoops, outsideLoop, radius ):
 	"Get extra loops between inside and outside loops."
 	greaterThanRadius = 1.4 * radius # later 1.01 * radius
 	extraFillLoops = []
-	points = intercircle.getPointsFromLoops( insideLoops + [ outsideLoop ], greaterThanRadius )
-	centers = intercircle.getCentersFromPoints( points, greaterThanRadius )
 	otherLoops = insideLoops + [ outsideLoop ]
+	points = intercircle.getPointsFromLoops( otherLoops, greaterThanRadius )
+	centers = intercircle.getCentersFromPoints( points, greaterThanRadius )
 	for center in centers:
 		inset = intercircle.getSimplifiedInsetFromClockwiseLoop( center, radius )
 		if intercircle.isLargeSameDirection( inset, center, radius ):
@@ -964,7 +964,7 @@ class FillRepository:
 	"A class to handle the fill settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.fill.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.fill.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Fill', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fill' )
 		self.activateFill = settings.BooleanSetting().getFromValue( 'Activate Fill:', self, True )

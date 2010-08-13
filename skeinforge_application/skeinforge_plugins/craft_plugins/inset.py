@@ -253,7 +253,7 @@ class InsetRepository:
 	"A class to handle the inset settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.craft_plugins.inset.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.inset.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Inset', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Inset' )
 		self.addCustomCodeForTemperatureReading = settings.BooleanSetting().getFromValue( 'Add Custom Code for Temperature Reading', self, True )
@@ -322,9 +322,19 @@ class InsetSkein:
 
 	def addGcodeFromRemainingLoop( self, loop, loopLists, radius, z ):
 		"Add the remainder of the loop which does not overlap the alreadyFilledArounds loops."
-		boundary = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, - radius )
-		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
-		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
+#		boundary = intercircle.getLargestInsetLoopFromLoopRegardless( loop, - radius )
+#		loop = euclidean.getSimplifiedLoop( intercircle.getCentersFromLoopDirection( euclidean.isWiddershins( loop ), loop, radius )[ 0 ], radius )
+#		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
+#		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
+
+		centerOutset = intercircle.getLargestCenterOutsetLoopFromLoopRegardless( loop, radius )
+		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, centerOutset.outset, z )
+		self.addGcodePerimeterBlockFromRemainingLoop( centerOutset.center, loopLists, radius, z )
+
+
+#		boundary = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, - radius )
+#		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
+#		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
 		self.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )
 		self.distanceFeedRate.addLine( '(</surroundingLoop>)' )
 

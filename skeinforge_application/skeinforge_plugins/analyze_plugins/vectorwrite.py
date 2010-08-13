@@ -23,6 +23,11 @@ Default is a huge number, which will be limited to the highest index layer.
 
 The "Layers To" is the index of the top layer that will be displayed.  If the layer to index is a huge number like the default, the display will go to the top of the model, at least until we model habitats:)  If the layer to index is negative, then the display will go to the layer to index below the top layer.  The layer from until layer to index is a python slice.
 
+===SVG Viewer===
+Default is webbrowser.
+
+If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector graphics file will be sent to the default browser to be opened.  If the 'SVG Viewer' is set to a program name, the scalable vector graphics file will be sent to that program to be opened.
+
 ==Examples==
 
 Below are examples of vectorwrite being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and vectorwrite.py.
@@ -45,7 +50,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the vectorwrite dialog.
 
 
->>> vectorwrite.analyzeFile( 'Screw Holder_penultimate.gcode' )
+>>> vectorwrite.getWindowAnalyzeFile( 'Screw Holder_penultimate.gcode' )
 The vectorwrite file is saved as Screw_Holder_penultimate_vectorwrite.svg
 
 """
@@ -73,22 +78,25 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-#maybe add open webbrowser first time file is created choice
-def analyzeFile( fileName ):
+def getNewRepository():
+	"Get the repository constructor."
+	return VectorwriteRepository()
+
+def getWindowAnalyzeFile( fileName ):
 	"Write scalable vector graphics for a gcode file."
 	gcodeText = gcodec.getFileText( fileName )
-	analyzeFileGivenText( fileName, gcodeText )
+	return getWindowAnalyzeFileGivenText( fileName, gcodeText )
 
-def analyzeFileGivenText( fileName, gcodeText, repository = None ):
+def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
 	"Write scalable vector graphics for a gcode file given the settings."
 	if gcodeText == '':
-		return ''
+		return None
 	if repository == None:
 		repository = settings.getReadRepository( VectorwriteRepository() )
 	startTime = time.time()
 	vectorwriteGcode = VectorwriteSkein().getCarvedSVG( fileName, gcodeText, repository )
 	if vectorwriteGcode == '':
-		return
+		return None
 	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_vectorwrite.svg'
 	suffixDirectoryName = os.path.dirname( suffixFileName )
 	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
@@ -96,11 +104,7 @@ def analyzeFileGivenText( fileName, gcodeText, repository = None ):
 	gcodec.writeFileText( suffixFileName, vectorwriteGcode )
 	print( 'The vectorwrite file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 	print( 'It took %s to vectorwrite the file.' % euclidean.getDurationString( time.time() - startTime ) )
-	settings.openWebPage( suffixFileName )
-
-def getNewRepository():
-	"Get the repository constructor."
-	return VectorwriteRepository()
+	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 	"Write scalable vector graphics for a skeinforge gcode file, if activate vectorwrite is selected."
@@ -108,39 +112,35 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 	if not repository.activateVectorwrite.value:
 		return
 	gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
-	analyzeFileGivenText( fileNameSuffix, gcodeText, repository )
+	getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
 class SVGWriterVectorwrite( svg_writer.SVGWriter ):
 	"A class to vectorwrite a carving."
-	def addLoops( self, loops, pathStart ):
-		"Add loops to the output."
-		loopString = ''
-		for loop in loops:
-			loopString += self.getSVGLoopString( loop ) + ' '
-		if len( loopString ) > 0:
-			self.addLine( pathStart + loopString[ : - 1 ] + '"/>' )
-
-	def addPaths( self, colorName, paths, pathStart ):
+	def addPaths( self, colorName, paths, transformString ):
 		"Add paths to the output."
 		pathString = ''
 		for path in paths:
-			pathString += self.getSVGPathString( path ) + ' '
-		if len( pathString ) > 0:
-			self.addLine( pathStart + pathString[ : - 1 ] + '" fill="none" stroke="%s"/>' % colorName )
+			pathString += self.getSVGStringForPath( path ) + ' '
+		if len( pathString ) < 1:
+			return
+		pathXMLElementCopy = self.pathXMLElement.getCopy( '', self.pathXMLElement.parent )
+		pathCopyDictionary = pathXMLElementCopy.attributeDictionary
+		pathCopyDictionary[ 'd' ] = pathString[ : - 1 ]
+		pathCopyDictionary[ 'fill' ] = 'none'
+		pathCopyDictionary[ 'stroke' ] = colorName
+		pathCopyDictionary[ 'transform' ] = transformString
 
 	def addRotatedLoopLayerToOutput( self, layerIndex, rotatedBoundaryLayer ):
 		"Add rotated boundary layer to the output."
-		self.addLayerBegin( layerIndex, rotatedBoundaryLayer.z )
-		cornerMinimumXString = self.getRounded( - self.carving.getCarveCornerMinimum().x )
-		cornerMinimumYString = self.getRounded( - self.carving.getCarveCornerMinimum().y )
-		pathStart = '\t\t\t<path transform="scale(%s, %s) translate(%s, %s)" d="' % ( self.unitScale, - self.unitScale, cornerMinimumXString, cornerMinimumYString )
-		self.addLoops( rotatedBoundaryLayer.boundaryLoops, pathStart )
-		self.addPaths( '#fa0', rotatedBoundaryLayer.innerPerimeters, pathStart ) #orange
-		self.addPaths( '#ff0', rotatedBoundaryLayer.loops, pathStart ) #yellow
-		self.addPaths( '#f00', rotatedBoundaryLayer.outerPerimeters, pathStart ) #red
-		self.addPaths( '#f5c', rotatedBoundaryLayer.paths, pathStart ) #light violetred
-		self.addLine( '\t\t</g>' )
+		self.addLayerBegin( layerIndex, rotatedBoundaryLayer )
+		transformString = self.getTransformString()
+		self.pathDictionary[ 'd' ] = self.getSVGStringForLoops( rotatedBoundaryLayer.boundaryLoops )
+		self.pathDictionary[ 'transform' ] = transformString
+		self.addPaths( '#fa0', rotatedBoundaryLayer.innerPerimeters, transformString ) #orange
+		self.addPaths( '#ff0', rotatedBoundaryLayer.loops, transformString ) #yellow
+		self.addPaths( '#f00', rotatedBoundaryLayer.outerPerimeters, transformString ) #red
+		self.addPaths( '#f5c', rotatedBoundaryLayer.paths, transformString ) #light violetred
 
 
 class ThreadLayer:
@@ -162,7 +162,7 @@ class VectorwriteRepository:
 	"A class to handle the vectorwrite settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_plugins.analyze_plugins.vectorwrite.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.vectorwrite.html', self )
 		self.activateVectorwrite = settings.BooleanSetting().getFromValue( 'Activate Vectorwrite', self, False )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Write Vector Graphics for', self, '' )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Vectorwrite' )
@@ -171,13 +171,15 @@ class VectorwriteRepository:
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
 		self.layersTo = settings.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
 		settings.LabelSeparator().getFromRepository( self )
+		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
+		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Vectorwrite'
 
 	def execute( self ):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			analyzeFile( fileName )
+			getWindowAnalyzeFile( fileName )
 
 
 class VectorwriteSkein:
@@ -308,7 +310,7 @@ class VectorwriteSkein:
 def main():
 	"Display the vectorwrite dialog."
 	if len( sys.argv ) > 1:
-		analyzeFile( ' '.join( sys.argv[ 1 : ] ) )
+		getWindowAnalyzeFile( ' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

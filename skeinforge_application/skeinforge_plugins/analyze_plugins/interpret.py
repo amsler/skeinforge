@@ -40,13 +40,13 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 	"Write file interpretation, if activate interpret is selected."
 	repository = settings.getReadRepository( getNewRepository() )
 	if repository.activateInterpret.value:
-		fabmetheus_interpret.analyzeFile( fileName )
+		fabmetheus_interpret.getWindowAnalyzeFile( fileName )
 
 
 def main():
 	"Display the interpret dialog."
 	if len( sys.argv ) > 1:
-		fabmetheus_interpret.analyzeFile( ' '.join( sys.argv[ 1 : ] ) )
+		fabmetheus_interpret.getWindowAnalyzeFile( ' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

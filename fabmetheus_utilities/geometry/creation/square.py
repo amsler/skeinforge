@@ -7,8 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.creation import lineation
-from fabmetheus_utilities.geometry.geometry_tools import path
+from fabmetheus_utilities.geometry.creation_tools import lineation
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -23,29 +22,27 @@ __license__ = "GPL 3.0"
 
 def getGeometryOutput( xmlElement ):
 	"Get vector3 vertices from attribute dictionary."
-	halfX = 1.0
-	halfX = evaluate.getEvaluatedFloatDefault( halfX, 'halfx', xmlElement )
-	halfX = 0.5 * evaluate.getEvaluatedFloatDefault( halfX / 0.5, 'width', xmlElement )
-	bottomHalfX = evaluate.getEvaluatedFloatDefault( halfX, 'bottomhalfx', xmlElement )
-	bottomHalfX = 0.5 * evaluate.getEvaluatedFloatDefault( halfX / 0.5, 'bottomwidth', xmlElement )
-	topHalfX = evaluate.getEvaluatedFloatDefault( halfX, 'tophalfx', xmlElement )
-	topHalfX = 0.5 * evaluate.getEvaluatedFloatDefault( halfX / 0.5, 'topwidth', xmlElement )
-	halfY = halfX
+	inradius = complex( 1.0, 1.0 )
+	inradius = lineation.getComplexByPrefixes( [ 'demisize', 'inradius' ], inradius, xmlElement )
+	inradius = lineation.getComplexByMultiplierPrefix( 2.0, 'size', inradius, xmlElement )
+	demiwidth = lineation.getFloatByPrefixBeginEnd( 'demiwidth', 'width', inradius.real, xmlElement )
+	demiheight = lineation.getFloatByPrefixBeginEnd( 'demiheight', 'height', inradius.imag, xmlElement )
 	if '_arguments' in xmlElement.attributeDictionary:
 		arguments = xmlElement.attributeDictionary[ '_arguments' ]
-		halfX = 0.5 * euclidean.getFloatFromValue( arguments[ 0 ] )
-		xmlElement.attributeDictionary[ 'halfX' ] = str( halfX )
+		demiwidth = 0.5 * euclidean.getFloatFromValue( arguments[ 0 ] )
+		xmlElement.attributeDictionary[ 'inradius.x' ] = str( demiwidth )
 		if len( arguments ) > 1:
-			halfY = 0.5 * euclidean.getFloatFromValue( arguments[ 1 ] )
+			demiheight = 0.5 * euclidean.getFloatFromValue( arguments[ 1 ] )
+			xmlElement.attributeDictionary[ 'inradius.y' ] = str( demiheight )
 		else:
-			halfY = halfX
-	halfY = evaluate.getEvaluatedFloatDefault( halfY, 'halfy', xmlElement )
-	halfY = 0.5 * evaluate.getEvaluatedFloatDefault( halfY / 0.5, 'height', xmlElement )
+			demiheight = demiwidth
+	bottomDemiwidth = lineation.getFloatByPrefixBeginEnd( 'bottomdemiwidth', 'bottomwidth', demiwidth, xmlElement )
+	topDemiwidth = lineation.getFloatByPrefixBeginEnd( 'topdemiwidth', 'topwidth', demiwidth, xmlElement )
 	interiorAngle = evaluate.getEvaluatedFloatDefault( 90.0, 'interiorangle', xmlElement )
-	topRight = complex( topHalfX, halfY )
-	topLeft = complex( - topHalfX, halfY )
-	bottomLeft = complex( - bottomHalfX, - halfY )
-	bottomRight = complex( bottomHalfX, - halfY )
+	topRight = complex( topDemiwidth, demiheight )
+	topLeft = complex( - topDemiwidth, demiheight )
+	bottomLeft = complex( - bottomDemiwidth, - demiheight )
+	bottomRight = complex( bottomDemiwidth, - demiheight )
 	if interiorAngle != 90.0:
 		interiorPlaneAngle = euclidean.getWiddershinsUnitPolar( math.radians( interiorAngle - 90.0 ) )
 		topRight = ( topRight - bottomRight ) * interiorPlaneAngle + bottomRight
@@ -55,7 +52,7 @@ def getGeometryOutput( xmlElement ):
 		Vector3( topLeft.real, topLeft.imag ),
 		Vector3( bottomLeft.real, bottomLeft.imag ),
 		Vector3( bottomRight.real, bottomRight.imag ) ]
-	return lineation.getGeometryOutputByLoop( None, lineation.SideLoop( loop, 0.5 * math.pi ), xmlElement )
+	return lineation.getGeometryOutputByLoop( lineation.SideLoop( loop, 0.5 * math.pi ), xmlElement )
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."

@@ -55,7 +55,7 @@ __license__ = "GPL 3.0"
 
 def addToMenu( master, menu, repository, window ):
 	"Add a tool plugin menu."
-	path = settings.getPathInSkeinforgeFromFileNameHelp( repository.fileNameHelp )
+	path = settings.getPathInFabmetheusFromFileNameHelp( repository.fileNameHelp )
 	capitalizedBasename = os.path.basename( path ).capitalize()
 	helpRepository = settings.getReadRepository( skeinforge_help.HelpRepository() )
 	if repository.openWikiManualHelpPage != None and helpRepository.wikiManualPrimary.value:

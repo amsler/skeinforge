@@ -30,7 +30,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities import xml_simple_parser
+from fabmetheus_utilities import xml_simple_reader
 from fabmetheus_utilities import gcodec
 import sys
 
@@ -68,7 +68,7 @@ def getPluginsDirectoryPath():
 	return gcodec.getAbsoluteFolderPath( __file__, 'xml_plugins' )
 
 
-class CSVElement( xml_simple_parser.XMLElement ):
+class CSVElement( xml_simple_reader.XMLElement ):
 	"A csv element."
 	def continueParsingObject( self, line, lineStripped ):
 		"Parse replaced line."
@@ -124,7 +124,7 @@ class CSVElement( xml_simple_parser.XMLElement ):
 		return self.parent.getNumberOfParents() + 1
 
 
-class CSVSimpleParser( xml_simple_parser.XMLSimpleParser ):
+class CSVSimpleParser( xml_simple_reader.XMLSimpleReader ):
 	"A simple csv parser."
 	def __init__( self, parent, csvText ):
 		"Add empty lists."

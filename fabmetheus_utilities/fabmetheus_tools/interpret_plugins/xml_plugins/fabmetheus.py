@@ -34,8 +34,10 @@ from fabmetheus_utilities.geometry.geometry_utilities import boolean_geometry
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
-from fabmetheus_utilities import xml_simple_parser
+from fabmetheus_utilities import xml_simple_reader
 import os
+import sys
+import traceback
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -43,12 +45,6 @@ __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http
 __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
-
-def addToNamePathDictionary( directoryPath, namePathDictionary ):
-	"Add to the name path dictionary."
-	pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( directoryPath )
-	for pluginFileName in pluginFileNames:
-		namePathDictionary[ pluginFileName ] = os.path.join( directoryPath, pluginFileName )
 
 def getCarvingFromParser( xmlParser ):
 	"Get the carving for the parser."
@@ -66,6 +62,14 @@ def getGeometryToolsDirectoryPath():
 def getManipulationDirectoryPath():
 	"Get the manipulation directory path."
 	return os.path.join( evaluate.getGeometryDirectoryPath(), 'manipulation' )
+
+def getManipulationEvaluatorDirectoryPath():
+	"Get the manipulation from evaluator directory path."
+	return os.path.join( evaluate.getGeometryDirectoryPath(), 'manipulation_evaluator' )
+
+def getManipulationEvaluatorToolsDirectoryPath():
+	"Get the manipulation from evaluator tools directory path."
+	return os.path.join( evaluate.getGeometryDirectoryPath(), 'manipulation_evaluator_tools' )
 
 def getManipulationPathsDirectoryPath():
 	"Get the manipulation paths directory path."
@@ -86,21 +90,26 @@ def getStatementsDirectoryPath():
 
 class XMLBooleanGeometryProcessor():
 	"A class to process xml boolean geometry elements."
-	def __init__( self ):
+	def __init__(self):
 		"Initialize processor."
 		self.functions = []
+		self.manipulationEvaluatorDictionary = {}
+		settings.addToNamePathDictionary(getManipulationEvaluatorDirectoryPath(), self.manipulationEvaluatorDictionary)
+		settings.addToNamePathDictionary(getManipulationEvaluatorToolsDirectoryPath(), self.manipulationEvaluatorDictionary)
 		self.manipulationPathDictionary = {}
-		addToNamePathDictionary( getManipulationPathsDirectoryPath(), self.manipulationPathDictionary )
+		settings.addToNamePathDictionary(getManipulationPathsDirectoryPath(), self.manipulationPathDictionary)
 		self.manipulationShapeDictionary = {}
-		addToNamePathDictionary( getManipulationShapesDirectoryPath(), self.manipulationShapeDictionary )
+		settings.addToNamePathDictionary(getManipulationShapesDirectoryPath(), self.manipulationShapeDictionary)
 		self.namePathDictionary = {}
-		addToNamePathDictionary( evaluate.getCreationDirectoryPath(), self.namePathDictionary )
-		addToNamePathDictionary( getManipulationDirectoryPath(), self.namePathDictionary )
-		self.namePathDictionary.update( self.manipulationPathDictionary )
-		self.namePathDictionary.update( self.manipulationShapeDictionary )
-		addToNamePathDictionary( getGeometryToolsDirectoryPath(), self.namePathDictionary )
-		addToNamePathDictionary( getSolidsDirectoryPath(), self.namePathDictionary )
-		addToNamePathDictionary( getStatementsDirectoryPath(), self.namePathDictionary )
+		self.namePathDictionary.update(self.manipulationEvaluatorDictionary)
+		self.namePathDictionary.update(self.manipulationPathDictionary)
+		settings.addToNamePathDictionary(evaluate.getCreationDirectoryPath(), self.namePathDictionary)
+		settings.addToNamePathDictionary(evaluate.getCreationToolsDirectoryPath(), self.namePathDictionary)
+		settings.addToNamePathDictionary(getManipulationDirectoryPath(), self.namePathDictionary)
+		self.namePathDictionary.update(self.manipulationShapeDictionary)
+		settings.addToNamePathDictionary(getGeometryToolsDirectoryPath(), self.namePathDictionary)
+		settings.addToNamePathDictionary(getSolidsDirectoryPath(), self.namePathDictionary)
+		settings.addToNamePathDictionary(getStatementsDirectoryPath(), self.namePathDictionary)
 
 	def convertXMLElement( self, geometryOutput, xmlElement ):
 		"Convert the xml element."
@@ -120,7 +129,9 @@ class XMLBooleanGeometryProcessor():
 	def createChildren( self, geometryOutput, parent ):
 		"Create children for the parent."
 		for geometryOutputChild in geometryOutput:
-			self.convertXMLElement( geometryOutputChild, xml_simple_parser.XMLElement().getByParent( parent ) )
+			child = xml_simple_reader.XMLElement()
+			child.setParentAddToChildren( parent )
+			self.convertXMLElement( geometryOutputChild, child )
 
 	def processChildren( self, xmlElement ):
 		"Process the children of the xml element."
@@ -135,4 +146,11 @@ class XMLBooleanGeometryProcessor():
 		pluginModule = gcodec.getModuleWithPath( self.namePathDictionary[ lowerClassName ] )
 		if pluginModule == None:
 			return None
-		return pluginModule.processXMLElement( xmlElement, self )
+		try:
+			return pluginModule.processXMLElement( xmlElement, self )
+		except:
+			print( 'Warning, could not processXMLElement in fabmetheus for:' )
+			print( pluginModule )
+			print( xmlElement )
+			traceback.print_exc( file = sys.stdout )
+		return None

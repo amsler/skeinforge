@@ -9,7 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools.dictionary import Dictionary
 from fabmetheus_utilities.geometry.geometry_tools import vertex
-from fabmetheus_utilities.geometry.geometry_tools import matrix4x4
+from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import xml_simple_writer
 
@@ -39,7 +39,7 @@ class Path( Dictionary ):
 	def __init__( self ):
 		"Add empty lists."
 		Dictionary.__init__( self )
-		self.matrix4X4 = matrix4x4.Matrix4X4()
+		self.matrix4X4 = matrix.Matrix()
 		self.transformedVertices = None
 		self.vertices = []
 
@@ -49,19 +49,19 @@ class Path( Dictionary ):
 			self.matrix4X4.addXML( depth, output )
 		xml_simple_writer.addXMLFromVertices( depth, output, self.vertices )
 
-	def getMatrixChain( self ):
-		"Get the matrix chain."
-		return self.matrix4X4.getOtherTimesSelf( self.xmlElement.parent.object.getMatrixChain() )
+	def getMatrixChainTetragrid(self):
+		"Get the matrix chain tetragrid."
+		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).matrixTetragrid
 
 	def getPaths( self ):
 		"Get all vertices."
 		return [ self.getVertices() ]
 
-	def getVertices( self ):
+	def getVertices(self):
 		"Get all vertices."
 		if self.xmlElement == None:
 			return self.vertices
 		if self.transformedVertices == None:
-			self.transformedVertices = matrix4x4.getTransformedVector3s( self.getMatrixChain().matrixTetragrid, self.vertices )
+			self.transformedVertices = matrix.getTransformedVector3s(self.getMatrixChainTetragrid(), self.vertices)
 		return self.transformedVertices
 
