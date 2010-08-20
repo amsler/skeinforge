@@ -41,7 +41,7 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def getCarving( fileName = '' ):
+def getCarving( fileName = ''):
 	"Get the carving for the csv file."
 	csvText = gcodec.getFileText( fileName )
 	if csvText == '':
@@ -53,10 +53,10 @@ def getCarving( fileName = '' ):
 		return None
 	return pluginModule.getCarvingFromParser( csvParser )
 
-def getLineDictionary( line ):
+def getLineDictionary(line):
 	"Get the line dictionary."
 	lineDictionary = {}
-	splitLine = line.split( '\t' )
+	splitLine = line.split('\t')
 	for splitLineIndex in xrange( len( splitLine ) ):
 		word = splitLine[ splitLineIndex ]
 		if word != '':
@@ -65,23 +65,23 @@ def getLineDictionary( line ):
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'xml_plugins' )
+	return gcodec.getAbsoluteFolderPath( __file__, 'xml_plugins')
 
 
 class CSVElement( xml_simple_reader.XMLElement ):
 	"A csv element."
 	def continueParsingObject( self, line, lineStripped ):
 		"Parse replaced line."
-		splitLineStripped = lineStripped.split( '\t' )
-		key = splitLineStripped[ 0 ]
-		value = splitLineStripped[ 1 ]
+		splitLineStripped = lineStripped.split('\t')
+		key = splitLineStripped[0]
+		value = splitLineStripped[1]
 		self.attributeDictionary[ key ] = value
 		self.addToIDDictionaryIFIDExists()
 
 	def continueParsingTable( self, line, lineStripped ):
 		"Parse replaced line."
 		if self.headingDictionary == None:
-			self.headingDictionary = getLineDictionary( line )
+			self.headingDictionary = getLineDictionary(line)
 			return
 		csvElement = self
 		oldAttributeDictionaryLength = len( self.attributeDictionary )
@@ -89,7 +89,7 @@ class CSVElement( xml_simple_reader.XMLElement ):
 			csvElement = CSVElement()
 		csvElement.parent = self.parent
 		csvElement.className = self.className
-		lineDictionary = getLineDictionary( line )
+		lineDictionary = getLineDictionary(line)
 		for columnIndex in lineDictionary.keys():
 			if columnIndex in self.headingDictionary:
 				key = self.headingDictionary[ columnIndex ]
@@ -102,8 +102,8 @@ class CSVElement( xml_simple_reader.XMLElement ):
 
 	def getElementFromObject( self, leadingTabCount, lineStripped, oldElement ):
 		"Parse replaced line."
-		splitLine = lineStripped.split( '\t' )
-		self.className = splitLine[ 1 ]
+		splitLine = lineStripped.split('\t')
+		self.className = splitLine[1]
 		if leadingTabCount == 0:
 			return self
 		self.parent = oldElement
@@ -134,7 +134,7 @@ class CSVSimpleParser( xml_simple_reader.XMLSimpleReader ):
 		self.oldCSVElement = None
 		self.root = None
 		for line in self.lines:
-			self.parseLine( line )
+			self.parseLine(line)
 
 	def getNewCSVElement( self, leadingTabCount, lineStripped ):
 		"Get a new csv element."
@@ -142,7 +142,7 @@ class CSVSimpleParser( xml_simple_reader.XMLSimpleReader ):
 			self.extraLeadingTabCount = 1 - leadingTabCount
 		if self.extraLeadingTabCount != None:
 			leadingTabCount += self.extraLeadingTabCount
-		if lineStripped[ : len( '_table' ) ] == '_table' or lineStripped[ : len( '_t' ) ] == '_t':
+		if lineStripped[ : len('_table') ] == '_table' or lineStripped[ : len('_t') ] == '_t':
 			self.oldCSVElement = CSVElement().getElementFromTable( leadingTabCount, lineStripped, self.oldCSVElement )
 			self.continueFunction = self.oldCSVElement.continueParsingTable
 			return
@@ -155,8 +155,8 @@ class CSVSimpleParser( xml_simple_reader.XMLSimpleReader ):
 		if len( lineStripped ) < 1:
 			return
 		leadingPart = line[ : line.find( lineStripped ) ]
-		leadingTabCount = leadingPart.count( '\t' )
-		if lineStripped[ : len( '_' ) ] == '_':
+		leadingTabCount = leadingPart.count('\t')
+		if lineStripped[ : len('_') ] == '_':
 			self.getNewCSVElement( leadingTabCount, lineStripped )
 			if self.root == None:
 				self.root = self.oldCSVElement
@@ -169,7 +169,7 @@ class CSVSimpleParser( xml_simple_reader.XMLSimpleReader ):
 def main():
 	"Display the inset dialog."
 	if len( sys.argv ) > 1:
-		getCarving( ' '.join( sys.argv[ 1 : ] ) )
+		getCarving(' '.join( sys.argv[ 1 : ] ) )
 
 if __name__ == "__main__":
 	main()

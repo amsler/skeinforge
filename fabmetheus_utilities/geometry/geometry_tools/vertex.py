@@ -20,20 +20,20 @@ __license__ = "GPL 3.0"
 def addGeometryList( vertices, xmlElement ):
 	"Add vertex elements to an xml element."
 	for vertex in vertices:
-		vertexElement = getUnboundVertexElement( vertex )
+		vertexElement = getUnboundVertexElement(vertex)
 		vertexElement.parent = xmlElement
 		xmlElement.children.append( vertexElement )
 
 def addVertexToAttributeDictionary( attributeDictionary, vertex ):
 	"Add to the attribute dictionary."
 	if vertex.x != 0.0:
-		attributeDictionary[ 'x' ] = str( vertex.x )
+		attributeDictionary['x'] = str( vertex.x )
 	if vertex.y != 0.0:
-		attributeDictionary[ 'y' ] = str( vertex.y )
+		attributeDictionary['y'] = str( vertex.y )
 	if vertex.z != 0.0:
-		attributeDictionary[ 'z' ] = str( vertex.z )
+		attributeDictionary['z'] = str( vertex.z )
 
-def getUnboundVertexElement( vertex ):
+def getUnboundVertexElement(vertex):
 	"Add vertex element to an xml element."
 	vertexElement = xml_simple_reader.XMLElement()
 	addVertexToAttributeDictionary( vertexElement.attributeDictionary, vertex )
@@ -42,4 +42,4 @@ def getUnboundVertexElement( vertex ):
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	xmlElement.parent.object.vertices.append( evaluate.getVector3FromXMLElement( xmlElement ) )
+	xmlElement.parent.object.vertices.append( evaluate.getVector3FromXMLElement(xmlElement) )

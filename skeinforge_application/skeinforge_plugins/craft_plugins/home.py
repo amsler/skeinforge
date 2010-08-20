@@ -39,7 +39,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the home dialog.
 
 
->>> home.writeOutput( 'Screw Holder Bottom.stl' )
+>>> home.writeOutput('Screw Holder Bottom.stl')
 The home tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -75,7 +75,7 @@ def getCraftedText( fileName, text, homeRepository = None ):
 
 def getCraftedTextFromText( gcodeText, homeRepository = None ):
 	"Home a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'home' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'home'):
 		return gcodeText
 	if homeRepository == None:
 		homeRepository = settings.getReadRepository( HomeRepository() )
@@ -87,22 +87,22 @@ def getNewRepository():
 	"Get the repository constructor."
 	return HomeRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Home a gcode linear move file.  Chain home the gcode if it is not already homed. If no fileName is specified, home the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'home' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'home')
 
 
 class HomeRepository:
 	"A class to handle the home settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.home.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Home', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_home' )
-		self.activateHome = settings.BooleanSetting().getFromValue( 'Activate Home', self, True )
-		self.nameOfHomingFile = settings.StringSetting().getFromValue( 'Name of Homing File:', self, 'homing.gcode' )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.home.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Home', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_home')
+		self.activateHome = settings.BooleanSetting().getFromValue('Activate Home', self, True )
+		self.nameOfHomingFile = settings.StringSetting().getFromValue('Name of Homing File:', self, 'homing.gcode')
 		self.executeTitle = 'Home'
 
 	def execute( self ):
@@ -148,50 +148,50 @@ class HomeSkein:
 		if self.oldLocation == None:
 			return
 		if self.extruderActive:
-			self.distanceFeedRate.addLine( 'M103' )
+			self.distanceFeedRate.addLine('M103')
 		self.addHopUp( self.oldLocation )
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode( self.homingLines )
 		self.addHopUp( self.oldLocation )
 		self.addFloat( self.oldLocation, location )
 		if self.extruderActive:
-			self.distanceFeedRate.addLine( 'M101' )
+			self.distanceFeedRate.addLine('M101')
 
 	def getCraftedGcode( self, gcodeText, homeRepository ):
 		"Parse gcode text and store the home gcode."
 		self.homingText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), homeRepository.nameOfHomingFile.value )
 		if len( self.homingText ) < 1:
 			return gcodeText
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.homeRepository = homeRepository
 		self.parseInitialization( homeRepository )
 		self.homingLines = gcodec.getTextLines( self.homingText )
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			self.parseLine( line )
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self, homeRepository ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> home </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> home </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.absolutePerimeterWidth = abs( float( splitLine[ 1 ] ) )
+				self.absolutePerimeterWidth = abs( float( splitLine[1] ) )
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float( splitLine[ 1 ] )
-			self.distanceFeedRate.addLine( line )
+				self.travelFeedRatePerMinute = 60.0 * float( splitLine[1] )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			self.addHomeTravel( splitLine )
 			self.oldLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
@@ -202,13 +202,13 @@ class HomeSkein:
 			self.extruderActive = True
 		elif firstWord == 'M103':
 			self.extruderActive = False
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the home dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

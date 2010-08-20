@@ -32,13 +32,13 @@
 	<!--
 		Creation
 		-->
-	<dictionary polygonFivePointTwo='=creation.polygon(5.2)' />
-	<dictionary polygonFive='=creation.polygon({equation.spherical.elevation:"revolutions*30.0",revolutions:2})*7' />
+	<dictionary polygonFivePointTwo='=creation.getPolygon(5.2)' />
+	<dictionary polygonFive='=creation.getPolygon({equation.spherical.elevation:"revolutions*30.0",revolutions:2})*7' />
 	<!--
 		Dictionary
 		-->
 	<dictionary concatenate='{ 0 : "Zero" } || { 1 : "One" }' />
-	<dictionary range5one='{ 0 : "Zero", 1 : "One", 2 : "Two", 3 : "Three", 4 : "Four" }[ 1 ]' />
+	<dictionary range5one='{ 0 : "Zero", 1 : "One", 2 : "Two", 3 : "Three", 4 : "Four" }[1]' />
 	<dictionary range5one='{ 0 : "Zero", 1 : "One", 2 : "Two", 3 : "Three", 4 : "Four" }[ :4:2 ]' />
 	<dictionary range5onecomma3='{ 0 : "Zero", 1 : "One", 2 : "Two", 3 : "Three", 4 : "Four" }[ 1, 3 ]' />
 	<dictionary range5onethrough3='{ 0 : "Zero", 1 : "One", 2 : "Two", 3 : "Three", 4 : "Four" }[ 4 : -1 : -1 ]' />
@@ -51,7 +51,7 @@
 	<dictionary namefivenumber='=name.five.number' />
 	<dictionary parentseven='=parent.seven' />
 	<dictionary rootseven='=root.seven' />
-	<dictionary vertexthreezero='=id.triangle.vertex[ 0 ]' />
+	<dictionary vertexthreezero='=id.triangle.vertex[0]' />
 	<!--
 		List
 		-->
@@ -59,7 +59,7 @@
 	<dictionary concatenatethree='[0,1]||3' />
 	<dictionary copy='[0,1,2,3,4][ : ]' />
 	<dictionary copy='[0,1,2,3,4][]' />
-	<dictionary range5one='[0,1,2,3,4][ 1 ]' />
+	<dictionary range5one='[0,1,2,3,4][1]' />
 	<dictionary range5onecomma3='[0,1,2,3,4][ 1, 3 ]' />
 	<dictionary range5onethrough3='[0,1,2,3,4][ 3 : -1 : -1 ]' />
 	<dictionary reverse5='[0,1,2,3,4][ : : -1 ]' />
@@ -81,8 +81,8 @@
 	<dictionary id='kapow' kapow='=4**-2' />
 	<dictionary bracket='=2*(3+1)' compoundbracket='=2*(8/(1+1))' withoutbracket='=2*3+1' />
 	<dictionary name='name number' power='=3' />
-	<dictionary p='=creation.polygon(5.2)' />
-	<dictionary p='=creation.polygon()*5' />
+	<dictionary p='=creation.getPolygon(5.2)' />
+	<dictionary p='=creation.getPolygon()*5' />
 	<function id="triple" parameters='number' >
 		<statement number='=number*3' />
 		<statement count='=1' />

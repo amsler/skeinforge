@@ -1,8 +1,8 @@
 try:
 	import serial
 except:
-	print( 'You do not have pySerial installed, which is needed to control the serial port.' )
-	print( 'Information on pySerial is at:\nhttp://pyserial.wiki.sourceforge.net/pySerial' )
+	print('You do not have pySerial installed, which is needed to control the serial port.')
+	print('Information on pySerial is at:\nhttp://pyserial.wiki.sourceforge.net/pySerial')
 import reprap, time							# Import the reprap and pySerial modules.
 
 reprap.serial = serial.Serial(0, 19200, timeout = reprap.snap.messageTimeout)	# Initialise serial port, here the first port (0) is used.

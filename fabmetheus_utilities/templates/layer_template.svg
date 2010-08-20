@@ -234,19 +234,19 @@ function viewSingle() {
 	]]></script>
 
 	<title>replaceWith_Title</title>
-	<desc></desc>
 
 	<!--Begin Layer Data   -->
 	<g id="layerData" fill="#556B2F" stroke="#00F" stroke-width="0.54px" font-weight="bold" font-family="Arial" font-size="15px">
 		<!--id="sliceElementTemplate" must be there or else the slice template will not be found-->
 		<g id="sliceElementTemplate" transform="translate(20, 242)">
- 			<text y="15" fill="#000" stroke="none">Layer 1, z:0.1</text>
+			<!--id="layerTextTemplate" must be there so that the text could be removed if necessary-->
+			<text id="layerTextTemplate" y="15" fill="#000" stroke="none">Layer 1, z:0.1</text>
  			<path transform="scale(3.7, -3.7) translate(0, 5)" d="M 0 -5 L 50 0 L60 50 L 5 50 z M 5 3 L5 15 L15 15 L15 5 z"/>
 		</g>
 	</g>
 	<!--End Layer Data-->
 
-	<!--id="beginningOfControlSection" must be there or else the control box will be carved-->
+	<!--id="beginningOfControlSection" must be there or else the control box will be carved and so that the controls could be removed-->
 	<g id="beginningOfControlSection" font-weight="bold" font-family="Arial" font-size="15px">
 		<!--Button to change from all to single-->
 		<text id="buttonSingle" fill="darkslateblue" visibility="hidden" onclick="viewSingle()">[Single View]</text>
@@ -293,7 +293,7 @@ function viewSingle() {
 			</g>
 		</g>
 	</g>
-	<!--No Javascript Control box   -->
+	<!--id="noJavascriptControls" must be there so that the controls could be removed if necessary-->
 	<g id="noJavascriptControls" fill="#000" transform="translate(20, 1400)">
 		<rect width="640" height="110" stroke="gray" stroke-width="4px" fill="silver"/>
 		<g transform="translate(10, 0)">

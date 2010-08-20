@@ -61,8 +61,8 @@ def addFacesGivenText( stlText, triangleMesh, vertexIndexTable ):
 	lines = gcodec.getTextLines( stlText )
 	vertices = []
 	for line in lines:
-		if line.find( 'vertex' ) != - 1:
-			vertices.append( getVertexGivenLine( line ) )
+		if line.find('vertex') != - 1:
+			vertices.append( getVertexGivenLine(line) )
 	addFacesGivenVertices( triangleMesh, vertexIndexTable, vertices )
 
 def addFacesGivenVertices( triangleMesh, vertexIndexTable, vertices ):
@@ -70,16 +70,16 @@ def addFacesGivenVertices( triangleMesh, vertexIndexTable, vertices ):
 	for vertexIndex in xrange( 0, len( vertices ), 3 ):
 		triangleMesh.faces.append( getFaceGivenLines( triangleMesh, vertexIndex, vertexIndexTable, vertices ) )
 
-def getCarving( fileName = '' ):
+def getCarving( fileName = ''):
 	"Get the triangle mesh for the stl file."
 	if fileName == '':
 		return None
-	stlData = gcodec.getFileText( fileName, 'rb' )
+	stlData = gcodec.getFileText( fileName, 'rb')
 	if stlData == '':
 		return None
 	triangleMesh = trianglemesh.TriangleMesh()
 	vertexIndexTable = {}
-	numberOfVertexStrings = stlData.count( 'vertex' )
+	numberOfVertexStrings = stlData.count('vertex')
 	requiredVertexStringsForText = max( 2, len( stlData ) / 8000 )
 	if numberOfVertexStrings > requiredVertexStringsForText:
 		addFacesGivenText( stlData, triangleMesh, vertexIndexTable )
@@ -96,11 +96,11 @@ def getFaceGivenLines( triangleMesh, vertexStartIndex, vertexIndexTable, vertice
 	for vertexIndex in xrange( vertexStartIndex, vertexStartIndex + 3 ):
 		vertex = vertices[ vertexIndex ]
 		vertexUniqueIndex = len( vertexIndexTable )
-		if str( vertex ) in vertexIndexTable:
-			vertexUniqueIndex = vertexIndexTable[ str( vertex ) ]
+		if str(vertex) in vertexIndexTable:
+			vertexUniqueIndex = vertexIndexTable[ str(vertex) ]
 		else:
-			vertexIndexTable[ str( vertex ) ] = vertexUniqueIndex
-			triangleMesh.vertices.append( vertex )
+			vertexIndexTable[ str(vertex) ] = vertexUniqueIndex
+			triangleMesh.vertices.append(vertex)
 		faceGivenLines.vertexIndexes.append( vertexUniqueIndex )
 	return faceGivenLines
 
@@ -109,17 +109,17 @@ def getFloat( floatString ):
 	try:
 		return float( floatString )
 	except:
-		return float( floatString.replace( ',', '.' ) )
+		return float( floatString.replace(',', '.') )
 
 def getFloatGivenBinary( byteIndex, stlData ):
 	"Get vertex given stl vertex line."
-	return unpack( 'f', stlData[ byteIndex : byteIndex + 4 ] )[ 0 ]
+	return unpack('f', stlData[ byteIndex : byteIndex + 4 ] )[0]
 
 def getVertexGivenBinary( byteIndex, stlData ):
 	"Get vertex given stl vertex line."
 	return Vector3( getFloatGivenBinary( byteIndex, stlData ), getFloatGivenBinary( byteIndex + 4, stlData ), getFloatGivenBinary( byteIndex + 8, stlData ) )
 
-def getVertexGivenLine( line ):
+def getVertexGivenLine(line):
 	"Get vertex given stl vertex line."
 	splitLine = line.split()
-	return Vector3( getFloat( splitLine[ 1 ] ), getFloat( splitLine[ 2 ] ), getFloat( splitLine[ 3 ] ) )
+	return Vector3( getFloat( splitLine[1] ), getFloat( splitLine[2] ), getFloat( splitLine[3] ) )

@@ -45,7 +45,7 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def getCarving( fileName = '' ):
+def getCarving( fileName = ''):
 	"Get the triangle mesh for the slc file."
 	carving = SLCCarving()
 	carving.readFile( fileName )
@@ -53,11 +53,11 @@ def getCarving( fileName = '' ):
 
 def getLittleEndianFloatGivenFile( file ):
 	"Get little endian float given a file."
-	return unpack( '<f', file.read( 4 ) )[ 0 ]
+	return unpack('<f', file.read( 4 ) )[0]
 
 def getLittleEndianUnsignedLongGivenFile( file ):
 	"Get little endian float given a file."
-	return unpack( '<L', file.read( 4 ) )[ 0 ]
+	return unpack('<L', file.read( 4 ) )[0]
 
 def getPointsFromFile( numPoints, file ):
 	"Process the vertice points for a given boundary."
@@ -113,13 +113,13 @@ class SLCCarving:
 		"Get the corner minimum of the vertices."
 		return self.cornerMinimum
 
-	def getCarvedSVG( self ):
+	def getCarvedSVG(self):
 		"Get the carved svg text."
-		if len( self.rotatedBoundaryLayers ) < 1:
+		if len(self.rotatedBoundaryLayers) < 1:
 			return ''
-		decimalPlaces = max( 0, 2 - int( math.floor( math.log10( self.layerThickness ) ) ) )
-		self.svgWriter = svg_writer.SVGWriter( self, decimalPlaces )
-		return self.svgWriter.getReplacedSVGTemplate( self.fileName, 'basic', self.rotatedBoundaryLayers )
+		decimalPlaces = max(0, 2 - int(math.floor(math.log10(self.layerThickness))))
+		self.svgWriter = svg_writer.SVGWriter(True, self, decimalPlaces)
+		return self.svgWriter.getReplacedSVGTemplate(self.fileName, 'basic', self.rotatedBoundaryLayers)
 
 	def getCarveLayerThickness( self ):
 		"Get the layer thickness."
@@ -151,7 +151,7 @@ class SLCCarving:
 	def readFile( self, fileName ):
 		"Read SLC and store the layers."
 		self.fileName = fileName
-		pslcfile = open( fileName, 'rb' )
+		pslcfile = open( fileName, 'rb')
 		readHeader( pslcfile )
 		pslcfile.read( 256 ) #Go past the 256 byte 3D Reserved Section.
 		self.readTableEntry( pslcfile )
@@ -199,7 +199,7 @@ class SLCCarving:
 def main():
 	"Display the inset dialog."
 	if len( sys.argv ) > 1:
-		getCarving( ' '.join( sys.argv[ 1 : ] ) )
+		getCarving(' '.join( sys.argv[ 1 : ] ) )
 
 if __name__ == "__main__":
 	main()

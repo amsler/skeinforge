@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.creation_tools import lineation
+from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -42,16 +42,16 @@ def getBevelPath( begin, center, close, end, radius ):
 
 def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 	"Get bevel loop."
-	if len( loop ) < 3:
-		return [ loop ]
+	if len(loop) < 3:
+		return [loop]
 	radius = lineation.getRadiusByPrefix( prefix, sideLength, xmlElement )
 	if radius == 0.0:
 		return loop
 	bevelLoop = []
-	for pointIndex in xrange( len( loop ) ):
-		begin = loop[ ( pointIndex + len( loop ) - 1 ) % len( loop ) ]
-		center = loop[ pointIndex ]
-		end = loop[ ( pointIndex + 1 ) % len( loop ) ]
+	for pointIndex in xrange(len(loop)):
+		begin = loop[(pointIndex + len(loop) - 1) % len(loop)]
+		center = loop[pointIndex]
+		end = loop[(pointIndex + 1) % len(loop)]
 		bevelLoop += getBevelPath( begin, center, close, end, radius )
 	return [ euclidean.getLoopWithoutCloseSequentialPoints( close, bevelLoop ) ]
 

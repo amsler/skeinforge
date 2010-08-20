@@ -39,7 +39,7 @@ def getChainTextFromProcedures( fileName, procedures, text ):
 		if craftModule != None:
 			text = craftModule.getCraftedText( fileName, text )
 			if gcodec.isProcedureDone( text, procedure ):
-				print( '%s procedure took %s.' % ( procedure.capitalize(), euclidean.getDurationString( time.time() - lastProcedureTime ) ) )
+				print('%s procedure took %s.' % ( procedure.capitalize(), euclidean.getDurationString( time.time() - lastProcedureTime ) ) )
 				lastProcedureTime = time.time()
 	return text
 
@@ -60,7 +60,7 @@ def getNewRepository():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_plugins', 'craft_plugins' ) )
+	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'craft_plugins') )
 
 def getPluginFileNames():
 	"Get craft plugin fileNames."
@@ -97,21 +97,21 @@ def getSequenceIndexPlusOneFromText( fileText ):
 
 def writeChainTextWithNounMessage( fileName, procedure ):
 	"Get and write a crafted shape file."
-	print( '' )
-	print( 'The %s tool is parsing the file:' % procedure )
+	print('')
+	print('The %s tool is parsing the file:' % procedure )
 	print( os.path.basename( fileName ) )
-	print( '' )
+	print('')
 	startTime = time.time()
-	fileNameSuffix = fileName[ : fileName.rfind( '.' ) ] + '_' + procedure + '.gcode'
+	fileNameSuffix = fileName[ : fileName.rfind('.') ] + '_' + procedure + '.gcode'
 	craftText = getChainText( fileName, procedure )
 	if craftText == '':
 		return
 	gcodec.writeFileText( fileNameSuffix, craftText )
-	print( '' )
-	print( 'The %s tool has created the file:' % procedure )
+	print('')
+	print('The %s tool has created the file:' % procedure )
 	print( fileNameSuffix )
-	print( '' )
-	print( 'It took %s to craft the file.' % euclidean.getDurationString( time.time() - startTime ) )
+	print('')
+	print('It took %s to craft the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	skeinforge_analyze.writeOutput( fileName, fileNameSuffix, craftText )
 
 def writeOutput( fileName ):
@@ -157,7 +157,7 @@ class CraftRadioButtonsSaveListener:
 			else:
 				radioPlugin.radiobutton.grid_remove()
 		if not maximumValue:
-			selectedRadioPlugin = settings.getSelectedRadioPlugin( self.repository.importantFileNames + [ activeRadioPlugins[ 0 ].name ], activeRadioPlugins ).setSelect()
+			selectedRadioPlugin = settings.getSelectedRadioPlugin( self.repository.importantFileNames + [ activeRadioPlugins[0].name ], activeRadioPlugins ).setSelect()
 		self.repository.pluginFrame.update()
 
 
@@ -165,9 +165,9 @@ class CraftRepository:
 	"A class to handle the craft settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_utilities.skeinforge_craft.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Craft', self, '' )
-		self.importantFileNames = [ 'carve', 'chop', 'feed', 'flow', 'lift', 'raft', 'speed' ]
+		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_craft.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Craft', self, '')
+		self.importantFileNames = ['carve', 'chop', 'feed', 'flow', 'lift', 'raft', 'speed']
 		allCraftNames = gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 		radioPlugins = settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), self.importantFileNames, allCraftNames, self )
 		CraftRadioButtonsSaveListener().getFromRadioPlugins( radioPlugins, self )

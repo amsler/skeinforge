@@ -19,7 +19,7 @@ class HiddenScrollbar( Tkinter.Scrollbar ):
 	def set( self, lo, hi ):
 		"Add to grid is needed, remove if not."
 		if float( lo ) <= 0.0 and float( hi ) >= 1.0:
-			self.tk.call( 'grid', 'remove', self )
+			self.tk.call('grid', 'remove', self )
 		else:
 			self.grid()
 		Tkinter.Scrollbar.set( self, lo, hi )

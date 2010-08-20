@@ -63,7 +63,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the mill dialog.
 
 
->>> mill.writeOutput( 'Screw Holder Bottom.stl' )
+>>> mill.writeOutput('Screw Holder Bottom.stl')
 Screw Holder Bottom.stl
 The mill tool is parsing the file:
 Screw Holder Bottom.stl
@@ -104,7 +104,7 @@ def getCraftedText( fileName, gcodeText = '', repository = None ):
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Mill a gcode linear move gcodeText."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'mill' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'mill'):
 		return gcodeText
 	if repository == None:
 		repository = settings.getReadRepository( MillRepository() )
@@ -131,12 +131,12 @@ def isPointOfTableInLoop( loop, pointTable ):
 			return True
 	return False
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Mill a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
-	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'mill' )
+	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'mill')
 
 
 class Average:
@@ -152,7 +152,7 @@ class Average:
 	def getAverage( self ):
 		"Get the average."
 		if self.numberOfValues == 0:
-			print( 'should never happen, self.numberOfValues in Average is zero' )
+			print('should never happen, self.numberOfValues in Average is zero')
 			return 0.0
 		return self.total / float( self.numberOfValues )
 
@@ -166,14 +166,14 @@ class MillRepository:
 	"A class to handle the mill settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.mill.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Mill', self, '' )
-		self.activateMill = settings.BooleanSetting().getFromValue( 'Activate Mill', self, True )
-		settings.LabelDisplay().getFromName( '- Add Loops -', self )
-		self.addInnerLoops = settings.BooleanSetting().getFromValue( 'Add Inner Loops', self, True )
-		self.addOuterLoops = settings.BooleanSetting().getFromValue( 'Add Outer Loops', self, True )
-		self.crossHatch = settings.BooleanSetting().getFromValue( 'Cross Hatch', self, True )
-		settings.LabelDisplay().getFromName( '- Loop Outset -', self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.mill.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Mill', self, '')
+		self.activateMill = settings.BooleanSetting().getFromValue('Activate Mill', self, True )
+		settings.LabelDisplay().getFromName('- Add Loops -', self )
+		self.addInnerLoops = settings.BooleanSetting().getFromValue('Add Inner Loops', self, True )
+		self.addOuterLoops = settings.BooleanSetting().getFromValue('Add Outer Loops', self, True )
+		self.crossHatch = settings.BooleanSetting().getFromValue('Cross Hatch', self, True )
+		settings.LabelDisplay().getFromName('- Loop Outset -', self )
 		self.loopInnerOutsetOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.3, 'Loop Inner Outset over Perimeter Width (ratio):', self, 0.7, 0.5 )
 		self.loopOuterOutsetOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.8, 'Loop Outer Outset over Perimeter Width (ratio):', self, 1.4, 1.0 )
 		self.millWidthOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.8, 'Mill Width over Perimeter Width (ratio):', self, 1.8, 1.0 )
@@ -254,9 +254,9 @@ class MillSkein:
 		loops = euclidean.getSimplifiedLoops( loops, millRadius )
 		for loop in loops:
 			if isPointOfTableInLoop( loop, innerPointTable ):
-				boundaryLayer.innerLoops.append( loop )
+				boundaryLayer.innerLoops.append(loop)
 			else:
-				boundaryLayer.outerLoops.append( loop )
+				boundaryLayer.outerLoops.append(loop)
 		if self.repository.crossHatch.value and boundaryLayerIndex % 2 == 1:
 			boundaryLayer.segmentTable = boundaryLayer.verticalSegmentTable
 		else:
@@ -265,11 +265,11 @@ class MillSkein:
 	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the mill gcode."
 		self.repository = repository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
 		self.parseBoundaries()
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseLine( line )
+		for line in self.lines[self.lineIndex :]:
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getHorizontalSegmentTableForXIntersectionsTable( self, xIntersectionsTable ):
@@ -307,8 +307,8 @@ class MillSkein:
 		"Parse the boundaries and add them to the boundary layers."
 		boundaryLoop = None
 		boundaryLayer = None
-		for line in self.lines[ self.lineIndex : ]:
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		for line in self.lines[self.lineIndex :]:
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == '(</boundaryPerimeter>)':
 				boundaryLoop = None
@@ -319,7 +319,7 @@ class MillSkein:
 					boundaryLayer.loops.append( boundaryLoop )
 				boundaryLoop.append( location.dropAxis( 2 ) )
 			elif firstWord == '(<layer>':
-				boundaryLayer = euclidean.LoopLayer( float( splitLine[ 1 ] ) )
+				boundaryLayer = euclidean.LoopLayer( float( splitLine[1] ) )
 				self.boundaryLayers.append( boundaryLayer )
 		if len( self.boundaryLayers ) < 2:
 			return
@@ -347,27 +347,27 @@ class MillSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> mill </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> mill </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[ 1 ] )
+				self.perimeterWidth = float( splitLine[1] )
 				self.aroundWidth = 0.1 * self.perimeterWidth
 				self.halfPerimeterWidth = 0.5 * self.perimeterWidth
 				self.millWidth = self.perimeterWidth * self.repository.millWidthOverPerimeterWidth.value
 				self.loopInnerOutset = self.halfPerimeterWidth + self.perimeterWidth * self.repository.loopInnerOutsetOverPerimeterWidth.value
 				self.loopOuterOutset = self.halfPerimeterWidth + self.perimeterWidth * self.repository.loopOuterOutsetOverPerimeterWidth.value
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the mill skein."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 			if self.isExtruderActive:
@@ -386,13 +386,13 @@ class MillSkein:
 			if len( self.boundaryLayers ) > self.layerIndex:
 				self.addMillThreads()
 			self.layerIndex += 1
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the mill dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

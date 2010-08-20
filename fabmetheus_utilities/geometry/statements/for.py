@@ -22,17 +22,17 @@ def processChildrenByIndexValue( function, index, indexValue, value, xmlElement 
 		function.localDictionary[ indexValue.indexName ] = index
 	if indexValue.valueName != '':
 		function.localDictionary[ indexValue.valueName ] = value
-	function.processChildren( xmlElement )
+	function.processChildren(xmlElement)
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	if xmlElement.object == None:
-		xmlElement.object = IndexValue( xmlElement )
+		xmlElement.object = IndexValue(xmlElement)
 	if xmlElement.object.inSplitWords == None:
 		return
 	if len( xmlProcessor.functions ) < 1:
-		print( 'Warning, "for" element is not in a function in processXMLElement in for.py for:' )
-		print( xmlElement )
+		print('Warning, "for" element is not in a function in processXMLElement in for.py for:')
+		print(xmlElement)
 		return
 	function = xmlProcessor.functions[ - 1 ]
 	inValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.inSplitWords, xmlElement )
@@ -54,18 +54,18 @@ class IndexValue:
 		self.inSplitWords = None
 		self.indexName = ''
 		if 'index' in xmlElement.attributeDictionary:
-			self.indexName = xmlElement.attributeDictionary[ 'index' ]
+			self.indexName = xmlElement.attributeDictionary['index']
 		self.valueName = ''
 		if 'value' in xmlElement.attributeDictionary:
-			self.valueName = xmlElement.attributeDictionary[ 'value' ]
+			self.valueName = xmlElement.attributeDictionary['value']
 		if 'in' in xmlElement.attributeDictionary:
-			self.inSplitWords = evaluate.getEvaluatorSplitWords( xmlElement.attributeDictionary[ 'in' ] )
+			self.inSplitWords = evaluate.getEvaluatorSplitWords( xmlElement.attributeDictionary['in'] )
 		else:
-			print( 'Warning, could not find the "in" attribute in IndexValue in for.py for:' )
-			print( xmlElement )
+			print('Warning, could not find the "in" attribute in IndexValue in for.py for:')
+			print(xmlElement)
 			return
 		if len( self.inSplitWords ) < 1:
 			self.inSplitWords = None
-			print( 'Warning, could not get split words for the "in" attribute in IndexValue in for.py for:' )
-			print( xmlElement )
+			print('Warning, could not get split words for the "in" attribute in IndexValue in for.py for:')
+			print(xmlElement)
 

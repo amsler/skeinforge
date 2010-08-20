@@ -54,7 +54,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the feed dialog.
 
 
->>> feed.writeOutput( 'Screw Holder Bottom.stl' )
+>>> feed.writeOutput('Screw Holder Bottom.stl')
 The feed tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -90,7 +90,7 @@ def getCraftedText( fileName, text = '', feedRepository = None ):
 
 def getCraftedTextFromText( gcodeText, feedRepository = None ):
 	"Feed a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'feed' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'feed'):
 		return gcodeText
 	if feedRepository == None:
 		feedRepository = settings.getReadRepository( FeedRepository() )
@@ -102,22 +102,22 @@ def getNewRepository():
 	"Get the repository constructor."
 	return FeedRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Feed a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'feed' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'feed')
 
 
 class FeedRepository:
 	"A class to handle the feed settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.feed.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Feed', self, '' )
-		self.activateFeed = settings.BooleanSetting().getFromValue( 'Activate Feed:', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.feed.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Feed', self, '')
+		self.activateFeed = settings.BooleanSetting().getFromValue('Activate Feed:', self, True )
 		self.feedRatePerSecond = settings.FloatSpin().getFromValue( 2.0, 'Feed Rate (mm/s):', self, 50.0, 16.0 )
-		settings.LabelDisplay().getFromName( 'Maximum Z Feed Rate:', self )
+		settings.LabelDisplay().getFromName('Maximum Z Feed Rate:', self )
 		self.maximumZDrillFeedRatePerSecond = settings.FloatSpin().getFromValue( 0.02, 'Maximum Z Drill Feed Rate (mm/s):', self, 0.5, 0.1 )
 		self.maximumZTravelFeedRatePerSecond = settings.FloatSpin().getFromValue( 0.5, 'Maximum Z Travel Feed Rate (mm/s):', self, 10.0, 8.0 )
 		self.travelFeedRatePerSecond = settings.FloatSpin().getFromValue( 2.0, 'Travel Feed Rate (mm/s):', self, 50.0, 16.0 )
@@ -148,10 +148,10 @@ class FeedSkein:
 		self.feedRepository = feedRepository
 		self.feedRatePerSecond = feedRepository.feedRatePerSecond.value
 		self.travelFeedRatePerMinute = 60.0 * self.feedRepository.travelFeedRatePerSecond.value
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseLine( line )
+		for line in self.lines[self.lineIndex :]:
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getFeededLine( self, splitLine ):
@@ -167,39 +167,39 @@ class FeedSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> feed </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> feed </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.absolutePerimeterWidth = abs( float( splitLine[ 1 ] ) )
-				self.distanceFeedRate.addTagBracketedLine( 'maximumZDrillFeedRatePerSecond', self.distanceFeedRate.maximumZDrillFeedRatePerSecond )
-				self.distanceFeedRate.addTagBracketedLine( 'maximumZTravelFeedRatePerSecond', self.distanceFeedRate.maximumZTravelFeedRatePerSecond )
-				self.distanceFeedRate.addTagBracketedLine( 'operatingFeedRatePerSecond', self.feedRatePerSecond )
-				self.distanceFeedRate.addTagBracketedLine( 'travelFeedRatePerSecond', self.feedRepository.travelFeedRatePerSecond.value )
-			self.distanceFeedRate.addLine( line )
+				self.absolutePerimeterWidth = abs( float( splitLine[1] ) )
+				self.distanceFeedRate.addTagBracketedLine('maximumZDrillFeedRatePerSecond', self.distanceFeedRate.maximumZDrillFeedRatePerSecond )
+				self.distanceFeedRate.addTagBracketedLine('maximumZTravelFeedRatePerSecond', self.distanceFeedRate.maximumZTravelFeedRatePerSecond )
+				self.distanceFeedRate.addTagBracketedLine('operatingFeedRatePerSecond', self.feedRatePerSecond )
+				self.distanceFeedRate.addTagBracketedLine('travelFeedRatePerSecond', self.feedRepository.travelFeedRatePerSecond.value )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the feed skein."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			line = self.getFeededLine( splitLine )
 		elif firstWord == 'M101':
 			self.isExtruderActive = True
 		elif firstWord == 'M103':
 			self.isExtruderActive = False
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the feed dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

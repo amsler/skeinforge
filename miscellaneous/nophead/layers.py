@@ -62,7 +62,7 @@ def make_images(layers):
             if last_pos != None:
                 draw.line(((( last_pos.x - x0) * scale, height - ( last_pos.y - y0) * scale),
                            ((thread[0].x - x0) * scale, height - (thread[0].y - y0) * scale)), fill = 128)
-            last_pos = thread[ 0 ].copy()
+            last_pos = thread[0].copy()
             for point in thread[1:]:
                 draw.line((((last_pos.x - x0) * scale, height - (last_pos.y - y0) * scale),
                           ( (point.x    - x0) * scale, height - (point.y    - y0) * scale)), fill = segment % 8)

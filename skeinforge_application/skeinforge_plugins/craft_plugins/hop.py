@@ -44,7 +44,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the hop dialog.
 
 
->>> hop.writeOutput( 'Screw Holder Bottom.stl' )
+>>> hop.writeOutput('Screw Holder Bottom.stl')
 The hop tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -79,7 +79,7 @@ def getCraftedText( fileName, text, hopRepository = None ):
 
 def getCraftedTextFromText( gcodeText, hopRepository = None ):
 	"Hop a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'hop' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'hop'):
 		return gcodeText
 	if hopRepository == None:
 		hopRepository = settings.getReadRepository( HopRepository() )
@@ -91,21 +91,21 @@ def getNewRepository():
 	"Get the repository constructor."
 	return HopRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Hop a gcode linear move file.  Chain hop the gcode if it is not already hopped. If no fileName is specified, hop the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'hop' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'hop')
 
 
 class HopRepository:
 	"A class to handle the hop settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.hop.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Hop', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Hop' )
-		self.activateHop = settings.BooleanSetting().getFromValue( 'Activate Hop', self, False )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.hop.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Hop', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Hop')
+		self.activateHop = settings.BooleanSetting().getFromValue('Activate Hop', self, False )
 		self.hopOverLayerThickness = settings.FloatSpin().getFromValue( 0.5, 'Hop Over Layer Thickness (ratio):', self, 1.5, 1.0 )
 		self.minimumHopAngle = settings.FloatSpin().getFromValue( 20.0, 'Minimum Hop Angle (degrees):', self, 60.0, 30.0 )
 		self.executeTitle = 'Hop'
@@ -132,17 +132,17 @@ class HopSkein:
 
 	def getCraftedGcode( self, gcodeText, hopRepository ):
 		"Parse gcode text and store the hop gcode."
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.minimumSlope = math.tan( math.radians( hopRepository.minimumHopAngle.value ) )
 		self.parseInitialization( hopRepository )
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			self.parseLine( line )
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getHopLine( self, line ):
 		"Get hopped gcode line."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		if self.extruderActive:
 			return line
@@ -175,10 +175,10 @@ class HopSkein:
 		"Determine if there is another linear travel before the thread ends."
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = "";
 			if len( splitLine ) > 0:
-				firstWord = splitLine[ 0 ]
+				firstWord = splitLine[0]
 			if firstWord == 'G1':
 				return True
 			if firstWord == 'M101':
@@ -189,27 +189,27 @@ class HopSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(<layerThickness>':
-				layerThickness = float( splitLine[ 1 ] )
+				layerThickness = float( splitLine[1] )
 				self.hopHeight = hopRepository.hopOverLayerThickness.value * layerThickness
 				self.hopDistance = self.hopHeight / self.minimumSlope
 				self.minimumDistance = 0.5 * layerThickness
 			elif firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> hop </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> hop </procedureDone>)')
 				return
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			line = self.getHopLine( line )
+			line = self.getHopLine(line)
 			self.oldLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 			self.justDeactivated = False
 		elif firstWord == 'M101':
@@ -217,13 +217,13 @@ class HopSkein:
 		elif firstWord == 'M103':
 			self.extruderActive = False
 			self.justDeactivated = True
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the hop dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

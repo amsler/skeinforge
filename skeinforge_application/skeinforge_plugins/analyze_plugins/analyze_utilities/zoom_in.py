@@ -37,7 +37,7 @@ class ZoomIn( MouseToolBase ):
 		"Set the window mouse tool to this."
 		self.window.destroyMouseToolRaiseMouseButtons()
 		self.window.mouseTool = self
-		self.mouseButton[ 'relief' ] = settings.Tkinter.SUNKEN
+		self.mouseButton['relief'] = settings.Tkinter.SUNKEN
 
 	def getReset( self, window ):
 		"Reset the mouse tool to default."

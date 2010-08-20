@@ -65,9 +65,9 @@ class Cube( trianglemesh.TriangleMesh ):
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.inradius = evaluate.getVector3ByPrefixes( [ 'demisize', 'inradius' ], Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
+		self.inradius = evaluate.getVector3ByPrefixes( ['demisize', 'inradius'], Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
 		self.inradius = evaluate.getVector3ByMultiplierPrefix( 2.0, 'size', self.inradius, self.xmlElement )
-		self.xmlElement.attributeDictionary[ 'inradius.x' ] = self.inradius.x
-		self.xmlElement.attributeDictionary[ 'inradius.y' ] = self.inradius.y
-		self.xmlElement.attributeDictionary[ 'inradius.z' ] = self.inradius.z
+		self.xmlElement.attributeDictionary['inradius.x'] = self.inradius.x
+		self.xmlElement.attributeDictionary['inradius.y'] = self.inradius.y
+		self.xmlElement.attributeDictionary['inradius.z'] = self.inradius.z
 		self.createShape()

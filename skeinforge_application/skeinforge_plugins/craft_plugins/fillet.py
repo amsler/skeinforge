@@ -69,7 +69,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the fillet dialog.
 
 
->>> fillet.writeOutput( 'Screw Holder Bottom.stl' )
+>>> fillet.writeOutput('Screw Holder Bottom.stl')
 The fillet tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -105,7 +105,7 @@ def getCraftedText( fileName, text, filletRepository = None ):
 
 def getCraftedTextFromText( gcodeText, filletRepository = None ):
 	"Fillet a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'fillet' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'fillet'):
 		return gcodeText
 	if filletRepository == None:
 		filletRepository = settings.getReadRepository( FilletRepository() )
@@ -125,11 +125,11 @@ def getNewRepository():
 	"Get the repository constructor."
 	return FilletRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Fillet a gcode linear move file. Depending on the settings, either arcPoint, arcRadius, arcSegment, bevel or do nothing."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'fillet' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'fillet')
 
 
 class BevelSkein:
@@ -160,12 +160,12 @@ class BevelSkein:
 	def getCraftedGcode( self, filletRepository, gcodeText ):
 		"Parse gcode text and store the bevel gcode."
 		self.cornerFeedRateOverOperatingFeedRate = filletRepository.cornerFeedRateOverOperatingFeedRate.value
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.filletRepository = filletRepository
 		self.parseInitialization( filletRepository )
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			self.parseLine( line )
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getExtruderOffReversalPoint( self, afterSegment, afterSegmentComplex, beforeSegment, beforeSegmentComplex, location ):
@@ -198,7 +198,7 @@ class BevelSkein:
 		"Get the next linear move.  Return none is none is found."
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			if gcodec.getFirstWord( splitLine ) == 'G1':
 				nextLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 				return nextLocation
@@ -219,27 +219,27 @@ class BevelSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> fillet </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> fillet </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				perimeterWidth = abs( float( splitLine[ 1 ] ) )
+				perimeterWidth = abs( float( splitLine[1] ) )
 				self.curveSection = 0.7 * perimeterWidth
 				self.filletRadius = perimeterWidth * filletRepository.filletRadiusOverPerimeterWidth.value
 				self.minimumRadius = 0.1 * perimeterWidth
 				self.reversalSlowdownDistance = perimeterWidth * filletRepository.reversalSlowdownDistanceOverPerimeterWidth.value
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
 		self.shouldAddLine = True
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			self.linearMove( splitLine )
 		elif firstWord == 'M101':
@@ -247,7 +247,7 @@ class BevelSkein:
 		elif firstWord == 'M103':
 			self.extruderActive = False
 		if self.shouldAddLine:
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def splitPointGetAfter( self, location, nextLocation ):
 		"Bevel a point and return the end of the bevel.   should get complex for radius"
@@ -361,7 +361,7 @@ class ArcPointSkein( ArcSegmentSkein ):
 		cornerFeedRate = self.getCornerFeedRate()
 		if cornerFeedRate != None:
 			line += ' F' + self.distanceFeedRate.getRounded( self.distanceFeedRate.getZLimitedFeedRate( deltaZ, distance, cornerFeedRate ) )
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 	def getRelativeCenter( self, centerMinusBeforeComplex ):
 		"Get the relative center."
@@ -373,18 +373,18 @@ class ArcRadiusSkein( ArcPointSkein ):
 	def getRelativeCenter( self, centerMinusBeforeComplex ):
 		"Get the relative center."
 		radius = abs( centerMinusBeforeComplex )
-		return ' R' + ( self.distanceFeedRate.getRounded( radius ) )
+		return ' R' + ( self.distanceFeedRate.getRounded(radius) )
 
 
 class FilletRepository:
 	"A class to handle the fillet settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.fillet.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fillet' )
-		self.activateFillet = settings.BooleanSetting().getFromValue( 'Activate Fillet', self, False )
-		self.filletProcedureChoiceLabel = settings.LabelDisplay().getFromName( 'Fillet Procedure Choice: ', self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.fillet.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fillet')
+		self.activateFillet = settings.BooleanSetting().getFromValue('Activate Fillet', self, False )
+		self.filletProcedureChoiceLabel = settings.LabelDisplay().getFromName('Fillet Procedure Choice: ', self )
 		filletLatentStringVar = settings.LatentStringVar()
 		self.arcPoint = settings.Radio().getFromRadio( filletLatentStringVar, 'Arc Point', self, False )
 		self.arcRadius = settings.Radio().getFromRadio( filletLatentStringVar, 'Arc Radius', self, False )
@@ -393,7 +393,7 @@ class FilletRepository:
 		self.cornerFeedRateOverOperatingFeedRate = settings.FloatSpin().getFromValue( 0.8, 'Corner Feed Rate over Operating Feed Rate (ratio):', self, 1.2, 1.0 )
 		self.filletRadiusOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.25, 'Fillet Radius over Perimeter Width (ratio):', self, 0.65, 0.35 )
 		self.reversalSlowdownDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.3, 'Reversal Slowdown Distance over Perimeter Width (ratio):', self, 0.7, 0.5 )
-		self.useIntermediateFeedRateInCorners = settings.BooleanSetting().getFromValue( 'Use Intermediate Feed Rate in Corners', self, True )
+		self.useIntermediateFeedRateInCorners = settings.BooleanSetting().getFromValue('Use Intermediate Feed Rate in Corners', self, True )
 		self.executeTitle = 'Fillet'
 
 	def execute( self ):
@@ -406,7 +406,7 @@ class FilletRepository:
 def main():
 	"Display the fillet dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

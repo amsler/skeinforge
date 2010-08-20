@@ -91,7 +91,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the temperature dialog.
 
 
->>> temperature.writeOutput( 'Screw Holder Bottom.stl' )
+>>> temperature.writeOutput('Screw Holder Bottom.stl')
 The temperature tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -127,7 +127,7 @@ def getCraftedText( fileName, text = '', repository = None ):
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Temperature a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'temperature' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'temperature'):
 		return gcodeText
 	if repository == None:
 		repository = settings.getReadRepository( TemperatureRepository() )
@@ -139,28 +139,28 @@ def getNewRepository():
 	"Get the repository constructor."
 	return TemperatureRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Temperature a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'temperature' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'temperature')
 
 
 class TemperatureRepository:
 	"A class to handle the temperature settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.temperature.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Temperature', self, '' )
-		self.activateTemperature = settings.BooleanSetting().getFromValue( 'Activate Temperature:', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.temperature.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Temperature', self, '')
+		self.activateTemperature = settings.BooleanSetting().getFromValue('Activate Temperature:', self, True )
 		settings.LabelSeparator().getFromRepository( self )
-		self.initialCircling = settings.BooleanSetting().getFromValue( 'Initial Circling:', self, False )
+		self.initialCircling = settings.BooleanSetting().getFromValue('Initial Circling:', self, False )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Rate -', self )
+		settings.LabelDisplay().getFromName('- Rate -', self )
 		self.coolingRate = settings.FloatSpin().getFromValue( 1.0, 'Cooling Rate (Celcius/second):', self, 20.0, 3.0 )
 		self.heatingRate = settings.FloatSpin().getFromValue( 1.0, 'Heating Rate (Celcius/second):', self, 20.0, 10.0 )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Temperature -', self )
+		settings.LabelDisplay().getFromName('- Temperature -', self )
 		self.chamberTemperature = settings.FloatSpin().getFromValue( 0.0, 'Chamber Temperature (Celcius):', self, 400.0, 25.0 )
 		self.baseTemperature = settings.FloatSpin().getFromValue( 140.0, 'Base Temperature (Celcius):', self, 260.0, 200.0 )
 		self.interfaceTemperature = settings.FloatSpin().getFromValue( 140.0, 'Interface Temperature (Celcius):', self, 260.0, 200.0 )
@@ -188,46 +188,46 @@ class TemperatureSkein:
 	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the temperature gcode."
 		self.repository = repository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		if self.repository.coolingRate.value < 0.1:
-			print( 'The cooling rate should be more than 0.1, any cooling rate less than 0.1 will be treated as 0.1.' )
+			print('The cooling rate should be more than 0.1, any cooling rate less than 0.1 will be treated as 0.1.')
 			self.repository.coolingRate.value = 0.1
 		if self.repository.heatingRate.value < 0.1:
-			print( 'The heating rate should be more than 0.1, any heating rate less than 0.1 will be treated as 0.1.' )
+			print('The heating rate should be more than 0.1, any heating rate less than 0.1 will be treated as 0.1.')
 			self.repository.heatingRate.value = 0.1
 		self.parseInitialization()
-		self.distanceFeedRate.addLines( self.lines[ self.lineIndex : ] )
+		self.distanceFeedRate.addLines( self.lines[self.lineIndex :] )
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> temperature </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> temperature </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.distanceFeedRate.addTagBracketedLine( 'coolingRate', self.repository.coolingRate.value )
-				self.distanceFeedRate.addTagBracketedLine( 'heatingRate', self.repository.heatingRate.value )
+				self.distanceFeedRate.addTagBracketedLine('coolingRate', self.repository.coolingRate.value )
+				self.distanceFeedRate.addTagBracketedLine('heatingRate', self.repository.heatingRate.value )
 				if self.repository.initialCircling.value:
-					self.distanceFeedRate.addTagBracketedLine( 'chamberTemperature', self.repository.chamberTemperature.value )
-				self.distanceFeedRate.addTagBracketedLine( 'baseTemperature', self.repository.baseTemperature.value )
-				self.distanceFeedRate.addTagBracketedLine( 'interfaceTemperature', self.repository.interfaceTemperature.value )
-				self.distanceFeedRate.addTagBracketedLine( 'objectFirstLayerInfillTemperature', self.repository.objectFirstLayerInfillTemperature.value )
-				self.distanceFeedRate.addTagBracketedLine( 'objectFirstLayerPerimeterTemperature', self.repository.objectFirstLayerPerimeterTemperature.value )
-				self.distanceFeedRate.addTagBracketedLine( 'objectNextLayersTemperature', self.repository.objectNextLayersTemperature.value )
-				self.distanceFeedRate.addTagBracketedLine( 'supportLayersTemperature', self.repository.supportLayersTemperature.value )
-				self.distanceFeedRate.addTagBracketedLine( 'supportedLayersTemperature', self.repository.supportedLayersTemperature.value )
-			self.distanceFeedRate.addLine( line )
+					self.distanceFeedRate.addTagBracketedLine('chamberTemperature', self.repository.chamberTemperature.value )
+				self.distanceFeedRate.addTagBracketedLine('baseTemperature', self.repository.baseTemperature.value )
+				self.distanceFeedRate.addTagBracketedLine('interfaceTemperature', self.repository.interfaceTemperature.value )
+				self.distanceFeedRate.addTagBracketedLine('objectFirstLayerInfillTemperature', self.repository.objectFirstLayerInfillTemperature.value )
+				self.distanceFeedRate.addTagBracketedLine('objectFirstLayerPerimeterTemperature', self.repository.objectFirstLayerPerimeterTemperature.value )
+				self.distanceFeedRate.addTagBracketedLine('objectNextLayersTemperature', self.repository.objectNextLayersTemperature.value )
+				self.distanceFeedRate.addTagBracketedLine('supportLayersTemperature', self.repository.supportLayersTemperature.value )
+				self.distanceFeedRate.addTagBracketedLine('supportedLayersTemperature', self.repository.supportedLayersTemperature.value )
+			self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the temperature dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

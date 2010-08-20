@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
+from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
@@ -39,7 +39,7 @@ def addGeometryList( faces, xmlElement ):
 def getCommonVertexIndex( edgeFirst, edgeSecond ):
 	"Get the vertex index that both edges have in common."
 	for edgeFirstVertexIndex in edgeFirst.vertexIndexes:
-		if edgeFirstVertexIndex == edgeSecond.vertexIndexes[ 0 ] or edgeFirstVertexIndex == edgeSecond.vertexIndexes[ 1 ]:
+		if edgeFirstVertexIndex == edgeSecond.vertexIndexes[0] or edgeFirstVertexIndex == edgeSecond.vertexIndexes[1]:
 			return edgeFirstVertexIndex
 	print( "Inconsistent GNU Triangulated Surface" )
 	print( edgeFirst )
@@ -51,7 +51,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	face = Face()
 	face.index = len( xmlElement.parent.object.faces )
 	for vertexIndexIndex in xrange( 3 ):
-		face.vertexIndexes.append( evaluate.getEvaluatedInt( 'vertex' + str( vertexIndexIndex ), xmlElement ) )
+		face.vertexIndexes.append( evaluate.getEvaluatedInt('vertex' + str( vertexIndexIndex ), xmlElement ) )
 	xmlElement.parent.object.faces.append( face )
 
 
@@ -98,7 +98,7 @@ class Face:
 		"Add to the attribute dictionary."
 		for vertexIndexIndex in xrange( len( self.vertexIndexes ) ):
 			vertexIndex = self.vertexIndexes[ vertexIndexIndex ]
-			attributeDictionary[ 'vertex' + str( vertexIndexIndex ) ] = str( vertexIndex )
+			attributeDictionary['vertex' + str( vertexIndexIndex ) ] = str( vertexIndex )
 
 	def addXML( self, depth, output ):
 		"Add the xml for this object."

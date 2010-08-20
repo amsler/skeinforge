@@ -2,8 +2,8 @@
 try:
 	import serial
 except:
-	print( 'You do not have pySerial installed, which is needed to control the serial port.' )
-	print( 'Information on pySerial is at:\nhttp://pyserial.wiki.sourceforge.net/pySerial' )
+	print('You do not have pySerial installed, which is needed to control the serial port.')
+	print('Information on pySerial is at:\nhttp://pyserial.wiki.sourceforge.net/pySerial')
 
 import reprap, time, sys
 

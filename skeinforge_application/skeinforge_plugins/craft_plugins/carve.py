@@ -91,7 +91,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the carve dialog.
 
 
->>> carve.writeOutput( 'Screw Holder Bottom.stl' )
+>>> carve.writeOutput('Screw Holder Bottom.stl')
 The carve tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -129,9 +129,9 @@ __license__ = "GPL 3.0"
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get carved text."
-	if fileName.endswith( '.svg' ):
+	if fileName.endswith('.svg'):
 		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
-		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'carve' ):
+		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'carve'):
 			return gcodeText
 	carving = svg_writer.getCarving( fileName )
 	if carving == None:
@@ -145,19 +145,19 @@ def getNewRepository():
 	"Get the repository constructor."
 	return CarveRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Carve a GNU Triangulated Surface file."
 	startTime = time.time()
-	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being carved.' )
+	print('File ' + gcodec.getSummarizedFileName( fileName ) + ' is being carved.')
 	repository = CarveRepository()
 	settings.getReadRepository( repository )
 	carveGcode = getCraftedText( fileName, '', repository )
 	if carveGcode == '':
 		return
-	suffixFileName = gcodec.getFilePathWithUnderscoredBasename( fileName, '_carve.svg' )
+	suffixFileName = gcodec.getFilePathWithUnderscoredBasename( fileName, '_carve.svg')
 	gcodec.writeFileText( suffixFileName, carveGcode )
-	print( 'The carved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took %s to carve the file.' % euclidean.getDurationString( time.time() - startTime ) )
+	print('The carved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('It took %s to carve the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 
@@ -165,26 +165,27 @@ class CarveRepository:
 	"A class to handle the carve settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.carve.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Carve' )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.carve.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Carve')
+		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
 		self.bridgeThicknessMultiplier = settings.FloatSpin().getFromValue( 0.8, 'Bridge Thickness Multiplier (ratio):', self, 1.2, 1.0 )
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
-		self.infillDirectionBridge = settings.BooleanSetting().getFromValue( 'Infill in Direction of Bridges', self, True )
+		self.infillDirectionBridge = settings.BooleanSetting().getFromValue('Infill in Direction of Bridges', self, True )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Layers -', self )
+		settings.LabelDisplay().getFromName('- Layers -', self )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
 		self.layersTo = settings.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
 		settings.LabelSeparator().getFromRepository( self )
-		self.meshTypeLabel = settings.LabelDisplay().getFromName( 'Mesh Type: ', self )
+		self.meshTypeLabel = settings.LabelDisplay().getFromName('Mesh Type: ', self )
 		importLatentStringVar = settings.LatentStringVar()
 		self.correctMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Correct Mesh', self, True )
 		self.unprovenMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Unproven Mesh', self, False )
 		self.perimeterWidthOverThickness = settings.FloatSpin().getFromValue( 1.4, 'Perimeter Width over Thickness (ratio):', self, 2.2, 1.8 )
 		settings.LabelSeparator().getFromRepository( self )
-		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
+		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
 		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Carve'
 
@@ -197,32 +198,33 @@ class CarveRepository:
 
 class CarveSkein:
 	"A class to carve a carving."
-	def getCarvedSVG( self, carving, fileName, repository ):
+	def getCarvedSVG(self, carving, fileName, repository):
 		"Parse gnu triangulated surface text and store the carved gcode."
 		layerThickness = repository.layerThickness.value
 		bridgeLayerThickness = layerThickness * repository.bridgeThicknessMultiplier.value
 		perimeterWidth = repository.perimeterWidthOverThickness.value * layerThickness
 		if repository.infillDirectionBridge.value:
-			carving.setCarveBridgeLayerThickness( bridgeLayerThickness )
-		carving.setCarveLayerThickness( layerThickness )
-		importRadius = 0.5 * repository.importCoarseness.value * abs( perimeterWidth )
-		carving.setCarveImportRadius( max( importRadius, 0.01 * layerThickness ) )
-		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
+			carving.setCarveBridgeLayerThickness(bridgeLayerThickness)
+		carving.setCarveLayerThickness(layerThickness)
+		importRadius = 0.5 * repository.importCoarseness.value * abs(perimeterWidth)
+		carving.setCarveImportRadius(max(importRadius, 0.01 * layerThickness))
+		carving.setCarveIsCorrectMesh(repository.correctMesh.value)
 		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
-		if len( rotatedBoundaryLayers ) < 1:
-			print( 'There are no slices for the model, this could be because the model is too small.' )
+		if len(rotatedBoundaryLayers) < 1:
+			print('There are no slices for the model, this could be because the model is too small.')
 			return ''
 		layerThickness = carving.getCarveLayerThickness()
-		decimalPlacesCarried = max( 0, 1 + repository.extraDecimalPlaces.value - int( math.floor( math.log10( layerThickness ) ) ) )
+		decimalPlacesCarried = max(0, 1 + repository.extraDecimalPlaces.value - int(math.floor(math.log10(layerThickness))))
 		perimeterWidth = repository.perimeterWidthOverThickness.value * layerThickness
-		svgWriter = svg_writer.SVGWriter( carving, decimalPlacesCarried, perimeterWidth )
-		return svgWriter.getReplacedSVGTemplate( fileName, 'carve', svg_writer.getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ) )
+		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
+		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedBoundaryLayers)
+		return svgWriter.getReplacedSVGTemplate(fileName, 'carve', truncatedRotatedBoundaryLayers)
 
 
 def main():
 	"Display the carve dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

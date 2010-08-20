@@ -29,9 +29,9 @@ def getCarving( fileName ):
 		return None
 	return pluginModule.getCarving( fileName )
 
-def getSliceDictionary( xmlElement ):
+def getSliceDictionary(xmlElement):
 	"Get the metadata slice attribute dictionary."
-	for metadataElement in xmlElement.getChildrenWithClassName( 'metadata' ):
+	for metadataElement in xmlElement.getChildrenWithClassName('metadata'):
 		for child in metadataElement.children:
 			if child.className.lower() == 'slice:layers':
 				return child.attributeDictionary
@@ -44,7 +44,8 @@ def getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ):
 
 class SVGWriter:
 	"A base class to get an svg skein from a carving."
-	def __init__( self, carving, decimalPlacesCarried, perimeterWidth = None ):
+	def __init__(self, addLayerTemplateToSVG, carving, decimalPlacesCarried, perimeterWidth = None):
+		self.addLayerTemplateToSVG = addLayerTemplateToSVG
 		self.carving = carving
 		self.decimalPlacesCarried = decimalPlacesCarried
 		self.margin = 20
@@ -52,38 +53,29 @@ class SVGWriter:
 		self.textHeight = 22.5
 		self.unitScale = 3.7
 
-	def addLayerBegin( self, layerIndex, rotatedBoundaryLayer ):
+	def addLayerBegin(self, layerIndex, rotatedBoundaryLayer):
 		"Add the start lines for the layer."
-#		y = (1 * i + 1) * ( margin + sliceDimY * unitScale) + i * txtHeight
-		layerTranslateY = layerIndex * self.textHeight + ( layerIndex + 1 ) * ( self.extent.y * self.unitScale + self.margin )
 		zRounded = self.getRounded( rotatedBoundaryLayer.z )
-		self.graphicsCopy = self.graphicsXMLElement.getCopy( zRounded, self.graphicsXMLElement.parent )
-		marginRounded = self.getRounded( self.margin )
-		translateYRounded = self.getRounded( layerTranslateY )
-		self.graphicsCopy.attributeDictionary[ 'transform' ] = 'translate(%s, %s)' % ( marginRounded, translateYRounded )
-		self.graphicsCopy.getFirstChildWithClassName( 'text' ).text = 'Layer %s, z:%s' % ( layerIndex, zRounded )
-		self.pathXMLElement = self.graphicsCopy.getFirstChildWithClassName( 'path' )
+		self.graphicsCopy = self.graphicsXMLElement.getCopy(zRounded, self.graphicsXMLElement.parent)
+		if self.addLayerTemplateToSVG:
+			marginRounded = self.getRounded(self.margin)
+			layerTranslateY = layerIndex * self.textHeight + (layerIndex + 1) * (self.extent.y * self.unitScale + self.margin)
+			translateYRounded = self.getRounded(layerTranslateY)
+			self.graphicsCopy.attributeDictionary['transform'] = 'translate(%s, %s)' % (marginRounded, translateYRounded)
+			self.graphicsCopy.getFirstChildWithClassName('text').text = 'Layer %s, z:%s' % (layerIndex, zRounded)
+		self.pathXMLElement = self.graphicsCopy.getFirstChildWithClassName('path')
 		self.pathDictionary = self.pathXMLElement.attributeDictionary
-#	unit scale (mm=3.7, in=96)
-#	
-#	g transform
-#		x = margin
-#		y = (layer + 1) * ( margin + (slice height * unit scale)) + (layer * 20)
-#
-#	text
-#		y = text height
-#
-#	path transform
-#		scale = (unit scale) (-1 * unitscale)
-#		translate = (-1 * minX) (-1 * minY)
 
 	def addRotatedLoopLayerToOutput( self, layerIndex, rotatedBoundaryLayer ):
 		"Add rotated boundary layer to the output."
 		self.addLayerBegin( layerIndex, rotatedBoundaryLayer )
 		if rotatedBoundaryLayer.rotation != None:
-			self.graphicsCopy.attributeDictionary[ 'bridgeRotation' ] = str( rotatedBoundaryLayer.rotation )
-		self.pathDictionary[ 'transform' ] = self.getTransformString()
-		self.pathDictionary[ 'd' ] = self.getSVGStringForLoops( rotatedBoundaryLayer.loops )
+			self.graphicsCopy.attributeDictionary['bridgeRotation'] = str( rotatedBoundaryLayer.rotation )
+		if self.addLayerTemplateToSVG:
+			self.pathDictionary['transform'] = self.getTransformString()
+		else:
+			del self.pathDictionary['transform']
+		self.pathDictionary['d'] = self.getSVGStringForLoops( rotatedBoundaryLayer.loops )
 
 	def addRotatedLoopLayersToOutput( self, rotatedBoundaryLayers ):
 		"Add rotated boundary layers to the output."
@@ -96,43 +88,49 @@ class SVGWriter:
 		cornerMaximum = self.carving.getCarveCornerMaximum()
 		cornerMinimum = self.carving.getCarveCornerMinimum()
 		self.extent = cornerMaximum - cornerMinimum
-		svgTemplateText = gcodec.getFileTextInFileDirectory( __file__, os.path.join( 'templates', 'layer_template.svg' ) )
+		svgTemplateText = gcodec.getFileTextInFileDirectory( __file__, os.path.join('templates', 'layer_template.svg') )
 		self.xmlParser = XMLSimpleReader( fileName, None, svgTemplateText )
 		self.svgElement = self.xmlParser.getRoot()
+		if not self.addLayerTemplateToSVG:
+			self.svgElement.getXMLElementByID('layerTextTemplate').removeFromIDNameParent()
+			del self.svgElement.getXMLElementByID('sliceElementTemplate').attributeDictionary['transform']
 		svgElementDictionary = self.svgElement.attributeDictionary
-		self.graphicsXMLElement = self.svgElement.getXMLElementByID( 'sliceElementTemplate' )
-		self.graphicsXMLElement.removeFromIDNameParent()
-		self.graphicsXMLElement.attributeDictionary[ 'id' ] = 'z:'
+		self.graphicsXMLElement = self.svgElement.getXMLElementByID('sliceElementTemplate')
+		self.graphicsXMLElement.attributeDictionary['id'] = 'z:'
 		self.addRotatedLoopLayersToOutput( rotatedBoundaryLayers )
 		self.sliceDictionary = getSliceDictionary( self.svgElement )
-		self.setMetadataNoscriptElement( 'layerThickness', self.carving.getCarveLayerThickness() )
-		self.setMetadataNoscriptElement( 'maxX', cornerMaximum.x )
-		self.setMetadataNoscriptElement( 'minX', cornerMinimum.x )
-		self.setMetadataNoscriptElement( 'maxY', cornerMaximum.y )
-		self.setMetadataNoscriptElement( 'minY', cornerMinimum.y )
-		self.setMetadataNoscriptElement( 'maxZ', cornerMaximum.z )
-		self.setMetadataNoscriptElement( 'minZ', cornerMinimum.z )
-		self.margin = float( self.sliceDictionary[ 'margin' ] )
-		self.textHeight = float( self.sliceDictionary[ 'textHeight' ] )
-		javascriptControlBoxWidth = float( self.sliceDictionary[ 'javascriptControlBoxWidth' ] )
-		noJavascriptControlBoxHeight = float( self.sliceDictionary[ 'noJavascriptControlBoxHeight' ] )
+		self.setMetadataNoscriptElement('layerThickness', self.carving.getCarveLayerThickness() )
+		self.setMetadataNoscriptElement('maxX', cornerMaximum.x )
+		self.setMetadataNoscriptElement('minX', cornerMinimum.x )
+		self.setMetadataNoscriptElement('maxY', cornerMaximum.y )
+		self.setMetadataNoscriptElement('minY', cornerMinimum.y )
+		self.setMetadataNoscriptElement('maxZ', cornerMaximum.z )
+		self.setMetadataNoscriptElement('minZ', cornerMinimum.z )
+		self.margin = float( self.sliceDictionary['margin'] )
+		self.textHeight = float( self.sliceDictionary['textHeight'] )
+		javascriptControlBoxWidth = float( self.sliceDictionary['javascriptControlBoxWidth'] )
+		noJavascriptControlBoxHeight = float( self.sliceDictionary['noJavascriptControlBoxHeight'] )
 		controlTop = len( rotatedBoundaryLayers ) * ( self.margin + self.extent.y * self.unitScale + self.textHeight ) + 2.0 * self.margin + self.textHeight
-		self.svgElement.getFirstChildWithClassName( 'title' ).text = os.path.basename( fileName ) + ' - Slice Layers'
-		noJavascriptDictionary = self.svgElement.getXMLElementByID( 'noJavascriptControls' ).attributeDictionary
-		noJavascriptDictionary[ 'transform' ] = 'translate(%s, %s)' % ( self.getRounded( self.margin ), self.getRounded( controlTop ) )
-		svgElementDictionary[ 'height' ] = '%spx' % self.getRounded( controlTop + noJavascriptControlBoxHeight + self.margin )
+		self.svgElement.getFirstChildWithClassName('title').text = os.path.basename( fileName ) + ' - Slice Layers'
+		svgElementDictionary['height'] = '%spx' % self.getRounded( controlTop + noJavascriptControlBoxHeight + self.margin )
 #		width = margin + (sliceDimX * unitScale) + margin;
 		width = 2.0 * self.margin + max( self.extent.x * self.unitScale, javascriptControlBoxWidth )
-		svgElementDictionary[ 'width' ] = '%spx' % self.getRounded( width )
-		self.sliceDictionary[ 'decimalPlacesCarried' ] = str( self.decimalPlacesCarried )
+		svgElementDictionary['width'] = '%spx' % self.getRounded( width )
+		self.sliceDictionary['decimalPlacesCarried'] = str( self.decimalPlacesCarried )
 		if self.perimeterWidth != None:
-			self.sliceDictionary[ 'perimeterWidth' ] = self.getRounded( self.perimeterWidth )
-		self.sliceDictionary[ 'yAxisPointingUpward' ] = 'true'
-		self.sliceDictionary[ 'procedureDone' ] = procedureName
-		replaceWithTable = {}
-		self.svgElement.getXMLElementByID( 'dimXNoJavascript' ).text = self.getRounded( self.extent.x )
-		self.svgElement.getXMLElementByID( 'dimYNoJavascript' ).text = self.getRounded( self.extent.y )
-		self.svgElement.getXMLElementByID( 'dimZNoJavascript' ).text = self.getRounded( self.extent.z )
+			self.sliceDictionary['perimeterWidth'] = self.getRounded( self.perimeterWidth )
+		self.sliceDictionary['yAxisPointingUpward'] = 'true'
+		self.sliceDictionary['procedureDone'] = procedureName
+		noJavascriptDictionary = self.svgElement.getXMLElementByID('noJavascriptControls').attributeDictionary
+		noJavascriptDictionary['transform'] = 'translate(%s, %s)' % ( self.getRounded(self.margin), self.getRounded( controlTop ) )
+		self.svgElement.getXMLElementByID('dimXNoJavascript').text = self.getRounded( self.extent.x )
+		self.svgElement.getXMLElementByID('dimYNoJavascript').text = self.getRounded( self.extent.y )
+		self.svgElement.getXMLElementByID('dimZNoJavascript').text = self.getRounded( self.extent.z )
+		if not self.addLayerTemplateToSVG:
+			self.svgElement.getFirstChildWithClassName('script').removeFromIDNameParent()
+			self.svgElement.getXMLElementByID('beginningOfControlSection').removeFromIDNameParent()
+			self.svgElement.getXMLElementByID('noJavascriptControls').removeFromIDNameParent()
+		self.graphicsXMLElement.removeFromIDNameParent()
 		output = cStringIO.StringIO()
 		output.write( self.xmlParser.beforeRoot )
 		self.svgElement.addXML( 0, output )
@@ -148,17 +146,17 @@ class SVGWriter:
 
 	def getSVGStringForLoop( self, loop ):
 		"Get the svg loop string."
-		if len( loop ) < 1:
+		if len(loop) < 1:
 			return ''
-		return self.getSVGStringForPath( loop ) + ' z'
+		return self.getSVGStringForPath(loop) + ' z'
 
 	def getSVGStringForLoops( self, loops ):
 		"Get the svg loops string."
 		loopString = ''
 		if len( loops ) > 0:
-			loopString += self.getSVGStringForLoop( loops[ 0 ] )
+			loopString += self.getSVGStringForLoop( loops[0] )
 		for loop in loops[ 1 : ]:
-			loopString += ' ' + self.getSVGStringForLoop( loop )
+			loopString += ' ' + self.getSVGStringForLoop(loop)
 		return loopString
 
 	def getSVGStringForPath( self, path ):
@@ -181,4 +179,4 @@ class SVGWriter:
 		"Set the metadata value and the NoJavascript text."
 		valueString = self.getRounded( value )
 		self.sliceDictionary[ prefix ] = valueString
-		self.svgElement.getXMLElementByID( prefix + 'NoJavascript' ).text = valueString
+		self.svgElement.getXMLElementByID( prefix + 'NoJavascript').text = valueString

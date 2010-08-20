@@ -25,7 +25,7 @@ class MouseToolBase:
 
 	def destroyEverything( self ):
 		"Destroy items."
-		self.canvas.delete( 'mouse_item' )
+		self.canvas.delete('mouse_item')
 
 	def destroyEverythingGetFocus( self ):
 		"Destroy items and get the focus for the canvas."
@@ -40,7 +40,7 @@ class MouseToolBase:
 
 	def getTagsGivenXY( self, x, y ):
 		"Get the tag for the x and y."
-		tags = self.canvas.itemcget( self.canvas.find_closest( x, y ), 'tags' )
+		tags = self.canvas.itemcget( self.canvas.find_closest( x, y ), 'tags')
 		currentEnd = ' current'
 		if tags.find( currentEnd ) != - 1:
 			return tags[ : - len( currentEnd ) ]

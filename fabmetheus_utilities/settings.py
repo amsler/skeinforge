@@ -17,8 +17,8 @@ import webbrowser
 try:
 	import Tkinter
 except:
-	print( 'You do not have Tkinter, which is needed for the graphical interface, you will only be able to use the command line.' )
-	print( 'Information on how to download Tkinter is at:\nwww.tcl.tk/software/tcltk/' )
+	print('You do not have Tkinter, which is needed for the graphical interface, you will only be able to use the command line.')
+	print('Information on how to download Tkinter is at:\nwww.tcl.tk/software/tcltk/')
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -35,13 +35,13 @@ globalSpreadsheetSeparator = '\t'
 def addAcceleratorCommand( acceleratorBinding, commandFunction, master, menu, text ):
 	"Add accelerator command."
 	acceleratorText = acceleratorBinding[ 1 : - 1 ]
-	lastIndexOfMinus = acceleratorText.rfind( '-' )
+	lastIndexOfMinus = acceleratorText.rfind('-')
 	if lastIndexOfMinus > - 1:
 		acceleratorText = acceleratorText[ : lastIndexOfMinus + 1 ] + acceleratorText[ lastIndexOfMinus + 1 : ].capitalize()
-	acceleratorText = acceleratorText.replace( 'KeyPress-', '' )
-	acceleratorText = acceleratorText.replace( '-', '+' )
-	acceleratorText = acceleratorText.replace( 'Control', 'Ctrl' )
-	acceleratorBinding = acceleratorBinding.replace( 'KeyPress', '' )
+	acceleratorText = acceleratorText.replace('KeyPress-', '')
+	acceleratorText = acceleratorText.replace('-', '+')
+	acceleratorText = acceleratorText.replace('Control', 'Ctrl')
+	acceleratorBinding = acceleratorBinding.replace('KeyPress', '')
 	menu.add_command( accelerator = acceleratorText, label = text, underline = 0, command = commandFunction )
 	master.bind( acceleratorBinding, commandFunction )
 
@@ -57,7 +57,7 @@ def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	repository.executeTitle = None
 	repository.fileNameHelp = fileNameHelp
 	repository.fileNameInput = None
-	repository.lowerName = fileNameHelp.split( '.' )[ - 2 ]
+	repository.lowerName = fileNameHelp.split('.')[ - 2 ]
 	repository.baseName = repository.lowerName + '.csv'
 	repository.capitalizedName = getEachWordCapitalized( repository.lowerName )
 	repository.openLocalHelpPage = HelpPage().getOpenFromDocumentationSubName( repository.fileNameHelp )
@@ -68,7 +68,7 @@ def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	repository.title = repository.capitalizedName + ' Settings'
 	repository.menuEntities = []
 	repository.saveCloseTitle = 'Save and Close'
-	repository.windowPosition = WindowPosition().getFromValue( repository, '0+0' )
+	repository.windowPosition = WindowPosition().getFromValue( repository, '0+0')
 	for setting in repository.archive:
 		setting.repository = repository
 
@@ -84,7 +84,7 @@ def addMenuEntitiesToMenuFrameable( menu, menuEntities ):
 
 def addPluginsParentToMenu( directoryPath, menu, parentPath, pluginFileNames ):
 	"Add plugins and the parent to the menu."
-	ToolDialog().addPluginToMenu( menu, parentPath[ : parentPath.rfind( '.' ) ] )
+	ToolDialog().addPluginToMenu( menu, parentPath[ : parentPath.rfind('.') ] )
 	menu.add_separator()
 	addPluginsToMenu( directoryPath, menu, pluginFileNames )
 
@@ -119,7 +119,7 @@ def deleteMenuItems( menu ):
 		if lastMenuIndex != None:
 			menu.delete( 0, lastMenuIndex )
 	except:
-		print( 'this should never happen, the lastMenuIndex in deleteMenuItems in settings could not be determined.' ) 
+		print('this should never happen, the lastMenuIndex in deleteMenuItems in settings could not be determined.') 
 
 def getAlongWayHexadecimalColor( beginBrightness, colorWidth, difference, endColorTuple, wayLength ):
 	"Get a color along the way from begin brightness to the end color."
@@ -140,8 +140,8 @@ def getAlongWayHexadecimalPrimary( beginBrightness, beginRatio, colorWidth, endB
 def getArchiveText( repository ):
 	"Get the text representation of the archive."
 	archiveWriter = cStringIO.StringIO()
-	archiveWriter.write( 'Format is tab separated %s.\n' % repository.title.lower() )
-	archiveWriter.write( 'Name                          %sValue\n' % globalSpreadsheetSeparator )
+	archiveWriter.write('Format is tab separated %s.\n' % repository.title.lower() )
+	archiveWriter.write('Name                          %sValue\n' % globalSpreadsheetSeparator )
 	for setting in repository.archive:
 		setting.writeToArchiveWriter( archiveWriter )
 	return archiveWriter.getvalue()
@@ -152,7 +152,7 @@ def getDisplayedDialogFromConstructor( repository ):
 		getReadRepository( repository )
 		return RepositoryDialog( repository, Tkinter.Tk() )
 	except:
-		print( 'this should never happen, getDisplayedDialogFromConstructor in settings could not open' )
+		print('this should never happen, getDisplayedDialogFromConstructor in settings could not open')
 		print( repository )
 		return None
 
@@ -171,14 +171,14 @@ def getDisplayToolButtonsRepository( directoryPath, importantFileNames, names, r
 		displayToolButtons.append( displayToolButton )
 	return displayToolButtons
 
-def getDocumentationPath( subName = '' ):
+def getDocumentationPath( subName = ''):
 	"Get the documentation file path."
-	return os.path.join( getPathInFabmetheus( 'documentation' ), subName )
+	return os.path.join( getPathInFabmetheus('documentation'), subName )
 
 def getEachWordCapitalized( name ):
 	"Get the capitalized name."
-	withSpaces = name.lower().replace( '_', ' ' )
-	words = withSpaces.split( ' ' )
+	withSpaces = name.lower().replace('_', ' ')
+	words = withSpaces.split(' ')
 	capitalizedStrings = []
 	for word in words:
 		capitalizedStrings.append( word.capitalize() )
@@ -186,12 +186,12 @@ def getEachWordCapitalized( name ):
 
 def getFileInAlterationsOrGivenDirectory( directory, fileName ):
 	"Get the file from the fileName or the lowercase fileName in the alterations directories, if there is no file look in the given directory."
-	settingsAlterationsDirectory = getSettingsDirectoryPath( 'alterations' )
+	settingsAlterationsDirectory = getSettingsDirectoryPath('alterations')
 	makeDirectory( settingsAlterationsDirectory )
 	fileInSettingsAlterationsDirectory = getFileInGivenDirectory( settingsAlterationsDirectory, fileName )
 	if fileInSettingsAlterationsDirectory != '':
 		return fileInSettingsAlterationsDirectory
-	alterationsDirectory = getPathInSkeinforge( 'alterations' )
+	alterationsDirectory = getPathInSkeinforge('alterations')
 	fileInAlterationsDirectory = getFileInGivenDirectory( alterationsDirectory, fileName )
 	if fileInAlterationsDirectory != '':
 		return fileInAlterationsDirectory
@@ -220,9 +220,9 @@ def getFolders( directory ):
 	try:
 		directoryListing = os.listdir( directory )
 	except OSError:
-		print( 'Skeinforge can not list the directory:' )
+		print('Skeinforge can not list the directory:')
 		print( directory )
-		print( 'so give it read/write permission for that directory.' )
+		print('so give it read/write permission for that directory.')
 	folders = []
 	for fileName in directoryListing:
 		if os.path.isdir( os.path.join( directory, fileName ) ):
@@ -234,7 +234,7 @@ def getGlobalRepositoryDialogValues():
 	global globalRepositoryDialogListTable
 	return euclidean.getListTableElements( globalRepositoryDialogListTable )
 
-def getPathInFabmetheus( subName = '' ):
+def getPathInFabmetheus( subName = ''):
 	"Get the path in the fabmetheus directory."
 	path = os.path.dirname( os.path.dirname( os.path.abspath( __file__ ) ) )
 	if subName == '':
@@ -251,22 +251,22 @@ def getPathInFabmetheusUtilities(subName=''):
 def getPathInFabmetheusFromFileNameHelp( fileNameHelp ):
 	"Get the directory path from file name help."
 	fabmetheusPath = getPathInFabmetheus()
-	splitFileNameHelps = fileNameHelp.split( '.' )
+	splitFileNameHelps = fileNameHelp.split('.')
 	splitFileNameDirectoryNames = splitFileNameHelps[ : - 1 ]
 	for splitFileNameDirectoryName in splitFileNameDirectoryNames:
 		fabmetheusPath = os.path.join( fabmetheusPath, splitFileNameDirectoryName )
 	return fabmetheusPath
 
-def getPathInSkeinforge( subName = '' ):
+def getPathInSkeinforge( subName = ''):
 	"Get the skeinforge directory path."
-	path = getPathInFabmetheus( 'skeinforge_application' )
+	path = getPathInFabmetheus('skeinforge_application')
 	if subName == '':
 		return path
 	return os.path.join( path, subName )
 
-def getPathInSkeinforgePlugins( subName = '' ):
+def getPathInSkeinforgePlugins( subName = ''):
 	"Get the skeinforge plugins directory path."
-	return getPathInSkeinforge( 'skeinforge_plugins' )
+	return getPathInSkeinforge('skeinforge_plugins')
 
 def getProfileBaseName( repository ):
 	"Get the profile base file name."
@@ -274,16 +274,16 @@ def getProfileBaseName( repository ):
 		return repository.baseName
 	return os.path.join( repository.profileDirectory(), repository.baseName )
 
-def getProfilesDirectoryPath( subfolder = '' ):
+def getProfilesDirectoryPath( subfolder = ''):
 	"Get the profiles directory path, which is the settings directory joined with profiles."
-	profilesDirectory = getSettingsDirectoryPath( 'profiles' )
+	profilesDirectory = getSettingsDirectoryPath('profiles')
 	if subfolder == '':
 		return profilesDirectory
 	return os.path.join( profilesDirectory, subfolder )
 
-def getProfilesDirectoryInAboveDirectory( subName = '' ):
+def getProfilesDirectoryInAboveDirectory( subName = ''):
 	"Get the profiles directory path in the above directory."
-	aboveProfilesDirectory = getPathInSkeinforge( 'profiles' )
+	aboveProfilesDirectory = getPathInSkeinforge('profiles')
 	if subName == '':
 		return aboveProfilesDirectory
 	return os.path.join( aboveProfilesDirectory, subName )
@@ -293,10 +293,10 @@ def getRadioPluginsAddPluginFrame( directoryPath, importantFileNames, names, rep
 	repository.pluginFrame = PluginFrame()
 	radioPlugins = []
 	for name in names:
-		radioPlugin = RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginFrame.latentStringVar, name, repository, name == importantFileNames[ 0 ] )
+		radioPlugin = RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginFrame.latentStringVar, name, repository, name == importantFileNames[0] )
 		radioPlugin.updateFunction = repository.pluginFrame.update
 		radioPlugins.append( radioPlugin )
-	defaultRadioButton = getSelectedRadioPlugin( importantFileNames + [ radioPlugins[ 0 ].name ], radioPlugins )
+	defaultRadioButton = getSelectedRadioPlugin( importantFileNames + [ radioPlugins[0].name ], radioPlugins )
 	repository.pluginFrame.getFromPath( defaultRadioButton, directoryPath, repository )
 	return radioPlugins
 
@@ -304,7 +304,7 @@ def getReadRepository( repository ):
 	"Read and return settings from a file."
 	text = gcodec.getFileText( getProfilesDirectoryPath( getProfileBaseName( repository ) ), 'r', False )
 	if text == '':
-		print( 'The default %s will be written in the .skeinforge folder in the home directory.' % repository.title.lower() )
+		print('The default %s will be written in the .skeinforge folder in the home directory.' % repository.title.lower() )
 		text = gcodec.getFileText( getProfilesDirectoryInAboveDirectory( getProfileBaseName( repository ) ), 'r', False )
 		if text != '':
 			readSettingsFromText( repository, text )
@@ -337,13 +337,13 @@ def getSelectedRadioPlugin( names, radioPlugins ):
 			if radioPlugin.name == name:
 				radioPlugin.value = True
 				return radioPlugin
-	print( 'this should never happen, no getSelectedRadioPlugin in settings' )
+	print('this should never happen, no getSelectedRadioPlugin in settings')
 	print( names )
-	return radioPlugin[ 0 ]
+	return radioPlugin[0]
 
-def getSettingsDirectoryPath( subfolder = '' ):
+def getSettingsDirectoryPath( subfolder = ''):
 	"Get the settings directory path, which is the home directory joined with .skeinforge."
-	settingsDirectory = os.path.join( os.path.expanduser( '~' ), '.skeinforge' )
+	settingsDirectory = os.path.join( os.path.expanduser('~'), '.skeinforge')
 	if subfolder == '':
 		return settingsDirectory
 	return os.path.join( settingsDirectory, subfolder )
@@ -363,14 +363,14 @@ def getTitleFromName( title ):
 	"Get the title of this setting."
 	if title[ - 1 ] == ':':
 		title = title[ : - 1 ]
-	spaceBracketIndex = title.find( ' (' )
+	spaceBracketIndex = title.find(' (')
 	if spaceBracketIndex > - 1:
 		return title[ : spaceBracketIndex ]
 	return title
 
 def getWidthHex( number, width ):
 	"Get the first width hexadecimal digits."
-	return ( '0000%s' % hex( number )[ 2 : ] )[ - width : ]
+	return ('0000%s' % hex( number )[ 2 : ] )[ - width : ]
 
 def liftRepositoryDialogs( repositoryDialogs ):
 	"Lift the repository dialogs."
@@ -388,7 +388,7 @@ def makeDirectory( directory ):
 	try:
 		os.makedirs( directory )
 	except OSError:
-		print( 'Skeinforge can not make the directory %s so give it read/write permission for that directory and the containing directory.' % directory )
+		print('Skeinforge can not make the directory %s so give it read/write permission for that directory and the containing directory.' % directory )
 
 def openSVGPage( fileName, svgViewer ):
 	"Open svg page with an svg program."
@@ -401,17 +401,17 @@ def openSVGPage( fileName, svgViewer ):
 	shellCommand = svgViewer + ' ' + filePath
 	commandResult = os.system( shellCommand )
 	if commandResult != 0:
-		print( 'It may be that the system could not find the %s program.' % svgViewer )
-		print( 'If so, try installing the %s program or look for another svg viewer, like Netscape which can be found at:' % svgViewer )
-		print( 'http://www.netscape.org/' )
-		print( '' )
+		print('It may be that the system could not find the %s program.' % svgViewer )
+		print('If so, try installing the %s program or look for another svg viewer, like Netscape which can be found at:' % svgViewer )
+		print('http://www.netscape.org/')
+		print('')
 
 def openWebPage( webPagePath ):
 	"Open a web page in a browser."
-	if webPagePath.find( '#' ) != - 1: # to get around # encode bug
+	if webPagePath.find('#') != - 1: # to get around # encode bug
 		redirectionText = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">\n<html>\n<head>\n'
 		redirectionText += '<meta http-equiv="REFRESH" content="0;url=%s"></head>\n</HTML>\n' % webPagePath
-		webPagePath = getDocumentationPath( 'redirect.html' )
+		webPagePath = getDocumentationPath('redirect.html')
 		gcodec.writeFileText( webPagePath, redirectionText )
 	webPagePath = '"%s"' % webPagePath # " to get around space in url bug
 	try:
@@ -421,7 +421,7 @@ def openWebPage( webPagePath ):
 		pass
 	webbrowserName = webbrowser.get().name
 	if webbrowserName == '':
-		print( 'Skeinforge was not able to open the documentation file in a web browser.  To see the documentation, open the following file in a web browser:' )
+		print('Skeinforge was not able to open the documentation file in a web browser.  To see the documentation, open the following file in a web browser:')
 		print( webPagePath )
 		return
 	os.system( webbrowserName + ' ' + webPagePath )#used this instead of webbrowser.open() to workaround webbrowser open() bug
@@ -468,7 +468,7 @@ def setArchiveToLine( lineIndex, lines, settingTable ):
 	splitLine = line.split( globalSpreadsheetSeparator )
 	if len( splitLine ) < 2:
 		return
-	fileSettingName = splitLine[ 0 ]
+	fileSettingName = splitLine[0]
 	if fileSettingName in settingTable:
 		settingTable[ fileSettingName ].setValueToSplitLine( lineIndex, lines, splitLine )
 
@@ -478,8 +478,8 @@ def setButtonFontWeightString( button, isBold ):
 		weightString = 'normal'
 		if isBold:
 			weightString = 'bold'
-		splitFont = button[ 'font' ].split()
-		button[ 'font' ] = ( splitFont[ 0 ], splitFont[ 1 ], weightString )
+		splitFont = button['font'].split()
+		button['font'] = ( splitFont[0], splitFont[1], weightString )
 	except:
 		pass
 
@@ -492,15 +492,15 @@ def setEntryText( entry, value ):
 
 def setIntegerValueToString( integerSetting, valueString ):
 	"Set the integer to the string."
-	dotIndex = valueString.find( '.' )
+	dotIndex = valueString.find('.')
 	if dotIndex > - 1:
 		valueString = valueString[ : dotIndex ]
 	try:
 		integerSetting.value = int( valueString )
 		return
 	except:
-		print( 'Warning, can not read integer ' + integerSetting.name + ' ' + valueString )
-		print( 'Will try reading as a boolean, which might be a mistake.' )
+		print('Warning, can not read integer ' + integerSetting.name + ' ' + valueString )
+		print('Will try reading as a boolean, which might be a mistake.')
 	integerSetting.value = 0
 	if valueString.lower() == 'true':
 		integerSetting.value = 1
@@ -510,28 +510,28 @@ def setSpinColor( setting ):
 	if setting.entry == None:
 		return
 	if setting.backgroundColor == None:
-		setting.backgroundColor = setting.entry[ 'background' ]
-		if setting.backgroundColor[ 0 ] != '#':
+		setting.backgroundColor = setting.entry['background']
+		if setting.backgroundColor[0] != '#':
 			setting.backgroundColor = '#ffffff'
 		setting.colorWidth = len( setting.backgroundColor ) / 3
 		setting.grey = int( setting.backgroundColor[ 1 : 1 + setting.colorWidth ], 16 )
-		setting.white = int( 'f' * setting.colorWidth, 16 )
+		setting.white = int('f' * setting.colorWidth, 16 )
 	if abs( setting.value - setting.defaultValue ) < 0.02 * setting.width:
-		setting.entry[ 'background' ] = setting.backgroundColor
+		setting.entry['background'] = setting.backgroundColor
 		return
 	difference = setting.value - setting.defaultValue
 	if difference > 0.0:
 		wayLength = setting.to - setting.defaultValue
-		setting.entry[ 'background' ] = getAlongWayHexadecimalColor( setting.grey, setting.colorWidth, difference, ( 0, setting.white, setting.white ), wayLength )
+		setting.entry['background'] = getAlongWayHexadecimalColor( setting.grey, setting.colorWidth, difference, ( 0, setting.white, setting.white ), wayLength )
 		return
 	wayLength = setting.from_ - setting.defaultValue
-	setting.entry[ 'background' ] = getAlongWayHexadecimalColor( setting.grey, setting.colorWidth, difference, ( setting.white, setting.white, 0 ), wayLength )
+	setting.entry['background'] = getAlongWayHexadecimalColor( setting.grey, setting.colorWidth, difference, ( setting.white, setting.white, 0 ), wayLength )
 
 def startMainLoopFromConstructor( repository ):
 	"Display the repository dialog and start the main loop."
 	displayedDialogFromConstructor = getDisplayedDialogFromConstructor( repository )
 	if displayedDialogFromConstructor == None:
-		print( 'Warning, displayedDialogFromConstructor in settings is none, so the window will not be displayed.' )
+		print('Warning, displayedDialogFromConstructor in settings is none, so the window will not be displayed.')
 	else:
 		displayedDialogFromConstructor.root.mainloop()
 
@@ -542,7 +542,7 @@ def writeValueListToArchiveWriter( archiveWriter, setting ):
 		if item != '[]':
 			archiveWriter.write( globalSpreadsheetSeparator )
 			archiveWriter.write( item )
-	archiveWriter.write( '\n' )
+	archiveWriter.write('\n')
 
 def writeSettings( repository ):
 	"Write the settings to a file."
@@ -553,7 +553,7 @@ def writeSettings( repository ):
 def writeSettingsPrintMessage( repository ):
 	"Set the settings to the dialog then write them."
 	writeSettings( repository )
-	print( repository.title.lower().capitalize() + ' have been saved.' )
+	print( repository.title.lower().capitalize() + ' have been saved.')
 
 
 class StringSetting:
@@ -597,7 +597,7 @@ class StringSetting:
 	def bindEntry( self ):
 		"Bind the entry to the update function."
 		if self.updateFunction != None:
-			self.entry.bind( '<Return>', self.updateFunction )
+			self.entry.bind('<Return>', self.updateFunction )
 
 	def createEntry( self, root ):
 		"Create the entry."
@@ -644,7 +644,7 @@ class StringSetting:
 
 	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
 		"Set the value to the second word of a split line."
-		self.setValueToString( splitLine[ 1 ] )
+		self.setValueToString( splitLine[1] )
 
 	def setValueToString( self, valueString ):
 		"Set the value to the value string."
@@ -652,7 +652,7 @@ class StringSetting:
 
 	def writeToArchiveWriter( self, archiveWriter ):
 		"Write tab separated name and value to the archive writer."
-		archiveWriter.write( '%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, self.value ) )
+		archiveWriter.write('%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, self.value ) )
 
 
 class BooleanSetting( StringSetting ):
@@ -700,7 +700,7 @@ class BooleanSetting( StringSetting ):
 
 	def setValueToString( self, valueString ):
 		"Set the boolean to the string."
-		self.value = ( valueString.lower() == 'true' )
+		self.value = ( valueString.lower() == 'true')
 
 	def toggleCheckbutton( self ):
 		"Workaround for Tkinter bug, toggle the value."
@@ -731,7 +731,7 @@ class CloseListener:
 		"Listen to the destroy message of the widget."
 		if self.shouldWasClosedBeBound:
 			self.shouldWasClosedBeBound = False
-			widget.bind( '<Destroy>', self.wasClosed )
+			widget.bind('<Destroy>', self.wasClosed )
 
 	def wasClosed( self, event ):
 		"The dialog was closed."
@@ -775,7 +775,7 @@ class FileHelpMenuBar:
 		root.config( menu = self.menuBar )
 		self.fileMenu = Tkinter.Menu( self.menuBar, tearoff = 0 )
 		self.menuBar.add_cascade( label = "File", menu = self.fileMenu, underline = 0 )
-		self.underlineLetters.append( 'f' )
+		self.underlineLetters.append('f')
 
 	def addMenuToMenuBar( self, labelText, menu ):
 		"Add a menu to the menu bar."
@@ -792,7 +792,7 @@ class FileHelpMenuBar:
 		"Add a menu to the menu bar from a tool."
 		pluginModule = gcodec.getModuleWithPath( modulePath )
 		if pluginModule == None:
-			print( 'this should never happen, pluginModule in addMenuToMenuBar in settings is None.' )
+			print('this should never happen, pluginModule in addMenuToMenuBar in settings is None.')
 			return None
 		repositoryMenu = Tkinter.Menu( self.menuBar, tearoff = 0 )
 		labelText = getEachWordCapitalized( os.path.basename( modulePath ) )
@@ -803,11 +803,11 @@ class FileHelpMenuBar:
 		"Complete the menu."
 		self.closeFunction = closeFunction
 		self.saveFunction = saveFunction
-		addAcceleratorCommand( '<Control-KeyPress-s>', saveFunction, self.root, self.fileMenu, 'Save' )
+		addAcceleratorCommand('<Control-KeyPress-s>', saveFunction, self.root, self.fileMenu, 'Save')
 		self.fileMenu.add_command( label = "Save and Close", command = self.saveClose )
-		addAcceleratorCommand( '<Control-KeyPress-w>', closeFunction, self.root, self.fileMenu, 'Close' )
+		addAcceleratorCommand('<Control-KeyPress-w>', closeFunction, self.root, self.fileMenu, 'Close')
 		self.fileMenu.add_separator()
-		addAcceleratorCommand( '<Control-KeyPress-q>', quitWindows, self.root, self.fileMenu, 'Quit' )
+		addAcceleratorCommand('<Control-KeyPress-q>', quitWindows, self.root, self.fileMenu, 'Quit')
 		skeinforgeToolsDirectoryPath = getPathInSkeinforgePlugins()
 		pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( skeinforgeToolsDirectoryPath )
 		for pluginFileName in pluginFileNames:
@@ -842,29 +842,29 @@ class FileNameInput( StringSetting ):
 			self.setCancelledValue( fileName )
 			return
 		except:
-			print( 'Could not get the old directory in settings, so the file picker will be opened in the default directory.' )
+			print('Could not get the old directory in settings, so the file picker will be opened in the default directory.')
 		try:
 			fileName = tkFileDialog.askopenfilename( filetypes = self.getFileNameFirstTypes(), initialdir = '.', initialfile = '', parent = parent, title = self.name )
 			self.setCancelledValue( fileName )
 		except:
-			print( 'Error in execute in FileName in settings, ' + self.name )
+			print('Error in execute in FileName in settings, ' + self.name )
 
 	def getFileNameFirstTypes( self ):
 		"Get the file types with the file type of the fileName moved to the front of the list."
-		allFiles = [ ( 'All', '*.*' ) ]
+		allFiles = [ ('All', '*.*') ]
 		try:
 			basename = os.path.basename( self.value )
-			splitFile = basename.split( '.' )
+			splitFile = basename.split('.')
 			allReadables = []
 			if len( self.fileTypes ) > 1:
 				for fileType in self.fileTypes:
-					allReadable = ( ( 'All Readable', fileType[ 1 ] ) )
+					allReadable = ( ('All Readable', fileType[1] ) )
 					allReadables.append( allReadable )
 			if len( splitFile ) < 1:
 				return allReadables + allFiles + self.fileTypes
 			baseExtension = splitFile[ - 1 ]
 			for fileType in self.fileTypes:
-				fileExtension = fileType[ 1 ].split( '.' )[ - 1 ]
+				fileExtension = fileType[1].split('.')[ - 1 ]
 				if fileExtension == baseExtension:
 					fileNameFirstTypes = self.fileTypes[ : ]
 					fileNameFirstTypes.remove( fileType )
@@ -883,7 +883,7 @@ class FileNameInput( StringSetting ):
 
 	def setCancelledValue( self, fileName ):
 		"Set the value to the file name and wasCancelled true if a file was not picked."
-		if ( str( fileName ) == '()' or str( fileName ) == '' ):
+		if ( str( fileName ) == '()' or str( fileName ) == ''):
 			self.wasCancelled = True
 		else:
 			self.value = fileName
@@ -900,7 +900,7 @@ class FloatSetting( StringSetting ):
 		try:
 			self.value = float( valueString )
 		except:
-			print( 'Oops, can not read float' + self.name + ' ' + valueString )
+			print('Oops, can not read float' + self.name + ' ' + valueString )
 
 
 class FloatSpin( FloatSetting ):
@@ -923,7 +923,7 @@ class FloatSpin( FloatSetting ):
 
 	def bindEntry( self ):
 		"Bind the entry to the update function."
-		self.entry.bind( '<Return>', self.entryUpdated )
+		self.entry.bind('<Return>', self.entryUpdated )
 		self.setColor()
 
 	def createEntry( self, root ):
@@ -1107,7 +1107,7 @@ class HelpPage:
 		capitalizedName = getEachWordCapitalized( self.name )
 		self.displayButton = Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', command = self.openPage, text = capitalizedName )
 		if len( capitalizedName ) < 12:
-			self.displayButton[ 'width' ] = 10
+			self.displayButton['width'] = 10
 		self.displayButton.grid( row = gridPosition.row, column = self.column, columnspan = 2 )
 
 	def addToMenu( self, repositoryMenu ):
@@ -1130,7 +1130,7 @@ class HelpPage:
 		self.hypertextAddress = 'http://www.' + afterWWW
 		return self
 
-	def getFromNameSubName( self, name, repository, subName = '' ):
+	def getFromNameSubName( self, name, repository, subName = ''):
 		"Initialize."
 		self.setToNameRepository( name, repository )
 		self.hypertextAddress = getDocumentationPath( subName )
@@ -1151,7 +1151,7 @@ class HelpPage:
 		self.hypertextAddress = 'http://www.' + afterWWW
 		return self.openPage
 
-	def getOpenFromDocumentationSubName( self, subName = '' ):
+	def getOpenFromDocumentationSubName( self, subName = ''):
 		"Get the open help page function from the afterWWW of the address after the www."
 		self.hypertextAddress = getDocumentationPath( subName )
 		return self.openPage
@@ -1261,11 +1261,11 @@ class LabelHelp:
 		if len( name ) < 1:
 			return
 		self.popupMenu = Tkinter.Menu( master, tearoff = 0 )
-		titleFromName = getTitleFromName( name.replace( '- ', '' ).replace( ' -', '' ) )
+		titleFromName = getTitleFromName( name.replace('- ', '').replace(' -', '') )
 		self.popupMenu.add_command( label = 'Help', command = HelpPage().getOpenFromDocumentationSubName( fileNameHelp + '#' + titleFromName ) )
-		widget.bind( '<Button-1>', self.unpostPopupMenu )
-		widget.bind( '<Button-2>', self.unpostPopupMenu )
-		widget.bind( '<Button-3>', self.displayPopupMenu )
+		widget.bind('<Button-1>', self.unpostPopupMenu )
+		widget.bind('<Button-2>', self.unpostPopupMenu )
+		widget.bind('<Button-3>', self.displayPopupMenu )
 
 	def unpostPopupMenu( self, event = None ):
 		'Unpost the popup menu.'
@@ -1284,7 +1284,7 @@ class LabelSeparator:
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		gridPosition.increment()
-		self.label = Tkinter.Label( gridPosition.master, text = '' )
+		self.label = Tkinter.Label( gridPosition.master, text = '')
 		self.label.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
 
 	def addToMenu( self, repositoryMenu ):
@@ -1335,12 +1335,12 @@ class MenuButtonDisplay:
 	def addToMenu( self, repositoryMenu ):
 		"Add this to the repository menu."
 		if len( self.menuRadios ) < 1:
-			print( 'The MenuButtonDisplay in settings should have menu items.' )
+			print('The MenuButtonDisplay in settings should have menu items.')
 			print( self.name )
 			return
 		self.menu = Tkinter.Menu( repositoryMenu, tearoff = 0 )
 		repositoryMenu.add_cascade( label = getTitleFromName( self.name ), menu = self.menu )
-		self.setRadioVarToName( self.menuRadios[ 0 ].name )
+		self.setRadioVarToName( self.menuRadios[0].name )
 
 	def addToMenuFrameable( self, repositoryMenu ):
 		"Add this to the frameable repository menu."
@@ -1367,7 +1367,7 @@ class MenuButtonDisplay:
 		"Get the menu button."
 		self.optionList = [ name ]
 		self.radioVar = Tkinter.StringVar()
-		self.radioVar.set( self.optionList[ 0 ] )
+		self.radioVar.set( self.optionList[0] )
 
 	def setToNameAddToDialog( self, name, gridPosition ):
 		"Get the menu button."
@@ -1381,7 +1381,7 @@ class MenuButtonDisplay:
 		self.menuButton.grid( row = gridPosition.row, column = 3, columnspan = 2, sticky = Tkinter.W )
 		self.menuButton.menu = Tkinter.Menu( self.menuButton, tearoff = 0 )
 		self.menu = self.menuButton.menu
-		self.menuButton[ 'menu' ]  =  self.menu
+		self.menuButton['menu']  =  self.menu
 		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
 
 
@@ -1462,7 +1462,7 @@ class PluginFrame:
 	def createFrame( self, gridPosition ):
 		"Create the frame."
 		gridVertical = GridVertical( 0, 0 )
-		gridVertical.master = Tkinter.LabelFrame( gridPosition.master, borderwidth = 3, relief = 'raised' )
+		gridVertical.master = Tkinter.LabelFrame( gridPosition.master, borderwidth = 3, relief = 'raised')
 		gridVertical.master.grid( row = gridPosition.row, column = gridPosition.column, columnspan = 12, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
 		gridPosition.master.grid_rowconfigure( gridPosition.row, weight = 1 )
 		gridPosition.master.grid_columnconfigure( gridPosition.column + 11, weight = 1 )
@@ -1472,7 +1472,7 @@ class PluginFrame:
 		path = os.path.join( self.directoryPath, self.latentStringVar.getString() )
 		pluginModule = gcodec.getModuleWithPath( path )
 		if pluginModule == None:
-			print( 'this should never happen, pluginModule in addToDialog in PluginFrame in settings is None' )
+			print('this should never happen, pluginModule in addToDialog in PluginFrame in settings is None')
 			print( path )
 			return
 		gridVertical.repository = getReadRepository( pluginModule.getNewRepository() )
@@ -1492,8 +1492,8 @@ class PluginFrame:
 		gridVertical.xScrollbar.grid( row = gridVertical.row + 1, column = gridVertical.column, columnspan = 11, sticky = Tkinter.E + Tkinter.W )
 		gridVertical.yScrollbar = HiddenScrollbar( gridVertical.master )
 		gridVertical.yScrollbar.grid( row = gridVertical.row, column = gridVertical.column + 12, sticky = Tkinter.N + Tkinter.S )
-		canvasHeight = min( 1000, gridPosition.master.winfo_screenheight() - 500 ) - 6 - int( gridVertical.xScrollbar[ 'width' ] )
-		canvasWidth = min( 650, gridPosition.master.winfo_screenwidth() - 100 ) - 6 - int( gridVertical.yScrollbar[ 'width' ] )
+		canvasHeight = min( 1000, gridPosition.master.winfo_screenheight() - 500 ) - 6 - int( gridVertical.xScrollbar['width'] )
+		canvasWidth = min( 650, gridPosition.master.winfo_screenwidth() - 100 ) - 6 - int( gridVertical.yScrollbar['width'] )
 		gridVertical.canvas = Tkinter.Canvas( gridVertical.master, height = canvasHeight, highlightthickness = 0, width = canvasWidth )
 		gridVertical.frameGridVertical.master = Tkinter.Frame( gridVertical.canvas )
 		for setting in gridVertical.repository.displayEntities:
@@ -1501,11 +1501,11 @@ class PluginFrame:
 		addEmptyRow( gridVertical.frameGridVertical )
 		gridVertical.frameGridVertical.master.update_idletasks()
 		gridVertical.xScrollbar.config( command = gridVertical.canvas.xview )
-		gridVertical.canvas[ 'xscrollcommand' ] = gridVertical.xScrollbar.set
+		gridVertical.canvas['xscrollcommand'] = gridVertical.xScrollbar.set
 		gridVertical.yScrollbar.config( command = gridVertical.canvas.yview )
-		gridVertical.canvas[ 'yscrollcommand' ] = gridVertical.yScrollbar.set
+		gridVertical.canvas['yscrollcommand'] = gridVertical.yScrollbar.set
 		gridVertical.canvas.create_window( 0, 0, anchor = Tkinter.NW, window = gridVertical.frameGridVertical.master )
-		gridVertical.canvas[ 'scrollregion' ] = gridVertical.frameGridVertical.master.grid_bbox()
+		gridVertical.canvas['scrollregion'] = gridVertical.frameGridVertical.master.grid_bbox()
 		gridVertical.canvas.grid( row = gridVertical.row, column = gridVertical.column, columnspan = 11, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
 		gridVertical.master.grid_rowconfigure( gridVertical.row, weight = 1 )
 		gridVertical.master.grid_columnconfigure( gridVertical.column + 11, weight = 1 )
@@ -1565,7 +1565,7 @@ class PluginGroupFrame( PluginFrame ):
 	def createFrame( self, gridPosition ):
 		"Create the frame."
 		gridVertical = GridVertical( 0, 0 )
-		gridVertical.master = Tkinter.LabelFrame( gridPosition.master, borderwidth = 3, relief = 'raised' )
+		gridVertical.master = Tkinter.LabelFrame( gridPosition.master, borderwidth = 3, relief = 'raised')
 		gridVertical.master.grid( row = gridPosition.row, column = gridPosition.column, columnspan = 11, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
 		gridPosition.master.grid_rowconfigure( gridPosition.row, weight = 1 )
 		gridPosition.master.grid_columnconfigure( gridPosition.column + 10, weight = 1 )
@@ -1575,7 +1575,7 @@ class PluginGroupFrame( PluginFrame ):
 		path = os.path.join( self.directoryPath, self.latentStringVar.getString() )
 		pluginModule = gcodec.getModuleWithPath( path )
 		if pluginModule == None:
-			print( 'this should never happen, pluginModule in addToDialog in PluginFrame in settings is None' )
+			print('this should never happen, pluginModule in addToDialog in PluginFrame in settings is None')
 			print( path )
 			return
 		gridVertical.repository = getReadRepository( pluginModule.getNewRepository() )
@@ -1611,7 +1611,7 @@ class Radio( BooleanSetting ):
 
 	def clickRadio( self ):
 		"Workaround for Tkinter bug, set the value."
-		self.latentStringVar.setString( self.radiobutton[ 'value' ] )
+		self.latentStringVar.setString( self.radiobutton['value'] )
 		if self.updateFunction != None:
 			self.updateFunction()
 
@@ -1632,11 +1632,11 @@ class Radio( BooleanSetting ):
 
 	def setToDisplay( self ):
 		"Set the boolean to the checkbutton."
-		self.value = ( self.latentStringVar.getString() == self.radiobutton[ 'value' ] )
+		self.value = ( self.latentStringVar.getString() == self.radiobutton['value'] )
 
 	def setSelect( self ):
 		"Set the int var and select the radio button."
-		self.latentStringVar.setString( self.radiobutton[ 'value' ] )
+		self.latentStringVar.setString( self.radiobutton['value'] )
 		self.radiobutton.select()
 
 	def setStateToValue( self ):
@@ -1679,11 +1679,11 @@ class RadioPlugin( RadioCapitalized ):
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		self.createRadioButton( gridPosition )
-		self.radiobutton[ 'activebackground' ] = 'black'
-		self.radiobutton[ 'activeforeground' ] = 'white'
-		self.radiobutton[ 'selectcolor' ] = 'white'
-		self.radiobutton[ 'borderwidth' ] = 3
-		self.radiobutton[ 'indicatoron' ] = 0
+		self.radiobutton['activebackground'] = 'black'
+		self.radiobutton['activeforeground'] = 'white'
+		self.radiobutton['selectcolor'] = 'white'
+		self.radiobutton['borderwidth'] = 3
+		self.radiobutton['indicatoron'] = 0
 		setButtonFontWeightString( self.radiobutton, self.important )
 		self.incrementGridPosition( gridPosition )
 		self.setStateToValue()
@@ -1705,12 +1705,12 @@ class TextSetting( StringSetting ):
 		"Set the update function to none."
 		self.tokenConversions = [
 			TokenConversion(),
-			TokenConversion( 'carriageReturn', '\r' ),
-			TokenConversion( 'doubleQuote', '"' ),
-			TokenConversion( 'newline', '\n' ),
-			TokenConversion( 'semicolon', ';' ),
-			TokenConversion( 'singleQuote', "'" ),
-			TokenConversion( 'tab', '\t' ) ]
+			TokenConversion('carriageReturn', '\r'),
+			TokenConversion('doubleQuote', '"'),
+			TokenConversion('newline', '\n'),
+			TokenConversion('semicolon', ';'),
+			TokenConversion('singleQuote', "'" ),
+			TokenConversion('tab', '\t') ]
 		self.updateFunction = None
 
 	def addToDialog( self, gridPosition ):
@@ -1746,7 +1746,7 @@ class TextSetting( StringSetting ):
 
 	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
 		"Set the value to the second word of a split line."
-		replacedValue = splitLine[ 1 ]
+		replacedValue = splitLine[1]
 		for tokenConversion in reversed( self.tokenConversions ):
 			replacedValue = tokenConversion.getTokenizedString( replacedValue )
 		self.setValueToString( replacedValue )
@@ -1756,12 +1756,12 @@ class TextSetting( StringSetting ):
 		replacedValue = self.value
 		for tokenConversion in self.tokenConversions:
 			replacedValue = tokenConversion.getNamedString( replacedValue )
-		archiveWriter.write( '%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, replacedValue ) )
+		archiveWriter.write('%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, replacedValue ) )
 
 
 class TokenConversion:
 	"A class to convert tokens in a string."
-	def __init__( self, name = 'replaceToken', token = '___replaced___' ):
+	def __init__( self, name = 'replaceToken', token = '___replaced___'):
 		"Set the name and token."
 		self.replacedName = '___replaced___' + name
 		self.token = token
@@ -1807,7 +1807,7 @@ class WindowPosition( StringSetting ):
 
 	def getFromValue( self, repository, value ):
 		"Initialize."
-		self.getFromValueOnly( 'WindowPosition', repository, value )
+		self.getFromValueOnly('WindowPosition', repository, value )
 		repository.archive.append( self )
 		repository.displayEntities.append( self )
 		return self
@@ -1820,7 +1820,7 @@ class WindowPosition( StringSetting ):
 			return
 		if geometryString == '1x1+0+0':
 			return
-		firstPlusIndexPlusOne = geometryString.find( '+' ) + 1
+		firstPlusIndexPlusOne = geometryString.find('+') + 1
 		self.value = geometryString[ firstPlusIndexPlusOne : ]
 
 	def setWindowPosition( self ):
@@ -1880,7 +1880,7 @@ class RepositoryDialog:
 		self.helpButton.grid( row = self.gridPosition.row, column = columnIndex, sticky = Tkinter.W )
 		self.closeListener.listenToWidget( self.helpButton )
 		columnIndex += 6
-		cancelButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'orange', command = self.cancel, fg = 'orange', text = 'Cancel' )
+		cancelButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'orange', command = self.cancel, fg = 'orange', text = 'Cancel')
 		cancelButton.grid( row = self.gridPosition.row, column = columnIndex )
 		columnIndex += 1
 		self.saveButton = Tkinter.Button( root, activebackground = 'black', activeforeground = 'darkgreen', command = saveCommand, fg = 'darkgreen', text = saveText )

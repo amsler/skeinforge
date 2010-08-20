@@ -11,7 +11,7 @@ from fabmetheus_utilities.geometry.geometry_tools.dictionary import Dictionary
 from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import euclidean
-from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
+from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities import xml_simple_reader
 
 
@@ -30,7 +30,7 @@ def convertXMLElementRenameByPaths( geometryOutput, xmlElement, xmlProcessor ):
 	xmlElement.className = 'group'
 	for geometryOutputChild in geometryOutput:
 		pathElement = xml_simple_reader.XMLElement()
-		pathElement.setParentAddToChildren( xmlElement )
+		pathElement.setParentAddToChildren(xmlElement)
 		path.convertXMLElementRename( geometryOutputChild, pathElement, xmlProcessor )
 
 def processShape(archivableClass, xmlElement, xmlProcessor):
@@ -81,4 +81,4 @@ class Group( Dictionary ):
 
 	def getVisible( self ):
 		"Get visible."
-		return euclidean.getBooleanFromDictionary( self.getAttributeDictionary(), 'visible' )
+		return euclidean.getBooleanFromDictionary( self.getAttributeDictionary(), 'visible')

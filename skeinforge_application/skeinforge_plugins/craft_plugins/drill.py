@@ -40,7 +40,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the drill dialog.
 
 
->>> drill.writeOutput( 'Screw Holder Bottom.stl' )
+>>> drill.writeOutput('Screw Holder Bottom.stl')
 The drill tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -74,7 +74,7 @@ def getCraftedText( fileName, text, repository = None ):
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Drill a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'drill' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'drill'):
 		return gcodeText
 	if repository == None:
 		repository = settings.getReadRepository( DrillRepository() )
@@ -98,11 +98,11 @@ def getPolygonCenter( polygon ):
 		pointSum += complex( pointBegin.real + pointEnd.real, pointBegin.imag + pointEnd.imag ) * area
 	return pointSum / 3.0 / areaSum
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Drill a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'drill' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'drill')
 
 
 class ThreadLayer:
@@ -121,9 +121,9 @@ class DrillRepository:
 	"A class to handle the drill settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.drill.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Drill', self, '' )
-		self.activateDrill = settings.BooleanSetting().getFromValue( 'Activate Drill', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.drill.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Drill', self, '')
+		self.activateDrill = settings.BooleanSetting().getFromValue('Activate Drill', self, True )
 		self.drillingMarginOnBottom = settings.FloatSpin().getFromValue( 0.0, 'Drilling Margin on Bottom (millimeters):', self, 5.0, 1.0 )
 		self.drillingMarginOnTop = settings.FloatSpin().getFromValue( 0.0, 'Drilling Margin on Top (millimeters):', self, 20.0, 3.0 )
 		self.executeTitle = 'Drill'
@@ -155,7 +155,7 @@ class DrillSkein:
 		self.isDrilled = True
 		if len( self.threadLayers ) < 1:
 			return
-		topThreadLayer = self.threadLayers[ 0 ]
+		topThreadLayer = self.threadLayers[0]
 		drillPoints = topThreadLayer.points
 		for drillPoint in drillPoints:
 			zTop = topThreadLayer.z + self.halfLayerThickness + self.repository.drillingMarginOnTop.value
@@ -179,13 +179,13 @@ class DrillSkein:
 
 	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the drill gcode."
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.repository = repository
 		self.parseInitialization()
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseSurroundingLoop( line )
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseLine( line )
+		for line in self.lines[self.lineIndex :]:
+			self.parseSurroundingLoop(line)
+		for line in self.lines[self.lineIndex :]:
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getDrillingCenterDepth( self, drillingCenterDepth, drillPoint ):
@@ -216,35 +216,35 @@ class DrillSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> drill </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> drill </procedureDone>)')
 				return
 			elif firstWord == '(<layerThickness>':
-				self.halfLayerThickness = 0.5 * float( splitLine[ 1 ] )
+				self.halfLayerThickness = 0.5 * float( splitLine[1] )
 			elif firstWord == '(<perimeterWidth>':
-				self.maximumDistance = 0.1 * float( splitLine[ 1 ] )
-			self.distanceFeedRate.addLine( line )
+				self.maximumDistance = 0.1 * float( splitLine[1] )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
-		self.distanceFeedRate.addLine( line )
+		firstWord = splitLine[0]
+		self.distanceFeedRate.addLine(line)
 		if firstWord == '(<layer>':
 			if not self.isDrilled:
 				self.addDrillHoles()
 
 	def parseSurroundingLoop( self, line ):
 		"Parse a surrounding loop."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			self.linearMove( splitLine )
 		if firstWord == 'M101':
@@ -257,7 +257,7 @@ class DrillSkein:
 				self.boundary = []
 			self.boundary.append( location.dropAxis( 2 ) )
 		elif firstWord == '(<layer>':
-			self.layerZ = float( splitLine[ 1 ] )
+			self.layerZ = float( splitLine[1] )
 			self.threadLayer = None
 		elif firstWord == '(<boundaryPerimeter>)':
 			self.addThreadLayerIfNone()
@@ -270,7 +270,7 @@ class DrillSkein:
 def main():
 	"Display the drill dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

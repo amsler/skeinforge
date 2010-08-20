@@ -9,7 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools.dictionary import Dictionary
 from fabmetheus_utilities.geometry.geometry_tools import vertex
-from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
+from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import xml_simple_writer
 
@@ -20,18 +20,18 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def convertXMLElement( geometryOutput, xmlElement, xmlProcessor ):
+def convertXMLElement(geometryOutput, xmlElement, xmlProcessor):
 	"Convert the xml element to a path xml element."
-	vertex.addGeometryList( geometryOutput, xmlElement )
+	vertex.addGeometryList(geometryOutput, xmlElement)
 
-def convertXMLElementRename( geometryOutput, xmlElement, xmlProcessor ):
+def convertXMLElementRename(geometryOutput, xmlElement, xmlProcessor):
 	"Convert the xml element to a path xml element."
 	xmlElement.className = 'path'
-	convertXMLElement( geometryOutput, xmlElement, xmlProcessor )
+	convertXMLElement(geometryOutput, xmlElement, xmlProcessor)
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement, xmlProcessor):
 	"Process the xml element."
-	evaluate.processArchivable( Path, xmlElement, xmlProcessor )
+	evaluate.processArchivable(Path, xmlElement, xmlProcessor)
 
 
 class Path( Dictionary ):

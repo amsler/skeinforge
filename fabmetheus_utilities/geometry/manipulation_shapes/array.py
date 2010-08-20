@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
+from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.geometry_tools import vertex
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import euclidean
@@ -24,7 +24,7 @@ globalExecutionOrder = 200
 
 def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 	"Get array path."
-	arrayPaths = evaluate.getPathsByKeys( [ prefix + 'path', prefix + 'paths' ], xmlElement )
+	arrayPaths = evaluate.getPathsByKeys( [ prefix + 'path', prefix + 'paths'], xmlElement )
 	manipulatedByPaths = []
 	for arrayPath in arrayPaths:
 		for arrayPoint in arrayPath:
@@ -41,9 +41,9 @@ def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 		manipulatedByVertices.append( manipulatedByVertex )
 	manipulatedPaths = manipulatedByPaths + manipulatedByVertices
 	if len( manipulatedPaths ) == 0:
-		print( 'Warning, in getManipulatedPaths in array there are no paths or vertices for:' )
-		print( xmlElement )
-		return [ loop ]
+		print('Warning, in getManipulatedPaths in array there are no paths or vertices for:')
+		print(xmlElement)
+		return [loop]
 	return manipulatedPaths
 
 def getVerticesByKey( key, xmlElement ):

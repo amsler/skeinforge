@@ -27,7 +27,7 @@ class Heading:
 	def addToOutput( self, output ):
 		"Add to the output."
 		line = '&nbsp;&nbsp;' * self.depth + '<a href="#%s">%s</a><br />\n' % ( self.name, self.name )
-		output.write( line )
+		output.write(line)
 
 	def getFromLine( self, headingLineTable, line ):
 		"Get the heading from a line."
@@ -35,7 +35,7 @@ class Heading:
 		nextLine = '\n<hr>\n'
 		if self.depth > 0:
 			nextLine = '\n'
-		self.name = line.replace( '=', '' ).replace( '<br>', '' )
+		self.name = line.replace('=', '').replace('<br>', '')
 		headingLineTable[ line ] = '<a name="%s" id="%s"></a><%s>%s</%s>%s' % ( self.name, self.name, headingTag, self.name, headingTag, nextLine )
 		return self
 
@@ -50,8 +50,8 @@ def addToHeadings( headingLineTable, headings, line ):
 
 def getNavigationHypertext( fileText, transferredFileNameIndex, transferredFileNames ):
 	"Get the hypertext help with navigation lines."
-	helpTextEnd = fileText.find( '</p>' )
-	helpTextStart = fileText.find( '<p>' )
+	helpTextEnd = fileText.find('</p>')
+	helpTextStart = fileText.find('<p>')
 	helpText = fileText[ helpTextStart : helpTextEnd ]
 	lines = gcodec.getTextLines( helpText )
 	headings = []
@@ -63,21 +63,21 @@ def getNavigationHypertext( fileText, transferredFileNameIndex, transferredFileN
 	for line in lines:
 		if line[ : 2 ] == '==':
 			if headingsToBeenAdded:
-				output.write( '<br />\n' )
+				output.write('<br />\n')
 				for heading in headings:
 					heading.addToOutput( output )
-				output.write( '<br />\n' )
+				output.write('<br />\n')
 				headingsToBeenAdded = False
 			if line in headingLineTable:
 				line = headingLineTable[ line ]
-		output.write( line + '\n' )
+		output.write( line + '\n')
 	helpText = output.getvalue()
 	previousFileName = 'contents.html'
 	previousIndex = transferredFileNameIndex - 1
 	if previousIndex >= 0:
 		previousFileName = transferredFileNames[ previousIndex ]
 	previousLinkText = '<a href="%s">Previous</a>' % previousFileName
-	navigationLine = getNavigationLine( '<a href="contents.html">Contents</a>', previousLinkText, getNextLinkText( transferredFileNames, transferredFileNameIndex + 1 ) )
+	navigationLine = getNavigationLine('<a href="contents.html">Contents</a>', previousLinkText, getNextLinkText( transferredFileNames, transferredFileNameIndex + 1 ) )
 	helpText = navigationLine + helpText + '<br />\n<br />\n' + navigationLine + '<hr>\n'
 	return fileText[ : helpTextStart ] + helpText + fileText[ helpTextEnd : ]
 
@@ -94,14 +94,14 @@ def getNextLinkText( hypertextFiles, nextIndex ):
 
 def getWrappedHypertext( fileText, hypertextFileIndex, hypertextFiles ):
 	"Get the wrapped pydoc hypertext help."
-	helpTextEnd = fileText.find( '</p>' )
+	helpTextEnd = fileText.find('</p>')
 	if helpTextEnd < 0:
-		print( 'Failed to find the helpTextEnd in getWrappedHypertext in docwrap.' )
-	helpTextStart = fileText.find( '<p>' )
+		print('Failed to find the helpTextEnd in getWrappedHypertext in docwrap.')
+	helpTextStart = fileText.find('<p>')
 	if helpTextStart < 0:
-		print( 'Failed to find the helpTextStart in getWrappedHypertext in docwrap.' )
+		print('Failed to find the helpTextStart in getWrappedHypertext in docwrap.')
 	helpText = fileText[ helpTextStart : helpTextEnd ]
-	helpText = helpText.replace( '&nbsp;', ' ' )
+	helpText = helpText.replace('&nbsp;', ' ')
 	return fileText[ : helpTextStart ] + helpText + fileText[ helpTextEnd : ]
 
 def readWriteDeleteHypertextHelp( documentDirectoryPath, hypertextFileIndex, hypertextFiles, transferredFileNames ):
@@ -111,8 +111,8 @@ def readWriteDeleteHypertextHelp( documentDirectoryPath, hypertextFileIndex, hyp
 	filePath = os.path.join( documentDirectoryPath, fileName )
 	fileText = gcodec.getFileText( fileName )
 	fileText = getWrappedHypertext( fileText, hypertextFileIndex, hypertextFiles )
-	if fileText.find( 'This page is in the table of contents.' ) > - 1:
-		fileText = fileText.replace( 'This page is in the table of contents.', '' )
+	if fileText.find('This page is in the table of contents.') > - 1:
+		fileText = fileText.replace('This page is in the table of contents.', '')
 		transferredFileNames.append( fileName )
 	gcodec.writeFileText( filePath, fileText )
 	os.remove( fileName )
@@ -136,53 +136,53 @@ def removeFilesInDirectory( directoryPath ):
 def writeContentsFile( documentDirectoryPath, hypertextFiles ):
 	"Write the contents file."
 	output = cStringIO.StringIO()
-	output.write( '<html>\n  <head>\n    <title>Contents</title>\n  </head>\n  <body>\n' )
-	navigationLine = getNavigationLine( 'Contents', 'Previous', getNextLinkText( hypertextFiles, 0 ) )
+	output.write('<html>\n  <head>\n    <title>Contents</title>\n  </head>\n  <body>\n')
+	navigationLine = getNavigationLine('Contents', 'Previous', getNextLinkText( hypertextFiles, 0 ) )
 	output.write( navigationLine )
 	for hypertextFile in hypertextFiles:
 		writeContentsLine( hypertextFile, output )
 	output.write( navigationLine )
-	output.write( '  </body>\n</html>\n' )
-	filePath = os.path.join( documentDirectoryPath, 'contents.html' )
+	output.write('  </body>\n</html>\n')
+	filePath = os.path.join( documentDirectoryPath, 'contents.html')
 	gcodec.writeFileText( filePath, output.getvalue() )
 
 def writeContentsLine( hypertextFile, output ):
 	"Write a line of the contents file."
-	summarizedFileName = hypertextFile[ : hypertextFile.rfind( '.' ) ]
-	numberOfDots = summarizedFileName.count( '.' )
+	summarizedFileName = hypertextFile[ : hypertextFile.rfind('.') ]
+	numberOfDots = summarizedFileName.count('.')
 	prefixSpaces = '&nbsp;&nbsp;' * numberOfDots
 	if numberOfDots > 0:
-		summarizedFileName = summarizedFileName[ summarizedFileName.rfind( '.' ) + 1 : ]
+		summarizedFileName = summarizedFileName[ summarizedFileName.rfind('.') + 1 : ]
 	capitalizedSummarizedFileName = settings.getEachWordCapitalized( summarizedFileName )
-	output.write( '%s<a href="%s">%s</a><br>\n' % ( prefixSpaces, hypertextFile, capitalizedSummarizedFileName ) )
+	output.write('%s<a href="%s">%s</a><br>\n' % ( prefixSpaces, hypertextFile, capitalizedSummarizedFileName ) )
 
 def writeHypertext():
 	"Run pydoc, then read, write and delete each of the files."
 	shellCommand = 'pydoc -w ./'
 	commandResult = os.system( shellCommand )
 	if commandResult != 0:
-		print( 'Failed to execute the following command in writeHypertext in docwrap.' )
+		print('Failed to execute the following command in writeHypertext in docwrap.')
 		print( shellCommand )
-	hypertextFiles = gcodec.getFilesWithFileTypeWithoutWords( 'html' )
+	hypertextFiles = gcodec.getFilesWithFileTypeWithoutWords('html')
 	if len( hypertextFiles ) <= 0:
-		print( 'Failed to find any help files in writeHypertext in docwrap.' )
+		print('Failed to find any help files in writeHypertext in docwrap.')
 		return
-	documentDirectoryPath = gcodec.getAbsoluteFolderPath( hypertextFiles[ 0 ], 'documentation' )
+	documentDirectoryPath = gcodec.getAbsoluteFolderPath( hypertextFiles[0], 'documentation')
 	removeFilesInDirectory( documentDirectoryPath )
 	sortedReplaceFiles = []
 	for hypertextFile in hypertextFiles:
-		sortedReplaceFiles.append( hypertextFile.replace( '.html', '. html' ) )
+		sortedReplaceFiles.append( hypertextFile.replace('.html', '. html') )
 	sortedReplaceFiles.sort()
 	hypertextFiles = []
 	for sortedReplaceFile in sortedReplaceFiles:
-		hypertextFiles.append( sortedReplaceFile.replace( '. html', '.html' ) )
+		hypertextFiles.append( sortedReplaceFile.replace('. html', '.html') )
 	transferredFileNames = []
 	for hypertextFileIndex in xrange( len( hypertextFiles ) ):
 		readWriteDeleteHypertextHelp( documentDirectoryPath, hypertextFileIndex, hypertextFiles, transferredFileNames )
 	for transferredFileNameIndex in xrange( len( transferredFileNames ) ):
 		readWriteNavigationHelp( documentDirectoryPath, transferredFileNameIndex, transferredFileNames )
 	writeContentsFile( documentDirectoryPath, transferredFileNames )
-	print( '%s files were wrapped.' % len( transferredFileNames ) )
+	print('%s files were wrapped.' % len( transferredFileNames ) )
 
 
 def main():

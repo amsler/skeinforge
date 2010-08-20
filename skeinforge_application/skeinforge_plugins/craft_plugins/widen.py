@@ -37,7 +37,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the widen dialog.
 
 
->>> widen.writeOutput( 'Screw Holder Bottom.stl' )
+>>> widen.writeOutput('Screw Holder Bottom.stl')
 The widen tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -80,7 +80,7 @@ def getCraftedText( fileName, text = '', repository = None ):
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Widen the preface gcode text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'widen' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'widen'):
 		return gcodeText
 	if repository == None:
 		repository = settings.getReadRepository( WidenRepository() )
@@ -118,26 +118,26 @@ def getWidenedLoop( loop, loopList, outsetLoop, radius ):
 	intersectingWithinLoops = getIntersectingWithinLoops( loop, loopList, outsetLoop )
 	if len( intersectingWithinLoops ) < 1:
 		return loop
-	loopsUnified = booleansolid.getLoopsUnified( radius, [ [ loop ], intersectingWithinLoops ] )
+	loopsUnified = booleansolid.getLoopsUnified( radius, [ [loop], intersectingWithinLoops ] )
 	if len( loopsUnified ) < 1:
 		return loop
 	return euclidean.getLargestLoop( loopsUnified )
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Widen the carving of a gcode file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'widen' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'widen')
 
 
 class WidenRepository:
 	"A class to handle the widen settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.widen.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Widen', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Widen' )
-		self.activateWiden = settings.BooleanSetting().getFromValue( 'Activate Widen:', self, False )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.widen.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Widen', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Widen')
+		self.activateWiden = settings.BooleanSetting().getFromValue('Activate Widen:', self, False )
 		self.executeTitle = 'Widen'
 
 	def execute( self ):
@@ -162,13 +162,13 @@ class WidenSkein:
 		clockwiseInsetLoops = []
 		for loopIndex in xrange( len( loops ) ):
 			loop = loops[ loopIndex ]
-			if euclidean.isWiddershins( loop ):
+			if euclidean.isWiddershins(loop):
 				otherLoops = loops[ : loopIndex ] + loops[ loopIndex + 1 : ]
-				leftPoint = euclidean.getLeftPoint( loop )
+				leftPoint = euclidean.getLeftPoint(loop)
 				if getIsPointInsideALoop( otherLoops, leftPoint ):
 					self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
 				else:
-					widdershinsLoops.append( loop )
+					widdershinsLoops.append(loop)
 			else:
 				clockwiseInsetLoops += intercircle.getInsetLoopsFromLoop( self.doublePerimeterWidth, loop )
 				self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
@@ -180,41 +180,41 @@ class WidenSkein:
 	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the widen gcode."
 		self.repository = repository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseLine( line )
+		for line in self.lines[self.lineIndex :]:
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'widen' )
+				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'widen')
 			elif firstWord == '(<extrusion>)':
-				self.distanceFeedRate.addLine( line )
+				self.distanceFeedRate.addLine(line)
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[ 1 ] )
+				self.perimeterWidth = float( splitLine[1] )
 				self.doublePerimeterWidth = 2.0 * self.perimeterWidth
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the widen skein."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == '(<boundaryPoint>':
 			location = gcodec.getLocationFromSplitLine( None, splitLine )
 			self.boundary.append( location.dropAxis( 2 ) )
 		elif firstWord == '(<layer>':
-			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float( splitLine[ 1 ] ) )
-			self.distanceFeedRate.addLine( line )
+			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float( splitLine[1] ) )
+			self.distanceFeedRate.addLine(line)
 		elif firstWord == '(</layer>)':
 			self.addWiden( self.rotatedBoundaryLayer )
 			self.rotatedBoundaryLayer = None
@@ -222,13 +222,13 @@ class WidenSkein:
 			self.boundary = []
 			self.rotatedBoundaryLayer.loops.append( self.boundary )
 		if self.rotatedBoundaryLayer == None:
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the widen dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

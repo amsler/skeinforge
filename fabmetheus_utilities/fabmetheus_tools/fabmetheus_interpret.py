@@ -52,12 +52,12 @@ def getFirstTranslatorFileNameUnmodified( fileName ):
 	if len( unmodified ) == 0:
 		print( "There are no unmodified gcode files in this folder." )
 		return ''
-	return unmodified[ 0 ]
+	return unmodified[0]
 
 def getGNUTranslatorGcodeFileTypeTuples():
 	"Get the file type tuples from the translators in the import plugins folder plus gcode."
 	fileTypeTuples = getTranslatorFileTypeTuples()
-	fileTypeTuples.append( ( 'Gcode text files', '*.gcode' ) )
+	fileTypeTuples.append( ('Gcode text files', '*.gcode') )
 	fileTypeTuples.sort()
 	return fileTypeTuples
 
@@ -79,7 +79,7 @@ def getInterpretPlugin( fileName ):
 			pluginModule = gcodec.getModuleWithDirectoryPath( importPluginsDirectoryPath, importPluginFileName )
 			if pluginModule != None:
 				return pluginModule
-	print( 'Could not find plugin to handle ' + fileName )
+	print('Could not find plugin to handle ' + fileName )
 	return None
 
 def getNewRepository():
@@ -88,7 +88,7 @@ def getNewRepository():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'interpret_plugins' )
+	return gcodec.getAbsoluteFolderPath( __file__, 'interpret_plugins')
 
 def getTranslatorFileTypeTuples():
 	"Get the file types from the translators in the import plugins folder."
@@ -113,13 +113,13 @@ def getWindowAnalyzeFile( fileName ):
 	repository = settings.getReadRepository( InterpretRepository() )
 	if repository.printInterpretion.value:
 		print( interpretGcode )
-	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_interpret.' + carving.getInterpretationSuffix()
+	suffixFileName = fileName[ : fileName.rfind('.') ] + '_interpret.' + carving.getInterpretationSuffix()
 	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
+	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, interpretGcode )
-	print( 'The interpret file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took %s to interpret the file.' % euclidean.getDurationString( time.time() - startTime ) )
+	print('The interpret file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('It took %s to interpret the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	textProgram = repository.textProgram.value
 	if textProgram == '':
 		return None
@@ -128,25 +128,25 @@ def getWindowAnalyzeFile( fileName ):
 		return None
 	textFilePath = '"' + os.path.normpath( suffixFileName ) + '"' # " to send in file name with spaces
 	shellCommand = textProgram + ' ' + textFilePath
-	print( 'Sending the shell command:' )
+	print('Sending the shell command:')
 	print( shellCommand )
 	commandResult = os.system( shellCommand )
 	if commandResult != 0:
-		print( 'It may be that the system could not find the %s program.' % textProgram )
-		print( 'If so, try installing the %s program or look for another one, like Open Office which can be found at:' % textProgram )
-		print( 'http://www.openoffice.org/' )
-		print( 'Open office writer can then be started from the command line with the command "soffice -writer".' )
+		print('It may be that the system could not find the %s program.' % textProgram )
+		print('If so, try installing the %s program or look for another one, like Open Office which can be found at:' % textProgram )
+		print('http://www.openoffice.org/')
+		print('Open office writer can then be started from the command line with the command "soffice -writer".')
 
 
 class InterpretRepository:
 	"A class to handle the interpret settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.interpret.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Interpret', self, '' )
-		self.activateInterpret = settings.BooleanSetting().getFromValue( 'Activate Interpret', self, False )
-		self.printInterpretion = settings.BooleanSetting().getFromValue( 'Print Interpretion', self, False )
-		self.textProgram = settings.StringSetting().getFromValue( 'Text Program:', self, 'webbrowser' )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.interpret.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Interpret', self, '')
+		self.activateInterpret = settings.BooleanSetting().getFromValue('Activate Interpret', self, False )
+		self.printInterpretion = settings.BooleanSetting().getFromValue('Print Interpretion', self, False )
+		self.textProgram = settings.StringSetting().getFromValue('Text Program:', self, 'webbrowser')
 		self.executeTitle = 'Interpret'
 
 	def execute( self ):

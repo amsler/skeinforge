@@ -49,7 +49,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the lash dialog.
 
 
->>> lash.writeOutput( 'Screw Holder Bottom.stl' )
+>>> lash.writeOutput('Screw Holder Bottom.stl')
 The lash tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -82,7 +82,7 @@ def getCraftedText( fileName, text, lashRepository = None ):
 
 def getCraftedTextFromText( gcodeText, lashRepository = None ):
 	"Get a lashed gcode linear move text from text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'lash' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'lash'):
 		return gcodeText
 	if lashRepository == None:
 		lashRepository = settings.getReadRepository( LashRepository() )
@@ -94,21 +94,21 @@ def getNewRepository():
 	"Get the repository constructor."
 	return LashRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Lash a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'lash' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'lash')
 
 
 class LashRepository:
 	"A class to handle the lash settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.lash.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Lash', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash' )
-		self.activateLash = settings.BooleanSetting().getFromValue( 'Activate Lash', self, False )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.lash.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Lash', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash')
+		self.activateLash = settings.BooleanSetting().getFromValue('Activate Lash', self, False )
 		self.xBacklash = settings.FloatSpin().getFromValue( 0.1, 'X Backlash (mm):', self, 0.5, 0.2 )
 		self.yBacklash = settings.FloatSpin().getFromValue( 0.1, 'Y Backlash (mm):', self, 0.5, 0.3 )
 		self.executeTitle = 'Lash'
@@ -131,14 +131,14 @@ class LashSkein:
 
 	def getCraftedGcode( self, gcodeText, lashRepository ):
 		"Parse gcode text and store the lash gcode."
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.lashRepository = lashRepository
 		self.xBacklash = lashRepository.xBacklash.value
 		self.yBacklash = lashRepository.yBacklash.value
 		self.parseInitialization()
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			self.parseLash( line )
+			self.parseLash(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getLashedLine( self, line, location, splitLine ):
@@ -159,31 +159,31 @@ class LashSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> lash </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> lash </procedureDone>)')
 				return
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLash( self, line ):
 		"Parse a gcode line and add it to the lash skein."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 			line = self.getLashedLine( line, location, splitLine )
 			self.oldLocation = location
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the lash dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

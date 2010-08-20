@@ -20,10 +20,10 @@ def processElse( xmlElement, xmlProcessor ):
 	"Process the else statement."
 	functions = xmlProcessor.functions
 	if len( functions ) < 1:
-		print( 'Warning, "else" element is not in a function in processElse in else.py for:' )
-		print( xmlElement )
+		print('Warning, "else" element is not in a function in processElse in else.py for:')
+		print(xmlElement)
 		return
-	functions[ - 1 ].processChildren( xmlElement )
+	functions[ - 1 ].processChildren(xmlElement)
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."

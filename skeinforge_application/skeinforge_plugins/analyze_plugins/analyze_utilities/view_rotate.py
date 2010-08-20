@@ -80,7 +80,7 @@ class ViewpointRotate( MouseToolBase ):
 		self.keyStartCanvasCoordinate = None
 		self.relativeLatitude = 0.0
 		self.relativeLongitude = 0.5 * math.pi
-		self.canvas.delete( 'mouse_item' )
+		self.canvas.delete('mouse_item')
 
 	def getMoveCoordinate( self ):
 		"Get the movement coordinate from the class relative latitude and longitude."
@@ -152,7 +152,7 @@ class ViewpointRotate( MouseToolBase ):
 		motionPressedScreen = self.window.getScreenComplex( motionPressedStart )
 		motionColorName = '#4B0082'
 		motionWidth = 9
-		self.canvas.delete( 'mouse_item' )
+		self.canvas.delete('mouse_item')
 		if abs( latitudeLongitude.deltaLongitude ) > 0.0:
 			self.canvas.create_arc(
 				buttonOnePressedCornerBottomLeft.real,
@@ -188,7 +188,7 @@ class ViewpointRotate( MouseToolBase ):
 		"Move the viewpoint given the move coordinates."
 		if abs( startCoordinate - moveCoordinate ) < 3:
 			startCoordinate = None
-			self.canvas.delete( 'mouse_item' )
+			self.canvas.delete('mouse_item')
 			return
 		latitudeLongitude = LatitudeLongitude( startCoordinate, moveCoordinate, self.window, shift )
 		self.repository.viewpointLatitude.value = latitudeLongitude.latitude

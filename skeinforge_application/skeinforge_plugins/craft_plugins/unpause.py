@@ -45,7 +45,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the unpause dialog.
 
 
->>> unpause.writeOutput( 'Screw Holder Bottom.stl' )
+>>> unpause.writeOutput('Screw Holder Bottom.stl')
 The unpause tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -80,7 +80,7 @@ def getCraftedText( fileName, text, repository = None ):
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Unpause a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'unpause' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'unpause'):
 		return gcodeText
 	if repository == None:
 		repository = settings.getReadRepository( UnpauseRepository() )
@@ -99,21 +99,21 @@ def getSelectedPlugin( repository ):
 			return plugin
 	return None
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Unpause a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'unpause' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'unpause')
 
 
 class UnpauseRepository:
 	"A class to handle the unpause settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.unpause.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Unpause' )
-		self.activateUnpause = settings.BooleanSetting().getFromValue( 'Activate Unpause', self, False )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.unpause.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Unpause')
+		self.activateUnpause = settings.BooleanSetting().getFromValue('Activate Unpause', self, False )
 		self.delay = settings.FloatSpin().getFromValue( 2.0, 'Delay (milliseconds):', self, 42.0, 28.0 )
 		self.maximumSpeed = settings.FloatSpin().getFromValue( 1.1, 'Maximum Speed (ratio):', self, 1.9, 1.3 )
 		self.executeTitle = 'Unpause'
@@ -141,11 +141,11 @@ class UnpauseSkein:
 		self.maximumSpeed = repository.maximumSpeed.value
 		self.minimumSpeedUpReciprocal = 1.0 / self.maximumSpeed
 		self.repository = repository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			self.parseLine( line )
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getUnpausedFeedRateMinute( self, location, splitLine ):
@@ -171,9 +171,9 @@ class UnpauseSkein:
 		location = self.oldLocation + relativeLocation
 		self.oldLocation = location
 		halfPlaneLineDistance = 0.5 * abs( relativeLocation.dropAxis( 2 ) )
-		radius = gcodec.getDoubleFromCharacterSplitLine( 'R', splitLine )
+		radius = gcodec.getDoubleFromCharacterSplitLine('R', splitLine )
 		if radius == None:
-			relativeCenter = complex( gcodec.getDoubleFromCharacterSplitLine( 'I', splitLine ), gcodec.getDoubleFromCharacterSplitLine( 'J', splitLine ) )
+			relativeCenter = complex( gcodec.getDoubleFromCharacterSplitLine('I', splitLine ), gcodec.getDoubleFromCharacterSplitLine('J', splitLine ) )
 			radius = abs( relativeCenter )
 		angle = 0.0
 		if radius > 0.0:
@@ -183,7 +183,7 @@ class UnpauseSkein:
 			else:
 				angle *= halfPlaneLineDistance / radius
 		deltaZ = abs( relativeLocation.z )
-		arcDistanceZ = complex( abs( angle ) * radius, relativeLocation.z )
+		arcDistanceZ = complex( abs(angle) * radius, relativeLocation.z )
 		distance = abs( arcDistanceZ )
 		if distance <= 0.0:
 			return ''
@@ -201,31 +201,31 @@ class UnpauseSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> unpause </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> unpause </procedureDone>)')
 				return
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			line = self.getUnpausedLinearMovement( line, splitLine )
 		if firstWord == 'G2' or firstWord == 'G3':
 			line = self.getUnpausedArcMovement( line, splitLine )
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the unpause dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

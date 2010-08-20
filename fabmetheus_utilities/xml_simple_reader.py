@@ -10,7 +10,7 @@ This example gets an xml tree for the xml file boolean.xml.  This example is run
 Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
 [GCC 4.2.1 (SUSE Linux)] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
->>> file = open( 'boolean.xml', 'r' )
+>>> file = open('boolean.xml', 'r')
 >>> xmlText = file.read()
 >>> file.close()
 >>> from xml_simple_reader import XMLSimpleReader
@@ -65,7 +65,7 @@ class XMLElement:
 	def addAttribute( self, beforeQuote, withinQuote ):
 		"Add the attribute to the dictionary."
 		beforeQuote = beforeQuote.strip()
-		lastEqualIndex = beforeQuote.rfind( '=' )
+		lastEqualIndex = beforeQuote.rfind('=')
 		if lastEqualIndex < 0:
 			return
 		key = beforeQuote[ : lastEqualIndex ].strip()
@@ -79,9 +79,9 @@ class XMLElement:
 		"Add to the id dictionary if the id key exists in the attribute dictionary."
 		self.importName = self.getCascadeImportName()
 		if 'id' in self.attributeDictionary:
-			self.addToIDDictionary( self.getImportNameWithDot() + self.attributeDictionary[ 'id' ], self )
+			self.addToIDDictionary( self.getImportNameWithDot() + self.attributeDictionary['id'], self )
 		if 'name' in self.attributeDictionary:
-			self.addToNameDictionary( self.getImportNameWithDot() + self.attributeDictionary[ 'name' ], self )
+			self.addToNameDictionary( self.getImportNameWithDot() + self.attributeDictionary['name'], self )
 
 	def addToNameDictionary( self, name, xmlElement ):
 		"Add to the name dictionary of all the XMLProcessor."
@@ -137,7 +137,7 @@ class XMLElement:
 		copy.attributeDictionary = self.attributeDictionary.copy()
 		if idSuffix != '':
 			if 'id' in copy.attributeDictionary:
-				copy.attributeDictionary[ 'id' ] = copy.attributeDictionary[ 'id' ] + idSuffix
+				copy.attributeDictionary['id'] = copy.attributeDictionary['id'] + idSuffix
 		copy.className = self.className
 		copy.text = self.text
 		copy.addToIDDictionaryIFIDExists()
@@ -155,7 +155,7 @@ class XMLElement:
 		"Get the id suffix from the dictionary."
 		suffix = self.className
 		if 'id' in self.attributeDictionary:
-			suffix = self.attributeDictionary[ 'id' ]
+			suffix = self.attributeDictionary['id']
 		if elementIndex == None:
 			return '_%s' % suffix
 		return '_%s_%s' % ( suffix, elementIndex )
@@ -168,24 +168,24 @@ class XMLElement:
 
 	def getParentParseReplacedLine( self, line, lineStripped, parent ):
 		"Parse replaced line and return the parent."
-		if lineStripped[ : len( '<!--' ) ] == '<!--':
+		if lineStripped[ : len('<!--') ] == '<!--':
 			self.className = '_comment'
 			self.text = line + '\n'
 			self.setParentAddToChildren( parent )
 			return parent
-		if lineStripped[ : len( '</' ) ] == '</':
+		if lineStripped[ : len('</') ] == '</':
 			if parent == None:
 				return parent
 			return parent.parent
 		self.setParentAddToChildren( parent )
-		cdataBeginIndex = lineStripped.find( '<![CDATA[' )
+		cdataBeginIndex = lineStripped.find('<![CDATA[')
 		if cdataBeginIndex != - 1:
-			cdataEndIndex = lineStripped.rfind( ']]>' )
+			cdataEndIndex = lineStripped.rfind(']]>')
 			if cdataEndIndex != - 1:
-				cdataEndIndex += len( ']]>' )
+				cdataEndIndex += len(']]>')
 				self.text = lineStripped[ cdataBeginIndex : cdataEndIndex ]
 				lineStripped = lineStripped[ : cdataBeginIndex ] + lineStripped[ cdataEndIndex : ]
-		self.className = lineStripped[ 1 : lineStripped.replace( '>', ' ' ).replace( '\n', ' ' ).find( ' ' ) ]
+		self.className = lineStripped[ 1 : lineStripped.replace('>', ' ').replace('\n', ' ').find(' ') ]
 		lastWord = lineStripped[ - 2 : ]
 		lineAfterClassName = lineStripped[ 2 + len( self.className ) : - 1 ]
 		beforeQuote = ''
@@ -213,7 +213,7 @@ class XMLElement:
 		tagEnd = '</%s>' % self.className
 		if lineStripped[ - len( tagEnd ) : ] == tagEnd:
 			untilTagEnd = lineStripped[ : - len( tagEnd ) ]
-			lastGreaterThanIndex = untilTagEnd.rfind( '>' )
+			lastGreaterThanIndex = untilTagEnd.rfind('>')
 			self.text += untilTagEnd[ lastGreaterThanIndex + 1 : ]
 			return parent
 		return self
@@ -242,7 +242,7 @@ class XMLElement:
 		"Get the child which has the idReference."
 		for child in self.children:
 			if 'bf:id' in child.attributeDictionary:
-				if child.attributeDictionary[ 'bf:id' ] == idReference:
+				if child.attributeDictionary['bf:id'] == idReference:
 					return child
 			subChildWithID = child.getSubChildWithID( idReference )
 			if subChildWithID != None:
@@ -283,16 +283,23 @@ class XMLElement:
 		"Get the xmlProcessor."
 		return self.getRoot().xmlProcessor
 
+	def removeChildrenFromIDNameParent( self ):
+		"Remove the children from the id and name dictionaries and the children list."
+		childrenCopy = self.children[:]
+		for child in childrenCopy:
+			child.removeFromIDNameParent()
+
 	def removeFromIDNameParent( self ):
 		"Remove this from the id and name dictionaries and the children of the parent."
+		self.removeChildrenFromIDNameParent()
 		if 'id' in self.attributeDictionary:
 			idDictionary = self.getRoot().idDictionary
-			idKey = self.getImportNameWithDot() + self.attributeDictionary[ 'id' ]
+			idKey = self.getImportNameWithDot() + self.attributeDictionary['id']
 			if idKey in idDictionary:
 				del idDictionary[ idKey ]
 		if 'name' in self.attributeDictionary:
 			nameDictionary = self.getRoot().nameDictionary
-			nameKey = self.getImportNameWithDot() + self.attributeDictionary[ 'name' ]
+			nameKey = self.getImportNameWithDot() + self.attributeDictionary['name']
 			if nameKey in nameDictionary:
 				del nameDictionary[ nameKey ]
 		if self.parent != None:
@@ -332,7 +339,7 @@ class XMLSimpleReader:
 		lineStripped = line.strip()
 		if len( lineStripped ) < 1:
 			return
-		if lineStripped.startswith( '<?xml' ):
+		if lineStripped.startswith('<?xml'):
 			return
 		xmlElement = XMLElement()
 		self.parent = xmlElement.getParentParseReplacedLine( line, lineStripped, self.parent )

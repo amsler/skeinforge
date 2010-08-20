@@ -38,28 +38,30 @@ class Cylinder( cube.Cube ):
 		"Create the shape."
 		polygonBottom = []
 		polygonTop = []
-		sides = max( int( evaluate.getSides( max( self.inradius.x, self.inradius.y ), self.xmlElement ) ), 3 )
-		sideAngle = 2.0 * math.pi / float( sides )
-		for side in xrange( sides ):
-			angle = float( side ) * sideAngle
-			unitComplex = euclidean.getWiddershinsUnitPolar( angle )
-			pointBottom = complex( unitComplex.real * self.inradius.x, unitComplex.imag * self.inradius.y )
-			polygonBottom.append( pointBottom )
+		sides = evaluate.getSidesMinimumThree(max(self.inradius.x, self.inradius.y), self.xmlElement )
+		sideAngle = 2.0 * math.pi / sides
+		for side in xrange(int(sides)):
+			angle = float(side) * sideAngle
+			unitComplex = euclidean.getWiddershinsUnitPolar(angle)
+			pointBottom = complex(unitComplex.real * self.inradius.x, unitComplex.imag * self.inradius.y)
+			polygonBottom.append(pointBottom)
 			if self.topOverBottom > 0.0:
-				polygonTop.append( pointBottom * self.topOverBottom )
+				polygonTop.append(pointBottom * self.topOverBottom)
 		if self.topOverBottom <= 0.0:
-			polygonTop.append( complex() )
-		bottomTopPolygon = [ trianglemesh.getAddIndexedLoop( polygonBottom, self.vertices, - self.inradius.z ), trianglemesh.getAddIndexedLoop( polygonTop, self.vertices, self.inradius.z ) ]
-		trianglemesh.addPillarFromConvexLoops( self.faces, bottomTopPolygon )
+			polygonTop.append(complex())
+		bottomTopPolygon = [
+			trianglemesh.getAddIndexedLoop(polygonBottom, self.vertices, - self.inradius.z),
+			trianglemesh.getAddIndexedLoop(polygonTop, self.vertices, self.inradius.z)]
+		trianglemesh.addPillarFromConvexLoops(self.faces, bottomTopPolygon)
 
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		self.inradius = evaluate.getVector3ByPrefixes( [ 'demisize', 'inradius', 'radius' ], Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
-		self.inradius = evaluate.getVector3ByMultiplierPrefixes( 2.0, [ 'diameter', 'size' ], self.inradius, self.xmlElement )
+		self.inradius = evaluate.getVector3ByPrefixes( ['demisize', 'inradius', 'radius'], Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
+		self.inradius = evaluate.getVector3ByMultiplierPrefixes( 2.0, ['diameter', 'size'], self.inradius, self.xmlElement )
 		self.inradius.z = 0.5 * evaluate.getEvaluatedFloatDefault( self.inradius.z + self.inradius.z, 'height', self.xmlElement )
-		self.topOverBottom = evaluate.getEvaluatedFloatOne( 'topoverbottom', self.xmlElement )
-		self.xmlElement.attributeDictionary[ 'height' ] = self.inradius.z + self.inradius.z
-		self.xmlElement.attributeDictionary[ 'radius.x' ] = self.inradius.x
-		self.xmlElement.attributeDictionary[ 'radius.y' ] = self.inradius.y
-		self.xmlElement.attributeDictionary[ 'topoverbottom' ] = self.topOverBottom
+		self.topOverBottom = evaluate.getEvaluatedFloatOne('topoverbottom', self.xmlElement )
+		self.xmlElement.attributeDictionary['height'] = self.inradius.z + self.inradius.z
+		self.xmlElement.attributeDictionary['radius.x'] = self.inradius.x
+		self.xmlElement.attributeDictionary['radius.y'] = self.inradius.y
+		self.xmlElement.attributeDictionary['topoverbottom'] = self.topOverBottom
 		self.createShape()

@@ -20,7 +20,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	if xmlElement.object == None:
 		if 'condition' in xmlElement.attributeDictionary:
-			value = xmlElement.attributeDictionary[ 'condition' ]
+			value = xmlElement.attributeDictionary['condition']
 			xmlElement.object = evaluate.getEvaluatorSplitWords( value )
 		else:
 			xmlElement.object = []
@@ -30,4 +30,4 @@ def processXMLElement( xmlElement, xmlProcessor ):
 		return
 	function = xmlProcessor.functions[ - 1 ]
 	while evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object, xmlElement ) > 0:
-		function.processChildren( xmlElement )
+		function.processChildren(xmlElement)

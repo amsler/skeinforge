@@ -41,16 +41,16 @@ __license__ = "GPL 3.0"
 def addListsSetCraftProfileArchive( craftSequence, defaultProfile, repository, fileNameHelp ):
 	"Set the craft profile archive."
 	settings.addListsToRepository( fileNameHelp, '', repository )
-	repository.craftSequenceLabel = settings.LabelDisplay().getFromName( 'Craft Sequence: ', repository )
+	repository.craftSequenceLabel = settings.LabelDisplay().getFromName('Craft Sequence: ', repository )
 	craftToolStrings = []
 	for craftTool in craftSequence[ : - 1 ]:
-		craftToolStrings.append( settings.getEachWordCapitalized( craftTool ) + '->' )
+		craftToolStrings.append( settings.getEachWordCapitalized( craftTool ) + '->')
 	craftToolStrings.append( settings.getEachWordCapitalized( craftSequence[ - 1 ] ) )
 	for craftToolStringIndex in xrange( 0, len( craftToolStrings ), 5 ):
 		craftLine = ' '.join( craftToolStrings[ craftToolStringIndex : craftToolStringIndex + 5 ] )
 		settings.LabelDisplay().getFromName( craftLine, repository )
-	settings.LabelDisplay().getFromName( '', repository )
-	repository.profileList = ProfileList().getFromName( 'Profile List:', repository )
+	settings.LabelDisplay().getFromName('', repository )
+	repository.profileList = ProfileList().getFromName('Profile List:', repository )
 	repository.profileListbox = ProfileListboxSetting().getFromListSetting( repository.profileList, 'Profile Selection:', repository, defaultProfile )
 	repository.addListboxSelection = AddProfile().getFromProfileListboxSettingRepository( repository.profileListbox, repository )
 	repository.deleteListboxSelection = DeleteProfile().getFromProfileListboxSettingRepository( repository.profileListbox, repository )
@@ -61,7 +61,7 @@ def addListsSetCraftProfileArchive( craftSequence, defaultProfile, repository, f
 def addListsToCraftTypeRepository( fileNameHelp, repository ):
 	"Add the value to the lists."
 	settings.addListsToRepository( fileNameHelp, getProfileDirectory, repository )
-	dotsMinusOne = fileNameHelp.count( '.' ) - 1
+	dotsMinusOne = fileNameHelp.count('.') - 1
 	x = 0
 	xAddition = 400
 	for step in xrange( dotsMinusOne ):
@@ -74,7 +74,7 @@ def cancelAll():
 	for globalRepositoryDialogValue in settings.getGlobalRepositoryDialogValues():
 		globalRepositoryDialogValue.cancel()
 
-def getCraftTypeName( subName = '' ):
+def getCraftTypeName( subName = ''):
 	"Get the craft type from the profile."
 	profileSettings = getReadProfileRepository()
 	craftTypeName = settings.getSelectedPluginName( profileSettings.craftRadios )
@@ -82,7 +82,7 @@ def getCraftTypeName( subName = '' ):
 		return craftTypeName
 	return os.path.join( craftTypeName, subName )
 
-def getCraftTypePluginModule( craftTypeName = '' ):
+def getCraftTypePluginModule( craftTypeName = ''):
 	"Get the craft type plugin module."
 	if craftTypeName == '':
 		craftTypeName = getCraftTypeName()
@@ -99,7 +99,7 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_plugins', 'profile_plugins' ) )
+	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'profile_plugins') )
 
 def getProfileDirectory():
 	"Get the profile directory."
@@ -130,7 +130,7 @@ class AddProfile:
 		"Add this to the dialog."
 		gridPosition.increment()
 		self.entry = settings.Tkinter.Entry( gridPosition.master )
-		self.entry.bind( '<Return>', self.addSelectionWithEvent )
+		self.entry.bind('<Return>', self.addSelectionWithEvent )
 		self.entry.grid( row = gridPosition.row, column = 1, columnspan = 3, sticky = settings.Tkinter.W )
 		self.addButton = settings.Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', text = 'Add Profile', command = self.addSelection )
 		self.addButton.grid( row = gridPosition.row, column = 0 )
@@ -139,11 +139,11 @@ class AddProfile:
 		"Add the selection of a listbox setting."
 		entryText = self.entry.get()
 		if entryText == '':
-			print( 'To add to the profiles, enter the material name.' )
+			print('To add to the profiles, enter the material name.')
 			return
 		self.profileListboxSetting.listSetting.setValueToFolders()
 		if entryText in self.profileListboxSetting.listSetting.value:
-			print( 'There is already a profile by the name of %s, so no profile will be added.' % entryText )
+			print('There is already a profile by the name of %s, so no profile will be added.' % entryText )
 			return
 		self.entry.delete( 0, settings.Tkinter.END )
 		craftTypeProfileDirectory = settings.getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName )
@@ -185,15 +185,15 @@ class DeleteProfileDialog:
 		self.profileListboxSetting = profileListboxSetting
 		self.root = root
 		self.row = 0
-		root.title( 'Delete Warning' )
+		root.title('Delete Warning')
 		self.gridPosition.increment()
-		self.label = settings.Tkinter.Label( self.root, text = 'Do you want to delete the profile?' )
+		self.label = settings.Tkinter.Label( self.root, text = 'Do you want to delete the profile?')
 		self.label.grid( row = self.row, column = 0, columnspan = 3, sticky = settings.Tkinter.W )
 		columnIndex = 1
-		deleteButton = settings.Tkinter.Button( root, activebackground = 'black', activeforeground = 'red', command = self.delete, fg = 'red', text = 'Delete' )
+		deleteButton = settings.Tkinter.Button( root, activebackground = 'black', activeforeground = 'red', command = self.delete, fg = 'red', text = 'Delete')
 		deleteButton.grid( row = self.row, column = columnIndex )
 		columnIndex += 1
-		noButton = settings.Tkinter.Button( root, activebackground = 'black', activeforeground = 'darkgreen', command = self.no, fg = 'darkgreen', text = 'Do Nothing' )
+		noButton = settings.Tkinter.Button( root, activebackground = 'black', activeforeground = 'darkgreen', command = self.no, fg = 'darkgreen', text = 'Do Nothing')
 		noButton.grid( row = self.row, column = columnIndex )
 
 	def delete( self ):
@@ -205,9 +205,9 @@ class DeleteProfileDialog:
 		lastSelectionIndex = 0
 		currentSelectionTuple = self.profileListboxSetting.listbox.curselection()
 		if len( currentSelectionTuple ) > 0:
-			lastSelectionIndex = int( currentSelectionTuple[ 0 ] )
+			lastSelectionIndex = int( currentSelectionTuple[0] )
 		else:
-			print( 'No profile is selected, so no profile will be deleted.' )
+			print('No profile is selected, so no profile will be deleted.')
 			return
 		settings.deleteDirectory( settings.getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
 		settings.deleteDirectory( getProfilesDirectoryInAboveDirectory( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
@@ -255,13 +255,13 @@ class ProfileListboxSetting( settings.StringSetting ):
 		gridPosition.increment()
 		scrollbar = HiddenScrollbar( gridPosition.master )
 		self.listbox = settings.Tkinter.Listbox( gridPosition.master, selectmode = settings.Tkinter.SINGLE, yscrollcommand = scrollbar.set )
-		self.listbox.bind( '<ButtonRelease-1>', self.buttonReleaseOne )
-		gridPosition.master.bind( '<FocusIn>', self.focusIn )
+		self.listbox.bind('<ButtonRelease-1>', self.buttonReleaseOne )
+		gridPosition.master.bind('<FocusIn>', self.focusIn )
 		scrollbar.config( command = self.listbox.yview )
 		self.listbox.grid( row = gridPosition.row, column = 0, sticky = settings.Tkinter.N + settings.Tkinter.S )
 		scrollbar.grid( row = gridPosition.row, column = 1, sticky = settings.Tkinter.N + settings.Tkinter.S )
 		self.setStateToValue()
-		self.repository.saveListenerTable[ 'updateProfileSaveListeners' ] = updateProfileSaveListeners
+		self.repository.saveListenerTable['updateProfileSaveListeners'] = updateProfileSaveListeners
 
 	def buttonReleaseOne( self, event ):
 		"Button one released."
@@ -300,7 +300,7 @@ class ProfileListboxSetting( settings.StringSetting ):
 		"Set the selection value to the listbox selection."
 		currentSelectionTuple = self.listbox.curselection()
 		if len( currentSelectionTuple ) > 0:
-			self.setValueToIndex( int( currentSelectionTuple[ 0 ] ) )
+			self.setValueToIndex( int( currentSelectionTuple[0] ) )
 
 	def setValueToIndex( self, index ):
 		"Set the selection value to the index."
@@ -314,7 +314,7 @@ class ProfileListboxSetting( settings.StringSetting ):
 			self.value = self.defaultValue
 		if self.getSelectedFolder() == None:
 			if len( self.listSetting.value ) > 0:
-				self.value = self.listSetting.value[ 0 ]
+				self.value = self.listSetting.value[0]
 
 
 class ProfilePluginRadioButtonsSaveListener:
@@ -345,8 +345,8 @@ class ProfileRepository:
 	"A class to handle the profile entities."
 	def __init__( self ):
 		"Set the default entities, execute title & repository fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_utilities.skeinforge_profile.html', '', self )
-		importantFileNames = [ 'extrusion' ]
+		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_profile.html', '', self )
+		importantFileNames = ['extrusion']
 		self.craftRadios = settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		ProfilePluginRadioButtonsSaveListener().getFromRadioPlugins( self.craftRadios, self )
 		for craftRadio in self.craftRadios:
@@ -389,7 +389,7 @@ class ProfileSelectionMenuRadio:
 	def getFromMenuButtonDisplay( self, menuButtonDisplay, name, repository, value ):
 		"Initialize."
 		self.setToMenuButtonDisplay( menuButtonDisplay, name, repository, value )
-		self.valueName = name.replace( '_', ' ' )
+		self.valueName = name.replace('_', ' ')
 		return self
 
 	def setToMenuButtonDisplay( self, menuButtonDisplay, name, repository, value ):

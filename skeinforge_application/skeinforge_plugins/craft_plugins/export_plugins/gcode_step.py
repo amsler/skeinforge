@@ -2,7 +2,7 @@
 This page is in the table of contents.
 Gcode step is an export plugin to convert gcode from float position to number of steps.
 
-An export plugin is a script in the export_plugins folder which has the functions getOutput, isReplaceable and if it's output is not replaceable, writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An export plugin is a script in the export_plugins folder which has the getOutput function, the globalIsReplaceable variable and if it's output is not replaceable, the writeOutput function.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getOutput function of this script takes a gcode text and returns it with the positions converted into number of steps.  The writeOutput function of this script takes a gcode text and writes that with the positions converted into number of steps.
 
@@ -84,6 +84,10 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
+# This is true if the output is text and false if it is binary."
+globalIsReplaceable = True
+
+
 def getCharacterIntegerString( character, offset, splitLine, stepLength ):
 	"Get a character and integer string."
 	floatValue = getFloatFromCharacterSplitLine( character, splitLine )
@@ -101,7 +105,7 @@ def getFloatFromCharacterSplitLine( character, splitLine ):
 	return float( lineFromCharacter )
 
 def getOutput( gcodeText, gcodeStepRepository = None ):
-	"Get the exported version of a gcode file.  This function, isReplaceable and if it's output is not replaceable, writeOutput are the only necessary functions in a skeinforge export plugin."
+	'Get the exported version of a gcode file.'
 	if gcodeText == '':
 		return ''
 	if gcodeStepRepository == None:
@@ -113,19 +117,15 @@ def getNewRepository():
 	"Get the repository constructor."
 	return GcodeStepRepository()
 
-def isReplaceable():
-	"Return whether or not the output from this plugin is replaceable.  This should be true if the output is text and false if it is binary."
-	return True
-
-def writeOutput( fileName, gcodeText = '' ):
+def writeOutput( fileName, gcodeText = ''):
 	"Write the exported version of a gcode file."
 	gcodeText = gcodec.getGcodeFileText( fileName, gcodeText )
 	repository = GcodeStepRepository()
 	settings.getReadRepository( repository )
 	output = getOutput( gcodeText, repository )
-	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_gcode_step.gcode'
+	suffixFileName = fileName[ : fileName.rfind('.') ] + '_gcode_step.gcode'
 	gcodec.writeFileText( suffixFileName, output )
-	print( 'The converted file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('The converted file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 
 
 class GcodeStepRepository:
@@ -133,18 +133,18 @@ class GcodeStepRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		#Set the default settings.
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.gcode_step.html', '', self )
-		self.addFeedRateEvenWhenUnchanging = settings.BooleanSetting().getFromValue( 'Add Feed Rate Even When Unchanging', self, True )
-		self.addSpaceBetweenWords = settings.BooleanSetting().getFromValue( 'Add Space Between Words', self, True )
-		self.addZEvenWhenUnchanging = settings.BooleanSetting().getFromValue( 'Add Z Even When Unchanging', self, True )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Gcode Step', self, '' )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.gcode_step.html', '', self )
+		self.addFeedRateEvenWhenUnchanging = settings.BooleanSetting().getFromValue('Add Feed Rate Even When Unchanging', self, True )
+		self.addSpaceBetweenWords = settings.BooleanSetting().getFromValue('Add Space Between Words', self, True )
+		self.addZEvenWhenUnchanging = settings.BooleanSetting().getFromValue('Add Z Even When Unchanging', self, True )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to be Converted to Gcode Step', self, '')
 		self.feedRateStepLength = settings.FloatSpin().getFromValue( 0.0, 'Feed Rate Step Length (millimeters/second)', self, 1.0, 0.1 )
-		settings.LabelDisplay().getFromName( 'Offset:', self )
+		settings.LabelDisplay().getFromName('Offset:', self )
 		self.xOffset = settings.FloatSpin().getFromValue( - 100.0, 'X Offset (millimeters)', self, 100.0, 0.0 )
 		self.yOffset = settings.FloatSpin().getFromValue( -100.0, 'Y Offset (millimeters)', self, 100.0, 0.0 )
 		self.zOffset = settings.FloatSpin().getFromValue( - 10.0, 'Z Offset (millimeters)', self, 10.0, 0.0 )
 		self.radiusStepLength = settings.FloatSpin().getFromValue( 0.0, 'Radius Step Length (millimeters)', self, 1.0, 0.1 )
-		settings.LabelDisplay().getFromName( 'Step Length:', self )
+		settings.LabelDisplay().getFromName('Step Length:', self )
 		self.xStepLength = settings.FloatSpin().getFromValue( 0.0, 'X Step Length (millimeters)', self, 1.0, 0.1 )
 		self.yStepLength = settings.FloatSpin().getFromValue( 0.0, 'Y Step Length (millimeters)', self, 1.0, 0.1 )
 		self.zStepLength = settings.FloatSpin().getFromValue( 0.0, 'Z Step Length (millimeters)', self, 0.2, 0.01 )
@@ -153,7 +153,7 @@ class GcodeStepRepository:
 
 	def execute( self ):
 		"Convert to gcode step button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [ '.gcode' ], self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, ['.gcode'], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -172,45 +172,45 @@ class GcodeStepSkein:
 
 	def addLine( self, line ):
 		"Add a line of text and a newline to the output."
-		self.output.write( line + '\n' )
+		self.output.write( line + '\n')
 
 	def addStringToLine( self, lineStringIO, wordString ):
 		"Add a character and integer to line string."
 		if wordString == None:
 			return
 		if self.gcodeStepRepository.addSpaceBetweenWords.value:
-			lineStringIO.write( ' ' )
+			lineStringIO.write(' ')
 		lineStringIO.write( wordString )
 
 	def getCraftedGcode( self, gcodeStepRepository, gcodeText ):
 		"Parse gcode text and store the gcode."
 		self.gcodeStepRepository = gcodeStepRepository
-		lines = gcodec.getTextLines( gcodeText )
+		lines = gcodec.getTextLines(gcodeText)
 		for line in lines:
-			self.parseLine( line )
+			self.parseLine(line)
 		return self.output.getvalue()
 
 	def parseLine( self, line ):
 		"Parse a gcode line."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		firstWord = gcodec.getFirstWord( splitLine )
 		if len( firstWord ) < 1:
 			return
-		firstLetter = firstWord[ 0 ]
+		firstLetter = firstWord[0]
 		if firstLetter == '(':
 			return
 		if firstWord != 'G1' and firstWord != 'G2' and firstWord != 'G3':
-			self.addLine( line )
+			self.addLine(line)
 			return
 		lineStringIO = cStringIO.StringIO()
 		lineStringIO.write( firstWord )
-		self.addCharacterInteger( 'I', lineStringIO, 0.0, splitLine, self.gcodeStepRepository.xStepLength.value )
-		self.addCharacterInteger( 'J', lineStringIO, 0.0, splitLine, self.gcodeStepRepository.yStepLength.value )
-		self.addCharacterInteger( 'R', lineStringIO, 0.0, splitLine, self.gcodeStepRepository.radiusStepLength.value )
-		self.addCharacterInteger( 'X', lineStringIO, self.gcodeStepRepository.xOffset.value, splitLine, self.gcodeStepRepository.xStepLength.value )
-		self.addCharacterInteger( 'Y', lineStringIO, self.gcodeStepRepository.yOffset.value, splitLine, self.gcodeStepRepository.yStepLength.value )
-		zString = getCharacterIntegerString( 'Z', self.gcodeStepRepository.zOffset.value, splitLine, self.gcodeStepRepository.zStepLength.value )
-		feedRateString = getCharacterIntegerString( 'F', 0.0, splitLine, self.gcodeStepRepository.feedRateStepLength.value )
+		self.addCharacterInteger('I', lineStringIO, 0.0, splitLine, self.gcodeStepRepository.xStepLength.value )
+		self.addCharacterInteger('J', lineStringIO, 0.0, splitLine, self.gcodeStepRepository.yStepLength.value )
+		self.addCharacterInteger('R', lineStringIO, 0.0, splitLine, self.gcodeStepRepository.radiusStepLength.value )
+		self.addCharacterInteger('X', lineStringIO, self.gcodeStepRepository.xOffset.value, splitLine, self.gcodeStepRepository.xStepLength.value )
+		self.addCharacterInteger('Y', lineStringIO, self.gcodeStepRepository.yOffset.value, splitLine, self.gcodeStepRepository.yStepLength.value )
+		zString = getCharacterIntegerString('Z', self.gcodeStepRepository.zOffset.value, splitLine, self.gcodeStepRepository.zStepLength.value )
+		feedRateString = getCharacterIntegerString('F', 0.0, splitLine, self.gcodeStepRepository.feedRateStepLength.value )
 		if zString != None:
 			if zString != self.oldZString or self.gcodeStepRepository.addZEvenWhenUnchanging.value:
 				self.addStringToLine( lineStringIO, zString )
@@ -225,7 +225,7 @@ class GcodeStepSkein:
 def main():
 	"Display the export dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

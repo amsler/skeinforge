@@ -44,7 +44,7 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def getCarving( fileName = '' ):
+def getCarving( fileName = ''):
 	"Get the triangle mesh for the slc file."
 	return PythonCarving( fileName )
 
@@ -121,7 +121,7 @@ class PythonCarving:
 def main():
 	"Display the inset dialog."
 	if len( sys.argv ) > 1:
-		getCarving( ' '.join( sys.argv[ 1 : ] ) )
+		getCarving(' '.join( sys.argv[ 1 : ] ) )
 
 if __name__ == "__main__":
 	main()

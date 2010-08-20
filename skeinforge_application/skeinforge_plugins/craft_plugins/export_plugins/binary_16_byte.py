@@ -2,7 +2,7 @@
 This page is in the table of contents.
 Binary 16 byte is an export plugin to convert gcode into 16 byte binary segments.
 
-An export plugin is a script in the export_plugins folder which has the functions getOutput, isReplaceable and if it's output is not replaceable, writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An export plugin is a script in the export_plugins folder which has the getOutput function, the globalIsReplaceable variable and if it's output is not replaceable, the writeOutput function.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 The getOutput function of this script takes a gcode text and returns that text converted into 16 byte segments.  The writeOutput function of this script takes a gcode text and writes that in a binary format converted into 16 byte segments.
 
@@ -108,6 +108,11 @@ __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
+
+# This is true if the output is text and false if it is binary."
+globalIsReplaceable = False
+
+
 def getIntegerFromCharacterLengthLineOffset( character, offset, splitLine, stepLength ):
 	"Get the integer after the first occurence of the character in the split line."
 	lineFromCharacter = gcodec.getStringFromCharacterSplitLine( character, splitLine )
@@ -124,7 +129,7 @@ def getIntegerFlagFromCharacterSplitLine( character, splitLine ):
 	return 1
 
 def getOutput( gcodeText, binary16ByteRepository = None ):
-	"Get the exported version of a gcode file.  This function, isReplaceable and if it's output is not replaceable, writeOutput are the only necessary functions in a skeinforge export plugin."
+	'Get the exported version of a gcode file.'
 	if gcodeText == '':
 		return ''
 	if binary16ByteRepository == None:
@@ -136,19 +141,15 @@ def getNewRepository():
 	"Get the repository constructor."
 	return Binary16ByteRepository()
 
-def isReplaceable():
-	"Return whether or not the output from this plugin is replaceable.  This should be true if the output is text and false if it is binary."
-	return False
-
-def writeOutput( fileName, gcodeText = '' ):
+def writeOutput( fileName, gcodeText = ''):
 	"Write the exported version of a gcode file."
 	binary16ByteRepository = Binary16ByteRepository()
 	settings.getReadRepository( binary16ByteRepository )
 	gcodeText = gcodec.getGcodeFileText( fileName, gcodeText )
 	skeinOutput = getOutput( gcodeText, binary16ByteRepository )
-	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '.' + binary16ByteRepository.fileExtension.value
+	suffixFileName = fileName[ : fileName.rfind('.') ] + '.' + binary16ByteRepository.fileExtension.value
 	gcodec.writeFileText( suffixFileName, skeinOutput )
-	print( 'The converted file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('The converted file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
 
 
 class Binary16ByteRepository:
@@ -156,15 +157,15 @@ class Binary16ByteRepository:
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
 		#Set the default settings.
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.binary_16_byte.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to be Converted to Binary 16 Byte', self, '' )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.binary_16_byte.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to be Converted to Binary 16 Byte', self, '')
 		self.feedRateStepLength = settings.FloatSpin().getFromValue( 0.0, 'Feed Rate Step Length (millimeters/second)', self, 1.0, 0.1 )
-		self.fileExtension = settings.StringSetting().getFromValue( 'File Extension:', self, 'bin' )
-		settings.LabelDisplay().getFromName( 'Offset:', self )
+		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, 'bin')
+		settings.LabelDisplay().getFromName('Offset:', self )
 		self.xOffset = settings.FloatSpin().getFromValue( - 100.0, 'X Offset (millimeters)', self, 100.0, 0.0 )
 		self.yOffset = settings.FloatSpin().getFromValue( -100.0, 'Y Offset (millimeters)', self, 100.0, 0.0 )
 		self.zOffset = settings.FloatSpin().getFromValue( - 10.0, 'Z Offset (millimeters)', self, 10.0, 0.0 )
-		settings.LabelDisplay().getFromName( 'Step Length:', self )
+		settings.LabelDisplay().getFromName('Step Length:', self )
 		self.xStepLength = settings.FloatSpin().getFromValue( 0.0, 'X Step Length (millimeters)', self, 1.0, 0.1 )
 		self.yStepLength = settings.FloatSpin().getFromValue( 0.0, 'Y Step Length (millimeters)', self, 1.0, 0.1 )
 		self.zStepLength = settings.FloatSpin().getFromValue( 0.0, 'Z Step Length (millimeters)', self, 0.2, 0.01 )
@@ -173,7 +174,7 @@ class Binary16ByteRepository:
 
 	def execute( self ):
 		"Convert to binary 16 byte button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [ '.gcode' ], self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, ['.gcode'], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
@@ -186,44 +187,44 @@ class Binary16ByteSkein:
 	def getCraftedGcode( self, gcodeText, binary16ByteRepository ):
 		"Parse gcode text and store the gcode."
 		self.binary16ByteRepository = binary16ByteRepository
-		lines = gcodec.getTextLines( gcodeText )
+		lines = gcodec.getTextLines(gcodeText)
 		for line in lines:
-			self.parseLine( line )
+			self.parseLine(line)
 		return self.output.getvalue()
 
 	def parseLine( self, line ):
 		"Parse a gcode line."
 		binary16ByteRepository = self.binary16ByteRepository
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		firstWord = gcodec.getFirstWord( splitLine )
 		if len( firstWord ) < 1:
 			return
-		firstLetter = firstWord[ 0 ]
+		firstLetter = firstWord[0]
 		if firstLetter == '(':
 			return
-		feedRateInteger = getIntegerFromCharacterLengthLineOffset( 'F', 0.0, splitLine, binary16ByteRepository.feedRateStepLength.value )
-		iInteger = getIntegerFromCharacterLengthLineOffset( 'I', 0.0, splitLine, binary16ByteRepository.xStepLength.value )
-		jInteger = getIntegerFromCharacterLengthLineOffset( 'J', 0.0, splitLine, binary16ByteRepository.yStepLength.value )
-		xInteger = getIntegerFromCharacterLengthLineOffset( 'X', binary16ByteRepository.xOffset.value, splitLine, binary16ByteRepository.xStepLength.value )
-		yInteger = getIntegerFromCharacterLengthLineOffset( 'Y', binary16ByteRepository.yOffset.value, splitLine, binary16ByteRepository.yStepLength.value )
-		zInteger = getIntegerFromCharacterLengthLineOffset( 'Z', binary16ByteRepository.zOffset.value, splitLine, binary16ByteRepository.zStepLength.value )
-		sixteenByteStruct = Struct( 'cBhhhhhhBc' )
-#		print( 'xInteger' )
+		feedRateInteger = getIntegerFromCharacterLengthLineOffset('F', 0.0, splitLine, binary16ByteRepository.feedRateStepLength.value )
+		iInteger = getIntegerFromCharacterLengthLineOffset('I', 0.0, splitLine, binary16ByteRepository.xStepLength.value )
+		jInteger = getIntegerFromCharacterLengthLineOffset('J', 0.0, splitLine, binary16ByteRepository.yStepLength.value )
+		xInteger = getIntegerFromCharacterLengthLineOffset('X', binary16ByteRepository.xOffset.value, splitLine, binary16ByteRepository.xStepLength.value )
+		yInteger = getIntegerFromCharacterLengthLineOffset('Y', binary16ByteRepository.yOffset.value, splitLine, binary16ByteRepository.yStepLength.value )
+		zInteger = getIntegerFromCharacterLengthLineOffset('Z', binary16ByteRepository.zOffset.value, splitLine, binary16ByteRepository.zStepLength.value )
+		sixteenByteStruct = Struct('cBhhhhhhBc')
+#		print('xInteger')
 #		print( xInteger )
-		flagInteger = getIntegerFlagFromCharacterSplitLine( 'X', splitLine )
-		flagInteger += 2 * getIntegerFlagFromCharacterSplitLine( 'Y', splitLine )
-		flagInteger += 4 * getIntegerFlagFromCharacterSplitLine( 'Z', splitLine )
-		flagInteger += 8 * getIntegerFlagFromCharacterSplitLine( 'I', splitLine )
-		flagInteger += 16 * getIntegerFlagFromCharacterSplitLine( 'J', splitLine )
-		flagInteger += 32 * getIntegerFlagFromCharacterSplitLine( 'F', splitLine )
-		packedString = sixteenByteStruct.pack( firstLetter, int( firstWord[ 1 : ] ), xInteger, yInteger, zInteger, iInteger, jInteger, feedRateInteger, flagInteger, '#' )
+		flagInteger = getIntegerFlagFromCharacterSplitLine('X', splitLine )
+		flagInteger += 2 * getIntegerFlagFromCharacterSplitLine('Y', splitLine )
+		flagInteger += 4 * getIntegerFlagFromCharacterSplitLine('Z', splitLine )
+		flagInteger += 8 * getIntegerFlagFromCharacterSplitLine('I', splitLine )
+		flagInteger += 16 * getIntegerFlagFromCharacterSplitLine('J', splitLine )
+		flagInteger += 32 * getIntegerFlagFromCharacterSplitLine('F', splitLine )
+		packedString = sixteenByteStruct.pack( firstLetter, int( firstWord[ 1 : ] ), xInteger, yInteger, zInteger, iInteger, jInteger, feedRateInteger, flagInteger, '#')
 		self.output.write( packedString )
 
 
 def main():
 	"Display the export dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

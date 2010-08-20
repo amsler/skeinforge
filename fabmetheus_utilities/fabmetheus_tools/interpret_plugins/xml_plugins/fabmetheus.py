@@ -55,68 +55,31 @@ def getCarvingFromParser( xmlParser ):
 	root.xmlProcessor.processChildren( booleanGeometryElement )
 	return booleanGeometryElement.object
 
-def getGeometryToolsDirectoryPath():
-	"Get the plugins directory path."
-	return os.path.join( evaluate.getGeometryDirectoryPath(), 'geometry_tools' )
-
-def getManipulationDirectoryPath():
-	"Get the manipulation directory path."
-	return os.path.join( evaluate.getGeometryDirectoryPath(), 'manipulation' )
-
-def getManipulationEvaluatorDirectoryPath():
-	"Get the manipulation from evaluator directory path."
-	return os.path.join( evaluate.getGeometryDirectoryPath(), 'manipulation_evaluator' )
-
-def getManipulationEvaluatorToolsDirectoryPath():
-	"Get the manipulation from evaluator tools directory path."
-	return os.path.join( evaluate.getGeometryDirectoryPath(), 'manipulation_evaluator_tools' )
-
-def getManipulationPathsDirectoryPath():
-	"Get the manipulation paths directory path."
-	return os.path.join( evaluate.getGeometryDirectoryPath(), 'manipulation_paths' )
-
-def getManipulationShapesDirectoryPath():
-	"Get the manipulation shapes directory path."
-	return os.path.join( evaluate.getGeometryDirectoryPath(), 'manipulation_shapes' )
-
-def getSolidsDirectoryPath():
-	"Get the plugins directory path."
-	return os.path.join( evaluate.getGeometryDirectoryPath(), 'solids' )
-
-def getStatementsDirectoryPath():
-	"Get the statements directory path."
-	return os.path.join( evaluate.getGeometryDirectoryPath(), 'statements' )
-
 
 class XMLBooleanGeometryProcessor():
 	"A class to process xml boolean geometry elements."
 	def __init__(self):
 		"Initialize processor."
 		self.functions = []
-		self.manipulationEvaluatorDictionary = {}
-		settings.addToNamePathDictionary(getManipulationEvaluatorDirectoryPath(), self.manipulationEvaluatorDictionary)
-		settings.addToNamePathDictionary(getManipulationEvaluatorToolsDirectoryPath(), self.manipulationEvaluatorDictionary)
-		self.manipulationPathDictionary = {}
-		settings.addToNamePathDictionary(getManipulationPathsDirectoryPath(), self.manipulationPathDictionary)
-		self.manipulationShapeDictionary = {}
-		settings.addToNamePathDictionary(getManipulationShapesDirectoryPath(), self.manipulationShapeDictionary)
+		self.manipulationEvaluatorDictionary = evaluate.getGeometryDictionary('manipulation_evaluator')
+		self.manipulationPathDictionary = evaluate.getGeometryDictionary('manipulation_paths')
+		self.manipulationShapeDictionary = evaluate.getGeometryDictionary('manipulation_shapes')
 		self.namePathDictionary = {}
+		self.namePathDictionary.update(evaluate.globalCreationDictionary)
+		self.namePathDictionary.update(evaluate.getGeometryDictionary('manipulation'))
 		self.namePathDictionary.update(self.manipulationEvaluatorDictionary)
 		self.namePathDictionary.update(self.manipulationPathDictionary)
-		settings.addToNamePathDictionary(evaluate.getCreationDirectoryPath(), self.namePathDictionary)
-		settings.addToNamePathDictionary(evaluate.getCreationToolsDirectoryPath(), self.namePathDictionary)
-		settings.addToNamePathDictionary(getManipulationDirectoryPath(), self.namePathDictionary)
 		self.namePathDictionary.update(self.manipulationShapeDictionary)
-		settings.addToNamePathDictionary(getGeometryToolsDirectoryPath(), self.namePathDictionary)
-		settings.addToNamePathDictionary(getSolidsDirectoryPath(), self.namePathDictionary)
-		settings.addToNamePathDictionary(getStatementsDirectoryPath(), self.namePathDictionary)
+		settings.addToNamePathDictionary(evaluate.getGeometryDirectoryPath('geometry_tools'), self.namePathDictionary)
+		settings.addToNamePathDictionary(evaluate.getGeometryDirectoryPath('solids'), self.namePathDictionary)
+		settings.addToNamePathDictionary(evaluate.getGeometryDirectoryPath('statements'), self.namePathDictionary)
 
 	def convertXMLElement( self, geometryOutput, xmlElement ):
 		"Convert the xml element."
 		geometryOutputKeys = geometryOutput.keys()
 		if len( geometryOutputKeys ) < 1:
 			return None
-		firstKey = geometryOutputKeys[ 0 ]
+		firstKey = geometryOutputKeys[0]
 		lowerClassName = firstKey.lower()
 		if lowerClassName not in self.namePathDictionary:
 			return None
@@ -149,8 +112,8 @@ class XMLBooleanGeometryProcessor():
 		try:
 			return pluginModule.processXMLElement( xmlElement, self )
 		except:
-			print( 'Warning, could not processXMLElement in fabmetheus for:' )
+			print('Warning, could not processXMLElement in fabmetheus for:')
 			print( pluginModule )
-			print( xmlElement )
+			print(xmlElement)
 			traceback.print_exc( file = sys.stdout )
 		return None

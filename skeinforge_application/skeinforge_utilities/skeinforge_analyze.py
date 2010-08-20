@@ -28,9 +28,9 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_plugins', 'analyze_plugins' ) )
+	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'analyze_plugins') )
 
-def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
+def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Analyze a gcode file."
 	gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
 	pluginFileNames = getPluginFileNames()
@@ -41,16 +41,16 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
 			try:
 				pluginModule.writeOutput( fileName, fileNameSuffix, gcodeText )
 			except:
-				print( 'Warning, the tool %s could not analyze the output.' % pluginFileName )
+				print('Warning, the tool %s could not analyze the output.' % pluginFileName )
 
 
 class AnalyzeRepository:
 	"A class to handle the analyze settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_utilities.skeinforge_analyze.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Analyze', self, '' )
-		importantFileNames = [ 'skeinview', 'behold', 'statistic' ]
+		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_analyze.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Analyze', self, '')
+		importantFileNames = ['skeinview', 'behold', 'statistic']
 		settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		self.executeTitle = 'Analyze'
 

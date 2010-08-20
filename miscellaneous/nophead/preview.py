@@ -2,15 +2,15 @@ import sys
 try:
     import Tkinter
 except:
-    print( 'You do not have Tkinter, which is needed for the graphical interface.' )
-    print( 'Information on how to download Tkinter is at:\nwww.tcl.tk/software/tcltk/' )
+    print('You do not have Tkinter, which is needed for the graphical interface.')
+    print('Information on how to download Tkinter is at:\nwww.tcl.tk/software/tcltk/')
 try:
     from layers import *
     from gRead import *
     import ImageTk
 except:
-    print( 'You do not have the Python Imaging Library, which is needed by preview and gifview to view the gcode.' )
-    print( 'The Python Imaging Library can be downloaded from:\nwww.pythonware.com/products/pil/' )
+    print('You do not have the Python Imaging Library, which is needed by preview and gifview to view the gcode.')
+    print('The Python Imaging Library can be downloaded from:\nwww.pythonware.com/products/pil/')
 
 class Preview:
     def __init__(self, layers):
@@ -56,14 +56,14 @@ class Preview:
         self.update()
 
 
-def viewGif( fileName, gcodeText = '' ):
+def viewGif( fileName, gcodeText = ''):
     layers = []
     try:
         gRead(fileName, layers, gcodeText)
         Preview(layers)
     except Exception, why:
-        print( 'Preview failed: ' + str( why ) )
+        print('Preview failed: ' + str( why ) )
 
 
 if __name__ == "__main__":
-    viewGif( ' '.join( sys.argv[ 1 : ] ) )
+    viewGif(' '.join( sys.argv[ 1 : ] ) )

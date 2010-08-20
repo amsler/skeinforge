@@ -7,9 +7,9 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.creation_tools import lineation
+from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
+from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -134,16 +134,16 @@ def equateSphericalDotRadius( point, returnValue ):
 
 def equateVerticesByFunction( equationFunction, points, prefix, revolutions, xmlElement ):
 	"Get equated points by equation function."
-	prefixedEquationName = prefix + equationFunction.__name__[ len( 'equate' ) : ].replace( 'Dot', '.' ).lower()
+	prefixedEquationName = prefix + equationFunction.__name__[ len('equate') : ].replace('Dot', '.').lower()
 	if prefixedEquationName not in xmlElement.attributeDictionary:
 		return
 	equationResult = EquationResult( prefixedEquationName, revolutions, xmlElement )
 	for point in points:
 		returnValue = equationResult.getReturnValue( point )
 		if returnValue == None:
-			print( 'Warning, returnValue in alterVerticesByEquation in equation is None for:' )
+			print('Warning, returnValue in alterVerticesByEquation in equation is None for:')
 			print( point )
-			print( xmlElement )
+			print(xmlElement)
 		else:
 			equationFunction( point, returnValue )
 	equationResult.function.reset()
@@ -151,7 +151,7 @@ def equateVerticesByFunction( equationFunction, points, prefix, revolutions, xml
 def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 	"Get equated paths."
 	equatePoints( loop, prefix, 0.0, xmlElement )
-	return [ loop ]
+	return [loop]
 
 def getManipulatedGeometryOutput( geometryOutput, xmlElement ):
 	"Get equated geometryOutput."
@@ -171,17 +171,17 @@ class EquationResult:
 		"Get return value."
 		if self.function == None:
 			return point
-		self.function.localDictionary[ 'azimuth' ] = math.degrees( math.atan2( point.y, point.x ) )
-		self.function.localDictionary[ 'radius' ] = abs( point.dropAxis() )
+		self.function.localDictionary['azimuth'] = math.degrees( math.atan2( point.y, point.x ) )
+		self.function.localDictionary['radius'] = abs( point.dropAxis() )
 		if self.revolutions != None:
 			if len( self.points ) > 0:
 				self.revolutions += 0.5 / math.pi * euclidean.getAngleAroundZAxisDifference( point, self.points[ - 1 ] )
-			self.function.localDictionary[ 'revolutions' ] = self.revolutions
-		self.function.localDictionary[ 'vertex' ] = point
-		self.function.localDictionary[ 'vertexes' ] = self.points
-		self.function.localDictionary[ 'vertexindex' ] = len( self.points )
-		self.function.localDictionary[ 'x' ] = point.x
-		self.function.localDictionary[ 'y' ] = point.y
-		self.function.localDictionary[ 'z' ] = point.z
+			self.function.localDictionary['revolutions'] = self.revolutions
+		self.function.localDictionary['vertex'] = point
+		self.function.localDictionary['vertexes'] = self.points
+		self.function.localDictionary['vertexindex'] = len( self.points )
+		self.function.localDictionary['x'] = point.x
+		self.function.localDictionary['y'] = point.y
+		self.function.localDictionary['z'] = point.z
 		self.points.append( point )
 		return self.function.getReturnValueWithoutDeletion()

@@ -32,7 +32,7 @@ def getNewRepository():
 
 def parseLineReplace( firstWordTable, line, output ):
 	"Parse the line and replace it if the first word of the line is in the first word table."
-	firstWord = gcodec.getFirstWordFromLine( line )
+	firstWord = gcodec.getFirstWordFromLine(line)
 	if firstWord in firstWordTable:
 		line = firstWordTable[ firstWord ]
 	gcodec.addLineAndNewlineIfNecessary( line, output )
@@ -42,40 +42,40 @@ class ScalableVectorGraphicsRepository:
 	"A class to handle the export settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', '', self )
-		self.fileExtension = settings.StringSetting().getFromValue( 'File Extension:', self, '' )
-		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', '', self )
+		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, '')
+		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
 
 	def addCanvasLineToOutput( self, canvasLinesOutput, objectIDNumber ):
 		"Add the canvas line to the output."
 		coordinates = self.canvas.coords( objectIDNumber )
-		xBegin = coordinates[ 0 ] - self.boxW
-		xEnd = coordinates[ 2 ] - self.boxW
-		yBegin = coordinates[ 1 ] - self.boxN
-		yEnd = coordinates[ 3 ] - self.boxN
+		xBegin = coordinates[0] - self.boxW
+		xEnd = coordinates[2] - self.boxW
+		yBegin = coordinates[1] - self.boxN
+		yEnd = coordinates[3] - self.boxN
 		west = self.boxW
-		color = self.canvas.itemcget( objectIDNumber, 'fill' )
-		width = self.canvas.itemcget( objectIDNumber, 'width' )
+		color = self.canvas.itemcget( objectIDNumber, 'fill')
+		width = self.canvas.itemcget( objectIDNumber, 'width')
 		line = '<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-width="%spx"/>\n' % ( xBegin, yBegin, xEnd, yEnd, color, width )
-		canvasLinesOutput.write( line + '\n' )
+		canvasLinesOutput.write( line + '\n')
 
 	def execute( self ):
 		"Export the canvas as an svg file."
 		svgFileName = gcodec.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )
 		boundingBox = self.canvas.bbox( settings.Tkinter.ALL ) # tuple (w, n, e, s)
-		self.boxW = boundingBox[ 0 ]
-		self.boxN = boundingBox[ 1 ]
-		boxWidth = boundingBox[ 2 ] - self.boxW
-		boxHeight = boundingBox[ 3 ] - self.boxN
-		print( 'Exported svg file saved as ' + svgFileName )
-		svgTemplateText = gcodec.getFileTextInFileDirectory( settings.__file__, os.path.join( 'templates', 'canvas_template.svg' ) )
+		self.boxW = boundingBox[0]
+		self.boxN = boundingBox[1]
+		boxWidth = boundingBox[2] - self.boxW
+		boxHeight = boundingBox[3] - self.boxN
+		print('Exported svg file saved as ' + svgFileName )
+		svgTemplateText = gcodec.getFileTextInFileDirectory( settings.__file__, os.path.join('templates', 'canvas_template.svg') )
 		output = cStringIO.StringIO()
 		lines = gcodec.getTextLines( svgTemplateText )
 		firstWordTable = {}
-		firstWordTable[ 'height="999px"' ] = '		height="%spx"' % int( round( boxHeight ) )
-		firstWordTable[ '<!--replaceLineWith_coloredLines-->' ] = self.getCanvasLinesOutput()
-		firstWordTable[ 'replaceLineWithTitle' ] = gcodec.getSummarizedFileName( self.fileName )
-		firstWordTable[ 'width="999px"' ] = '		width="%spx"' % int( round( boxWidth ) )
+		firstWordTable['height="999px"'] = '		height="%spx"' % int( round( boxHeight ) )
+		firstWordTable['<!--replaceLineWith_coloredLines-->'] = self.getCanvasLinesOutput()
+		firstWordTable['replaceLineWithTitle'] = gcodec.getSummarizedFileName( self.fileName )
+		firstWordTable['width="999px"'] = '		width="%spx"' % int( round( boxWidth ) )
 		for line in lines:
 			parseLineReplace( firstWordTable, line, output )
 		gcodec.writeFileText( svgFileName, output.getvalue() )
@@ -88,25 +88,25 @@ class ScalableVectorGraphicsRepository:
 			return
 		svgFilePath = '"' + os.path.normpath( svgFileName ) + '"' # " to send in file name with spaces
 		shellCommand = svgViewer + ' ' + svgFilePath
-		print( '' )
+		print('')
 		if fileExtension == '':
-			print( 'Sending the shell command:' )
+			print('Sending the shell command:')
 			print( shellCommand )
 			commandResult = os.system( shellCommand )
 			if commandResult != 0:
-				print( 'It may be that the system could not find the %s program.' % svgViewer )
-				print( 'If so, try installing the %s program or look for another svg viewer, like Netscape which can be found at:' % svgViewer )
-				print( 'http://www.netscape.org/' )
+				print('It may be that the system could not find the %s program.' % svgViewer )
+				print('If so, try installing the %s program or look for another svg viewer, like Netscape which can be found at:' % svgViewer )
+				print('http://www.netscape.org/')
 			return
-		convertedFileName = gcodec.getFilePathWithUnderscoredBasename( svgFilePath, '.' + fileExtension + '"' )
+		convertedFileName = gcodec.getFilePathWithUnderscoredBasename( svgFilePath, '.' + fileExtension + '"')
 		shellCommand += ' ' + convertedFileName
-		print( 'Sending the shell command:' )
+		print('Sending the shell command:')
 		print( shellCommand )
 		commandResult = os.system( shellCommand )
 		if commandResult != 0:
-			print( 'The %s program could not convert the svg to the %s file format.' % ( svgViewer, fileExtension ) )
-			print( 'Try installing the %s program or look for another one, like Image Magick which can be found at:' % svgViewer )
-			print( 'http://www.imagemagick.org/script/index.php' )
+			print('The %s program could not convert the svg to the %s file format.' % ( svgViewer, fileExtension ) )
+			print('Try installing the %s program or look for another one, like Image Magick which can be found at:' % svgViewer )
+			print('http://www.imagemagick.org/script/index.php')
 
 	def getCanvasLinesOutput( self ):
 		"Add the canvas line to the output."

@@ -41,7 +41,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the lift dialog.
 
 
->>> lift.writeOutput( 'Screw Holder Bottom.stl' )
+>>> lift.writeOutput('Screw Holder Bottom.stl')
 The lift tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -79,7 +79,7 @@ def getCraftedText( fileName, text = '', liftRepository = None ):
 
 def getCraftedTextFromText( gcodeText, liftRepository = None ):
 	"Lift the preface gcode text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'lift' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'lift'):
 		return gcodeText
 	if liftRepository == None:
 		liftRepository = settings.getReadRepository( LiftRepository() )
@@ -91,20 +91,20 @@ def getNewRepository():
 	"Get the repository constructor."
 	return LiftRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Lift the carving of a gcode file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'lift' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'lift')
 
 
 class LiftRepository:
 	"A class to handle the lift settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.lift.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lifted', self, '' )
-		self.activateLift = settings.BooleanSetting().getFromValue( 'Activate Lift:', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.lift.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lifted', self, '')
+		self.activateLift = settings.BooleanSetting().getFromValue('Activate Lift:', self, True )
 		self.cuttingLiftOverLayerStep = settings.FloatSpin().getFromValue( - 1.0, 'Cutting Lift over Layer Step (ratio):', self, 1.0, - 0.5 )
 		self.clearanceAboveTop = settings.FloatSpin().getFromValue( 0.0, 'Clearance above Top (mm):', self, 10.0, 5.0 )
 		self.executeTitle = 'Lift'
@@ -138,7 +138,7 @@ class LiftSkein:
 	def getCraftedGcode( self, liftRepository, gcodeText ):
 		"Parse gcode text and store the lift gcode."
 		self.liftRepository = liftRepository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
 		self.oldLocation = None
 		if self.layerStep == None:
@@ -146,8 +146,8 @@ class LiftSkein:
 		self.cuttingLift = self.layerStep * liftRepository.cuttingLiftOverLayerStep.value
 		self.setMaximumZ()
 		self.travelZ = self.maximumZ + 0.5 * self.layerStep + liftRepository.clearanceAboveTop.value
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseLine( line )
+		for line in self.lines[self.lineIndex :]:
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getLinearMove( self, line, location, splitLine ):
@@ -167,24 +167,24 @@ class LiftSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ].lstrip()
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'lift' )
+				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'lift')
 				return
 			elif firstWord == '(<layerThickness>':
-				self.layerThickness = float( splitLine[ 1 ] )
+				self.layerThickness = float( splitLine[1] )
 			elif firstWord == '(<layerStep>':
-				self.layerStep = float( splitLine[ 1 ] )
-			self.distanceFeedRate.addLine( line )
+				self.layerStep = float( splitLine[1] )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the lift skein."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 			line = self.getLinearMove( line, location, splitLine )
@@ -195,13 +195,13 @@ class LiftSkein:
 			self.extruderActive = True
 		elif firstWord == 'M103':
 			self.extruderActive = False
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 	def setMaximumZ( self ):
 		"Set maximum  z."
 		localOldLocation = None
-		for line in self.lines[ self.lineIndex : ]:
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		for line in self.lines[self.lineIndex :]:
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( localOldLocation, splitLine )
@@ -212,7 +212,7 @@ class LiftSkein:
 def main():
 	"Display the lift dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

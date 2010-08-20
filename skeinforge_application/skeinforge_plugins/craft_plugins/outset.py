@@ -30,7 +30,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the outset dialog.
 
 
->>> outset.writeOutput( 'Screw Holder Bottom.stl' )
+>>> outset.writeOutput('Screw Holder Bottom.stl')
 The outset tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -71,7 +71,7 @@ def getCraftedText( fileName, text = '', repository = None ):
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Outset the preface gcode text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'outset' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'outset'):
 		return gcodeText
 	if repository == None:
 		repository = settings.getReadRepository( OutsetRepository() )
@@ -83,20 +83,20 @@ def getNewRepository():
 	"Get the repository constructor."
 	return OutsetRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Outset the carving of a gcode file.  If no fileName is specified, outset the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'outset' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'outset')
 
 
 class OutsetRepository:
 	"A class to handle the outset settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.outset.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Outset', self, '' )
-		self.activateOutset = settings.BooleanSetting().getFromValue( 'Activate Outset:', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.outset.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Outset', self, '')
+		self.activateOutset = settings.BooleanSetting().getFromValue('Activate Outset:', self, True )
 		self.executeTitle = 'Outset'
 
 	def execute( self ):
@@ -119,8 +119,8 @@ class OutsetSkein:
 		boundary = intercircle.getLargestInsetLoopFromLoopRegardless( loop, radius )
 		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
 		self.distanceFeedRate.addPerimeterBlock( loop, z )
-		self.distanceFeedRate.addLine( '(</boundaryPerimeter>)' )
-		self.distanceFeedRate.addLine( '(</surroundingLoop>)' )
+		self.distanceFeedRate.addLine('(</boundaryPerimeter>)')
+		self.distanceFeedRate.addLine('(</surroundingLoop>)')
 
 	def addOutset( self, rotatedBoundaryLayer ):
 		"Add outset to the layer."
@@ -132,7 +132,7 @@ class OutsetSkein:
 	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the bevel gcode."
 		self.repository = repository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			self.parseLine( lineIndex )
@@ -142,31 +142,31 @@ class OutsetSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ].lstrip()
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addTagBracketedLine( 'procedureDone', 'outset' )
+				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'outset')
 			elif firstWord == '(<perimeterWidth>':
-				self.absoluteHalfPerimeterWidth = 0.5 * abs( float( splitLine[ 1 ] ) )
+				self.absoluteHalfPerimeterWidth = 0.5 * abs( float( splitLine[1] ) )
 			elif firstWord == '(<layer>':
 				self.lineIndex -= 1
 				return
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, lineIndex ):
 		"Parse a gcode line and add it to the outset skein."
 		line = self.lines[ lineIndex ].lstrip()
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == '(<boundaryPoint>':
 			location = gcodec.getLocationFromSplitLine( None, splitLine )
 			self.boundary.append( location.dropAxis( 2 ) )
 		elif firstWord == '(<layer>':
-			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float( splitLine[ 1 ] ) )
-			self.distanceFeedRate.addLine( line )
+			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float( splitLine[1] ) )
+			self.distanceFeedRate.addLine(line)
 		elif firstWord == '(</layer>)':
 			self.addOutset( self.rotatedBoundaryLayer )
 			self.rotatedBoundaryLayer = None
@@ -174,13 +174,13 @@ class OutsetSkein:
 			self.boundary = []
 			self.rotatedBoundaryLayer.loops.append( self.boundary )
 		if self.rotatedBoundaryLayer == None:
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the outset dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

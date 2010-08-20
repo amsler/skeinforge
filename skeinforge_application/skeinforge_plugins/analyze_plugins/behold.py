@@ -230,7 +230,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the behold dialog.
 
 
->>> behold.getWindowAnalyzeFile( 'Screw Holder_penultimate.gcode' )
+>>> behold.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
 This brings up the behold viewer to view the gcode file.
 
 """
@@ -292,7 +292,7 @@ def getWindowGivenTextRepository( fileName, gcodeText, repository ):
 	skein.parseGcode( fileName, gcodeText, repository )
 	return SkeinWindow( repository, skein )
 
-def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
+def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Write a beholded gcode file for a skeinforge gcode file, if 'Activate Behold' is selected."
 	repository = settings.getReadRepository( BeholdRepository() )
 	if repository.activateBehold.value:
@@ -304,45 +304,45 @@ class BeholdRepository( tableau.TableauRepository ):
 	"A class to handle the behold settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.behold.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File for Behold', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold' )
-		self.activateBehold = settings.BooleanSetting().getFromValue( 'Activate Behold', self, True )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.behold.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Behold', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold')
+		self.activateBehold = settings.BooleanSetting().getFromValue('Activate Behold', self, True )
 		self.addAnimation()
-		self.axisRulings = settings.BooleanSetting().getFromValue( 'Axis Rulings', self, True )
+		self.axisRulings = settings.BooleanSetting().getFromValue('Axis Rulings', self, True )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Banding -', self )
+		settings.LabelDisplay().getFromName('- Banding -', self )
 		self.bandHeight = settings.IntSpinUpdate().getFromValue( 0, 'Band Height (layers):', self, 10, 5 )
 		self.bottomBandBrightness = settings.FloatSpinUpdate().getFromValue( 0.0, 'Bottom Band Brightness (ratio):', self, 1.0, 0.7 )
 		self.bottomLayerBrightness = settings.FloatSpinUpdate().getFromValue( 0.0, 'Bottom Layer Brightness (ratio):', self, 1.0, 1.0 )
-		self.brightBandStart = settings.MenuButtonDisplay().getFromName( 'Bright Band Start:', self )
+		self.brightBandStart = settings.MenuButtonDisplay().getFromName('Bright Band Start:', self )
 		self.fromTheBottom = settings.MenuRadio().getFromMenuButtonDisplay( self.brightBandStart, 'From the Bottom', self, False )
 		self.fromTheTop = settings.MenuRadio().getFromMenuButtonDisplay( self.brightBandStart, 'From the Top', self, True )
 		settings.LabelSeparator().getFromRepository( self )
-		self.drawArrows = settings.BooleanSetting().getFromValue( 'Draw Arrows', self, False )
-		self.goAroundExtruderOffTravel = settings.BooleanSetting().getFromValue( 'Go Around Extruder Off Travel', self, False )
+		self.drawArrows = settings.BooleanSetting().getFromValue('Draw Arrows', self, False )
+		self.goAroundExtruderOffTravel = settings.BooleanSetting().getFromValue('Go Around Extruder Off Travel', self, False )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Layers -', self )
+		settings.LabelDisplay().getFromName('- Layers -', self )
 		self.layer = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
 		self.layerExtraSpan = settings.IntSpinUpdate().getSingleIncrementFromValue( - 912345678, 'Layer Extra Span (integer):', self, 912345678, 912345678 )
 		settings.LabelSeparator().getFromRepository( self )
 		self.line = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
-		self.mouseMode = settings.MenuButtonDisplay().getFromName( 'Mouse Mode:', self )
+		self.mouseMode = settings.MenuButtonDisplay().getFromName('Mouse Mode:', self )
 		self.displayLine = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
 		self.viewMove = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Move', self, False )
 		self.viewRotate = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Rotate', self, False )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Number of Fill Layers -', self )
+		settings.LabelDisplay().getFromName('- Number of Fill Layers -', self )
 		self.numberOfFillBottomLayers = settings.IntSpinUpdate().getFromValue( 0, 'Number of Fill Bottom Layers (integer):', self, 5, 1 )
 		self.numberOfFillTopLayers = settings.IntSpinUpdate().getFromValue( 0, 'Number of Fill Top Layers (integer):', self, 5, 1 )
 		settings.LabelSeparator().getFromRepository( self )
 		self.addScaleScreenSlide()
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Viewpoint -', self )
+		settings.LabelDisplay().getFromName('- Viewpoint -', self )
 		self.viewpointLatitude = settings.FloatSpin().getFromValue( 0.0, 'Viewpoint Latitude (degrees):', self, 180.0, 15.0 )
 		self.viewpointLongitude = settings.FloatSpin().getFromValue( 0.0, 'Viewpoint Longitude (degrees):', self, 360.0, 210.0 )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Width -', self )
+		settings.LabelDisplay().getFromName('- Width -', self )
 		self.widthOfAxisNegativeSide = settings.IntSpinUpdate().getFromValue( 0, 'Width of Axis Negative Side (pixels):', self, 10, 2 )
 		self.widthOfAxisPositiveSide = settings.IntSpinUpdate().getFromValue( 0, 'Width of Axis Positive Side (pixels):', self, 10, 6 )
 		self.widthOfFillBottomThread = settings.IntSpinUpdate().getFromValue( 0, 'Width of Fill Bottom Thread (pixels):', self, 10, 2 )
@@ -449,7 +449,7 @@ class BeholdSkein:
 		'Move a colored thread to the skein pane.'
 		if len( self.coloredThread ) <= 0:
 			return
-		layerZoneIndex = self.getLayerZoneIndex( self.coloredThread[ 0 ].z )
+		layerZoneIndex = self.getLayerZoneIndex( self.coloredThread[0].z )
 		if not self.extruderActive:
 			self.setColoredThread( ( 190.0, 190.0, 190.0 ), self.skeinPane.travelLines ) #grey
 			return
@@ -476,10 +476,10 @@ class BeholdSkein:
 
 	def parseCorner( self, line ):
 		"Parse a gcode line and use the location to update the bounding corners."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			self.linearCorner( splitLine )
 		elif firstWord == 'M101':
@@ -487,9 +487,9 @@ class BeholdSkein:
 		elif firstWord == 'M103':
 			self.extruderActive = False
 		elif firstWord == '(<layer>':
-			self.layerTopZ = float( splitLine[ 1 ] ) + self.thirdLayerThickness
+			self.layerTopZ = float( splitLine[1] ) + self.thirdLayerThickness
 		elif firstWord == '(<layerThickness>':
-			self.thirdLayerThickness = 0.33333333333 * float( splitLine[ 1 ] )
+			self.thirdLayerThickness = 0.33333333333 * float( splitLine[1] )
 		elif firstWord == '(<surroundingLoop>)':
 			if self.layerTopZ > self.getLayerTop():
 				self.layerTops.append( self.layerTopZ )
@@ -500,14 +500,14 @@ class BeholdSkein:
 		self.fileName = fileName
 		self.gcodeText = gcodeText
 		self.initializeActiveLocation()
-		self.cornerHigh = Vector3( - 999999999.0, - 999999999.0, - 999999999.0 )
-		self.cornerLow = Vector3( 999999999.0, 999999999.0, 999999999.0 )
+		self.cornerHigh = Vector3(-999999999.0, -999999999.0, -999999999.0)
+		self.cornerLow = Vector3(999999999.0, 999999999.0, 999999999.0)
 		self.goAroundExtruderOffTravel = repository.goAroundExtruderOffTravel.value
-		self.lines = gcodec.getTextLines( gcodeText )
-		self.isThereALayerStartWord = gcodec.isThereAFirstWord( '(<layer>', self.lines, 1 )
+		self.lines = gcodec.getTextLines(gcodeText)
+		self.isThereALayerStartWord = gcodec.isThereAFirstWord('(<layer>', self.lines, 1 )
 		self.parseInitialization()
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseCorner( line )
+		for line in self.lines[self.lineIndex :]:
+			self.parseCorner(line)
 		if len( self.layerTops ) > 0:
 			self.layerTops[ - 1 ] += 912345678.9
 		if len( self.layerTops ) > 1:
@@ -528,25 +528,25 @@ class BeholdSkein:
 		self.initializeActiveLocation()
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			self.parseLine( line )
+			self.parseLine(line)
 
 	def parseInitialization( self ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
-				self.feedRateMinute = 60.0 * float( splitLine[ 1 ] )
+				self.feedRateMinute = 60.0 * float( splitLine[1] )
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the vector output."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if self.isLayerStart( firstWord, splitLine ):
 			self.skeinPane = SkeinPane( len( self.skeinPanes ) )
 			self.skeinPanes.append( self.skeinPane )
@@ -569,7 +569,7 @@ class BeholdSkein:
 			self.isLoop = False
 		elif firstWord == '(<perimeter>':
 			self.isPerimeter = True
-			self.isOuter = ( splitLine[ 1 ] == 'outer' )
+			self.isOuter = ( splitLine[1] == 'outer')
 		elif firstWord == '(</perimeter>)':
 			self.moveColoredThreadToSkeinPane()
 			self.isPerimeter = False
@@ -594,9 +594,9 @@ class BeholdSkein:
 			bandIndex = brightZoneIndex / self.repository.bandHeight.value + 1
 		if bandIndex % 2 == 0:
 			multiplier *= self.repository.bottomBandBrightness.value
-		red = settings.getWidthHex( int( colorTuple[ 0 ] * multiplier ), 2 )
-		green = settings.getWidthHex( int( colorTuple[ 1 ] * multiplier ), 2 )
-		blue = settings.getWidthHex( int( colorTuple[ 2 ] * multiplier ), 2 )
+		red = settings.getWidthHex( int( colorTuple[0] * multiplier ), 2 )
+		green = settings.getWidthHex( int( colorTuple[1] * multiplier ), 2 )
+		blue = settings.getWidthHex( int( colorTuple[2] * multiplier ), 2 )
 		coloredLine.colorName = '#%s%s%s' % ( red, green, blue )
 
 	def setColoredThread( self, colorTuple, lineList ):
@@ -636,7 +636,7 @@ class SkeinWindow( tableau.TableauWindow ):
 	def __init__( self, repository, skein ):
 		"Initialize the skein window."
 		self.arrowshape = ( 24, 30, 9 )
-		self.addCanvasMenuRootScrollSkein( repository, skein, '_behold', 'Behold' )
+		self.addCanvasMenuRootScrollSkein( repository, skein, '_behold', 'Behold')
 		self.center = 0.5 * self.screenSize
 		self.motionStippleName = 'gray75'
 		halfCenter = 0.5 * self.center.real
@@ -732,15 +732,15 @@ class SkeinWindow( tableau.TableauWindow ):
 			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineX, projectiveSpace, self.negativeAxisLineX.tagString, self.repository.widthOfAxisNegativeSide.value )
 			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineY, projectiveSpace, self.negativeAxisLineY.tagString, self.repository.widthOfAxisNegativeSide.value )
 		if self.repository.widthOfAxisPositiveSide.value > 0:
-			self.getDrawnColoredLine( 'last', self.positiveAxisLineX, projectiveSpace, self.positiveAxisLineX.tagString, self.repository.widthOfAxisPositiveSide.value )
-			self.getDrawnColoredLine( 'last', self.positiveAxisLineY, projectiveSpace, self.positiveAxisLineY.tagString, self.repository.widthOfAxisPositiveSide.value )
+			self.getDrawnColoredLine('last', self.positiveAxisLineX, projectiveSpace, self.positiveAxisLineX.tagString, self.repository.widthOfAxisPositiveSide.value )
+			self.getDrawnColoredLine('last', self.positiveAxisLineY, projectiveSpace, self.positiveAxisLineY.tagString, self.repository.widthOfAxisPositiveSide.value )
 
 	def drawZAxisLine( self, projectiveSpace ):
 		"Draw the z axis line."
 		if self.repository.widthOfAxisNegativeSide.value > 0:
 			self.getDrawnColoredLineWithoutArrow( self.negativeAxisLineZ, projectiveSpace, self.negativeAxisLineZ.tagString, self.repository.widthOfAxisNegativeSide.value )
 		if self.repository.widthOfAxisPositiveSide.value > 0:
-			self.getDrawnColoredLine( 'last', self.positiveAxisLineZ, projectiveSpace, self.positiveAxisLineZ.tagString, self.repository.widthOfAxisPositiveSide.value )
+			self.getDrawnColoredLine('last', self.positiveAxisLineZ, projectiveSpace, self.positiveAxisLineZ.tagString, self.repository.widthOfAxisPositiveSide.value )
 
 	def getCentered( self, coordinate ):
 		"Get the centered coordinate."
@@ -837,7 +837,7 @@ class SkeinWindow( tableau.TableauWindow ):
 	def printHexadecimalColorName( self, name ):
 		"Print the color name in hexadecimal."
 		colorTuple = self.canvas.winfo_rgb( name )
-		print( '#%s%s%s' % ( settings.getWidthHex( colorTuple[ 0 ], 2 ), settings.getWidthHex( colorTuple[ 1 ], 2 ), settings.getWidthHex( colorTuple[ 2 ], 2 ) ) )
+		print('#%s%s%s' % ( settings.getWidthHex( colorTuple[0], 2 ), settings.getWidthHex( colorTuple[1], 2 ), settings.getWidthHex( colorTuple[2], 2 ) ) )
 
 	def update( self ):
 		"Update the screen."
@@ -874,7 +874,7 @@ class SkeinWindow( tableau.TableauWindow ):
 def main():
 	"Display the behold dialog."
 	if len( sys.argv ) > 1:
-		tableau.startMainLoopFromWindow( getWindowAnalyzeFile( ' '.join( sys.argv[ 1 : ] ) ) )
+		tableau.startMainLoopFromWindow( getWindowAnalyzeFile(' '.join( sys.argv[ 1 : ] ) ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

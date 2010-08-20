@@ -49,7 +49,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the tower dialog.
 
 
->>> tower.writeOutput( 'Screw Holder Bottom.stl' )
+>>> tower.writeOutput('Screw Holder Bottom.stl')
 The tower tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -85,7 +85,7 @@ def getCraftedText( fileName, text, towerRepository = None ):
 
 def getCraftedTextFromText( gcodeText, towerRepository = None ):
 	"Tower a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'tower' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'tower'):
 		return gcodeText
 	if towerRepository == None:
 		towerRepository = settings.getReadRepository( TowerRepository() )
@@ -97,11 +97,11 @@ def getNewRepository():
 	"Get the repository constructor."
 	return TowerRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Tower a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'tower' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'tower')
 
 
 class Island:
@@ -141,10 +141,10 @@ class TowerRepository:
 	"A class to handle the tower settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.tower.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Tower', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Tower' )
-		self.activateTower = settings.BooleanSetting().getFromValue( 'Activate Tower', self, False )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.tower.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Tower', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Tower')
+		self.activateTower = settings.BooleanSetting().getFromValue('Activate Tower', self, False )
 		self.extruderPossibleCollisionConeAngle = settings.FloatSpin().getFromValue( 40.0, 'Extruder Possible Collision Cone Angle (degrees):', self, 80.0, 60.0 )
 		self.maximumTowerHeight = settings.IntSpin().getFromValue( 2, 'Maximum Tower Height (layers):', self, 10, 5 )
 		self.towerStartLayer = settings.IntSpin().getFromValue( 1, 'Tower Start Layer (integer):', self, 5, 1 )
@@ -242,10 +242,10 @@ class TowerSkein:
 
 	def getCraftedGcode( self, gcodeText, towerRepository ):
 		"Parse gcode text and store the tower gcode."
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.towerRepository = towerRepository
 		self.parseInitialization()
-		if gcodec.isThereAFirstWord( '(<operatingLayerEnd>', self.lines, self.lineIndex ):
+		if gcodec.isThereAFirstWord('(<operatingLayerEnd>', self.lines, self.lineIndex ):
 			self.parseUntilOperatingLayer()
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			self.parseLine( lineIndex )
@@ -272,7 +272,7 @@ class TowerSkein:
 	def getTransferClosestSurroundingLoopLines( self, oldOrderedLocation, remainingSurroundingLoops ):
 		"Get and transfer the closest remaining surrounding loop."
 		if len( remainingSurroundingLoops ) > 0:
-			oldOrderedLocation.z = remainingSurroundingLoops[ 0 ].z
+			oldOrderedLocation.z = remainingSurroundingLoops[0].z
 		closestDistance = 999999999999999999.0
 		closestSurroundingLoop = None
 		for remainingSurroundingLoop in remainingSurroundingLoops:
@@ -283,7 +283,7 @@ class TowerSkein:
 		remainingSurroundingLoops.remove( closestSurroundingLoop )
 		hasTravelledHighRoad = False
 		for line in closestSurroundingLoop.lines:
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
@@ -293,7 +293,7 @@ class TowerSkein:
 				if location.z > self.highestZ:
 					self.highestZ = location.z
 				self.oldLocation = location
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 		return closestSurroundingLoop
 
 	def isInsideRemovedOutsideCone( self, island, removedBoundingLoop, untilLayerIndex ):
@@ -315,29 +315,29 @@ class TowerSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> tower </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> tower </procedureDone>)')
 			elif firstWord == '(<layer>':
 				return
 			elif firstWord == '(<layerThickness>':
-				self.minimumBelow = 0.1 * float( splitLine[ 1 ] )
+				self.minimumBelow = 0.1 * float( splitLine[1] )
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[ 1 ] )
+				self.perimeterWidth = float( splitLine[1] )
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float( splitLine[ 1 ] )
-			self.distanceFeedRate.addLine( line )
+				self.travelFeedRatePerMinute = 60.0 * float( splitLine[1] )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, lineIndex ):
 		"Parse a gcode line."
 		line = self.lines[ lineIndex ]
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
-		self.afterExtrusionLines.append( line )
+		firstWord = splitLine[0]
+		self.afterExtrusionLines.append(line)
 		if firstWord == 'M103':
 			self.afterExtrusionLines = []
 		elif firstWord == '(</boundaryPerimeter>)':
@@ -367,22 +367,22 @@ class TowerSkein:
 				self.addThreadLayerIfNone()
 				self.threadLayer.islands.append( self.island )
 		if self.island != None:
-			self.island.lines.append( line )
+			self.island.lines.append(line)
 		if firstWord == '(</surroundingLoop>)':
 			self.afterExtrusionLines = []
 			self.surroundingLoopCount -= 1
 			if self.surroundingLoopCount == 0:
 				self.island = None
 		if len( self.beforeExtrusionLines ) > 0:
-			self.beforeExtrusionLines.append( line )
+			self.beforeExtrusionLines.append(line)
 
 	def parseUntilOperatingLayer( self ):
 		"Parse gcode until the operating layer if there is one."
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 			if firstWord == 'G1':
 				self.oldLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 				if self.oldLocation.z > self.highestZ:
@@ -394,7 +394,7 @@ class TowerSkein:
 def main():
 	"Display the tower dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

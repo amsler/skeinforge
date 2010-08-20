@@ -40,7 +40,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the comment dialog.
 
 
->>> comment.getWindowAnalyzeFile( 'Screw Holder_penultimate.gcode' )
+>>> comment.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
 The commente file is saved as Screw_Holder_penultimate_comment.gcode
 
 """
@@ -73,10 +73,10 @@ def getWindowAnalyzeFile( fileName ):
 def getWindowAnalyzeFileGivenText( fileName, gcodeText ):
 	"Write a commented gcode file for a gcode file."
 	skein = CommentSkein()
-	skein.parseGcode( gcodeText )
-	gcodec.writeFileMessageEnd( '_comment.gcode', fileName, skein.output.getvalue(), 'The commented file is saved as ' )
+	skein.parseGcode(gcodeText)
+	gcodec.writeFileMessageEnd('_comment.gcode', fileName, skein.output.getvalue(), 'The commented file is saved as ')
 
-def writeOutput( fileName, fileNameSuffix, gcodeText = '' ):
+def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Write a commented gcode file for a skeinforge gcode file, if 'Write Commented File for Skeinforge Chain' is selected."
 	repository = settings.getReadRepository( CommentRepository() )
 	if gcodeText == '':
@@ -89,16 +89,16 @@ class CommentRepository:
 	"A class to handle the comment settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.comment.html', '', self )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comment' )
-		self.activateComment = settings.BooleanSetting().getFromValue( 'Activate Comment', self, False )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ( 'Gcode text files', '*.gcode' ) ], 'Open File to Write Comments for', self, '' )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.comment.html', '', self )
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comment')
+		self.activateComment = settings.BooleanSetting().getFromValue('Activate Comment', self, False )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to Write Comments for', self, '')
 		#Create the archive, title of the execute button, title of the dialog & settings fileName.
 		self.executeTitle = 'Write Comments'
 
 	def execute( self ):
 		"Write button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, [ '_comment' ] )
+		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, ['_comment'] )
 		for fileName in fileNames:
 			getWindowAnalyzeFile( fileName )
 
@@ -121,16 +121,16 @@ class CommentSkein:
 
 	def parseGcode( self, gcodeText ):
 		"Parse gcode text and store the commented gcode."
-		lines = gcodec.getTextLines( gcodeText )
+		lines = gcodec.getTextLines(gcodeText)
 		for line in lines:
-			self.parseLine( line )
+			self.parseLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the commented gcode."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			self.linearMove( splitLine )
 		elif firstWord == 'G2':
@@ -152,7 +152,7 @@ class CommentSkein:
 		elif firstWord == 'M103':
 			self.addComment( "Extruder off." )
 		elif firstWord == 'M104':
-			self.addComment( "Set temperature to " + str( gcodec.getDoubleAfterFirstLetter( splitLine[ 1 ] ) ) + " C." )
+			self.addComment( "Set temperature to " + str( gcodec.getDoubleAfterFirstLetter( splitLine[1] ) ) + " C." )
 		elif firstWord == 'M105':
 			self.addComment( "Custom code for temperature reading." )
 		elif firstWord == 'M106':
@@ -160,7 +160,7 @@ class CommentSkein:
 		elif firstWord == 'M107':
 			self.addComment( "Turn fan off." )
 		elif firstWord == 'M108':
-			self.addComment( "Set extruder speed to " + str( gcodec.getDoubleAfterFirstLetter( splitLine[ 1 ] ) ) + "." )
+			self.addComment( "Set extruder speed to " + str( gcodec.getDoubleAfterFirstLetter( splitLine[1] ) ) + "." )
 		self.output.write( line + "\n" )
 
 	def setHelicalMoveEndpoint( self, splitLine ):
@@ -176,7 +176,7 @@ class CommentSkein:
 def main():
 	"Display the comment dialog."
 	if len( sys.argv ) > 1:
-		getWindowAnalyzeFile( ' '.join( sys.argv[ 1 : ] ) )
+		getWindowAnalyzeFile(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

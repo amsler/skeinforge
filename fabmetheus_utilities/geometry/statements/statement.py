@@ -16,13 +16,13 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def getLocalAttribute( xmlElement ):
+def getLocalAttribute(xmlElement):
 	"Get the local attribute if any."
 	for key in xmlElement.attributeDictionary:
 		if key[ : 1 ].isalpha():
 			value = evaluate.getEvaluatorSplitWords( xmlElement.attributeDictionary[ key ] )
-			if key.startswith( 'local.' ):
-				return evaluate.KeyValue( key[ len( 'local.' ) : ], value )
+			if key.startswith('local.'):
+				return evaluate.KeyValue( key[ len('local.') : ], value )
 			return evaluate.KeyValue( key, value )
 	return evaluate.KeyValue()
 
@@ -33,7 +33,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 		return
 	function = functions[ - 1 ]
 	if xmlElement.object == None:
-		xmlElement.object = getLocalAttribute( xmlElement )
-	if xmlElement.object.keyTuple[ 1 ] != None:
-		localValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.keyTuple[ 1 ], xmlElement )
-		function.localDictionary[ xmlElement.object.keyTuple[ 0 ] ] = localValue
+		xmlElement.object = getLocalAttribute(xmlElement)
+	if xmlElement.object.keyTuple[1] != None:
+		localValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.keyTuple[1], xmlElement )
+		function.localDictionary[ xmlElement.object.keyTuple[0] ] = localValue

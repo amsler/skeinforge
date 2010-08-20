@@ -44,7 +44,7 @@ __license__ = "GPL 3.0"
 
 class Vector3Index:
 	"A three dimensional vector index class."
-	__slots__ = [ 'index', 'x', 'y', 'z' ]
+	__slots__ = ['index', 'x', 'y', 'z']
 
 	def __init__( self, index, x = 0.0, y = 0.0, z = 0.0 ):
 		self.index = index

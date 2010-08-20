@@ -38,7 +38,7 @@ def addConnectionVertices( connectionVertices, geometryOutput ):
 			connectionVertices.append( geometryOutputValue )
 		elif geometryOutputKey == 'vertex':
 			for vertex in geometryOutputValue:
-				connectionVertices.append( vertex )
+				connectionVertices.append(vertex)
 		else:
 			addConnectionVertices( connectionVertices, geometryOutputValue )
 
@@ -95,7 +95,7 @@ def getIdentityMatrixTetragrid(tetragrid=None):
 def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 	"Get equated paths."
 	matrixPoints( loop, prefix, xmlElement )
-	return [ loop ]
+	return [loop]
 
 def getManipulatedGeometryOutput( geometryOutput, xmlElement ):
 	"Get equated geometryOutput."
@@ -211,11 +211,11 @@ def getRemovedFloatByKeys( keys, prefix, xmlElement ):
 		if prefixKey in xmlElement.attributeDictionary:
 			floatValue = evaluate.getEvaluatedFloat( prefixKey, xmlElement )
 			if floatValue == None:
-				print( 'Warning, evaluated value in getEvaluatedFloatByPrefixes in matrix is None for key:' )
+				print('Warning, evaluated value in getEvaluatedFloatByPrefixes in matrix is None for key:')
 				print( prefixKey )
-				print( 'for xmlElement dictionary value:' )
+				print('for xmlElement dictionary value:')
 				print( xmlElement.attributeDictionary[ prefixKey ] )
-				print( 'for xmlElement dictionary:' )
+				print('for xmlElement dictionary:')
 				print( xmlElement.attributeDictionary )
 			else:
 				removedFloat += floatValue
@@ -226,16 +226,16 @@ def getRotateMatrixTetragrid( prefix, xmlElement ):
 	"Get rotate matrix tetragrid and delete the rotate attributes."
 	# http://en.wikipedia.org/wiki/Rotation_matrix zxy
 	rotateMatrix = Matrix()
-	zAngle = getRemovedFloatByKeys( [ 'axisclockwisez', 'observerclockwisez', 'z' ], prefix, xmlElement )
-	zAngle -= getRemovedFloatByKeys( [ 'axiscounterclockwisez', 'observercounterclockwisez' ], prefix, xmlElement )
+	zAngle = getRemovedFloatByKeys( ['axisclockwisez', 'observerclockwisez', 'z'], prefix, xmlElement )
+	zAngle -= getRemovedFloatByKeys( ['axiscounterclockwisez', 'observercounterclockwisez'], prefix, xmlElement )
 	if zAngle != 0.0:
 		rotateMatrix.matrixTetragrid = rotateMatrix.getOtherTimesSelf(getDiagonalSwitchedTetragrid(-zAngle, [0, 1])).matrixTetragrid
-	xAngle = getRemovedFloatByKeys( [ 'axisclockwisex', 'observerclockwisex', 'x' ], prefix, xmlElement )
-	xAngle -= getRemovedFloatByKeys( [ 'axiscounterclockwisex', 'observercounterclockwisex' ], prefix, xmlElement )
+	xAngle = getRemovedFloatByKeys( ['axisclockwisex', 'observerclockwisex', 'x'], prefix, xmlElement )
+	xAngle -= getRemovedFloatByKeys( ['axiscounterclockwisex', 'observercounterclockwisex'], prefix, xmlElement )
 	if xAngle != 0.0:
 		rotateMatrix.matrixTetragrid = rotateMatrix.getOtherTimesSelf(getDiagonalSwitchedTetragrid(-xAngle, [1, 2])).matrixTetragrid
-	yAngle = getRemovedFloatByKeys( [ 'axiscounterclockwisey', 'observerclockwisey', 'y' ], prefix, xmlElement )
-	yAngle -= getRemovedFloatByKeys( [ 'axisclockwisey', 'observercounterclockwisey' ], prefix, xmlElement )
+	yAngle = getRemovedFloatByKeys( ['axiscounterclockwisey', 'observerclockwisey', 'y'], prefix, xmlElement )
+	yAngle -= getRemovedFloatByKeys( ['axisclockwisey', 'observercounterclockwisey'], prefix, xmlElement )
 	if yAngle != 0.0:
 		rotateMatrix.matrixTetragrid = rotateMatrix.getOtherTimesSelf(getDiagonalSwitchedTetragrid(yAngle, [0, 2])).matrixTetragrid
 	return rotateMatrix.matrixTetragrid
@@ -265,7 +265,7 @@ def getTetragridTimesOther(firstTetragrid, otherTetragrid ):
 
 def getTransformedByList( floatList, point ):
 	"Get the point transformed by the array."
-	return floatList[ 0 ] * point.x + floatList[ 1 ] * point.y + floatList[ 2 ] * point.z + floatList[ 3 ]
+	return floatList[0] * point.x + floatList[1] * point.y + floatList[2] * point.z + floatList[3]
 
 def getTransformedVector3s(matrixTetragrid, vector3s):
 	"Get the vector3s multiplied by a matrix."
@@ -286,9 +286,9 @@ def getVector3TransformedByMatrix(matrixTetragrid, vector3):
 	if matrixTetragrid == None:
 		return vector3.copy()
 	return Vector3(
-		getTransformedByList( matrixTetragrid[ 0 ], vector3),
-		getTransformedByList( matrixTetragrid[ 1 ], vector3),
-		getTransformedByList( matrixTetragrid[ 2 ], vector3))
+		getTransformedByList( matrixTetragrid[0], vector3),
+		getTransformedByList( matrixTetragrid[1], vector3),
+		getTransformedByList( matrixTetragrid[2], vector3))
 
 def matrixPoints(points, prefix, xmlElement):
 	"Rotate the points."
@@ -318,6 +318,11 @@ def setAttributeDictionaryMatrixToMatrix(matrix4X4, xmlElement):
 	setAttributeDictionaryToMatrix(xmlElement.attributeDictionary, matrix4X4)
 	if xmlElement.object != None:
 		xmlElement.object.matrix4X4 = matrix4X4
+
+def setAttributeDictionaryToMultipliedTetragrid(tetragrid, xmlElement):
+	"Set the element attribute dictionary and element matrix to the matrix times the tetragrid."
+	targetMatrix = getFromObjectOrXMLElement(xmlElement).getOtherTimesSelf(tetragrid)
+	setAttributeDictionaryMatrixToMatrix(targetMatrix, xmlElement)
 
 def setXMLElementDictionaryToOtherElementDictionary(fromXMLElement, matrix4X4, prefix, xmlElement):
 	"Set the xml element to the matrix attribute dictionary."

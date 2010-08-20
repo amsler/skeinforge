@@ -7,8 +7,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.creation_tools import solid
-from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
+from fabmetheus_utilities.geometry.creation import solid
+from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -26,7 +26,7 @@ globalExecutionOrder = 360
 def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 	"Get equated paths."
 	rotatePoints( loop, prefix, xmlElement )
-	return [ loop ]
+	return [loop]
 
 def getManipulatedGeometryOutput( geometryOutput, xmlElement ):
 	"Get equated geometryOutput."
@@ -40,8 +40,7 @@ def manipulateXMLElement(target, xmlElement, xmlProcessor):
 		print('Warning, rotateMatrixTetragrid was None in rotate so nothing will be done for:')
 		print(xmlElement)
 		return
-	targetMatrix = matrix.getFromObjectOrXMLElement(target).getSelfTimesOther(rotateMatrixTetragrid)
-	matrix.setAttributeDictionaryMatrixToMatrix(targetMatrix, target)
+	matrix.setAttributeDictionaryToMultipliedTetragrid(rotateMatrixTetragrid, target)
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
@@ -51,8 +50,8 @@ def rotatePoints( points, prefix, xmlElement ):
 	"Rotate the points."
 	rotateMatrixTetragrid = matrix.getRotateMatrixTetragrid( prefix, xmlElement )
 	if rotateMatrixTetragrid == None:
-		print( 'Warning, rotateMatrixTetragrid was None in rotate so nothing will be done for:' )
-		print( xmlElement )
+		print('Warning, rotateMatrixTetragrid was None in rotate so nothing will be done for:')
+		print(xmlElement)
 		return
 	for point in points:
 		matrix.transformVector3ByMatrix( rotateMatrixTetragrid, point )

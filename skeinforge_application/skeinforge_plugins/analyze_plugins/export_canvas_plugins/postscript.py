@@ -36,20 +36,20 @@ class PostscriptRepository:
 	"A class to handle the export settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.postscript.html', '', self )
-		self.fileExtension = settings.StringSetting().getFromValue( 'File Extension:', self, '' )
-		self.postscriptProgram = settings.StringSetting().getFromValue( 'Postscript Program:', self, 'gimp' )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.postscript.html', '', self )
+		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, '')
+		self.postscriptProgram = settings.StringSetting().getFromValue('Postscript Program:', self, 'gimp')
 
 	def execute( self ):
 		"Convert to postscript button has been clicked."
 		"Export the canvas as a postscript file."
 		postscriptFileName = gcodec.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )
 		boundingBox = self.canvas.bbox( settings.Tkinter.ALL ) # tuple (w, n, e, s)
-		boxW = boundingBox[ 0 ]
-		boxN = boundingBox[ 1 ]
-		boxWidth = boundingBox[ 2 ] - boxW
-		boxHeight = boundingBox[ 3 ] - boxN
-		print( 'Exported postscript file saved as ' + postscriptFileName )
+		boxW = boundingBox[0]
+		boxN = boundingBox[1]
+		boxWidth = boundingBox[2] - boxW
+		boxHeight = boundingBox[3] - boxN
+		print('Exported postscript file saved as ' + postscriptFileName )
 		self.canvas.postscript( file = postscriptFileName, height = boxHeight, width = boxWidth, pageheight = boxHeight, pagewidth = boxWidth, x = boxW, y = boxN )
 		fileExtension = self.fileExtension.value
 		postscriptProgram = self.postscriptProgram.value
@@ -57,25 +57,25 @@ class PostscriptRepository:
 			return
 		postscriptFilePath = '"' + os.path.normpath( postscriptFileName ) + '"' # " to send in file name with spaces
 		shellCommand = postscriptProgram + ' ' + postscriptFilePath
-		print( '' )
+		print('')
 		if fileExtension == '':
-			print( 'Sending the shell command:' )
+			print('Sending the shell command:')
 			print( shellCommand )
 			commandResult = os.system( shellCommand )
 			if commandResult != 0:
-				print( 'It may be that the system could not find the %s program.' % postscriptProgram )
-				print( 'If so, try installing the %s program or look for another one, like the Gnu Image Manipulation Program (Gimp) which can be found at:' % postscriptProgram )
-				print( 'http://www.gimp.org/' )
+				print('It may be that the system could not find the %s program.' % postscriptProgram )
+				print('If so, try installing the %s program or look for another one, like the Gnu Image Manipulation Program (Gimp) which can be found at:' % postscriptProgram )
+				print('http://www.gimp.org/')
 			return
-		convertedFileName = gcodec.getFilePathWithUnderscoredBasename( postscriptFilePath, '.' + fileExtension + '"' )
+		convertedFileName = gcodec.getFilePathWithUnderscoredBasename( postscriptFilePath, '.' + fileExtension + '"')
 		shellCommand += ' ' + convertedFileName
-		print( 'Sending the shell command:' )
+		print('Sending the shell command:')
 		print( shellCommand )
 		commandResult = os.system( shellCommand )
 		if commandResult != 0:
-			print( 'The %s program could not convert the postscript to the %s file format.' % ( postscriptProgram, fileExtension ) )
-			print( 'Try installing the %s program or look for another one, like Image Magick which can be found at:' % postscriptProgram )
-			print( 'http://www.imagemagick.org/script/index.php' )
+			print('The %s program could not convert the postscript to the %s file format.' % ( postscriptProgram, fileExtension ) )
+			print('Try installing the %s program or look for another one, like Image Magick which can be found at:' % postscriptProgram )
+			print('http://www.imagemagick.org/script/index.php')
 
 	def setCanvasFileNameSuffix( self, canvas, fileName, suffix ):
 		"Set the canvas and initialize the execute title."

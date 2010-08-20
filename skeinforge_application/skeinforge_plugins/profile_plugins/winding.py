@@ -39,7 +39,7 @@ __license__ = "GPL 3.0"
 
 def getCraftSequence():
 	"Get the winding craft sequence."
-	return 'cleave,preface,coil,flow,feed,home,lash,fillet,limit,dimension,unpause,export'.split( ',' )
+	return 'cleave,preface,coil,flow,feed,home,lash,fillet,limit,dimension,unpause,export'.split(',')
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -50,13 +50,13 @@ class WindingRepository:
 	"A class to handle the winding settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'free_wire', self, 'skeinforge_plugins.profile_plugins.winding.html' )
+		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'free_wire', self, 'skeinforge_plugins.profile_plugins.winding.html')
 
 
 def main():
 	"Display the export dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -74,9 +74,9 @@ def addLineXSegmentIntersection( lineLoopsIntersections, segmentFirstX, segmentS
 
 def addLoopLoopsIntersections( loop, loopsLoopsIntersections, otherLoops ):
 	"Add intersections of the loop with the other loops."
-	for pointIndex in xrange( len( loop ) ):
-		pointBegin = loop[ pointIndex ]
-		pointEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
+	for pointIndex in xrange(len(loop)):
+		pointBegin = loop[pointIndex]
+		pointEnd = loop[(pointIndex + 1) % len(loop)]
 		addLineLoopsIntersections( loopsLoopsIntersections, otherLoops, pointBegin, pointEnd )
 
 def addLoopsXSegmentIntersections( lineLoopsIntersections, loops, segmentFirstX, segmentSecondX, segmentYMirror, y ):
@@ -94,7 +94,7 @@ def addLoopXSegmentIntersections( lineLoopsIntersections, loop, segmentFirstX, s
 
 def directLoop(isWiddershins, loop):
 	"Direct the loop."
-	if euclidean.isWiddershins( loop ) != isWiddershins:
+	if euclidean.isWiddershins(loop) != isWiddershins:
 		loop.reverse()
 
 def directLoops(isWiddershins, loops):
@@ -112,9 +112,9 @@ def getInBetweenLoopsFromLoops( importRadius, loops ):
 	inBetweenLoops = []
 	for loop in loops:
 		inBetweenLoop = []
-		for pointIndex in xrange( len( loop ) ):
-			pointBegin = loop[ pointIndex ]
-			pointEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
+		for pointIndex in xrange(len(loop)):
+			pointBegin = loop[pointIndex]
+			pointEnd = loop[(pointIndex + 1) % len(loop)]
 			intercircle.addPointsFromSegment( pointBegin, pointEnd, inBetweenLoop, importRadius )
 		inBetweenLoops.append( inBetweenLoop )
 	return inBetweenLoops
@@ -150,7 +150,7 @@ def getLoopsDifference( importRadius, loopLists ):
 	"Get difference loops."
 	negativeLoops = getLoopsUnified( importRadius, loopLists[ 1 : ] )
 	directLoops( False, negativeLoops )
-	positiveLoops = loopLists[ 0 ]
+	positiveLoops = loopLists[0]
 	directLoops( True, positiveLoops )
 	radiusSide = 0.01 * importRadius
 	corners = getLoopsListsIntersections( loopLists )
@@ -167,8 +167,8 @@ def getLoopsIntersection( importRadius, loopLists ):
 	if len( loopLists ) < 1:
 		return []
 	if len( loopLists ) < 2:
-		return loopLists[ 0 ]
-	loopsIntersection = loopLists[ 0 ]
+		return loopLists[0]
+	loopsIntersection = loopLists[0]
 	for loopList in loopLists[ 1 : ]:
 		loopsIntersection = getLoopsIntersectionByPair( importRadius, loopsIntersection, loopList )
 	return loopsIntersection
@@ -249,7 +249,7 @@ class BooleanSolid( group.Group ):
 
 	def getPaths( self ):
 		"Get all paths."
-		importRadius = self.xmlElement.getCascadeFloat( 5.0 * evaluate.getPrecision( self.xmlElement ), 'importradius' )
+		importRadius = self.xmlElement.getCascadeFloat( 5.0 * evaluate.getPrecision( self.xmlElement ), 'importradius')
 		return euclidean.getVector3Paths( self.getLoopsFromObjectLoopsList( importRadius, self.getComplexPathLists() ) )
 
 	def getUnion( self, importRadius, visibleObjectLoopsList ):
@@ -258,4 +258,4 @@ class BooleanSolid( group.Group ):
 
 	def getXMLClassName( self ):
 		"Get xml class name."
-		return self.operationFunction.__name__.lower()[ len( 'get' ) : ]
+		return self.operationFunction.__name__.lower()[ len('get') : ]

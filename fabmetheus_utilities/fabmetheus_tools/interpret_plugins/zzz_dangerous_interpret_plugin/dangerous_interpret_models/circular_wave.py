@@ -79,7 +79,7 @@ class CircularWave:
 		for pointIndex in xrange( self.numberOfPoints ):
 			twist = self.twist * z / self.height
 			self.addPoint( loop, pointIndex, twist )
-		loopLayer.loops.append( loop )
+		loopLayer.loops.append(loop)
 		self.loopLayers.append( loopLayer )
 
 	def addPoint( self, loop, pointIndex, twist ):

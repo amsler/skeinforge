@@ -35,35 +35,35 @@ __license__ = "GPL 3.0"
 
 def addLineAndNewlineIfNecessary( line, output ):
 	"Add the line and if the line does not end with a newline add a newline."
-	output.write( line )
-	if len( line ) < 1:
+	output.write(line)
+	if len(line) < 1:
 		return
-	if not line.endswith( '\n' ):
-		output.write( '\n' )
+	if not line.endswith('\n'):
+		output.write('\n')
 
 def addXMLLine( line, xmlLines ):
 	"Get the all the xml lines of a text."
 	strippedLine = line.strip()
-	if strippedLine[ : len( '<!--' ) ] == '<!--':
-		endIndex = line.find( '-->' )
+	if strippedLine[ : len('<!--') ] == '<!--':
+		endIndex = line.find('-->')
 		if endIndex != - 1:
-			endIndex += len( '-->' )
+			endIndex += len('-->')
 			commentLine = line[ : endIndex ]
 			remainderLine = line[ endIndex : ].strip()
 			if len( remainderLine ) > 0:
 				xmlLines.append( commentLine )
 				xmlLines.append( remainderLine )
 				return
-	xmlLines.append( line )
+	xmlLines.append(line)
 
 def createInitFile():
 	"Create the __init__.py file."
 	fileText = '__all__ = ' + str( getPythonFileNamesExceptInit() )
-	writeFileText( '__init__.py', fileText )
+	writeFileText('__init__.py', fileText )
 
 def findWords( fileNames, search ):
 	"Find in files the search."
-	print( search + ' is being searched for.' )
+	print( search + ' is being searched for.')
 	if fileNames == None:
 		fileNames = getPythonFileNamesExceptInitRecursively()
 	for fileName in fileNames:
@@ -77,7 +77,7 @@ def findWords( fileNames, search ):
 				if whereInTextFromEnd != whereInText:
 					print( whereInTextFromEnd )
 
-def getAbsoluteFolderPath( filePath, folderName = '' ):
+def getAbsoluteFolderPath( filePath, folderName = ''):
 	"Get the absolute folder path."
 	absoluteFolderPath = os.path.dirname( os.path.abspath( filePath ) )
 	if folderName == '':
@@ -121,10 +121,10 @@ def getFilePathWithUnderscoredBasename( fileName, suffix ):
 	"Get the file path with all spaces in the basename replaced with underscores."
 	suffixFileName = getUntilDot( fileName ) + suffix
 	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
+	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace(' ', '_')
 	return os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 
-def getFilesWithFileTypesWithoutWords( fileTypes, words = [], fileInDirectory = '' ):
+def getFilesWithFileTypesWithoutWords( fileTypes, words = [], fileInDirectory = ''):
 	"Get files which have a given file type, but with do not contain a word in a list."
 	filesWithFileTypes = []
 	for fileType in fileTypes:
@@ -132,7 +132,7 @@ def getFilesWithFileTypesWithoutWords( fileTypes, words = [], fileInDirectory = 
 	filesWithFileTypes.sort()
 	return filesWithFileTypes
 
-def getFilesWithFileTypeWithoutWords( fileType, words = [], fileInDirectory = '' ):
+def getFilesWithFileTypeWithoutWords( fileType, words = [], fileInDirectory = ''):
 	"Get files which have a given file type, but with do not contain a word in a list."
 	filesWithFileType = []
 	directoryName = os.getcwd()
@@ -157,10 +157,10 @@ def getFileText( fileName, readMode = 'r', printWarning = True ):
 		return fileText
 	except IOError:
 		if printWarning:
-			print( 'The file ' + fileName + ' does not exist.' )
+			print('The file ' + fileName + ' does not exist.')
 		return ''
 
-def getFileTextInFileDirectory( fileInDirectory, fileName, readMode = 'r' ):
+def getFileTextInFileDirectory( fileInDirectory, fileName, readMode = 'r'):
 	"Get the entire text of a file in the directory of the file in directory."
 	absoluteFilePathInFileDirectory = os.path.join( os.path.dirname( fileInDirectory ), fileName )
 	return getFileText( absoluteFilePathInFileDirectory, readMode )
@@ -168,10 +168,10 @@ def getFileTextInFileDirectory( fileInDirectory, fileName, readMode = 'r' ):
 def getFirstWord( splitLine ):
 	"Get the first word of a split line."
 	if len( splitLine ) > 0:
-		return splitLine[ 0 ]
+		return splitLine[0]
 	return ''
 
-def getFirstWordFromLine( line ):
+def getFirstWordFromLine(line):
 	"Get the first word of a line."
 	return getFirstWord( line.split() )
 
@@ -179,7 +179,7 @@ def getGcodeFileText( fileName, gcodeText ):
 	"Get the gcode text from a file if it the gcode text is empty and if the file is a gcode file."
 	if gcodeText != '':
 		return gcodeText
-	if fileName.endswith( '.gcode' ):
+	if fileName.endswith('.gcode'):
 		return getFileText( fileName )
 	return ''
 
@@ -188,14 +188,14 @@ def getLocationFromSplitLine( oldLocation, splitLine ):
 	if oldLocation == None:
 		oldLocation = Vector3()
 	return Vector3(
-		getDoubleFromCharacterSplitLineValue( 'X', splitLine, oldLocation.x ),
-		getDoubleFromCharacterSplitLineValue( 'Y', splitLine, oldLocation.y ),
-		getDoubleFromCharacterSplitLineValue( 'Z', splitLine, oldLocation.z ) )
+		getDoubleFromCharacterSplitLineValue('X', splitLine, oldLocation.x ),
+		getDoubleFromCharacterSplitLineValue('Y', splitLine, oldLocation.y ),
+		getDoubleFromCharacterSplitLineValue('Z', splitLine, oldLocation.z ) )
 
 def getModuleWithDirectoryPath( directoryPath, fileName ):
 	"Get the module from the fileName and folder name."
 	if fileName == '':
-		print( 'The file name in getModule in gcodec was empty.' )
+		print('The file name in getModule in gcodec was empty.')
 		return None
 	originalSystemPath = sys.path[ : ]
 	try:
@@ -205,13 +205,13 @@ def getModuleWithDirectoryPath( directoryPath, fileName ):
 		return folderPluginsModule
 	except:
 		sys.path = originalSystemPath
-		print( '' )
-		print( 'Exception traceback in getModuleWithDirectoryPath in gcodec:' )
+		print('')
+		print('Exception traceback in getModuleWithDirectoryPath in gcodec:')
 		traceback.print_exc( file = sys.stdout )
-		print( '' )
-		print( 'That error means; could not import a module with the fileName ' + fileName )
-		print( 'and an absolute directory name of ' + directoryPath )
-		print( '' )
+		print('')
+		print('That error means; could not import a module with the fileName ' + fileName )
+		print('and an absolute directory name of ' + directoryPath )
+		print('')
 	return None
 
 def getModuleWithPath( path ):
@@ -220,7 +220,7 @@ def getModuleWithPath( path ):
 
 def getPluginFileNamesFromDirectoryPath( directoryPath ):
 	"Get the file names of the python plugins in the directory path."
-	fileInDirectory = os.path.join( directoryPath, '__init__.py' )
+	fileInDirectory = os.path.join( directoryPath, '__init__.py')
 	fullPluginFileNames = getPythonFileNamesExceptInit( fileInDirectory )
 	pluginFileNames = []
 	for fullPluginFileName in fullPluginFileNames:
@@ -236,16 +236,16 @@ def getPythonDirectoryNames( directoryName ):
 	for fileName in directory:
 		subdirectoryName = os.path.join( directoryName, fileName )
 		if os.path.isdir( subdirectoryName ):
-			if os.path.isfile( os.path.join( subdirectoryName, '__init__.py' ) ):
+			if os.path.isfile( os.path.join( subdirectoryName, '__init__.py') ):
 				pythonDirectoryNames.append( subdirectoryName )
 	return pythonDirectoryNames
 
-def getPythonDirectoryNamesRecursively( directoryName = '' ):
+def getPythonDirectoryNamesRecursively( directoryName = ''):
 	"Get the python directories recursively."
 	recursivePythonDirectoryNames = []
 	if directoryName == '':
 		directoryName = os.getcwd()
-	if os.path.isfile( os.path.join( directoryName, '__init__.py' ) ):
+	if os.path.isfile( os.path.join( directoryName, '__init__.py') ):
 		recursivePythonDirectoryNames.append( directoryName )
 		pythonDirectoryNames = getPythonDirectoryNames( directoryName )
 		for pythonDirectoryName in pythonDirectoryNames:
@@ -254,27 +254,27 @@ def getPythonDirectoryNamesRecursively( directoryName = '' ):
 		return []
 	return recursivePythonDirectoryNames
 
-def getPythonFileNamesExceptInit( fileInDirectory = '' ):
+def getPythonFileNamesExceptInit( fileInDirectory = ''):
 	"Get the python fileNames of the directory which the fileInDirectory is in, except for the __init__.py file."
-	pythonFileNamesExceptInit = getFilesWithFileTypeWithoutWords( 'py', [ '__init__.py' ], fileInDirectory )
+	pythonFileNamesExceptInit = getFilesWithFileTypeWithoutWords('py', ['__init__.py'], fileInDirectory )
 	pythonFileNamesExceptInit.sort()
 	return pythonFileNamesExceptInit
 
-def getPythonFileNamesExceptInitRecursively( directoryName = '' ):
+def getPythonFileNamesExceptInitRecursively( directoryName = ''):
 	"Get the python fileNames of the directory recursively, except for the __init__.py files."
 	pythonDirectoryNames = getPythonDirectoryNamesRecursively( directoryName )
 	pythonFileNamesExceptInitRecursively = []
 	for pythonDirectoryName in pythonDirectoryNames:
-		pythonFileNamesExceptInitRecursively += getPythonFileNamesExceptInit( os.path.join( pythonDirectoryName, '__init__.py' ) )
+		pythonFileNamesExceptInitRecursively += getPythonFileNamesExceptInit( os.path.join( pythonDirectoryName, '__init__.py') )
 	pythonFileNamesExceptInitRecursively.sort()
 	return pythonFileNamesExceptInitRecursively
 
-def getSplitLineBeforeBracketSemicolon( line ):
+def getSplitLineBeforeBracketSemicolon(line):
 	"Get the split line before a bracket or semicolon."
-	semicolonIndex = line.find( ';' )
+	semicolonIndex = line.find(';')
 	if semicolonIndex >= 0:
 		line = line[ : semicolonIndex ]
-	bracketIndex = line.find( '(' )
+	bracketIndex = line.find('(')
 	if bracketIndex > 0:
 		return line[ : bracketIndex ].split()
 	return line.split()
@@ -307,31 +307,31 @@ def getTextIfEmpty(fileName, text):
 
 def getTextLines( text ):
 	"Get the all the lines of text of a text."
-	return text.replace( '\r', '\n' ).replace( '\n\n', '\n' ).split( '\n' )
+	return text.replace('\r', '\n').replace('\n\n', '\n').split('\n')
 
-def getUnmodifiedGCodeFiles( fileInDirectory = '' ):
+def getUnmodifiedGCodeFiles( fileInDirectory = ''):
 	"Get gcode files which are not modified."
 	#transform may be needed in future but probably won't
-	words = ' carve clip comb comment cool fill fillet hop inset oozebane raft stretch tower wipe'.replace( ' ', ' _' ).split()
-	return getFilesWithFileTypeWithoutWords( 'gcode', words, fileInDirectory )
+	words = ' carve clip comb comment cool fill fillet hop inset oozebane raft stretch tower wipe'.replace(' ', ' _').split()
+	return getFilesWithFileTypeWithoutWords('gcode', words, fileInDirectory )
 
 def getUntilDot( text ):
 	"Get the text until the last dot, if any."
-	dotIndex = text.rfind( '.' )
+	dotIndex = text.rfind('.')
 	if dotIndex < 0:
 		return text
 	return text[ : dotIndex ]
 
 def getVersionFileName():
 	"Get the file name of the version date."
-	return os.path.join( os.path.dirname( os.path.abspath( __file__ ) ), 'version.txt' )
+	return os.path.join( os.path.dirname( os.path.abspath( __file__ ) ), 'version.txt')
 
-def getWithoutBracketsEqualTab( line ):
+def getWithoutBracketsEqualTab(line):
 	"Get a string without the greater than sign, the bracket and less than sign, the equal sign or the tab."
-	line = line.replace( '=', ' ' )
-	line = line.replace( '(<', '' )
-	line = line.replace( '>', '' )
-	return line.replace( '\t', '' )
+	line = line.replace('=', ' ')
+	line = line.replace('(<', '')
+	line = line.replace('>', '')
+	return line.replace('\t', '')
 
 def getXMLTagSplitLines(combinedLine):
 	"Get the xml lines split at a tag."
@@ -383,18 +383,18 @@ def getXMLLines( text ):
 		firstCharacter = None
 		lastCharacter = None
 		if len( strippedLine ) > 1:
-			firstCharacter = strippedLine[ 0 ]
+			firstCharacter = strippedLine[0]
 			lastCharacter = strippedLine[ - 1 ]
 		if firstCharacter == '<' and lastCharacter != '>' and accumulatedOutput == None:
 			accumulatedOutput = cStringIO.StringIO()
 			accumulatedOutput.write( textLine )
-			if strippedLine[ : len( '<!--' ) ] == '<!--':
+			if strippedLine[ : len('<!--') ] == '<!--':
 				lastWord = '-->'
 		else:
 			if accumulatedOutput == None:
 				addXMLLine( textLine, combinedLines )
 			else:
-				accumulatedOutput.write( '\n' + textLine )
+				accumulatedOutput.write('\n' + textLine )
 				if strippedLine[ - len( lastWord ) : ] == lastWord:
 					addXMLLine( accumulatedOutput.getvalue(), combinedLines )
 					accumulatedOutput = None
@@ -408,7 +408,7 @@ def indexOfStartingWithSecond( letter, splitLine ):
 	"Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found"
 	for wordIndex in xrange( 1, len( splitLine ) ):
 		word = splitLine[ wordIndex ]
-		firstLetter = word[ 0 ]
+		firstLetter = word[0]
 		if firstLetter == letter:
 			return wordIndex
 	return - 1
@@ -428,13 +428,13 @@ def isProcedureDone( gcodeText, procedure ):
 	"Determine if the procedure has been done on the gcode text."
 	if gcodeText == '':
 		return False
-	lines = getTextLines( gcodeText )
+	lines = getTextLines(gcodeText)
 	for line in lines:
-		withoutBracketsEqualTabQuotes = getWithoutBracketsEqualTab( line ).replace( '"', '' )
+		withoutBracketsEqualTabQuotes = getWithoutBracketsEqualTab(line).replace('"', '')
 		splitLine = getWithoutBracketsEqualTab( withoutBracketsEqualTabQuotes ).split()
 		firstWord = getFirstWord( splitLine )
 		if firstWord == 'procedureDone':
-			if splitLine[ 1 ].find( procedure ) != - 1:
+			if splitLine[1].find( procedure ) != - 1:
 				return True
 		elif firstWord == 'extrusionStart':
 			return False
@@ -450,14 +450,14 @@ def isThereAFirstWord( firstWord, lines, startIndex ):
 	"Parse gcode until the first word if there is one."
 	for lineIndex in xrange( startIndex, len( lines ) ):
 		line = lines[ lineIndex ]
-		splitLine = getSplitLineBeforeBracketSemicolon( line )
+		splitLine = getSplitLineBeforeBracketSemicolon(line)
 		if firstWord == getFirstWord( splitLine ):
 			return True
 	return False
 
 def replaceWords( fileNames, original, replacement ):
 	"Replace in files the original with the replacement."
-	print( original + ' is being replaced with ' + replacement + ' in the following files:' )
+	print( original + ' is being replaced with ' + replacement + ' in the following files:')
 	if fileNames == None:
 		fileNames = getPythonFileNamesExceptInitRecursively()
 	for fileName in fileNames:
@@ -476,14 +476,14 @@ def writeFileMessageEnd( end, fileName, fileText, message ):
 	writeFileText( suffixFileName, fileText )
 	print( message + getSummarizedFileName( suffixFileName ) )
 
-def writeFileText( fileName, fileText, writeMode = 'w+' ):
+def writeFileText( fileName, fileText, writeMode = 'w+'):
 	"Write a text to a file."
 	try:
 		file = open( fileName, writeMode )
 		file.write( fileText )
 		file.close()
 	except IOError:
-		print( 'The file ' + fileName + ' can not be written to.' )
+		print('The file ' + fileName + ' can not be written to.')
 
 
 class BoundingRectangle:
@@ -495,7 +495,7 @@ class BoundingRectangle:
 		self.oldLocation = None
 		self.cornerRadius = complex( radius, radius )
 		for line in lines:
-			self.parseCorner( line )
+			self.parseCorner(line)
 		return self
 
 	def isPointInside( self, point ):
@@ -504,7 +504,7 @@ class BoundingRectangle:
 
 	def parseCorner( self, line ):
 		"Parse a gcode line and use the location to update the bounding corners."
-		splitLine = getSplitLineBeforeBracketSemicolon( line )
+		splitLine = getSplitLineBeforeBracketSemicolon(line)
 		firstWord = getFirstWord( splitLine )
 		if firstWord == '(<boundaryPoint>':
 			locationComplex = getLocationFromSplitLine( None, splitLine ).dropAxis( 2 )
@@ -533,7 +533,7 @@ class DistanceFeedRate:
 	def addGcodeFromFeedRateThreadZ( self, feedRateMinute, thread, z ):
 		"Add a thread to the output."
 		if len( thread ) > 0:
-			self.addGcodeMovementZWithFeedRate( feedRateMinute, thread[ 0 ], z )
+			self.addGcodeMovementZWithFeedRate( feedRateMinute, thread[0], z )
 		else:
 			print( "zero length vertex positions array which was skipped over, this should never happen" )
 		if len( thread ) < 2:
@@ -549,13 +549,13 @@ class DistanceFeedRate:
 		"Add the gcode loop."
 		euclidean.addSurroundingLoopBeginning( self, loop, z )
 		self.addPerimeterBlock( loop, z )
-		self.addLine( '(</boundaryPerimeter>)' )
-		self.addLine( '(</surroundingLoop>)' )
+		self.addLine('(</boundaryPerimeter>)')
+		self.addLine('(</surroundingLoop>)')
 
 	def addGcodeFromThreadZ( self, thread, z ):
 		"Add a thread to the output."
 		if len( thread ) > 0:
-			self.addGcodeMovementZ( thread[ 0 ], z )
+			self.addGcodeMovementZ( thread[0], z )
 		else:
 			print( "zero length vertex positions array which was skipped over, this should never happen" )
 		if len( thread ) < 2:
@@ -577,7 +577,7 @@ class DistanceFeedRate:
 
 	def addLine( self, line ):
 		"Add a line of text and a newline to the output."
-		splitLine = getSplitLineBeforeBracketSemicolon( line )
+		splitLine = getSplitLineBeforeBracketSemicolon(line)
 		firstWord = getFirstWord( splitLine )
 		if firstWord == 'G90':
 			self.absoluteDistanceMode = True
@@ -591,7 +591,7 @@ class DistanceFeedRate:
 				self.oldAddedLocation = location
 			else:
 				if self.oldAddedLocation == None:
-					print( 'Warning: There was no absolute location when the G91 command was parsed, so the absolute location will be set to the origin.' )
+					print('Warning: There was no absolute location when the G91 command was parsed, so the absolute location will be set to the origin.')
 					self.oldAddedLocation = Vector3()
 				self.oldAddedLocation += getLocationFromSplitLine( None, splitLine )
 		elif firstWord == 'G92':
@@ -600,13 +600,13 @@ class DistanceFeedRate:
 			self.maximumZFeedRatePerSecond = self.maximumZDrillFeedRatePerSecond
 		elif firstWord == 'M103':
 			self.maximumZFeedRatePerSecond = self.maximumZTravelFeedRatePerSecond
-		if len( line ) > 0:
+		if len(line) > 0:
 			self.output.write( line + "\n" )
 
 	def addLines( self, lines ):
 		"Add lines of text to the output."
 		for line in lines:
-			self.addLine( line )
+			self.addLine(line)
 
 	def addLinesSetAbsoluteDistanceMode( self, lines ):
 		"Add lines of text to the output."
@@ -619,14 +619,14 @@ class DistanceFeedRate:
 
 	def addPerimeterBlock( self, loop, z ):
 		"Add the perimeter gcode block for the loop."
-		if len( loop ) < 2:
+		if len(loop) < 2:
 			return
-		if euclidean.isWiddershins( loop ): # Indicate that a perimeter is beginning.
-			self.addLine( '(<perimeter> outer )' )
+		if euclidean.isWiddershins(loop): # Indicate that a perimeter is beginning.
+			self.addLine('(<perimeter> outer )')
 		else:
-			self.addLine( '(<perimeter> inner )' )
-		self.addGcodeFromThreadZ( loop + [ loop[ 0 ] ], z )
-		self.addLine( '(</perimeter>)' ) # Indicate that a perimeter is beginning.
+			self.addLine('(<perimeter> inner )')
+		self.addGcodeFromThreadZ( loop + [ loop[0] ], z )
+		self.addLine('(</perimeter>)') # Indicate that a perimeter is beginning.
 
 	def addTagBracketedLine( self, tagName, value ):
 		"Add a begin tag, balue and end tag."
@@ -673,7 +673,7 @@ class DistanceFeedRate:
 	def getLineWithFeedRate( self, feedRateMinute, line, splitLine ):
 		"Get the line with a feed rate."
 		roundedFeedRateString = 'F' + self.getRounded( feedRateMinute )
-		indexOfF = indexOfStartingWithSecond( 'F', splitLine )
+		indexOfF = indexOfStartingWithSecond('F', splitLine )
 		if indexOfF < 0:
 			return line + ' ' + roundedFeedRateString
 		word = splitLine[ indexOfF ]
@@ -682,7 +682,7 @@ class DistanceFeedRate:
 	def getLineWithX( self, line, splitLine, x ):
 		"Get the line with an x."
 		roundedXString = 'X' + self.getRounded( x )
-		indexOfX = indexOfStartingWithSecond( 'X', splitLine )
+		indexOfX = indexOfStartingWithSecond('X', splitLine )
 		if indexOfX == - 1:
 			return line + ' ' + roundedXString
 		word = splitLine[ indexOfX ]
@@ -691,7 +691,7 @@ class DistanceFeedRate:
 	def getLineWithY( self, line, splitLine, y ):
 		"Get the line with a y."
 		roundedYString = 'Y' + self.getRounded( y )
-		indexOfY = indexOfStartingWithSecond( 'Y', splitLine )
+		indexOfY = indexOfStartingWithSecond('Y', splitLine )
 		if indexOfY == - 1:
 			return line + ' ' + roundedYString
 		word = splitLine[ indexOfY ]
@@ -700,7 +700,7 @@ class DistanceFeedRate:
 	def getLineWithZ( self, line, splitLine, z ):
 		"Get the line with a z."
 		roundedZString = 'Z' + self.getRounded( z )
-		indexOfZ = indexOfStartingWithSecond( 'Z', splitLine )
+		indexOfZ = indexOfStartingWithSecond('Z', splitLine )
 		if indexOfZ == - 1:
 			return line + ' ' + roundedZString
 		word = splitLine[ indexOfZ ]
@@ -739,9 +739,9 @@ class DistanceFeedRate:
 		"Parse gcode split line and store the parameters."
 		firstWord = getWithoutBracketsEqualTab( firstWord )
 		if firstWord == 'decimalPlacesCarried':
-			self.decimalPlacesCarried = int( splitLine[ 1 ] )
+			self.decimalPlacesCarried = int( splitLine[1] )
 		elif firstWord == 'maximumZDrillFeedRatePerSecond':
-			self.maximumZDrillFeedRatePerSecond = float( splitLine[ 1 ] )
+			self.maximumZDrillFeedRatePerSecond = float( splitLine[1] )
 			self.maximumZFeedRatePerSecond = self.maximumZDrillFeedRatePerSecond
 		elif firstWord == 'maximumZTravelFeedRatePerSecond':
-			self.maximumZTravelFeedRatePerSecond = float( splitLine[ 1 ] )
+			self.maximumZTravelFeedRatePerSecond = float( splitLine[1] )

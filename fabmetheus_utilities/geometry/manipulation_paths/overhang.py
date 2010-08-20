@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.creation_tools import lineation
+from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -27,23 +27,23 @@ def addUnsupportedPointIndexes( alongAway ):
 	"Add the indexes of the unsupported points."
 	addedUnsupportedPointIndexes = []
 	for pointIndex in xrange( len( alongAway.loop ) ):
-		point = alongAway.loop[ pointIndex ]
+		point = alongAway.loop[pointIndex]
 		if pointIndex not in alongAway.unsupportedPointIndexes:
 			if not alongAway.getIsClockwisePointSupported( point ):
 				alongAway.unsupportedPointIndexes.append( pointIndex )
 				addedUnsupportedPointIndexes.append( pointIndex )
 	for pointIndex in addedUnsupportedPointIndexes:
-		point = alongAway.loop[ pointIndex ]
+		point = alongAway.loop[pointIndex]
 		point.y += alongAway.maximumYPlus
 
 def alterClockwiseSupportedPath( alongAway, xmlElement ):
 	"Get clockwise path with overhangs carved out."
 	alongAway.bottomPoints = []
-	alongAway.overhangSpan = xmlElement.getCascadeFloat( 0.0, 'overhang.span' )
+	alongAway.overhangSpan = xmlElement.getCascadeFloat( 0.0, 'overhang.span')
 	maximumY = - 987654321.0
 	minimumYPointIndex = 0
 	for pointIndex in xrange( len( alongAway.loop ) ):
-		point = alongAway.loop[ pointIndex ]
+		point = alongAway.loop[pointIndex]
 		if point.y < alongAway.loop[ minimumYPointIndex ].y:
 			minimumYPointIndex = pointIndex
 		maximumY = max( maximumY, point.y )
@@ -56,7 +56,7 @@ def alterClockwiseSupportedPath( alongAway, xmlElement ):
 		oldUnsupportedPointIndexesLength = len( alongAway.unsupportedPointIndexes )
 		addUnsupportedPointIndexes( alongAway )
 	for pointIndex in alongAway.unsupportedPointIndexes:
-		point = alongAway.loop[ pointIndex ]
+		point = alongAway.loop[pointIndex]
 		point.y -= alongAway.maximumYPlus
 	alongAway.unsupportedPointIndexes.sort()
 	alongAway.unsupportedPointIndexLists = []
@@ -103,21 +103,21 @@ def compareYAscending( point, pointOther ):
 
 def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 	"Get path with overhangs removed or filled in."
-	if len( loop ) < 3:
-		return [ loop ]
+	if len(loop) < 3:
+		return [loop]
 	if not evaluate.getEvaluatedBooleanDefault( True, prefix + 'activate', xmlElement ):
-		return [ loop ]
-	overhangAngle = math.radians( xmlElement.getCascadeFloat( 45.0, 'overhang.supportangle' ) )
+		return [loop]
+	overhangAngle = math.radians( xmlElement.getCascadeFloat( 45.0, 'overhang.supportangle') )
 	overhangPlaneAngle = euclidean.getWiddershinsUnitPolar( 0.5 * math.pi - overhangAngle )
 	overhangVerticalAngle = math.radians( evaluate.getEvaluatedFloatZero( prefix + 'inclination', xmlElement ) )
 	if overhangVerticalAngle != 0.0:
 		overhangVerticalCosine = abs( math.cos( overhangVerticalAngle ) )
 		if overhangVerticalCosine == 0.0:
-			return [ loop ]
+			return [loop]
 		imaginaryTimesCosine = overhangPlaneAngle.imag * overhangVerticalCosine
 		overhangPlaneAngle = euclidean.getNormalized( complex( overhangPlaneAngle.real, imaginaryTimesCosine ) )
 	alongAway = AlongAway( loop, overhangPlaneAngle )
-	if euclidean.getIsWiddershinsByVector3( loop ):
+	if euclidean.getIsWiddershinsByVector3(loop):
 		alterWiddershinsSupportedPath( alongAway, close )
 	else:
 		alterClockwiseSupportedPath( alongAway, xmlElement )
@@ -125,7 +125,7 @@ def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 
 def getMinimumYByPath( path ):
 	"Get path with overhangs removed or filled in."
-	minimumYByPath = path[ 0 ].y
+	minimumYByPath = path[0].y
 	for point in path:
 		minimumYByPath = min( minimumYByPath, point.y )
 	return minimumYByPath
@@ -159,7 +159,7 @@ class AlongAway:
 		self.awayIndexes = []
 		numberOfIntersectionsBelow = 0
 		for pointIndex in xrange( len( self.loop ) ):
-			begin = self.loop[ pointIndex ]
+			begin = self.loop[pointIndex]
 			end = self.loop[ ( pointIndex + 1 ) % len( self.loop ) ]
 			if begin != point and end != point:
 				self.awayIndexes.append( pointIndex )
@@ -185,7 +185,7 @@ class AlongAway:
 		self.awayIndexes = []
 		numberOfIntersectionsBelow = 0
 		for pointIndex in xrange( len( self.loop ) ):
-			begin = self.loop[ pointIndex ]
+			begin = self.loop[pointIndex]
 			end = self.loop[ ( pointIndex + 1 ) % len( self.loop ) ]
 			if begin != point and end != point:
 				self.awayIndexes.append( pointIndex )
@@ -223,7 +223,7 @@ class OverhangClockwise:
 
 	def alterLoop( self, unsupportedPointIndexes ):
 		"Alter alongAway loop."
-		unsupportedBeginIndex = unsupportedPointIndexes[ 0 ]
+		unsupportedBeginIndex = unsupportedPointIndexes[0]
 		unsupportedEndIndex = unsupportedPointIndexes[ - 1 ]
 		beginIndex = unsupportedBeginIndex - 1
 		endIndex = unsupportedEndIndex + 1

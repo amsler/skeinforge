@@ -36,7 +36,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the flow dialog.
 
 
->>> flow.writeOutput( 'Screw Holder Bottom.stl' )
+>>> flow.writeOutput('Screw Holder Bottom.stl')
 The flow tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -70,7 +70,7 @@ def getCraftedText( fileName, text = '', flowRepository = None ):
 
 def getCraftedTextFromText( gcodeText, flowRepository = None ):
 	"Flow a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'flow' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'flow'):
 		return gcodeText
 	if flowRepository == None:
 		flowRepository = settings.getReadRepository( FlowRepository() )
@@ -82,20 +82,20 @@ def getNewRepository():
 	"Get the repository constructor."
 	return FlowRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Flow a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'flow' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'flow')
 
 
 class FlowRepository:
 	"A class to handle the flow settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.flow.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Flow', self, '' )
-		self.activateFlow = settings.BooleanSetting().getFromValue( 'Activate Flow:', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.flow.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Flow', self, '')
+		self.activateFlow = settings.BooleanSetting().getFromValue('Activate Flow:', self, True )
 		self.flowRate = settings.FloatSpin().getFromValue( 50.0, 'Flow Rate (arbitrary units):', self, 250.0, 210.0 )
 		self.executeTitle = 'Flow'
 
@@ -119,45 +119,45 @@ class FlowSkein:
 		"Add flow rate line."
 		flowRateString = euclidean.getRoundedToThreePlaces( self.flowRepository.flowRate.value )
 		if flowRateString != self.oldFlowRateString:
-			self.distanceFeedRate.addLine( 'M108 S' + flowRateString )
+			self.distanceFeedRate.addLine('M108 S' + flowRateString )
 		self.oldFlowRateString = flowRateString
 
 	def getCraftedGcode( self, gcodeText, flowRepository ):
 		"Parse gcode text and store the flow gcode."
 		self.flowRepository = flowRepository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseLine( line )
+		for line in self.lines[self.lineIndex :]:
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> flow </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> flow </procedureDone>)')
 				return
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the flow skein."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1' or firstWord == '(<layer>':
 			self.addFlowRateLineIfNecessary()
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the flow dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

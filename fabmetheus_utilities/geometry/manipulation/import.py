@@ -34,34 +34,34 @@ def getXMLFromCarvingFileName( fileName ):
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
-	fileName = evaluate.getEvaluatedValue( 'file', xmlElement )
+	fileName = evaluate.getEvaluatedValue('file', xmlElement )
 	if fileName == None:
 		return
 	parserFileName = xmlElement.getRoot().parser.fileName
 	absoluteFileName = gcodec.getAbsoluteFolderPath( parserFileName, fileName )
 	xmlText = ''
-	if fileName.endswith( '.xml' ):
+	if fileName.endswith('.xml'):
 		xmlText = gcodec.getFileText( absoluteFileName )
 	else:
 		xmlText = getXMLFromCarvingFileName( absoluteFileName )
 	if xmlText == '':
-		print( 'The file %s could not be found in the folder which the fabmetheus xml file is in.' % fileName )
+		print('The file %s could not be found in the folder which the fabmetheus xml file is in.' % fileName )
 		return
 	if '_importname' in xmlElement.attributeDictionary:
-		xmlElement.importName = xmlElement.attributeDictionary[ '_importname' ]
+		xmlElement.importName = xmlElement.attributeDictionary['_importname']
 	else:
 		xmlElement.importName = gcodec.getUntilDot( fileName )
-		xmlElement.attributeDictionary[ '_importname' ] = xmlElement.importName
+		xmlElement.attributeDictionary['_importname'] = xmlElement.importName
 	XMLSimpleReader( parserFileName, xmlElement, xmlText )
 	originalChildren = xmlElement.children[ : ]
 	xmlElement.children = []
 	for child in originalChildren:
 		for subchild in child.children:
-			subchild.setParentAddToChildren( xmlElement )
+			subchild.setParentAddToChildren(xmlElement)
 		for attributeDictionaryKey in child.attributeDictionary.keys():
 			if attributeDictionaryKey != 'version':
 				xmlElement.attributeDictionary[ attributeDictionaryKey ] = child.attributeDictionary[ attributeDictionaryKey ]
 	group.processShape( group.Group, xmlElement, xmlProcessor )
 	root = xmlElement.getRoot()
-	root.idDictionary[ xmlElement.importName ] = evaluate.ElementID( xmlElement )
-	root.nameDictionary[ xmlElement.importName ] = evaluate.ElementName( xmlElement )
+	root.idDictionary[ xmlElement.importName ] = evaluate.ElementID(xmlElement)
+	root.nameDictionary[ xmlElement.importName ] = evaluate.ElementName(xmlElement)

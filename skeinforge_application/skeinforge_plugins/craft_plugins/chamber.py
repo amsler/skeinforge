@@ -125,7 +125,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the chamber dialog.
 
 
->>> chamber.writeOutput( 'Screw Holder Bottom.stl' )
+>>> chamber.writeOutput('Screw Holder Bottom.stl')
 Screw Holder Bottom.stl
 The chamber tool is parsing the file:
 Screw Holder Bottom.stl
@@ -161,7 +161,7 @@ def getCraftedText( fileName, text = '', chamberRepository = None ):
 
 def getCraftedTextFromText( gcodeText, chamberRepository = None ):
 	"Chamber a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'chamber' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'chamber'):
 		return gcodeText
 	if chamberRepository == None:
 		chamberRepository = settings.getReadRepository( ChamberRepository() )
@@ -173,22 +173,22 @@ def getNewRepository():
 	"Get the repository constructor."
 	return ChamberRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Chamber a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName == '':
 		return
-	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'chamber' )
+	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'chamber')
 
 
 class ChamberRepository:
 	"A class to handle the chamber settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.chamber.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Chamber', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber' )
-		self.activateChamber = settings.BooleanSetting().getFromValue( 'Activate Chamber:', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.chamber.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Chamber', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Chamber')
+		self.activateChamber = settings.BooleanSetting().getFromValue('Activate Chamber:', self, True )
 		self.bedTemperature = settings.FloatSpin().getFromValue( 20.0, 'Bed Temperature (Celcius):', self, 90.0, 60.0 )
 		self.chamberTemperature = settings.FloatSpin().getFromValue( 20.0, 'Chamber Temperature (Celcius):', self, 90.0, 30.0 )
 		self.holdingForce = settings.FloatSpin().getFromValue( 0.0, 'Holding Force (bar):', self, 100.0, 0.0 )
@@ -212,43 +212,43 @@ class ChamberSkein:
 	def getCraftedGcode( self, gcodeText, chamberRepository ):
 		"Parse gcode text and store the chamber gcode."
 		self.chamberRepository = chamberRepository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
-		for line in self.lines[ self.lineIndex : ]:
-			self.parseLine( line )
+		for line in self.lines[self.lineIndex :]:
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> chamber </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> chamber </procedureDone>)')
 				return
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the chamber skein."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == '(<extrusion>)':
-			self.distanceFeedRate.addLine( line )
-			self.distanceFeedRate.addParameter( 'M140', self.chamberRepository.bedTemperature.value ) # Set bed temperature.
-			self.distanceFeedRate.addParameter( 'M141', self.chamberRepository.chamberTemperature.value ) # Set chamber temperature.
-			self.distanceFeedRate.addParameter( 'M142', self.chamberRepository.holdingForce.value ) # Set holding pressure.
+			self.distanceFeedRate.addLine(line)
+			self.distanceFeedRate.addParameter('M140', self.chamberRepository.bedTemperature.value ) # Set bed temperature.
+			self.distanceFeedRate.addParameter('M141', self.chamberRepository.chamberTemperature.value ) # Set chamber temperature.
+			self.distanceFeedRate.addParameter('M142', self.chamberRepository.holdingForce.value ) # Set holding pressure.
 			return
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the chamber dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

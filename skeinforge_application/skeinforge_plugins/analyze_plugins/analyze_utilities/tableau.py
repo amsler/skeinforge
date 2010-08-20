@@ -28,7 +28,7 @@ def getGeometricDifference( first, second ):
 def getGridHorizontalFrame( gridPosition ):
 	"Get the grid horizontal object with a frame from the grid position."
 	gridHorizontal = settings.GridHorizontal( 0, 0 )
-	gridHorizontal.master = settings.Tkinter.Frame( gridPosition.master, borderwidth = 1, padx = 3, relief = 'raised' )
+	gridHorizontal.master = settings.Tkinter.Frame( gridPosition.master, borderwidth = 1, padx = 3, relief = 'raised')
 	gridHorizontal.master.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.E )
 	return gridHorizontal
 
@@ -39,7 +39,7 @@ def getLengthMinusOneMinimumOne( elementList ):
 def getScrollbarCanvasPortion( scrollbar ):
 	"Get the canvas portion of the scrollbar."
 	scrollbarBeginEnd = scrollbar.get()
-	return scrollbarBeginEnd[ 1 ] - scrollbarBeginEnd[ 0 ]
+	return scrollbarBeginEnd[1] - scrollbarBeginEnd[0]
 
 def setStateNormalDisabled( active, widget ):
 	"Set the state of the widget to normal if active and disabled if inactive."
@@ -51,7 +51,7 @@ def setStateNormalDisabled( active, widget ):
 def startMainLoopFromWindow( tableauWindow ):
 	"Display the tableau window and start the main loop."
 	if tableauWindow == None:
-		print( 'Warning, tableauWindow in startMainLoopFromWindow in tableau is none, so the window will not be displayed.' )
+		print('Warning, tableauWindow in startMainLoopFromWindow in tableau is none, so the window will not be displayed.')
 	else:
 		tableauWindow.root.mainloop()
 
@@ -88,7 +88,7 @@ class ExportCanvasDialog:
 				repositoryDialog.setCanvasFileNameSuffix( self.canvas, self.skein.fileName, self.suffix )
 				settings.liftRepositoryDialogs( settings.globalRepositoryDialogListTable[ repositoryDialog ] )
 				return
-		exportCanvasPluginsFolderPath = gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'export_canvas_plugins' )
+		exportCanvasPluginsFolderPath = gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'export_canvas_plugins')
 		pluginModule = gcodec.getModuleWithDirectoryPath( exportCanvasPluginsFolderPath, self.name )
 		if pluginModule == None:
 			return None
@@ -101,9 +101,9 @@ class TableauRepository:
 	"The viewer base repository class."
 	def addAnimation( self ):
 		"Add the animation settings."
-		self.frameList = settings.FrameList().getFromValue( 'Frame List', self, [] )
+		self.frameList = settings.FrameList().getFromValue('Frame List', self, [] )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Animation -', self )
+		settings.LabelDisplay().getFromName('- Animation -', self )
 		self.animationLineQuickening = settings.FloatSpinUpdate().getFromValue( 0.5, 'Animation Line Quickening (ratio):', self, 4.5, 1.0 )
 		self.animationSlideShowRate = settings.FloatSpinUpdate().getFromValue( 1.0, 'Animation Slide Show Rate (layers/second):', self, 5.0, 2.0 )
 		settings.LabelSeparator().getFromRepository( self )
@@ -112,7 +112,7 @@ class TableauRepository:
 		"Add the scale, screen and slide show settings."
 		self.scale = settings.FloatSpinNotOnMenu().getFromValue( 10.0, 'Scale (pixels per millimeter):', self, 50.0, 15.0 )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Screen Inset -', self )
+		settings.LabelDisplay().getFromName('- Screen Inset -', self )
 		self.screenHorizontalInset = settings.IntSpin().getFromValue( 80, 'Screen Horizontal Inset (pixels):', self, 1000, 100 )
 		self.screenVerticalInset = settings.IntSpin().getFromValue( 120, 'Screen Vertical Inset (pixels):', self, 1000, 220 )
 		settings.LabelSeparator().getFromRepository( self )
@@ -161,7 +161,7 @@ class TableauWindow:
 		repository.window = self
 		for menuRadio in repository.mouseMode.menuRadios:
 			fileName = menuRadio.name.lower()
-			fileName = fileName.replace( ' ', '_' ) + '.ppm'
+			fileName = fileName.replace(' ', '_') + '.ppm'
 			menuRadio.mouseButton = self.getPhotoButtonGridIncrement( menuRadio.invoke, fileName, self.gridPosition )
 		self.gridPosition = settings.GridHorizontal( 1, 99 )
 		self.gridPosition.master = self.root
@@ -177,7 +177,7 @@ class TableauWindow:
 		self.fileHelpMenuBar = settings.FileHelpMenuBar( self.root )
 		self.exportMenu = settings.Tkinter.Menu( self.fileHelpMenuBar.fileMenu, tearoff = 0 )
 		self.fileHelpMenuBar.fileMenu.add_cascade( label = "Export", menu = self.exportMenu, underline = 0 )
-		exportCanvasPluginsFolderPath = gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'export_canvas_plugins' )
+		exportCanvasPluginsFolderPath = gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'export_canvas_plugins')
 		exportCanvasPluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( exportCanvasPluginsFolderPath )
 		for exportCanvasPluginFileName in exportCanvasPluginFileNames:
 			ExportCanvasDialog().addPluginToMenu( self.canvas, skein.fileName, self.exportMenu, exportCanvasPluginFileName, suffix )
@@ -189,11 +189,11 @@ class TableauWindow:
 		self.diveButton = self.getPhotoButtonGridIncrement( self.dive, 'dive.ppm', gridPosition )
 		self.soarButton = self.getPhotoButtonGridIncrement( self.soar, 'soar.ppm', gridPosition )
 		gridPosition.increment()
-		settings.Tkinter.Label( gridPosition.master, text = 'Layer:' ).grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
+		settings.Tkinter.Label( gridPosition.master, text = 'Layer:').grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 		gridPosition.increment()
 		self.limitIndex()
 		self.layerEntry = settings.Tkinter.Spinbox( gridPosition.master, command = self.layerEntryReturnPressed, from_ = 0, increment = 1, to = getLengthMinusOneMinimumOne( self.skeinPanes ) )
-		self.layerEntry.bind( '<Return>', self.layerEntryReturnPressed )
+		self.layerEntry.bind('<Return>', self.layerEntryReturnPressed )
 		self.layerEntry.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 
 	def addLine( self, gridPosition ):
@@ -201,10 +201,10 @@ class TableauWindow:
 		self.lineDiveButton = self.getPhotoButtonGridIncrement( self.lineDive, 'dive.ppm', gridPosition )
 		self.lineSoarButton = self.getPhotoButtonGridIncrement( self.lineSoar, 'soar.ppm', gridPosition )
 		gridPosition.increment()
-		settings.Tkinter.Label( gridPosition.master, text = 'Line:' ).grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
+		settings.Tkinter.Label( gridPosition.master, text = 'Line:').grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 		gridPosition.increment()
 		self.lineEntry = settings.Tkinter.Spinbox( gridPosition.master, command = self.lineEntryReturnPressed, from_ = 0, increment = 1, to = getLengthMinusOneMinimumOne( self.getColoredLines() ) )
-		self.lineEntry.bind( '<Return>', self.lineEntryReturnPressed )
+		self.lineEntry.bind('<Return>', self.lineEntryReturnPressed )
 		self.lineEntry.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 
 	def addMouseInstantTool( self, fileName, gridPosition, mouseInstantTool ):
@@ -218,11 +218,11 @@ class TableauWindow:
 		"Add the mouse tool and bind button one clicked, button one released and motion."
 		self.xScrollbar.config( command = self.relayXview )
 		self.yScrollbar.config( command = self.relayYview )
-		self.canvas[ 'xscrollcommand' ] = self.xScrollbar.set
-		self.canvas[ 'yscrollcommand' ] = self.yScrollbar.set
+		self.canvas['xscrollcommand'] = self.xScrollbar.set
+		self.canvas['yscrollcommand'] = self.yScrollbar.set
 		settings.CloseListener( self, self.destroyAllDialogWindows ).listenToWidget( self.canvas )
 		self.canvasScreenCenter = 0.5 * complex( float( self.canvasWidth ) / float( self.screenSize.real ), float( self.canvasHeight ) / float( self.screenSize.imag ) )
-		self.addPhotoImage( 'stop.ppm', self.gridPosition )
+		self.addPhotoImage('stop.ppm', self.gridPosition )
 		self.gridPosition.increment()
 		self.addLayer( getGridHorizontalFrame( self.gridPosition ) )
 		self.gridPosition.increment()
@@ -240,17 +240,17 @@ class TableauWindow:
 			menuRadio.mouseTool = menuRadio.getNewMouseToolFunction().getReset( self )
 			self.mouseTool = menuRadio.mouseTool
 		self.createMouseModeTool()
-		self.canvas.bind( '<Button-1>', self.button1 )
-		self.canvas.bind( '<ButtonRelease-1>', self.buttonRelease1 )
-		self.canvas.bind( '<KeyPress-Down>', self.keyPressDown )
-		self.canvas.bind( '<KeyPress-Left>', self.keyPressLeft )
-		self.canvas.bind( '<KeyPress-Right>', self.keyPressRight )
-		self.canvas.bind( '<KeyPress-Up>', self.keyPressUp )
-		self.canvas.bind( '<Motion>', self.motion )
-		self.canvas.bind( '<Return>', self.keyPressReturn )
-		self.canvas.bind( '<Shift-ButtonRelease-1>', self.shiftButtonRelease1 )
-		self.canvas.bind( '<Shift-Motion>', self.shiftMotion )
-		self.layerEntry.bind( '<Destroy>', self.cancelTimer )
+		self.canvas.bind('<Button-1>', self.button1 )
+		self.canvas.bind('<ButtonRelease-1>', self.buttonRelease1 )
+		self.canvas.bind('<KeyPress-Down>', self.keyPressDown )
+		self.canvas.bind('<KeyPress-Left>', self.keyPressLeft )
+		self.canvas.bind('<KeyPress-Right>', self.keyPressRight )
+		self.canvas.bind('<KeyPress-Up>', self.keyPressUp )
+		self.canvas.bind('<Motion>', self.motion )
+		self.canvas.bind('<Return>', self.keyPressReturn )
+		self.canvas.bind('<Shift-ButtonRelease-1>', self.shiftButtonRelease1 )
+		self.canvas.bind('<Shift-Motion>', self.shiftMotion )
+		self.layerEntry.bind('<Destroy>', self.cancelTimer )
 		self.root.grid_columnconfigure( 44, weight = 1 )
 		self.root.grid_rowconfigure( 44, weight = 1 )
 		self.resetPeriodicButtonsText()
@@ -277,20 +277,20 @@ class TableauWindow:
 		try:
 			photoImage = settings.Tkinter.PhotoImage( file = os.path.join( self.imagesDirectoryPath, fileName ), master = gridPosition.master )
 		except:
-			print( 'Image %s was not found in the images directory, so a text button will be substituted.' % fileName )
+			print('Image %s was not found in the images directory, so a text button will be substituted.' % fileName )
 		untilDotFileName = gcodec.getUntilDot( fileName )
 		self.photoImages[ untilDotFileName ] = photoImage
 		return untilDotFileName
 
 	def addScale( self, gridPosition ):
 		"Add the line frame items."
-		self.addMouseInstantTool( 'zoom_out.ppm', gridPosition, zoom_out.getNewMouseTool() )
-		self.addMouseInstantTool( 'zoom_in.ppm', gridPosition, zoom_in.getNewMouseTool() )
+		self.addMouseInstantTool('zoom_out.ppm', gridPosition, zoom_out.getNewMouseTool() )
+		self.addMouseInstantTool('zoom_in.ppm', gridPosition, zoom_in.getNewMouseTool() )
 		gridPosition.increment()
-		settings.Tkinter.Label( gridPosition.master, text = 'Scale:' ).grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
+		settings.Tkinter.Label( gridPosition.master, text = 'Scale:').grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 		gridPosition.increment()
 		self.scaleEntry = settings.Tkinter.Spinbox( gridPosition.master, command = self.scaleEntryReturnPressed, from_ = 10.0, increment = 5.0, to = 100.0 )
-		self.scaleEntry.bind( '<Return>', self.scaleEntryReturnPressed )
+		self.scaleEntry.bind('<Return>', self.scaleEntryReturnPressed )
 		self.scaleEntry.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 
 	def addSettingsMenuSetWindowGeometry( self, center ):
@@ -302,7 +302,7 @@ class TableauWindow:
 		self.relayYview( settings.Tkinter.MOVETO, center.imag - self.canvasScreenCenter.imag )
 		self.root.withdraw()
 		self.root.update_idletasks()
-		movedGeometryString = '%sx%s+%s' % ( self.root.winfo_reqwidth(), self.root.winfo_reqheight(), '0+0' )
+		movedGeometryString = '%sx%s+%s' % ( self.root.winfo_reqwidth(), self.root.winfo_reqheight(), '0+0')
 		self.root.geometry( movedGeometryString )
 
 	def button1( self, event ):
@@ -337,7 +337,7 @@ class TableauWindow:
 		for menuRadio in self.repository.mouseMode.menuRadios:
 			if menuRadio.value:
 				self.mouseTool = menuRadio.mouseTool
-				menuRadio.mouseButton[ 'relief' ] = settings.Tkinter.SUNKEN
+				menuRadio.mouseButton['relief'] = settings.Tkinter.SUNKEN
 
 	def destroyAllDialogWindows( self ):
 		"Destroy all the dialog windows."
@@ -354,13 +354,13 @@ class TableauWindow:
 		"Destroy the mouse tool and raise the mouse buttons."
 		self.mouseTool.destroyEverything()
 		for menuRadio in self.repository.mouseMode.menuRadios:
-			menuRadio.mouseButton[ 'relief' ] = settings.Tkinter.RAISED
+			menuRadio.mouseButton['relief'] = settings.Tkinter.RAISED
 		for mouseInstantButton in self.mouseInstantButtons:
-			mouseInstantButton[ 'relief' ] = settings.Tkinter.RAISED
+			mouseInstantButton['relief'] = settings.Tkinter.RAISED
 
 	def dive( self ):
 		"Dive, go down periodically."
-		oldDiveButtonText = self.diveButton[ 'text' ]
+		oldDiveButtonText = self.diveButton['text']
 		self.cancelTimerResetButtons()
 		if oldDiveButtonText == 'stop':
 			return
@@ -374,7 +374,7 @@ class TableauWindow:
 		if self.repository.layer.value < 1:
 			self.resetPeriodicButtonsText()
 			return
-		self.setButtonImageText( self.diveButton, 'stop' )
+		self.setButtonImageText( self.diveButton, 'stop')
 		self.timerID = self.canvas.after( self.getSlideShowDelay(), self.diveCycle )
 
 	def getAnimationLineDelay( self, coloredLine ):
@@ -423,7 +423,7 @@ class TableauWindow:
 		photoImage = self.photoImages[ untilDotFileName ]
 		photoButton = settings.Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', command = commandFunction, text = untilDotFileName )
 		if photoImage != None:
-			photoButton[ 'image' ] = photoImage
+			photoButton['image'] = photoImage
 		photoButton.grid( row = gridPosition.row, column = gridPosition.column, sticky = settings.Tkinter.W )
 		return photoButton
 
@@ -432,8 +432,8 @@ class TableauWindow:
 		rulingText = euclidean.getRoundedToDecimalPlacesString( extraDecimalPlaces - math.floor( math.log10( self.rulingSeparationWidthMillimeters ) ), number )
 		if self.rulingSeparationWidthMillimeters < .99:
 			return rulingText
-		if rulingText[ - len( '.0' ) : ] == '.0':
-			return rulingText[ : - len( '.0' ) ]
+		if rulingText[ - len('.0') : ] == '.0':
+			return rulingText[ : - len('.0') ]
 		return rulingText
 
 	def getRulingSeparationWidthPixels( self, rank ):
@@ -446,7 +446,7 @@ class TableauWindow:
 
 	def getScrollPaneFraction( self ):
 		"Get the center of the scroll pane."
-		return complex( self.xScrollbar.get()[ 0 ], self.yScrollbar.get()[ 0 ] )
+		return complex( self.xScrollbar.get()[0], self.yScrollbar.get()[0] )
 
 	def getSlideShowDelay( self ):
 		"Get the slide show delay in milliseconds."
@@ -531,7 +531,7 @@ class TableauWindow:
 
 	def lineDive( self ):
 		"Line dive, go down periodically."
-		oldLineDiveButtonText = self.lineDiveButton[ 'text' ]
+		oldLineDiveButtonText = self.lineDiveButton['text']
 		self.cancelTimerResetButtons()
 		if oldLineDiveButtonText == 'stop':
 			return
@@ -551,13 +551,13 @@ class TableauWindow:
 		else:
 			self.updateMouseToolIfSelection()
 		self.setLineButtonsState()
-		self.setButtonImageText( self.lineDiveButton, 'stop' )
+		self.setButtonImageText( self.lineDiveButton, 'stop')
 		coloredLine = self.getColoredLines()[ self.repository.line.value ]
 		self.timerID = self.canvas.after( self.getAnimationLineDelay( coloredLine ), self.lineDiveCycle )
 
 	def lineSoar( self ):
 		"Line soar, go up periodically."
-		oldLineSoarButtonText = self.lineSoarButton[ 'text' ]
+		oldLineSoarButtonText = self.lineSoarButton['text']
 		self.cancelTimerResetButtons()
 		if oldLineSoarButtonText == 'stop':
 			return
@@ -578,7 +578,7 @@ class TableauWindow:
 		else:
 			self.updateMouseToolIfSelection()
 		self.setLineButtonsState()
-		self.setButtonImageText( self.lineSoarButton, 'stop' )
+		self.setButtonImageText( self.lineSoarButton, 'stop')
 		coloredLine = self.getColoredLines()[ self.repository.line.value ]
 		self.timerID = self.canvas.after( self.getAnimationLineDelay( coloredLine ), self.lineSoarCycle )
 
@@ -600,10 +600,10 @@ class TableauWindow:
 
 	def resetPeriodicButtonsText( self ):
 		"Reset the text of the periodic buttons."
-		self.setButtonImageText( self.diveButton, 'dive' )
-		self.setButtonImageText( self.soarButton, 'soar' )
-		self.setButtonImageText( self.lineDiveButton, 'dive' )
-		self.setButtonImageText( self.lineSoarButton, 'soar' )
+		self.setButtonImageText( self.diveButton, 'dive')
+		self.setButtonImageText( self.soarButton, 'soar')
+		self.setButtonImageText( self.lineDiveButton, 'dive')
+		self.setButtonImageText( self.lineSoarButton, 'soar')
 
 	def redisplayWindowUpdate( self, event = None ):
 		"Deiconify a new window and destroy the old."
@@ -628,8 +628,8 @@ class TableauWindow:
 		"Set the text of the e periodic buttons."
 		photoImage = self.photoImages[ text ]
 		if photoImage != None:
-			button[ 'image' ] = photoImage
-		button[ 'text' ] = text
+			button['image'] = photoImage
+		button['text'] = text
 
 	def setDisplayLayerIndex( self ):
 		"Set the display of the layer index entry field and buttons."
@@ -649,7 +649,7 @@ class TableauWindow:
 		"Set the archive to the display."
 		if self.root.state() != 'normal':
 			return
-		excessExtent = int( self.xScrollbar[ 'width' ] ) * 21 / 15
+		excessExtent = int( self.xScrollbar['width'] ) * 21 / 15
 		screenSize = self.skein.screenSize
 		xScrollbarCanvasPortion = getScrollbarCanvasPortion( self.xScrollbar )
 		newScreenHorizontalInset = int( self.root.winfo_screenwidth() - round( xScrollbarCanvasPortion * screenSize.real ) + excessExtent )
@@ -673,10 +673,10 @@ class TableauWindow:
 		coloredLines = self.getColoredLines()
 		if self.repository.layer.value < oldLayerIndex:
 			self.repository.line.value = len( coloredLines ) - 1
-			self.lineEntry[ 'to' ] = getLengthMinusOneMinimumOne( coloredLines )
+			self.lineEntry['to'] = getLengthMinusOneMinimumOne( coloredLines )
 		if self.repository.layer.value > oldLayerIndex:
 			self.repository.line.value = 0
-			self.lineEntry[ 'to' ] = getLengthMinusOneMinimumOne( coloredLines )
+			self.lineEntry['to'] = getLengthMinusOneMinimumOne( coloredLines )
 		self.update()
 
 	def setLineButtonsState( self ):
@@ -712,7 +712,7 @@ class TableauWindow:
 
 	def soar( self ):
 		"Soar, go up periodically."
-		oldSoarButtonText = self.soarButton[ 'text' ]
+		oldSoarButtonText = self.soarButton['text']
 		self.cancelTimerResetButtons()
 		if oldSoarButtonText == 'stop':
 			return
@@ -726,7 +726,7 @@ class TableauWindow:
 		if self.repository.layer.value > len( self.skeinPanes ) - 2:
 			self.resetPeriodicButtonsText()
 			return
-		self.setButtonImageText( self.soarButton, 'stop' )
+		self.setButtonImageText( self.soarButton, 'stop')
 		self.timerID = self.canvas.after( self.getSlideShowDelay(), self.soarCycle )
 
 	def updateDeiconify( self, center = complex( 0.5, 0.5 ) ):

@@ -52,7 +52,7 @@ def addSubmenus( craftTypeName, menu, pluginFileName, pluginPath, profileRadioVa
 
 def addToProfileMenu( menu ):
 	"Add a profile menu."
-	settings.ToolDialog().addPluginToMenu( menu, __file__[ : __file__.rfind( '.' ) ] )
+	settings.ToolDialog().addPluginToMenu( menu, __file__[ : __file__.rfind('.') ] )
 	menu.add_separator()
 	directoryPath = skeinforge_profile.getPluginsDirectoryPath()
 	pluginFileNames = skeinforge_profile.getPluginFileNames()
@@ -80,7 +80,7 @@ class ProfileMenuRadio:
 		self.profileJoinName = profilePluginFileName + '.& /' + name
 		self.profilePluginFileName = profilePluginFileName
 		self.radioVar = radioVar
-		menu.add_radiobutton( label = name.replace( '_', ' ' ), command = self.clickRadio, value = self.profileJoinName, variable = self.radioVar )
+		menu.add_radiobutton( label = name.replace('_', ' '), command = self.clickRadio, value = self.profileJoinName, variable = self.radioVar )
 		self.menuLength = menu.index( settings.Tkinter.END )
 		if value:
 			self.radioVar.set( self.profileJoinName )

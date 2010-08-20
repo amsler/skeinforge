@@ -80,7 +80,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the chop dialog.
 
 
->>> chop.writeOutput( 'Screw Holder Bottom.stl' )
+>>> chop.writeOutput('Screw Holder Bottom.stl')
 The chop tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -118,9 +118,9 @@ __license__ = "GPL 3.0"
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get chopped text."
-	if fileName.endswith( '.svg' ):
+	if fileName.endswith('.svg'):
 		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
-		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'chop' ):
+		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'chop'):
 			return gcodeText
 	carving = svg_writer.getCarving( fileName )
 	if carving == None:
@@ -134,22 +134,22 @@ def getNewRepository():
 	"Get the repository constructor."
 	return ChopRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Chop a GNU Triangulated Surface file.  If no fileName is specified, chop the first GNU Triangulated Surface file in this folder."
 	startTime = time.time()
-	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being chopped.' )
+	print('File ' + gcodec.getSummarizedFileName( fileName ) + ' is being chopped.')
 	repository = ChopRepository()
 	settings.getReadRepository( repository )
 	chopGcode = getCraftedText( fileName, '', repository )
 	if chopGcode == '':
 		return
-	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_chop.svg'
+	suffixFileName = fileName[ : fileName.rfind('.') ] + '_chop.svg'
 	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
+	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, chopGcode )
-	print( 'The chopped file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took %s to chop the file.' % euclidean.getDurationString( time.time() - startTime ) )
+	print('The chopped file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('It took %s to chop the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 
@@ -157,21 +157,22 @@ class ChopRepository:
 	"A class to handle the chop settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.chop.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '' )
-		self.addExtraTopLayerIfNecessary = settings.BooleanSetting().getFromValue( 'Add Extra Top Layer if Necessary', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.chop.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '')
+		self.addExtraTopLayerIfNecessary = settings.BooleanSetting().getFromValue('Add Extra Top Layer if Necessary', self, True )
+		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
 		self.layersTo = settings.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
-		self.meshTypeLabel = settings.LabelDisplay().getFromName( 'Mesh Type: ', self, )
+		self.meshTypeLabel = settings.LabelDisplay().getFromName('Mesh Type: ', self, )
 		importLatentStringVar = settings.LatentStringVar()
 		self.correctMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Correct Mesh', self, True )
 		self.unprovenMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Unproven Mesh', self, False )
 		self.perimeterWidth = settings.FloatSpin().getFromValue( 0.4, 'Perimeter Width (mm):', self, 4.0, 2.0 )
 		settings.LabelSeparator().getFromRepository( self )
-		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
+		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
 		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Chop'
 
@@ -203,21 +204,21 @@ class ChopSkein:
 		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
 		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
 		if len( rotatedBoundaryLayers ) < 1:
-			print( 'There are no slices for the model, this could be because the model is too small.' )
+			print('There are no slices for the model, this could be because the model is too small.')
 			return ''
 		if repository.addExtraTopLayerIfNecessary.value:
 			self.addExtraTopLayerIfNecessary( carving, layerThickness, rotatedBoundaryLayers )
 		rotatedBoundaryLayers.reverse()
 		layerThickness = carving.getCarveLayerThickness()
 		decimalPlacesCarried = max( 0, 1 + repository.extraDecimalPlaces.value - int( math.floor( math.log10( layerThickness ) ) ) )
-		svgWriter = svg_writer.SVGWriter( carving, decimalPlacesCarried, perimeterWidth )
+		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
 		return svgWriter.getReplacedSVGTemplate( fileName, 'chop', svg_writer.getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ) )
 
 
 def main():
 	"Display the chop dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

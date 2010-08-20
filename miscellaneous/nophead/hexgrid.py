@@ -19,10 +19,10 @@ safeTopRight = topRight - safetyMargin
 drillLocation = safeBottomLeft * 1.0
 offset = 0.0
 while drillLocation.imag < safeTopRight.imag:
-	print( '' )
+	print('')
 	while drillLocation.real < safeTopRight.real:
 		print( drillLocation )
 		drillLocation = complex( drillLocation.real + separation, drillLocation.imag )
 	offset = oddRowOffset - offset
 	drillLocation = complex( safeBottomLeft.real + offset, drillLocation.imag + horizontalSeparation )
-print( '' )
+print('')

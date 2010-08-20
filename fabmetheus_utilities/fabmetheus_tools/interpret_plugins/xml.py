@@ -117,7 +117,7 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def getCarving( fileName = '' ):
+def getCarving( fileName = ''):
 	"Get the carving for the xml file."
 	xmlText = gcodec.getFileText( fileName )
 	if xmlText == '':
@@ -131,12 +131,12 @@ def getCarving( fileName = '' ):
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'xml_plugins' )
+	return gcodec.getAbsoluteFolderPath( __file__, 'xml_plugins')
 
 def main():
 	"Display the inset dialog."
 	if len( sys.argv ) > 1:
-		getCarving( ' '.join( sys.argv[ 1 : ] ) )
+		getCarving(' '.join( sys.argv[ 1 : ] ) )
 
 if __name__ == "__main__":
 	main()

@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.creation_tools import lineation
+from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -23,26 +23,26 @@ globalExecutionOrder = 60
 
 def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
 	"Get segment loop."
-	if len( loop ) < 3:
-		return [ loop ]
+	if len(loop) < 3:
+		return [loop]
 	path = evaluate.getPathByPrefix( getSegmentPathDefault(), prefix, xmlElement )
 	if path == getSegmentPathDefault():
-		return [ loop ]
+		return [loop]
 	path = getXNormalizedVector3Path( path )
 	segmentCenter = evaluate.getVector3ByPrefix( prefix + 'center', None, xmlElement )
-	if euclidean.getIsWiddershinsByVector3( loop ):
+	if euclidean.getIsWiddershinsByVector3(loop):
 		path = path[ : : - 1 ]
 		for point in path:
 			point.x = 1.0 - point.x
 			if segmentCenter == None:
 				point.y = - point.y
 	segmentLoop = []
-	startEnd = lineation.StartEnd( len( loop ), prefix, xmlElement )
-	for pointIndex in xrange( len( loop ) ):
+	startEnd = lineation.StartEnd( len(loop), prefix, xmlElement )
+	for pointIndex in xrange(len(loop)):
 		if pointIndex >= startEnd.start and pointIndex < startEnd.end:
 			segmentLoop += getSegmentPath( loop, path, pointIndex, segmentCenter )
 		else:
-			segmentLoop.append( loop[ pointIndex ] )
+			segmentLoop.append( loop[pointIndex] )
 	return [ euclidean.getLoopWithoutCloseSequentialPoints( close, segmentLoop ) ]
 
 def getRadialPath( begin, end, path, segmentCenter ):
@@ -71,15 +71,15 @@ def getRadialPath( begin, end, path, segmentCenter ):
 
 def getSegmentPath( loop, path, pointIndex, segmentCenter ):
 	"Get segment path."
-	centerBegin = loop[ pointIndex ]
-	centerEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
+	centerBegin = loop[pointIndex]
+	centerEnd = loop[(pointIndex + 1) % len(loop)]
 	centerEndMinusBegin = centerEnd - centerBegin
 	if abs( centerEndMinusBegin ) <= 0.0:
 		return [ centerBegin ]
 	if segmentCenter != None:
 		return getRadialPath( centerBegin, centerEnd, path, segmentCenter )
-	begin = loop[ ( pointIndex + len( loop ) - 1 ) % len( loop ) ]
-	end = loop[ ( pointIndex + 2 ) % len( loop ) ]
+	begin = loop[(pointIndex + len(loop) - 1) % len(loop)]
+	end = loop[ ( pointIndex + 2 ) % len(loop) ]
 	return getWedgePath( begin, centerBegin, centerEnd, centerEndMinusBegin, end, path )
 
 def getSegmentPathDefault():
@@ -90,12 +90,12 @@ def getXNormalizedVector3Path( path ):
 	"Get path where the x ranges from 0 to 1."
 	if len( path ) < 1:
 		return path
-	minimumX = path[ 0 ].x
+	minimumX = path[0].x
 	for point in path[ 1 : ]:
 		minimumX = min( minimumX, point.x )
 	for point in path:
 		point.x -= minimumX
-	maximumX = path[ 0 ].x
+	maximumX = path[0].x
 	for point in path[ 1 : ]:
 		maximumX = max( maximumX, point.x )
 	for point in path:

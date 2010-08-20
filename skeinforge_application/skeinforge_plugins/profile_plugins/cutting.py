@@ -39,7 +39,7 @@ __license__ = "GPL 3.0"
 
 def getCraftSequence():
 	"Get the cutting craft sequence."
-	return 'chop,preface,outset,multiply,whittle,drill,lift,flow,feed,home,lash,fillet,limit,dimension,unpause,export'.split( ',' )
+	return 'chop,preface,outset,multiply,whittle,drill,lift,flow,feed,home,lash,fillet,limit,dimension,unpause,export'.split(',')
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -50,13 +50,13 @@ class CuttingRepository:
 	"A class to handle the cutting settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'end_mill', self, 'skeinforge_plugins.profile_plugins.cutting.html' )
+		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'end_mill', self, 'skeinforge_plugins.profile_plugins.cutting.html')
 
 
 def main():
 	"Display the export dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

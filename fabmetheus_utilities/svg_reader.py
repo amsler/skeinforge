@@ -1,24 +1,6 @@
 """
-This page is in the table of contents.
-The svg.py script is an import translator plugin to get a carving from an svg file.
+Svg reader.
 
-An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
-
-The getCarving function takes the file name of an svg file and returns the carving.
-
-This example gets a carving for the svg file Screw Holder Bottom.svg.  This example is run in a terminal in the folder which contains Screw Holder Bottom.svg and svg.py.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import svg
->>> svg.getCarving()
-0.20000000298, 999999999.0, -999999999.0, [8.72782748851e-17, None
-..
-many more lines of the carving
-..
 """
 
 
@@ -45,18 +27,6 @@ __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
-
-
-globalFontFileNames = None
-globalFontReaderDictionary = {}
-globalGetTricomplexDictionary = {}
-globalNumberOfCornerPoints = 11
-globalNumberOfBezierPoints = globalNumberOfCornerPoints + globalNumberOfCornerPoints
-globalBezierPortion = 1.0 / float(globalNumberOfBezierPoints)
-globalNumberOfCirclePoints = 4 * globalNumberOfCornerPoints
-globalProcessPathWordDictionary = {}
-globalProcessSVGElementDictionary = {}
-globalSideAngle = 0.5 * math.pi / float( globalNumberOfCornerPoints )
 
 
 def addFunctionsToDictionary( dictionary, functions, prefix ):
@@ -95,7 +65,7 @@ def getArcComplexes( begin, end, largeArcFlag, radius, sweepFlag, xAxisRotation 
 	arcComplexes = []
 	center = complex(centerTransformed.real * radius.real, centerTransformed.imag * radius.imag)
 	for side in xrange( 1, sides ):
-		unitPolar = euclidean.getWiddershinsUnitPolar( beginAngle + float( side ) * sideAngle )
+		unitPolar = euclidean.getWiddershinsUnitPolar( beginAngle + float(side) * sideAngle )
 		point = center + complex( unitPolar.real * radius.real, unitPolar.imag * radius.imag )
 		arcComplexes.append( point )
 	arcComplexes.append( end )
@@ -117,8 +87,8 @@ def getChainMatrixSVGIfNecessary(xmlElement, yAxisPointingUpward):
 
 def getCubicComplex( along, begin, controlPoints, end ):
 	'Get the cubic complex.'
-	segmentBegin = getQuadraticComplex( along, begin, controlPoints[ 0 ], controlPoints[ 1 ] )
-	segmentEnd = getQuadraticComplex( along, controlPoints[ 0 ], controlPoints[ 1 ], end )
+	segmentBegin = getQuadraticComplex( along, begin, controlPoints[0], controlPoints[1] )
+	segmentEnd = getQuadraticComplex( along, controlPoints[0], controlPoints[1], end )
 	return ( 1.0 - along ) * segmentBegin + along * segmentEnd
 
 def getCubicComplexes( begin, controlPoints, end ):
@@ -153,7 +123,7 @@ def getFontsDirectoryPath():
 def getLabelString( dictionary ):
 	"Get the label string for the dictionary."
 	for key in dictionary:
-		labelIndex = key.find( 'label' )
+		labelIndex = key.find('label')
 		if labelIndex >= 0:
 			return dictionary[ key ]
 	return ''
@@ -296,10 +266,10 @@ def getTricomplextranslate(transformWords):
 def processSVGElementcircle( svgReader, xmlElement ):
 	"Process xmlElement by svgReader."
 	attributeDictionary = xmlElement.attributeDictionary
-	center = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'cx', 'cy' )
-	radius = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'r' )
+	center = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'cx', 'cy')
+	radius = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'r')
 	if radius == 0.0:
-		print( 'Warning, in processSVGElementcircle in svgReader radius is zero in:' )
+		print('Warning, in processSVGElementcircle in svgReader radius is zero in:')
 		print( attributeDictionary )
 		return
 	global globalNumberOfCirclePoints
@@ -307,17 +277,17 @@ def processSVGElementcircle( svgReader, xmlElement ):
 	loop = []
 	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
 	for side in xrange( globalNumberOfCirclePoints ):
-		unitPolar = euclidean.getWiddershinsUnitPolar( float( side ) * globalSideAngle )
+		unitPolar = euclidean.getWiddershinsUnitPolar( float(side) * globalSideAngle )
 		loop.append( center + radius * unitPolar )
 	rotatedLoopLayer.loops += getTransformedFillOutline(loop, xmlElement, svgReader.yAxisPointingUpward)
 
 def processSVGElementellipse( svgReader, xmlElement ):
 	"Process xmlElement by svgReader."
 	attributeDictionary = xmlElement.attributeDictionary
-	center = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'cx', 'cy' )
-	radius = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'rx', 'ry' )
+	center = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'cx', 'cy')
+	radius = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'rx', 'ry')
 	if radius.real == 0.0 or radius.imag == 0.0:
-		print( 'Warning, in processSVGElementellipse in svgReader radius is zero in:' )
+		print('Warning, in processSVGElementellipse in svgReader radius is zero in:')
 		print( attributeDictionary )
 		return
 	global globalNumberOfCirclePoints
@@ -325,7 +295,7 @@ def processSVGElementellipse( svgReader, xmlElement ):
 	loop = []
 	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
 	for side in xrange( globalNumberOfCirclePoints ):
-		unitPolar = euclidean.getWiddershinsUnitPolar( float( side ) * globalSideAngle )
+		unitPolar = euclidean.getWiddershinsUnitPolar( float(side) * globalSideAngle )
 		loop.append( center + complex( unitPolar.real * radius.real, unitPolar.imag * radius.imag ) )
 	rotatedLoopLayer.loops += getTransformedFillOutline(loop, xmlElement, svgReader.yAxisPointingUpward)
 
@@ -333,20 +303,20 @@ def processSVGElementg( svgReader, xmlElement ):
 	"Process xmlElement by svgReader."
 	if 'id' not in xmlElement.attributeDictionary:
 		return
-	idString = xmlElement.attributeDictionary[ 'id' ].lower()
+	idString = xmlElement.attributeDictionary['id'].lower()
 	if idString == 'beginningofcontrolsection':
 		svgReader.stopProcessing = True
 		return
-	zIndex = idString.find( 'z:' )
+	zIndex = idString.find('z:')
 	if zIndex < 0:
 		idString = getLabelString( xmlElement.attributeDictionary )
-		zIndex = idString.find( 'z:' )
+		zIndex = idString.find('z:')
 	if zIndex < 0:
 		return
-	floatFromValue = euclidean.getFloatFromValue( idString[ zIndex + len( 'z:' ) : ].strip() )
+	floatFromValue = euclidean.getFloatFromValue( idString[ zIndex + len('z:') : ].strip() )
 	if floatFromValue != None:
 		svgReader.z = floatFromValue
-	svgReader.bridgeRotation = euclidean.getComplexDefaultByDictionary( None, xmlElement.attributeDictionary, 'bridgeRotation' )
+	svgReader.bridgeRotation = euclidean.getComplexDefaultByDictionary( None, xmlElement.attributeDictionary, 'bridgeRotation')
 
 def processSVGElementline(svgReader, xmlElement):
 	"Process xmlElement by svgReader."
@@ -358,7 +328,7 @@ def processSVGElementline(svgReader, xmlElement):
 def processSVGElementpath( svgReader, xmlElement ):
 	"Process xmlElement by svgReader."
 	if 'd' not in xmlElement.attributeDictionary:
-		print( 'Warning, in processSVGElementpath in svgReader can not get a value for d in:' )
+		print('Warning, in processSVGElementpath in svgReader can not get a value for d in:')
 		print( xmlElement.attributeDictionary )
 		return
 	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
@@ -367,7 +337,7 @@ def processSVGElementpath( svgReader, xmlElement ):
 def processSVGElementpolygon( svgReader, xmlElement ):
 	"Process xmlElement by svgReader."
 	if 'points' not in xmlElement.attributeDictionary:
-		print( 'Warning, in processSVGElementpolygon in svgReader can not get a value for d in:' )
+		print('Warning, in processSVGElementpolygon in svgReader can not get a value for d in:')
 		print( xmlElement.attributeDictionary )
 		return
 	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
@@ -393,19 +363,19 @@ def processSVGElementpolyline(svgReader, xmlElement):
 def processSVGElementrect( svgReader, xmlElement ):
 	"Process xmlElement by svgReader."
 	attributeDictionary = xmlElement.attributeDictionary
-	height = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'height' )
+	height = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'height')
 	if height == 0.0:
-		print( 'Warning, in processSVGElementrect in svgReader height is zero in:' )
+		print('Warning, in processSVGElementrect in svgReader height is zero in:')
 		print( attributeDictionary )
 		return
-	width = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'width' )
+	width = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'width')
 	if width == 0.0:
-		print( 'Warning, in processSVGElementrect in svgReader width is zero in:' )
+		print('Warning, in processSVGElementrect in svgReader width is zero in:')
 		print( attributeDictionary )
 		return
 	center = euclidean.getComplexDefaultByDictionaryKeys(complex(), attributeDictionary, 'x', 'y')
 	inradius = 0.5 * complex( width, height )
-	cornerRadius = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'rx', 'ry' )
+	cornerRadius = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'rx', 'ry')
 	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
 	if cornerRadius.real == 0.0 and cornerRadius.imag == 0.0:
 		inradiusMinusX = complex( - inradius.real, inradius.imag )
@@ -423,7 +393,7 @@ def processSVGElementrect( svgReader, xmlElement ):
 	global globalNumberOfCornerPoints
 	global globalSideAngle
 	for side in xrange( 1, globalNumberOfCornerPoints ):
-		unitPolar = euclidean.getWiddershinsUnitPolar( float( side ) * globalSideAngle )
+		unitPolar = euclidean.getWiddershinsUnitPolar( float(side) * globalSideAngle )
 		ellipsePath.append( complex( unitPolar.real * cornerRadius.real, unitPolar.imag * cornerRadius.imag ) )
 	ellipsePath.append( complex( 0.0, cornerRadius.imag ) )
 	cornerPoints = []
@@ -438,7 +408,7 @@ def processSVGElementrect( svgReader, xmlElement ):
 		loop.append( center - cornerPoint )
 	for cornerPoint in cornerPointsReversed:
 		loop.append( center + complex( cornerPoint.real, - cornerPoint.imag ) )
-	loop = euclidean.getLoopWithoutCloseSequentialPoints( 0.0001 * abs( inradius ), loop )
+	loop = euclidean.getLoopWithoutCloseSequentialPoints( 0.0001 * abs(inradius), loop )
 	rotatedLoopLayer.loops += getTransformedFillOutline(loop, xmlElement, svgReader.yAxisPointingUpward)
 
 def processSVGElementtext(svgReader, xmlElement):
@@ -577,7 +547,7 @@ class PathReader:
 		self.outlinePaths = []
 		self.path = []
 		self.xmlElement = xmlElement
-		pathString = xmlElement.attributeDictionary[ 'd' ].replace( ',', ' ' )
+		pathString = xmlElement.attributeDictionary['d'].replace(',', ' ')
 		global globalProcessPathWordDictionary
 		processPathWordDictionaryKeys = globalProcessPathWordDictionary.keys()
 		for processPathWordDictionaryKey in processPathWordDictionaryKeys:
@@ -861,13 +831,16 @@ class SVGReader:
 			try:
 				globalProcessSVGElementDictionary[ lowerClassName ]( self, xmlElement )
 			except:
-				print( 'Warning, in processXMLElement in svg_reader, could not process:' )
-				print( xmlElement )
+				print('Warning, in processXMLElement in svg_reader, could not process:')
+				print(xmlElement)
 				traceback.print_exc( file = sys.stdout )
 		for child in xmlElement.children:
 			self.processXMLElement( child )
 
 
+globalFontFileNames = None
+globalFontReaderDictionary = {}
+globalGetTricomplexDictionary = {}
 globalGetTricomplexFunctions = [
 	getTricomplexmatrix,
 	getTricomplexrotate,
@@ -875,7 +848,10 @@ globalGetTricomplexFunctions = [
 	getTricomplexskewX,
 	getTricomplexskewY,
 	getTricomplextranslate ]
-
+globalNumberOfCornerPoints = 11
+globalNumberOfBezierPoints = globalNumberOfCornerPoints + globalNumberOfCornerPoints
+globalBezierPortion = 1.0 / float(globalNumberOfBezierPoints)
+globalNumberOfCirclePoints = 4 * globalNumberOfCornerPoints
 globalProcessPathWordFunctions = [
 	PathReader.processPathWordA,
 	PathReader.processPathWorda,
@@ -897,7 +873,8 @@ globalProcessPathWordFunctions = [
 	PathReader.processPathWordv,
 	PathReader.processPathWordZ,
 	PathReader.processPathWordz ]
-
+globalProcessPathWordDictionary = {}
+globalProcessSVGElementDictionary = {}
 globalProcessSVGElementFunctions = [
 	processSVGElementcircle,
 	processSVGElementellipse,
@@ -908,7 +885,9 @@ globalProcessSVGElementFunctions = [
 	processSVGElementpolyline,
 	processSVGElementrect,
 	processSVGElementtext ]
+globalSideAngle = 0.5 * math.pi / float( globalNumberOfCornerPoints )
 
-addFunctionsToDictionary( globalGetTricomplexDictionary, globalGetTricomplexFunctions, 'getTricomplex' )
-addFunctionsToDictionary( globalProcessPathWordDictionary, globalProcessPathWordFunctions, 'processPathWord' )
-addFunctionsToDictionary( globalProcessSVGElementDictionary, globalProcessSVGElementFunctions, 'processSVGElement' )
+
+addFunctionsToDictionary( globalGetTricomplexDictionary, globalGetTricomplexFunctions, 'getTricomplex')
+addFunctionsToDictionary( globalProcessPathWordDictionary, globalProcessPathWordFunctions, 'processPathWord')
+addFunctionsToDictionary( globalProcessSVGElementDictionary, globalProcessSVGElementFunctions, 'processSVGElement')

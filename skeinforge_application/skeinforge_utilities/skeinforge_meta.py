@@ -23,7 +23,7 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join( 'skeinforge_plugins', 'meta_plugins' ) )
+	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'meta_plugins') )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -34,6 +34,6 @@ class MetaRepository:
 	"A class to handle the meta settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_utilities.skeinforge_meta.html', '', self )
-		importantFileNames = [ 'polyfile' ]
+		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_meta.html', '', self )
+		importantFileNames = ['polyfile']
 		settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )

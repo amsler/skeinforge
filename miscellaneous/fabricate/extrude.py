@@ -161,8 +161,8 @@ import __init__
 try:
 	import serial	# Import the pySerial modules.
 except:
-	print( 'You do not have pySerial installed, which is needed to control the serial port.' )
-	print( 'Information on pySerial is at:\nhttp://pyserial.wiki.sourceforge.net/pySerial' )
+	print('You do not have pySerial installed, which is needed to control the serial port.')
+	print('Information on pySerial is at:\nhttp://pyserial.wiki.sourceforge.net/pySerial')
 
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
 from skeinforge_tools.skeinforge_utilities import euclidean
@@ -178,7 +178,7 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def display( filename = '' ):
+def display( filename = ''):
 	"Parse a gcode file and display the commands.  If no filename is specified, parse all the gcode files which are not log files in this folder."
 	if filename == '':
 		displayFiles( getGCodeFilesWhichAreNotLogFiles() )
@@ -187,22 +187,22 @@ def display( filename = '' ):
 
 def displayFile( filename ):
 	"Parse a gcode file and display the commands."
-	print( 'File ' + filename + ' is being displayed.' )
+	print('File ' + filename + ' is being displayed.')
 	fileText = gcodec.getFileText( filename )
-	gcodec.writeFileMessageSuffix( filename, displayText( fileText ), 'The gcode log file is saved as ', '_log' )
+	gcodec.writeFileMessageSuffix( filename, displayText( fileText ), 'The gcode log file is saved as ', '_log')
 
 def displayFiles( filenames ):
 	"Parse gcode files and display the commands."
 	for filename in filenames:
 		displayFile( filename )
 
-def displayText( gcodeText ):
+def displayText(gcodeText):
 	"Parse a gcode text and display the commands."
 	skein = displaySkein()
-	skein.parseText( gcodeText )
+	skein.parseText(gcodeText)
 	return skein.output
 
-def extrude( filename = '' ):
+def extrude( filename = ''):
 	"""Parse a gcode file and send the commands to the extruder.  If no filename is specified, parse all the gcode files which are not log files in this folder.
 	This function requires write access to the serial device, running as root is one way to get that access."""
 	if filename == '':
@@ -213,9 +213,9 @@ def extrude( filename = '' ):
 def extrudeFile( filename ):
 	"""Parse a gcode file and send the commands to the extruder.
 	This function requires write access to the serial device, running as root is one way to get that access."""
-	print( 'File ' + filename + ' is being extruded.' )
+	print('File ' + filename + ' is being extruded.')
 	fileText = gcodec.getFileText( filename )
-	gcodec.writeFileMessageSuffix( filename, extrudeText( fileText ), 'The gcode log file is saved as ', '_log' )
+	gcodec.writeFileMessageSuffix( filename, extrudeText( fileText ), 'The gcode log file is saved as ', '_log')
 
 def extrudeFiles( filenames ):
 	"""Parse gcode files and send the commands to the extruder.
@@ -223,16 +223,16 @@ def extrudeFiles( filenames ):
 	for filename in filenames:
 		extrudeFile( filename )
 
-def extrudeText( gcodeText ):
+def extrudeText(gcodeText):
 	"""Parse a gcode text and send the commands to the extruder.
 	This function requires write access to the serial device, running as root is one way to get that access."""
 	skein = extrudeSkein()
-	skein.parseText( gcodeText )
+	skein.parseText(gcodeText)
 	return skein.output
 
 def getGCodeFilesWhichAreNotLogFiles():
 	"Get gcode files which are not log files."
-	return gcodec.getFilesWithFileTypeWithoutWords( 'gcode', [ '_log' ] )
+	return gcodec.getFilesWithFileTypeWithoutWords('gcode', ['_log'] )
 
 def getIntegerString( number ):
 	"Get integer as string."
@@ -249,7 +249,7 @@ class displaySkein:
 
 	def addToOutput( self, line ):
 		"Add line with a newline at the end to the output."
-		print( line )
+		print(line)
 		self.output += line + '\n'
 
 	def evaluateCommand( self, command ):
@@ -301,7 +301,7 @@ class displaySkein:
 
 	def homeReset( self ):
 		"Send all axies to home position. Wait until arrival."
-		homeCommandString = 'reprap.cartesian.homeReset( ' + getIntegerString( self.feedrateMinute ) + ', True )'
+		homeCommandString = 'reprap.cartesian.homeReset(' + getIntegerString( self.feedrateMinute ) + ', True )'
 		self.evaluateCommand( homeCommandString )
 
 	def linearMove( self, splitLine ):
@@ -320,34 +320,34 @@ class displaySkein:
 		xMoveString = getIntegerString( location.x )
 		yMoveString = getIntegerString( location.y )
 		zMoveString = getIntegerString( location.z )
-		moveCommandString = 'reprap.cartesian.seek( ( ' + xMoveString + ', ' + yMoveString + ', ' + zMoveString + '), ' + moveSpeedString + ', True )'
+		moveCommandString = 'reprap.cartesian.seek( (' + xMoveString + ', ' + yMoveString + ', ' + zMoveString + '), ' + moveSpeedString + ', True )'
 		self.evaluateCommand( moveCommandString )
 
 	def parseGCode( self, lines ):
 		"Parse gcode and send the commands to the extruder."
-		self.evaluateCommand( 'reprap.serial = serial.Serial(0, 19200, timeout = 60)' )	# Initialise serial port, here the first port (0) is used.
-		self.evaluateCommand( 'reprap.cartesian.x.active = True' )	# These devices are present in network, will automatically scan in the future.
-		self.evaluateCommand( 'reprap.cartesian.y.active = True' )
-		self.evaluateCommand( 'reprap.cartesian.z.active = True' )
-		self.evaluateCommand( 'reprap.extruder.active = True' )
-		self.evaluateCommand( 'reprap.cartesian.x.setNotify()' )
-		self.evaluateCommand( 'reprap.cartesian.y.setNotify()' )
-		self.evaluateCommand( 'reprap.cartesian.z.setNotify()' )
-		self.evaluateCommand( 'reprap.cartesian.x.limit = 2523' )
-		self.evaluateCommand( 'reprap.cartesian.y.limit = 2000' )
+		self.evaluateCommand('reprap.serial = serial.Serial(0, 19200, timeout = 60)')	# Initialise serial port, here the first port (0) is used.
+		self.evaluateCommand('reprap.cartesian.x.active = True')	# These devices are present in network, will automatically scan in the future.
+		self.evaluateCommand('reprap.cartesian.y.active = True')
+		self.evaluateCommand('reprap.cartesian.z.active = True')
+		self.evaluateCommand('reprap.extruder.active = True')
+		self.evaluateCommand('reprap.cartesian.x.setNotify()')
+		self.evaluateCommand('reprap.cartesian.y.setNotify()')
+		self.evaluateCommand('reprap.cartesian.z.setNotify()')
+		self.evaluateCommand('reprap.cartesian.x.limit = 2523')
+		self.evaluateCommand('reprap.cartesian.y.limit = 2000')
 		self.homeReset()	# The module is now ready to receive commands
 		for line in lines:
-			self.parseLine( line )
+			self.parseLine(line)
 		self.homeReset()
-		self.evaluateCommand( 'reprap.cartesian.free()' )	# Shut off power to all motors.
+		self.evaluateCommand('reprap.cartesian.free()')	# Shut off power to all motors.
 
 	def parseLine( self, line ):
 		"Parse a gcode line and send the command to the extruder."
-		self.addToOutput( line )
-		splitLine = line.split( ' ' )
+		self.addToOutput(line)
+		splitLine = line.split(' ')
 		if len( splitLine ) < 1:
 			return 0
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			self.linearMove( splitLine )
 		if firstWord == 'G2':
@@ -356,10 +356,10 @@ class displaySkein:
 			self.helicalMove( True, splitLine )
 		if firstWord == 'M101':
 			self.extruderActive = 1
-			self.evaluateCommand( 'reprap.extruder.setMotor(reprap.CMD_REVERSE, 150)' )
+			self.evaluateCommand('reprap.extruder.setMotor(reprap.CMD_REVERSE, 150)')
 		if firstWord == 'M103':
 			self.extruderActive = 0
-			self.evaluateCommand( 'reprap.extruder.setMotor(reprap.CMD_REVERSE, 0)' )
+			self.evaluateCommand('reprap.extruder.setMotor(reprap.CMD_REVERSE, 0)')
 			self.oldActiveLocation = None
 
 	def parseText( self, text ):
@@ -380,10 +380,10 @@ class extrudeSkein( displaySkein ):
 		"""Add an extruder command to the output and evaluate the extruder command.
 		Display the entire command, but only evaluate the command after the first equal sign."""
 		self.addToOutput( command )
-		firstEqualIndex = command.find( '=' )
+		firstEqualIndex = command.find('=')
 		exec( command )
 
 
-print( 'Extrude has been imported.' )
-print( 'The gcode files in this directory that are not log files are the following:' )
+print('Extrude has been imported.')
+print('The gcode files in this directory that are not log files are the following:')
 print( getGCodeFilesWhichAreNotLogFiles() )

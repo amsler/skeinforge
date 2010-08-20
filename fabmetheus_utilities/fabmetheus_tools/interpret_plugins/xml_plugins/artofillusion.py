@@ -31,7 +31,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import face
-from fabmetheus_utilities.geometry.manipulation_evaluator_tools import matrix
+from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_geometry
 from fabmetheus_utilities.geometry.geometry_utilities import booleansolid
 from fabmetheus_utilities.geometry.solids import cube
@@ -54,9 +54,9 @@ def getCarvingFromParser( xmlParser ):
 	booleanGeometry = boolean_geometry.BooleanGeometry()
 	artOfIllusionElement = xmlParser.getRoot()
 	artOfIllusionElement.object = booleanGeometry
-	euclidean.removeListFromDictionary( artOfIllusionElement.attributeDictionary, [ 'fileversion', 'xmlns:bf' ] )
-	sceneElement = artOfIllusionElement.getFirstChildWithClassName( 'Scene' )
-	xmlElements = sceneElement.getFirstChildWithClassName( 'objects' ).getChildrenWithClassName( 'bf:Elem' )
+	euclidean.removeListFromDictionary( artOfIllusionElement.attributeDictionary, ['fileversion', 'xmlns:bf'] )
+	sceneElement = artOfIllusionElement.getFirstChildWithClassName('Scene')
+	xmlElements = sceneElement.getFirstChildWithClassName('objects').getChildrenWithClassName('bf:Elem')
 	for xmlElement in xmlElements:
 		processXMLElement( booleanGeometry.archivableObjects, artOfIllusionElement, xmlElement )
 	return booleanGeometry
@@ -79,7 +79,7 @@ def getTransformXMLElement( coords, transformName ):
 	transformXMLElement = coords.getFirstChildWithClassName( transformName )
 	if len( transformXMLElement.attributeDictionary ) < 16:
 		if 'bf:ref' in transformXMLElement.attributeDictionary:
-			idReference = transformXMLElement.attributeDictionary[ 'bf:ref' ]
+			idReference = transformXMLElement.attributeDictionary['bf:ref']
 			return coords.getRoot().getSubChildWithID( idReference )
 	return transformXMLElement
 
@@ -87,22 +87,22 @@ def processXMLElement( archivableObjects, parent, xmlElement ):
 	"Add the object info if it is carvable."
 	if xmlElement == None:
 		return
-	object = xmlElement.getFirstChildWithClassName( 'object' )
+	object = xmlElement.getFirstChildWithClassName('object')
 	if 'bf:type' not in object.attributeDictionary:
 		return
-	shapeType = object.attributeDictionary[ 'bf:type' ]
+	shapeType = object.attributeDictionary['bf:type']
 	if shapeType not in globalCarvableClassObjectTable:
 		return
 	carvableClassObject = globalCarvableClassObjectTable[ shapeType ]
 	archivableObject = getCarvableObject( carvableClassObject, object, xmlElement )
-	archivableObject.xmlElement.attributeDictionary[ 'visible' ] = xmlElement.attributeDictionary[ 'visible' ]
+	archivableObject.xmlElement.attributeDictionary['visible'] = xmlElement.attributeDictionary['visible']
 	archivableObject.setToObjectAttributeDictionary()
 	archivableObject.xmlElement.parent = parent
 	archivableObjects.append( archivableObject )
 
 def removeListArtOfIllusionFromDictionary( dictionary, scrubKeys ):
 	"Remove the list and art of illusion keys from the dictionary."
-	euclidean.removeListFromDictionary( dictionary, [ 'bf:id', 'bf:type' ] )
+	euclidean.removeListFromDictionary( dictionary, ['bf:id', 'bf:type'] )
 	euclidean.removeListFromDictionary( dictionary, scrubKeys )
 
 
@@ -110,13 +110,13 @@ class BooleanSolid( booleansolid.BooleanSolid ):
 	"An Art of Illusion CSG object info."
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		processXMLElement( self.archivableObjects, self.xmlElement, self.xmlElement.getFirstChildWithClassName( 'obj1' ) )
-		processXMLElement( self.archivableObjects, self.xmlElement, self.xmlElement.getFirstChildWithClassName( 'obj2' ) )
-		operationString = self.xmlElement.attributeDictionary[ 'operation' ]
+		processXMLElement( self.archivableObjects, self.xmlElement, self.xmlElement.getFirstChildWithClassName('obj1') )
+		processXMLElement( self.archivableObjects, self.xmlElement, self.xmlElement.getFirstChildWithClassName('obj2') )
+		operationString = self.xmlElement.attributeDictionary['operation']
 		self.operationFunction = { '0': self.getUnion, '1': self.getIntersection, '2': self.getDifference, '3': self.getDifference }[ operationString ]
 		if operationString == '3':
 			self.archivableObjects.reverse()
-		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [ 'operation' ] )
+		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, ['operation'] )
 
 
 class Cube( cube.Cube ):
@@ -124,13 +124,13 @@ class Cube( cube.Cube ):
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
 		self.inradius = Vector3(
-			float( self.xmlElement.attributeDictionary[ 'halfx' ] ),
-			float( self.xmlElement.attributeDictionary[ 'halfy' ] ),
-			float( self.xmlElement.attributeDictionary[ 'halfz' ] ) )
-		self.xmlElement.attributeDictionary[ 'inradius.x' ] = self.xmlElement.attributeDictionary[ 'halfx' ]
-		self.xmlElement.attributeDictionary[ 'inradius.y' ] = self.xmlElement.attributeDictionary[ 'halfy' ]
-		self.xmlElement.attributeDictionary[ 'inradius.z' ] = self.xmlElement.attributeDictionary[ 'halfz' ]
-		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [ 'halfx', 'halfy', 'halfz' ] )
+			float( self.xmlElement.attributeDictionary['halfx'] ),
+			float( self.xmlElement.attributeDictionary['halfy'] ),
+			float( self.xmlElement.attributeDictionary['halfz'] ) )
+		self.xmlElement.attributeDictionary['inradius.x'] = self.xmlElement.attributeDictionary['halfx']
+		self.xmlElement.attributeDictionary['inradius.y'] = self.xmlElement.attributeDictionary['halfy']
+		self.xmlElement.attributeDictionary['inradius.z'] = self.xmlElement.attributeDictionary['halfz']
+		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, ['halfx', 'halfy', 'halfz'] )
 		self.createShape()
 
 
@@ -139,16 +139,15 @@ class Cylinder(cylinder.Cylinder):
 	def setToObjectAttributeDictionary(self):
 		"Set the shape of this carvable object info."
 		self.inradius = Vector3()
-		self.inradius.x = float(self.xmlElement.attributeDictionary[ 'rx' ])
-		self.inradius.y = float(self.xmlElement.attributeDictionary[ 'rz' ])
-		self.inradius.z = float(self.xmlElement.attributeDictionary[ 'height' ])
-		self.topOverBottom = float(self.xmlElement.attributeDictionary[ 'ratio' ])
+		self.inradius.x = float(self.xmlElement.attributeDictionary['rx'])
+		self.inradius.y = float(self.xmlElement.attributeDictionary['rz'])
+		self.inradius.z = float(self.xmlElement.attributeDictionary['height'])
+		self.topOverBottom = float(self.xmlElement.attributeDictionary['ratio'])
 		self.xmlElement.attributeDictionary['radius.x'] = self.xmlElement.attributeDictionary['rx']
 		self.xmlElement.attributeDictionary['radius.y'] = self.xmlElement.attributeDictionary['rz']
 		self.xmlElement.attributeDictionary['topoverbottom'] = self.xmlElement.attributeDictionary['ratio']
 		object = self.xmlElement.object
 		object.matrix4X4 = object.matrix4X4.getOtherTimesSelf(matrix.getDiagonalSwitchedTetragrid(90.0, [0, 2]))
-		print(  self.xmlElement.object.matrix4X4)
 		removeListArtOfIllusionFromDictionary(self.xmlElement.attributeDictionary, ['rx', 'rz', 'ratio'])
 		self.createShape()
 
@@ -157,8 +156,8 @@ class Group( group.Group ):
 	"An Art of Illusion Group object."
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this group."
-		childrenElement = self.xmlElement.parent.getFirstChildWithClassName( 'children' )
-		children = childrenElement.getChildrenWithClassName( 'bf:Elem' )
+		childrenElement = self.xmlElement.parent.getFirstChildWithClassName('children')
+		children = childrenElement.getChildrenWithClassName('bf:Elem')
 		for child in children:
 			processXMLElement( self.archivableObjects, self.xmlElement, child )
 		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [] )
@@ -169,13 +168,13 @@ class Sphere( sphere.Sphere ):
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object."
 		self.radius = Vector3(
-			float( self.xmlElement.attributeDictionary[ 'rx' ] ),
-			float( self.xmlElement.attributeDictionary[ 'ry' ] ),
-			float( self.xmlElement.attributeDictionary[ 'rz' ] ) )
-		self.xmlElement.attributeDictionary[ 'radius.x' ] = self.xmlElement.attributeDictionary[ 'rx' ]
-		self.xmlElement.attributeDictionary[ 'radius.y' ] = self.xmlElement.attributeDictionary[ 'ry' ]
-		self.xmlElement.attributeDictionary[ 'radius.z' ] = self.xmlElement.attributeDictionary[ 'rz' ]
-		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [ 'rx', 'ry', 'rz' ] )
+			float( self.xmlElement.attributeDictionary['rx'] ),
+			float( self.xmlElement.attributeDictionary['ry'] ),
+			float( self.xmlElement.attributeDictionary['rz'] ) )
+		self.xmlElement.attributeDictionary['radius.x'] = self.xmlElement.attributeDictionary['rx']
+		self.xmlElement.attributeDictionary['radius.y'] = self.xmlElement.attributeDictionary['ry']
+		self.xmlElement.attributeDictionary['radius.z'] = self.xmlElement.attributeDictionary['rz']
+		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, ['rx', 'ry', 'rz'] )
 		self.createShape()
 
 
@@ -183,26 +182,26 @@ class TriangleMesh( trianglemesh.TriangleMesh ):
 	"An Art of Illusion triangle mesh object."
 	def setToObjectAttributeDictionary( self ):
 		"Set the shape of this carvable object info."
-		vertexElement = self.xmlElement.getFirstChildWithClassName( 'vertex' )
-		vertexPointElements = vertexElement.getChildrenWithClassName( 'bf:Elem' )
+		vertexElement = self.xmlElement.getFirstChildWithClassName('vertex')
+		vertexPointElements = vertexElement.getChildrenWithClassName('bf:Elem')
 		for vertexPointElement in vertexPointElements:
-			coordinateElement = vertexPointElement.getFirstChildWithClassName( 'r' )
-			vertex = Vector3( float( coordinateElement.attributeDictionary[ 'x' ] ), float( coordinateElement.attributeDictionary[ 'y' ] ), float( coordinateElement.attributeDictionary[ 'z' ] ) )
-			self.vertices.append( vertex )
-		edgeElement = self.xmlElement.getFirstChildWithClassName( 'edge' )
-		edgeSubelements = edgeElement.getChildrenWithClassName( 'bf:Elem' )
+			coordinateElement = vertexPointElement.getFirstChildWithClassName('r')
+			vertex = Vector3( float( coordinateElement.attributeDictionary['x'] ), float( coordinateElement.attributeDictionary['y'] ), float( coordinateElement.attributeDictionary['z'] ) )
+			self.vertices.append(vertex)
+		edgeElement = self.xmlElement.getFirstChildWithClassName('edge')
+		edgeSubelements = edgeElement.getChildrenWithClassName('bf:Elem')
 		for edgeSubelementIndex in xrange( len( edgeSubelements ) ):
 			edgeSubelement = edgeSubelements[ edgeSubelementIndex ]
-			vertexIndexes = [ int( edgeSubelement.attributeDictionary[ 'v1' ] ), int( edgeSubelement.attributeDictionary[ 'v2' ] ) ]
+			vertexIndexes = [ int( edgeSubelement.attributeDictionary['v1'] ), int( edgeSubelement.attributeDictionary['v2'] ) ]
 			edge = face.Edge().getFromVertexIndexes( edgeSubelementIndex, vertexIndexes )
 			self.edges.append( edge )
-		faceElement = self.xmlElement.getFirstChildWithClassName( 'face' )
-		faceSubelements = faceElement.getChildrenWithClassName( 'bf:Elem' )
+		faceElement = self.xmlElement.getFirstChildWithClassName('face')
+		faceSubelements = faceElement.getChildrenWithClassName('bf:Elem')
 		for faceSubelementIndex in xrange( len( faceSubelements ) ):
 			faceSubelement = faceSubelements[ faceSubelementIndex ]
-			edgeIndexes = [ int( faceSubelement.attributeDictionary[ 'e1' ] ), int( faceSubelement.attributeDictionary[ 'e2' ] ), int( faceSubelement.attributeDictionary[ 'e3' ] ) ]
+			edgeIndexes = [ int( faceSubelement.attributeDictionary['e1'] ), int( faceSubelement.attributeDictionary['e2'] ), int( faceSubelement.attributeDictionary['e3'] ) ]
 			self.faces.append( face.Face().getFromEdgeIndexes( edgeIndexes, self.edges, faceSubelementIndex ) )
-		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, [ 'closed', 'smoothingMethod' ] )
+		removeListArtOfIllusionFromDictionary( self.xmlElement.attributeDictionary, ['closed', 'smoothingMethod'] )
 
 
 globalCarvableClassObjectTable = { 'CSGObject' : BooleanSolid, 'Cube' : Cube, 'Cylinder' : Cylinder, 'artofillusion.object.NullObject' : Group, 'Sphere' : Sphere, 'TriangleMesh' : TriangleMesh }

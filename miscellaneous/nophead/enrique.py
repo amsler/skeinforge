@@ -6,7 +6,7 @@ from vector3 import Vector3
 # @param  fileName name of the file
 # @return  entire text of a file.
 def getFileText( fileName ):
-    file = open( fileName, 'r' )
+    file = open( fileName, 'r')
     fileText = file.read()
     file.close()
     return fileText
@@ -15,7 +15,7 @@ def getFileText( fileName ):
 # @param  text text
 # @return  the lines of text of a text
 def getTextLines( text ):
-    return text.replace( '\r', '\n' ).split( '\n' )
+    return text.replace('\r', '\n').split('\n')
 
 # Get the double value of the word after the first letter.
 # @param  word string with value starting after the first letter
@@ -31,7 +31,7 @@ def getDoubleForLetter( letter, splitLine ):
 def indexOfStartingWithSecond( letter, splitLine ):
     for wordIndex in xrange( 1, len( splitLine ) ):
         word = splitLine[ wordIndex ]
-        firstLetter = word[ 0 ]
+        firstLetter = word[0]
         if firstLetter == letter:
             return wordIndex
     return - 1
@@ -69,7 +69,7 @@ class g2gif:
         self.images = []
         self.image = None
         for line in textLines:
-            self.parseLine( line )
+            self.parseLine(line)
         self.images.append(self.image)
         # write GIF animation
         fp = open(outfile, "wb")
@@ -78,10 +78,10 @@ class g2gif:
 
 
     def parseLine(self, line):
-        splitLine = line.split( ' ' )
+        splitLine = line.split(' ')
         if len( splitLine ) < 1:
             return 0
-        firstWord = splitLine[ 0 ]
+        firstWord = splitLine[0]
         if firstWord == 'G1':
             self.linearMove( splitLine )
         if firstWord == 'M101':

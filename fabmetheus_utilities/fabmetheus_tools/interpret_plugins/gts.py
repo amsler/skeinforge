@@ -55,20 +55,20 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 	lines = gcodec.getTextLines( gnuTriangulatedSurfaceText )
 	linesWithoutComments = []
 	for line in lines:
-		if len( line ) > 0:
-			firstCharacter = line[ 0 ]
+		if len(line) > 0:
+			firstCharacter = line[0]
 			if firstCharacter != '#' and firstCharacter != '!':
-				linesWithoutComments.append( line )
-	splitLine = linesWithoutComments[ 0 ].split()
-	numberOfVertices = int( splitLine[ 0 ] )
-	numberOfEdges = int( splitLine[ 1 ] )
-	numberOfFaces = int( splitLine[ 2 ] )
+				linesWithoutComments.append(line)
+	splitLine = linesWithoutComments[0].split()
+	numberOfVertices = int( splitLine[0] )
+	numberOfEdges = int( splitLine[1] )
+	numberOfFaces = int( splitLine[2] )
 	faceTriples = []
 	for vertexIndex in xrange( numberOfVertices ):
 		line = linesWithoutComments[ vertexIndex + 1 ]
 		splitLine = line.split()
-		vertex = Vector3( float( splitLine[ 0 ] ), float( splitLine[ 1 ] ), float( splitLine[ 2 ] ) )
-		triangleMesh.vertices.append( vertex )
+		vertex = Vector3( float( splitLine[0] ), float( splitLine[1] ), float( splitLine[2] ) )
+		triangleMesh.vertices.append(vertex)
 	edgeStart = numberOfVertices + 1
 	for edgeIndex in xrange( numberOfEdges ):
 		line = linesWithoutComments[ edgeIndex + edgeStart ]

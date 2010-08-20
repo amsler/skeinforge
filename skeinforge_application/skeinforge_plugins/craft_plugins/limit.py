@@ -35,7 +35,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the limit dialog.
 
 
->>> limit.writeOutput( 'Screw Holder Bottom.stl' )
+>>> limit.writeOutput('Screw Holder Bottom.stl')
 The limit tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -78,7 +78,7 @@ def getCraftedText( fileName, gcodeText = '', repository = None ):
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Limit a gcode text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'limit' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'limit'):
 		return gcodeText
 	if repository == None:
 		repository = settings.getReadRepository( LimitRepository() )
@@ -90,21 +90,21 @@ def getNewRepository():
 	"Get the repository constructor."
 	return LimitRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Limit a gcode file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'limit' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'limit')
 
 
 class LimitRepository:
 	"A class to handle the limit settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.limit.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Limit', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Limit' )
-		self.activateLimit = settings.BooleanSetting().getFromValue( 'Activate Limit', self, False )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.limit.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Limit', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Limit')
+		self.activateLimit = settings.BooleanSetting().getFromValue('Activate Limit', self, False )
 		self.maximumInitialFeedRate = settings.FloatSpin().getFromValue( 0.5, 'Maximum Initial Feed Rate (mm/s):', self, 10.0, 1.0 )
 		self.executeTitle = 'Limit'
 
@@ -127,7 +127,7 @@ class LimitSkein:
 	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the limit gcode."
 		self.repository = repository
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			self.parseLine( lineIndex )
@@ -145,13 +145,13 @@ class LimitSkein:
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine( '(<procedureDone> limit </procedureDone>)' )
+				self.distanceFeedRate.addLine('(<procedureDone> limit </procedureDone>)')
 				return
-			self.distanceFeedRate.addLine( line )
+			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, lineIndex ):
 		"Parse a gcode line and add it to the limit skein."
@@ -159,16 +159,16 @@ class LimitSkein:
 		splitLine = line.split()
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			line = self.getLimitedLinearMovement( line, splitLine )
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the limit dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

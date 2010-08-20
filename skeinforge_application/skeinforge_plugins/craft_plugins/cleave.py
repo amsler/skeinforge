@@ -75,7 +75,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the cleave dialog.
 
 
->>> cleave.writeOutput( 'Screw Holder Bottom.stl' )
+>>> cleave.writeOutput('Screw Holder Bottom.stl')
 The cleave tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -113,9 +113,9 @@ __license__ = "GPL 3.0"
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get cleaved text."
-	if fileName.endswith( '.svg' ):
+	if fileName.endswith('.svg'):
 		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
-		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'cleave' ):
+		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'cleave'):
 			return gcodeText
 	carving = svg_writer.getCarving( fileName )
 	if carving == None:
@@ -129,22 +129,22 @@ def getNewRepository():
 	"Get the repository constructor."
 	return CleaveRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Cleave a GNU Triangulated Surface file.  If no fileName is specified, cleave the first GNU Triangulated Surface file in this folder."
 	startTime = time.time()
-	print( 'File ' + gcodec.getSummarizedFileName( fileName ) + ' is being cleaved.' )
+	print('File ' + gcodec.getSummarizedFileName( fileName ) + ' is being cleaved.')
 	repository = CleaveRepository()
 	settings.getReadRepository( repository )
 	cleaveGcode = getCraftedText( fileName, '', repository )
 	if cleaveGcode == '':
 		return
-	suffixFileName = fileName[ : fileName.rfind( '.' ) ] + '_cleave.svg'
+	suffixFileName = fileName[ : fileName.rfind('.') ] + '_cleave.svg'
 	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace( ' ', '_' )
+	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, cleaveGcode )
-	print( 'The cleaved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
-	print( 'It took %s to cleave the file.' % euclidean.getDurationString( time.time() - startTime ) )
+	print('The cleaved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('It took %s to cleave the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 
@@ -152,20 +152,21 @@ class CleaveRepository:
 	"A class to handle the cleave settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.cleave.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Cleaved', self, '' )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.cleave.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Cleaved', self, '')
+		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
 		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
 		self.layersTo = settings.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
-		self.meshTypeLabel = settings.LabelDisplay().getFromName( 'Mesh Type: ', self, )
+		self.meshTypeLabel = settings.LabelDisplay().getFromName('Mesh Type: ', self, )
 		importLatentStringVar = settings.LatentStringVar()
 		self.correctMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Correct Mesh', self, True )
 		self.unprovenMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Unproven Mesh', self, False )
 		self.perimeterWidth = settings.FloatSpin().getFromValue( 0.4, 'Perimeter Width (mm):', self, 4.0, 2.0 )
 		settings.LabelSeparator().getFromRepository( self )
-		self.svgViewer = settings.StringSetting().getFromValue( 'SVG Viewer:', self, 'webbrowser' )
+		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
 		settings.LabelSeparator().getFromRepository( self )
 		self.executeTitle = 'Cleave'
 
@@ -188,18 +189,18 @@ class CleaveSkein:
 		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
 		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
 		if len( rotatedBoundaryLayers ) < 1:
-			print( 'There are no slices for the model, this could be because the model is too small.' )
+			print('There are no slices for the model, this could be because the model is too small.')
 			return ''
 		layerThickness = carving.getCarveLayerThickness()
 		decimalPlacesCarried = max( 0, 1 + repository.extraDecimalPlaces.value - int( math.floor( math.log10( layerThickness ) ) ) )
-		svgWriter = svg_writer.SVGWriter( carving, decimalPlacesCarried, perimeterWidth )
+		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
 		return svgWriter.getReplacedSVGTemplate( fileName, 'cleave', svg_writer.getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ) )
 
 
 def main():
 	"Display the cleave dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

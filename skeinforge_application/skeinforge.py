@@ -13,7 +13,7 @@ The skeinforge module provides a single place to call up all the setting dialogs
 
 The plugin buttons which are commonly used are bolded and the ones which are rarely used have normal font weight.
 
-There are also tools which handle settings for the chain, like material & polyfile.
+There are also tools which handle settings for the chain, like polyfile.
 
 The analyze tool calls plugins in the analyze_plugins folder, which will analyze the gcode in some way when it is generated if their Activate checkbox is selected.
 
@@ -23,7 +23,7 @@ The default settings are similar to those on Nophead's machine.  A setting which
 
 ===Alternative===
 Another way to make gcode for a model is to use the Java RepRap host program, described at:
-http://dev.www.reprap.org/bin/view/Main/DriverSoftware#Creating_GCode_files_from_STL_fi
+http://reprap.org/wiki/Installing_RepRap_on_your_computer
 
 ===Contribute===
 You can contribute by helping develop the manual at:
@@ -187,7 +187,7 @@ Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
 [GCC 4.2.1 (SUSE Linux)] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import skeinforge
->>> skeinforge.writeOutput( 'Screw Holder.stl' )
+>>> skeinforge.writeOutput('Screw Holder.stl')
 The exported file is saved as Screw Holder_export.gcode
 
 
@@ -214,40 +214,46 @@ import os
 import sys
 
 
-# big save
-# maybe rename geometry_tools to geometry_basics, split geometry into geometry_tools and geometry_plugins
-# maybe transformPath..
-# matrix into manipulation & process?
-# try to get rid of comment if possible
-# maybe submanipulate meaning call getManipulation from getGeometryOutputByFunction, bring back manipulateTarget? for solids, maybe manipulate around elements
-# circle
-# classify more of evaluate.xml
-# view profile 1 mm thickness
+# manipulate path xmlelement
+# outline strokeWidth, closed=false
 # flip axis center & origin
+# line
 # mirror axis center & origin, concatenate
+# line, parabolic interpolation if there is no endpoint angle then symmetrical, bysymmetricalplane, bysymmetricalsolid
+# curve, relative, control type - parabolic cubic circular, between
+# quadratic, cubic vertexes; distance in equation
+# matrixTetragrid to tetragrid, matrix.transform, target
+# inset, outset path
 # grid within bounds and row/column, maybe subgrid or subarray
+# combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
+# matrix rotate around axis http://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
+# pixel, voxel, surfaxel/boxel, lattice, mesh
+# array? targetequation radius xyz give index
+# connectionfrom, to, connect, xaxis
+# documentation Add Layer Template to SVG
+# add overview link to crnsdoo index and svg page
+# bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
+# look over copy module
+#
 # append, delete, copy
 # _getAccessibleDictionary, _getAccessibleFunctions
 # Vector2 & Vector3 also maybe in list
-# combine xmlelement with csvelement, csv _format, _column, _row, _text
-# send introduction to crnsdoo
-# matrix rotate around axis http://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
-# svg element calls svg_reader, what does open svg path & text mean?
-# curve, relative, control type - parabolic cubic circular, between
-# pixel, voxel, surfaxel/boxel, lattice, mesh
-# quadratic, cubic vertexes; distance in equation
-# array? targetequation radius xyz give index
-# connectionfrom, to, connect, xaxis
-# bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
-# look over copy module
+#
+# classify more of evaluate.xml
 # maybe in svgReader if loop intersection with previous union else add
+#
+# unimportant
+# carve time is missing
+# view profile 1 mm thickness
+# svg inskcape layer label, import into inskscape in general
+# only parse svg once, do not parse again if yAxisPointingUpward="true"
+#
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # del previous, add begin & end if far  get actual path
 # polling
 # svgCanvas with xmlWriter
 # getNormal, getIsFlat?
 # getVerticesByKey in geomancer should also get from a geometry string, array along loop or path in process and getManipulated
-# line, parabolic interpolation if there is no endpoint angle then symmetrical, bysymmetricalplane, bysymmetricalsolid
 # transform
 # mesh. for cube, then cyliner, then sphere after lathe
 # tube, rotor
@@ -255,29 +261,32 @@ import sys
 # lathe
 # think about setActualMinimumZ in boolean_geometry
 # pyramid
-# only parse svg once, do not parse again if yAxisPointingUpward="true"
 # round extrusion ?, fillet
-# tetroc
-# widen ( outline? ) single path to different widths
+# manipulate solid, maybe manipulate around elements
 # gear, hollow top
 # boolean loop corner outset
 # work out close and radius
 # voronoi average location intersection looped inset intercircles
 # maybe move and give geometryOutput to cube, cylinder, sphere
+#
 # comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
-# generated_files?
+# global simplify pathBetween
+# comb documentation
+# maybe move after clip
+#
+# stretch add back addAlong
+# maybe save all generated_files option
 # creationID, addObject, getTarget, copyXMLElement?
 # drill
 # dovetail
 # maybe not getNewObject, getNew, addToBoolean
 # convert global repository settings to local settings
 # table to dictionary
-# comb documentation
+# maybe try to get rid of comment if possible
 # check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # remove cool set at end of layer
 # add circling when hot in chamber
 # maybe measuring rod
-# comb simplify path, option of only combing around inside loops
 # remove comments from clip, bend
 # add hook _extrusion
 # winding into coiling, coil into wind & weave
@@ -321,7 +330,6 @@ import sys
 # search rss from blogs, add search links for common materials, combine created on or progress bar with searchable help
 #boundaries, center radius z bottom top, circular or rectangular, polygon, put cool minimum radius orbits within boundaries
 # move & rotate model
-# comb improve running jump
 # possible jitter bug http://cpwebste.blogspot.com/2010/04/hydras-first-print.html
 # trial, meta in a grid settings
 # maybe svg slice format
@@ -425,7 +433,7 @@ import sys
 # concept, interlaced bricks at corners ( length proportional to corner angle )
 # concept, new links to archi, import links to archi and adds skeinforge tool menu item, back on skeinforge named execute tool is added
 # concept, trnsnt
-# concept, indexium expand condense remove, single text
+# concept, indexium expand condense remove, single text, pymetheus
 # concept, inscribed key silencer
 # concept, spreadsheet to python and/or javascript
 # concept, blog, frequent updates, mix associated news
@@ -470,7 +478,7 @@ def addToProfileMenu( profileSelection, profileType, repository ):
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_plugins' )
+	return gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_plugins')
 
 def getPluginFileNames():
 	"Get analyze plugin fileNames."
@@ -485,10 +493,10 @@ def getRadioPluginsAddPluginGroupFrame( directoryPath, importantFileNames, names
 	repository.pluginGroupFrame = settings.PluginGroupFrame()
 	radioPlugins = []
 	for name in names:
-		radioPlugin = settings.RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginGroupFrame.latentStringVar, name, repository, name == importantFileNames[ 0 ] )
+		radioPlugin = settings.RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginGroupFrame.latentStringVar, name, repository, name == importantFileNames[0] )
 		radioPlugin.updateFunction = repository.pluginGroupFrame.update
 		radioPlugins.append( radioPlugin )
-	defaultRadioButton = settings.getSelectedRadioPlugin( importantFileNames + [ radioPlugins[ 0 ].name ], radioPlugins )
+	defaultRadioButton = settings.getSelectedRadioPlugin( importantFileNames + [ radioPlugins[0].name ], radioPlugins )
 	repository.pluginGroupFrame.getFromPath( defaultRadioButton, directoryPath, repository )
 	return radioPlugins
 
@@ -501,21 +509,21 @@ class SkeinforgeRepository:
 	"A class to handle the skeinforge settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '' )
-		self.profileType = settings.MenuButtonDisplay().getFromName( 'Profile Type: ', self )
-		self.profileSelection = settings.MenuButtonDisplay().getFromName( 'Profile Selection: ', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge.html', '', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '')
+		self.profileType = settings.MenuButtonDisplay().getFromName('Profile Type: ', self )
+		self.profileSelection = settings.MenuButtonDisplay().getFromName('Profile Selection: ', self )
 		addToProfileMenu( self.profileSelection, self.profileType, self )
-		settings.LabelDisplay().getFromName( 'Search:', self )
-		reprapSearch = settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_reprap.html', 'Reprap', self )
-		skeinforgeSearch = settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_skeinforge.html', 'Skeinforge', self )
+		settings.LabelDisplay().getFromName('Search:', self )
+		reprapSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_reprap.html', 'Reprap', self )
+		skeinforgeSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_skeinforge.html', 'Skeinforge', self )
 		skeinforgeSearch.column += 2
-		webSearch = settings.HelpPage().getFromNameAfterHTTP( 'members.axion.net/~enrique/search_web.html', 'Web', self )
+		webSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_web.html', 'Web', self )
 		webSearch.column += 4
 		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
-		self.version = settings.LabelDisplay().getFromName( 'Version: ' + versionText, self )
-		settings.LabelDisplay().getFromName( '', self )
-		importantFileNames = [ 'craft', 'profile' ]
+		self.version = settings.LabelDisplay().getFromName('Version: ' + versionText, self )
+		settings.LabelDisplay().getFromName('', self )
+		importantFileNames = ['craft', 'profile']
 		getRadioPluginsAddPluginGroupFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		self.executeTitle = 'Skeinforge'
 
@@ -537,7 +545,7 @@ class SkeinforgeRepository:
 def main():
 	"Display the skeinforge dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

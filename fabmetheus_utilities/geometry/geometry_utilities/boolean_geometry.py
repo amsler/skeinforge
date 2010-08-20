@@ -59,8 +59,8 @@ class BooleanGeometry:
 		"Get the string representation of this carving."
 		xmlElement = None
 		if len( self.archivableObjects ) > 0:
-			xmlElement = self.archivableObjects[ 0 ].xmlElement
-		output = xml_simple_writer.getBeginGeometryXMLOutput( xmlElement )
+			xmlElement = self.archivableObjects[0].xmlElement
+		output = xml_simple_writer.getBeginGeometryXMLOutput(xmlElement)
 		self.addXML( 1, output )
 		return xml_simple_writer.getEndGeometryXMLString( output )
 
@@ -118,9 +118,9 @@ class BooleanGeometry:
 		if euclidean.isLoopListIntersecting( rotatedBoundaryLayer.loops, z ):
 			rotatedBoundaryLayer.loops = booleansolid.getLoopsUnified( self.importRadius, visibleObjectLoopsList )
 			if shouldPrintWarning:
-				print( 'Warning, the triangle mesh slice intersects itself.' )
+				print('Warning, the triangle mesh slice intersects itself.')
 				print( "Something will still be printed, but there is no guarantee that it will be the correct shape." )
-				print( 'Once the gcode is saved, you should check over the layer with a z of:' )
+				print('Once the gcode is saved, you should check over the layer with a z of:')
 				print( z )
 		return rotatedBoundaryLayer
 

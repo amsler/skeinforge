@@ -66,7 +66,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 This brings up the splodge dialog.
 
 
->>> splodge.writeOutput( 'Screw Holder Bottom.stl' )
+>>> splodge.writeOutput('Screw Holder Bottom.stl')
 The splodge tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -101,7 +101,7 @@ def getCraftedText( fileName, text, splodgeRepository = None ):
 
 def getCraftedTextFromText( gcodeText, splodgeRepository = None ):
 	"Splodge a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'splodge' ):
+	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'splodge'):
 		return gcodeText
 	if splodgeRepository == None:
 		splodgeRepository = settings.getReadRepository( SplodgeRepository() )
@@ -113,28 +113,28 @@ def getNewRepository():
 	"Get the repository constructor."
 	return SplodgeRepository()
 
-def writeOutput( fileName = '' ):
+def writeOutput( fileName = ''):
 	"Splodge a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'splodge' )
+		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'splodge')
 
 
 class SplodgeRepository:
 	"A class to handle the splodge settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository( 'skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Splodge', self, '' )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute( 'http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Splodge' )
-		self.activateSplodge = settings.BooleanSetting().getFromValue( 'Activate Splodge', self, False )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html', self )
+		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Splodge', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Splodge')
+		self.activateSplodge = settings.BooleanSetting().getFromValue('Activate Splodge', self, False )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Initial -', self )
+		settings.LabelDisplay().getFromName('- Initial -', self )
 		self.initialLiftOverExtraThickness = settings.FloatSpin().getFromValue( 0.5, 'Initial Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
 		self.initialSplodgeFeedRate = settings.FloatSpin().getFromValue( 0.4, 'Initial Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
 		self.initialSplodgeQuantityLength = settings.FloatSpin().getFromValue( 10.0, 'Initial Splodge Quantity Length (millimeters):', self, 90.0, 30.0 )
 		settings.LabelSeparator().getFromRepository( self )
-		settings.LabelDisplay().getFromName( '- Operating -', self )
+		settings.LabelDisplay().getFromName('- Operating -', self )
 		self.operatingLiftOverExtraThickness = settings.FloatSpin().getFromValue( 0.5, 'Operating Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
 		self.operatingSplodgeFeedRate = settings.FloatSpin().getFromValue( 0.4, 'Operating Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
 		self.operatingSplodgeQuantityLength = settings.FloatSpin().getFromValue( 0.4, 'Operating Splodge Quantity Length (millimeters):', self, 2.4, 1.0 )
@@ -167,37 +167,37 @@ class SplodgeSkein:
 		if line == self.lastLineOutput:
 			return
 		self.lastLineOutput = line
-		self.distanceFeedRate.addLine( line )
+		self.distanceFeedRate.addLine(line)
 
 	def addLineUnlessIdenticalReactivate( self, line ):
 		"Add a line, unless it is identical to the last line or another M101."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'M101':
 			if not self.isLastExtruderCommandActivate:
-				self.addLineUnlessIdentical( line )
+				self.addLineUnlessIdentical(line)
 				self.isLastExtruderCommandActivate = True
 			return
 		if firstWord == 'M103':
 			self.isLastExtruderCommandActivate = False
-		self.addLineUnlessIdentical( line )
+		self.addLineUnlessIdentical(line)
 
 	def getCraftedGcode( self, gcodeText, splodgeRepository ):
 		"Parse gcode text and store the splodge gcode."
-		self.lines = gcodec.getTextLines( gcodeText )
+		self.lines = gcodec.getTextLines(gcodeText)
 		self.setRotations()
 		self.splodgeRepository = splodgeRepository
 		self.parseInitialization( splodgeRepository )
-		self.boundingRectangle = gcodec.BoundingRectangle().getFromGcodeLines( self.lines[ self.lineIndex : ], 0.5 * self.perimeterWidth )
+		self.boundingRectangle = gcodec.BoundingRectangle().getFromGcodeLines( self.lines[self.lineIndex :], 0.5 * self.perimeterWidth )
 		self.initialSplodgeFeedRateMinute = 60.0 * splodgeRepository.initialSplodgeFeedRate.value
 		self.initialStartupDistance = splodgeRepository.initialSplodgeQuantityLength.value * splodgeRepository.initialSplodgeFeedRate.value / self.operatingFeedRatePerSecond
 		self.operatingSplodgeFeedRateMinute = 60.0 * splodgeRepository.operatingSplodgeFeedRate.value
 		self.operatingStartupDistance = splodgeRepository.operatingSplodgeQuantityLength.value * splodgeRepository.operatingSplodgeFeedRate.value / self.operatingFeedRatePerSecond
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			self.parseLine( line )
+			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getInitialSplodgeLine( self, line, location ):
@@ -214,7 +214,7 @@ class SplodgeSkein:
 		isActive = False
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'M101':
 				isActive = True
@@ -259,8 +259,8 @@ class SplodgeSkein:
 		lift = extraLayerThickness * liftOverExtraThickness
 		startLine = self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.feedRateMinute, startComplex, location.z + lift )
 		self.addLineUnlessIdenticalReactivate( startLine )
-		self.addLineUnlessIdenticalReactivate( 'M101' )
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		self.addLineUnlessIdenticalReactivate('M101')
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		lineLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 		self.distanceFeedRate.addGcodeMovementZWithFeedRate( feedRateMinute, locationComplex, lineLocation.z + lift )
 		return ''
@@ -281,40 +281,40 @@ class SplodgeSkein:
 		"Determine if activate command is before linear move command."
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			if firstWord == 'G1' or firstWord == 'M103':
 				return False
 			if firstWord == 'M101':
 				return True
-		print( 'This should never happen in isJustBeforeExtrusion in splodge, no activate or deactivate command was found for this thread.' )
+		print('This should never happen in isJustBeforeExtrusion in splodge, no activate or deactivate command was found for this thread.')
 		return False
 
 	def parseInitialization( self, splodgeRepository ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord( splitLine )
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
-				self.addLineUnlessIdenticalReactivate( '(<procedureDone> splodge </procedureDone>)' )
+				self.addLineUnlessIdenticalReactivate('(<procedureDone> splodge </procedureDone>)')
 				return
 			elif firstWord == '(<layerThickness>':
-				self.layerThickness = float( splitLine[ 1 ] )
+				self.layerThickness = float( splitLine[1] )
 			elif firstWord == '(<operatingFeedRatePerSecond>':
-				self.operatingFeedRatePerSecond = float( splitLine[ 1 ] )
+				self.operatingFeedRatePerSecond = float( splitLine[1] )
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[ 1 ] )
+				self.perimeterWidth = float( splitLine[1] )
 				self.minimumQuantityLength = 0.1 * self.perimeterWidth
-			self.addLineUnlessIdenticalReactivate( line )
+			self.addLineUnlessIdenticalReactivate(line)
 
 	def parseLine( self, line ):
 		"Parse a gcode line and add it to the bevel gcode."
-		splitLine = gcodec.getSplitLineBeforeBracketSemicolon( line )
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len( splitLine ) < 1:
 			return
-		firstWord = splitLine[ 0 ]
+		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
 			line = self.getSplodgeLine( line, location, splitLine )
@@ -323,7 +323,7 @@ class SplodgeSkein:
 			self.isExtruderActive = True
 		elif firstWord == 'M103':
 			self.isExtruderActive = False
-		self.addLineUnlessIdenticalReactivate( line )
+		self.addLineUnlessIdenticalReactivate(line)
 
 	def setRotations( self ):
 		"Set the rotations."
@@ -340,7 +340,7 @@ class SplodgeSkein:
 def main():
 	"Display the splodge dialog."
 	if len( sys.argv ) > 1:
-		writeOutput( ' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[ 1 : ] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -31,10 +31,10 @@ def printAttributeDictionaryKey( attributeDictionaryKey, xmlElement, xmlProcesso
 			attributeValue = xmlElement.attributeDictionary[ attributeDictionaryKey ]
 			if attributeValue != '':
 				attributeValue = ' - ' + attributeValue
-			print( 'Local Dictionary Variables' + attributeValue )
+			print('Local Dictionary Variables' + attributeValue )
 			localDictionaryKeys.sort()
 			for localDictionaryKey in localDictionaryKeys:
-				print( '%s: %s' % ( localDictionaryKey, localDictionary[ localDictionaryKey ] ) )
+				print('%s: %s' % ( localDictionaryKey, localDictionary[ localDictionaryKey ] ) )
 			return
 	value = xmlElement.attributeDictionary[ attributeDictionaryKey ]
 	evaluatedValue = None
@@ -42,13 +42,13 @@ def printAttributeDictionaryKey( attributeDictionaryKey, xmlElement, xmlProcesso
 		evaluatedValue = evaluate.getEvaluatedExpressionValue( attributeDictionaryKey, xmlElement )
 	else:
 		evaluatedValue = evaluate.getEvaluatedExpressionValue( value, xmlElement )
-	print( '%s: %s' % ( attributeDictionaryKey, evaluatedValue ) )
+	print('%s: %s' % ( attributeDictionaryKey, evaluatedValue ) )
 
 def processXMLElement( xmlElement, xmlProcessor ):
 	"Process the xml element."
 	attributeDictionaryKeys = xmlElement.attributeDictionary.keys()
 	if len( attributeDictionaryKeys ) < 1:
-		print( '' )
+		print('')
 		return
 	attributeDictionaryKeys.sort()
 	for attributeDictionaryKey in attributeDictionaryKeys:

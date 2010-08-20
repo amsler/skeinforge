@@ -1,6 +1,8 @@
 """
 This page is in the table of contents.
-The svg.py script is an import translator plugin to get a carving from an svg file.
+The svg.py script is an import translator plugin to get a carving from an svg file.  This script will read an svg file made by skeinforge or by inkscape.
+
+An example inkscape svg file is inkscape_star.svg in the models folder.
 
 An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
@@ -41,7 +43,7 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def getCarving( fileName = '' ):
+def getCarving( fileName = ''):
 	"Get the triangle mesh for the gts file."
 	carving = SVGCarving()
 	carving.parseSVG( fileName, gcodec.getFileText( fileName ) )
@@ -77,9 +79,9 @@ class SVGCarving:
 		"Get the carved svg text."
 		if len( self.svgReader.rotatedLoopLayers ) < 1:
 			return ''
-		decimalPlacesCarried = max( 0, 2 - int( math.floor( math.log10( self.layerThickness ) ) ) )
-		self.svgWriter = svg_writer.SVGWriter( self, decimalPlacesCarried )
-		return self.svgWriter.getReplacedSVGTemplate( self.fileName, 'basic', self.svgReader.rotatedLoopLayers )
+		decimalPlacesCarried = max(0, 2 - int(math.floor(math.log10(self.layerThickness))))
+		self.svgWriter = svg_writer.SVGWriter(True, self, decimalPlacesCarried)
+		return self.svgWriter.getReplacedSVGTemplate(self.fileName, 'basic', self.svgReader.rotatedLoopLayers)
 
 	def getCarveLayerThickness( self ):
 		"Get the layer thickness."
@@ -97,9 +99,9 @@ class SVGCarving:
 		"Parse gcode initialization and store the parameters."
 		if self.svgReader.sliceDictionary == None:
 			return
-		self.layerThickness = euclidean.getFloatDefaultByDictionary( self.layerThickness, self.svgReader.sliceDictionary, 'layerThickness' )
-		self.maximumZ = euclidean.getFloatDefaultByDictionary( self.maximumZ, self.svgReader.sliceDictionary, 'maxZ' )
-		self.minimumZ = euclidean.getFloatDefaultByDictionary( self.minimumZ, self.svgReader.sliceDictionary, 'minZ' )
+		self.layerThickness = euclidean.getFloatDefaultByDictionary( self.layerThickness, self.svgReader.sliceDictionary, 'layerThickness')
+		self.maximumZ = euclidean.getFloatDefaultByDictionary( self.maximumZ, self.svgReader.sliceDictionary, 'maxZ')
+		self.minimumZ = euclidean.getFloatDefaultByDictionary( self.minimumZ, self.svgReader.sliceDictionary, 'minZ')
 
 	def parseSVG( self, fileName, svgText ):
 		"Parse SVG text and store the layers."

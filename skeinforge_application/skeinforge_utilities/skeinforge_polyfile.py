@@ -21,10 +21,10 @@ def getFileOrGcodeDirectory( fileName, wasCancelled, words = [] ):
 	if isEmptyOrCancelled( fileName, wasCancelled ):
 		return []
 	if isDirectorySetting():
-		dotIndex = fileName.rfind( '.' )
+		dotIndex = fileName.rfind('.')
 		if dotIndex < 0:
-			print( 'The file name should have a suffix, like myfile.xml.' )
-			print( 'Since the file name does not have a suffix, nothing will be done' )
+			print('The file name should have a suffix, like myfile.xml.')
+			print('Since the file name does not have a suffix, nothing will be done')
 		suffix = fileName[ dotIndex + 1 : ]
 		return gcodec.getFilesWithFileTypeWithoutWords( suffix, words, fileName )
 	return [ fileName ]
@@ -62,8 +62,8 @@ class PolyfileRepository:
 	"A class to handle the polyfile settings."
 	def __init__( self ):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository( 'skeinforge_application.skeinforge_utilities.skeinforge_plugins.polyfile.html', '', self )
-		self.directoryOrFileChoiceLabel = settings.LabelDisplay().getFromName( 'Directory or File Choice: ', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_plugins.polyfile.html', '', self )
+		self.directoryOrFileChoiceLabel = settings.LabelDisplay().getFromName('Directory or File Choice: ', self )
 		directoryLatentStringVar = settings.LatentStringVar()
 		self.directorySetting = settings.Radio().getFromRadio( directoryLatentStringVar, 'Execute All Unmodified Files in a Directory', self, False )
 		self.fileSetting = settings.Radio().getFromRadio( directoryLatentStringVar, 'Execute File', self, True )
