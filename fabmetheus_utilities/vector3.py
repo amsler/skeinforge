@@ -51,17 +51,17 @@ class Vector3:
 		self.y = y
 		self.z = z
 
-	def __abs__( self ):
+	def __abs__(self):
 		"Get the magnitude of the Vector3."
 		return math.sqrt( self.x * self.x + self.y * self.y + self.z * self.z )
 
 	magnitude = __abs__
 
-	def __add__( self, other ):
+	def __add__(self, other):
 		"Get the sum of this Vector3 and other one."
 		return Vector3( self.x + other.x, self.y + other.y, self.z + other.z )
 
-	def __copy__( self ):
+	def __copy__(self):
 		"Get the copy of this Vector3."
 		return Vector3( self.x, self.y, self.z )
 
@@ -69,11 +69,11 @@ class Vector3:
 
 	copy = __copy__
 
-	def __div__( self, other ):
+	def __div__(self, other):
 		"Get a new Vector3 by dividing each component of this one."
 		return Vector3( self.x / other, self.y / other, self.z / other )
 
-	def __eq__( self, other ):
+	def __eq__(self, other):
 		"Determine whether this vector is identical to other one."
 		if other == None:
 			return False
@@ -81,114 +81,121 @@ class Vector3:
 			return False
 		return self.x == other.x and self.y == other.y and self.z == other.z
 
-	def __floordiv__( self, other ):
+	def __floordiv__(self, other):
 		"Get a new Vector3 by floor dividing each component of this one."
 		return Vector3( self.x // other, self.y // other, self.z // other )
 
-	def __hash__( self ):
+	def _getAccessibleAttribute(self, attributeName):
+		"Get the accessible attribute."
+		global globalAccessibleAttributeSet
+		if attributeName in globalAccessibleAttributeSet:
+			return getattr(self, attributeName, None)
+		return None
+
+	def __hash__(self):
 		"Determine whether this vector is identical to other one."
 		return self.__repr__().__hash__()
 
-	def __iadd__( self, other ):
+	def __iadd__(self, other):
 		"Add other Vector3 to this one."
 		self.x += other.x
 		self.y += other.y
 		self.z += other.z
 		return self
 
-	def __idiv__( self, other ):
+	def __idiv__(self, other):
 		"Divide each component of this Vector3."
 		self.x /= other
 		self.y /= other
 		self.z /= other
 		return self
 
-	def __ifloordiv__( self, other ):
+	def __ifloordiv__(self, other):
 		"Floor divide each component of this Vector3."
 		self.x //= other
 		self.y //= other
 		self.z //= other
 		return self
 
-	def __imul__( self, other ):
+	def __imul__(self, other):
 		"Multiply each component of this Vector3."
 		self.x *= other
 		self.y *= other
 		self.z *= other
 		return self
 
-	def __isub__( self, other ):
+	def __isub__(self, other):
 		"Subtract other Vector3 from this one."
 		self.x -= other.x
 		self.y -= other.y
 		self.z -= other.z
 		return self
 
-	def __itruediv__( self, other ):
+	def __itruediv__(self, other):
 		"True divide each component of this Vector3."
 		self.x = operator.truediv( self.x, other )
 		self.y = operator.truediv( self.y, other )
 		self.z = operator.truediv( self.z, other )
 		return self
 
-	def __mul__( self, other ):
+	def __mul__(self, other):
 		"Get a new Vector3 by multiplying each component of this one."
 		return Vector3( self.x * other, self.y * other, self.z * other )
 
-	def __ne__( self, other ):
+	def __ne__(self, other):
 		"Determine whether this vector is not identical to other one."
 		return not self.__eq__( other )
 
-	def __neg__( self ):
+	def __neg__(self):
 		return Vector3( - self.x, - self.y, - self.z )
 
-	def __nonzero__( self ):
+	def __nonzero__(self):
 		return self.x != 0 or self.y != 0 or self.z != 0
 
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this Vector3."
 		return '(%s, %s, %s)' % ( self.x, self.y, self.z )
 
-	def __rdiv__( self, other ):
+	def __rdiv__(self, other):
 		"Get a new Vector3 by dividing each component of this one."
 		return Vector3( other / self.x, other / self.y, other / self.z )
 
-	def __rfloordiv__( self, other ):
+	def __rfloordiv__(self, other):
 		"Get a new Vector3 by floor dividing each component of this one."
 		return Vector3( other // self.x, other // self.y, other // self.z )
 
-	def __rmul__( self, other ):
+	def __rmul__(self, other):
 		"Get a new Vector3 by multiplying each component of this one."
 		return Vector3( self.x * other, self.y * other, self.z * other )
 
-	def __rtruediv__( self, other ):
+	def __rtruediv__(self, other):
 		"Get a new Vector3 by true dividing each component of this one."
 		return Vector3( operator.truediv( other , self.x ), operator.truediv( other, self.y ), operator.truediv( other, self.z ) )
 
-	def __sub__( self, other ):
+	def __sub__(self, other):
 		"Get the difference between the Vector3 and other one."
 		return Vector3( self.x - other.x, self.y - other.y, self.z - other.z )
 
-	def __truediv__( self, other ):
+	def __truediv__(self, other):
 		"Get a new Vector3 by true dividing each component of this one."
 		return Vector3( operator.truediv( self.x, other ), operator.truediv( self.y, other ), operator.truediv( self.z, other ) )
 
-	def cross( self, other ):
+	def cross(self, other):
 		"Calculate the cross product of this vector with other one."
 		return Vector3( self.y * other.z - self.z * other.y, - self.x * other.z + self.z * other.x, self.x * other.y - self.y * other.x )
 
-	def distance( self, other ):
+	def distance(self, other):
 		"Get the Euclidean distance between this vector and other one."
 		return math.sqrt( self.distanceSquared( other ) )
 
-	def distanceSquared( self, other ):
+	def distanceSquared(self, other):
 		"Get the square of the Euclidean distance between this vector and other one."
 		separationX = self.x - other.x
 		separationY = self.y - other.y
 		separationZ = self.z - other.z
 		return separationX * separationX + separationY * separationY + separationZ * separationZ
 
-	def dot( self, other ):
+	def dot(self, other):
 		"Calculate the dot product of this vector with other one."
 		return self.x * other.x + self.y * other.y + self.z * other.z
 
@@ -204,11 +211,11 @@ class Vector3:
 		if which == 2:
 			return complex( self.x, self.y )
 
-	def getFloatList( self ):
+	def getFloatList(self):
 		"Get the vector as a list of floats."
 		return [ float( self.x ), float( self.y ), float( self.z ) ]
 
-	def getIsDefault( self ):
+	def getIsDefault(self):
 		"Determine if this is the zero vector."
 		if self.x != 0.0:
 			return False
@@ -216,20 +223,20 @@ class Vector3:
 			return False
 		return self.z == 0.0
 
-	def getNormalized( self ):
+	def getNormalized(self):
 		"Get the normalized Vector3."
-		magnitude = abs( self )
+		magnitude = abs(self)
 		if magnitude == 0.0:
 			return self.copy()
 		return self / magnitude
 
-	def magnitudeSquared( self ):
+	def magnitudeSquared(self):
 		"Get the square of the magnitude of the Vector3."
 		return self.x * self.x + self.y * self.y + self.z * self.z
 
-	def normalize( self ):
+	def normalize(self):
 		"Scale each component of this Vector3 so that it has a magnitude of 1. If this Vector3 has a magnitude of 0, this method has no effect."
-		magnitude = abs( self )
+		magnitude = abs(self)
 		if magnitude != 0.0:
 			self /= magnitude
 
@@ -238,7 +245,7 @@ class Vector3:
 		distance = 2 * ( self.x * normal.x + self.y * normal.y + self.z * normal.z )
 		return Vector3( self.x - distance * normal.x, self.y - distance * normal.y, self.z - distance * normal.z )
 
-	def setToVector3( self, other ):
+	def setToVector3(self, other):
 		"Set this Vector3 to be identical to other one."
 		self.x = other.x
 		self.y = other.y
@@ -249,6 +256,9 @@ class Vector3:
 		self.x = x
 		self.y = y
 		self.z = z
+
+
+globalAccessibleAttributeSet = 'x y z'.split()
 
 """
 class Vector3:

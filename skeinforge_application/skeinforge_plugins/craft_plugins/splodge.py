@@ -122,26 +122,26 @@ def writeOutput( fileName = ''):
 
 class SplodgeRepository:
 	"A class to handle the splodge settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Splodge', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Splodge')
 		self.activateSplodge = settings.BooleanSetting().getFromValue('Activate Splodge', self, False )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Initial -', self )
 		self.initialLiftOverExtraThickness = settings.FloatSpin().getFromValue( 0.5, 'Initial Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
 		self.initialSplodgeFeedRate = settings.FloatSpin().getFromValue( 0.4, 'Initial Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
 		self.initialSplodgeQuantityLength = settings.FloatSpin().getFromValue( 10.0, 'Initial Splodge Quantity Length (millimeters):', self, 90.0, 30.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Operating -', self )
 		self.operatingLiftOverExtraThickness = settings.FloatSpin().getFromValue( 0.5, 'Operating Lift over Extra Thickness (ratio):', self, 1.5, 1.0 )
 		self.operatingSplodgeFeedRate = settings.FloatSpin().getFromValue( 0.4, 'Operating Splodge Feed Rate (mm/s):', self, 2.4, 1.0 )
 		self.operatingSplodgeQuantityLength = settings.FloatSpin().getFromValue( 0.4, 'Operating Splodge Quantity Length (millimeters):', self, 2.4, 1.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		self.executeTitle = 'Splodge'
 
-	def execute( self ):
+	def execute(self):
 		"Splodge button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -150,7 +150,7 @@ class SplodgeRepository:
 
 class SplodgeSkein:
 	"A class to splodge a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRateMinute = 961.0
 		self.isExtruderActive = False
@@ -209,7 +209,7 @@ class SplodgeSkein:
 			return line
 		return self.getSplodgeLineGivenDistance( self.initialSplodgeFeedRateMinute, line, self.splodgeRepository.initialLiftOverExtraThickness.value, location, self.initialStartupDistance )
 
-	def getNextActiveLocationComplex( self ):
+	def getNextActiveLocationComplex(self):
 		"Get the next active line."
 		isActive = False
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
@@ -277,7 +277,7 @@ class SplodgeSkein:
 				return startComplex
 		return startComplex
 
-	def isJustBeforeExtrusion( self ):
+	def isJustBeforeExtrusion(self):
 		"Determine if activate command is before linear move command."
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
@@ -325,14 +325,14 @@ class SplodgeSkein:
 			self.isExtruderActive = False
 		self.addLineUnlessIdenticalReactivate(line)
 
-	def setRotations( self ):
+	def setRotations(self):
 		"Set the rotations."
 		self.rootHalf = math.sqrt( 0.5 )
 		self.rotations = []
 		self.rotations.append( complex( self.rootHalf, self.rootHalf ) )
 		self.rotations.append( complex( self.rootHalf, - self.rootHalf ) )
 		self.rotations.append( complex( 0.0, 1.0 ) )
-		self.rotations.append( complex( 0.0, - 1.0 ) )
+		self.rotations.append( complex(0.0, -1.0) )
 		self.rotations.append( complex( - self.rootHalf, self.rootHalf ) )
 		self.rotations.append( complex( - self.rootHalf, - self.rootHalf ) )
 

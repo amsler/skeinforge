@@ -21,12 +21,9 @@ __license__ = "GPL 3.0"
 
 
 def getGeometryOutput(xmlElement):
-	"Get vector3 vertices from attribute dictionary."
-	radius = complex(1.0, 1.0)
-	radius = lineation.getComplexByPrefixes(['demisize', 'radius'], radius, xmlElement)
-	radius = lineation.getComplexByMultiplierPrefixes(2.0, ['diameter', 'size'], radius, xmlElement)
-	sides = evaluate.getSidesMinimumThree(max(radius.real, radius.imag), xmlElement)
-	sides = evaluate.getEvaluatedFloatDefault(sides, 'sides', xmlElement)
+	"Get vector3 vertexes from attribute dictionary."
+	radius = lineation.getRadiusComplex(complex(1.0, 1.0), xmlElement)
+	sides = evaluate.getSidesMinimumThreeBasedOnPrecisionSides(max(radius.real, radius.imag), xmlElement)
 	loop = []
 	start = evaluate.getEvaluatedFloatZero('start', xmlElement)
 	start = getWrappedFloat(start, 360.0)
@@ -36,21 +33,23 @@ def getGeometryOutput(xmlElement):
 	revolutions = evaluate.getEvaluatedFloatOne('revolutions', xmlElement)
 	if revolutions > 1:
 		end += 360.0 * (revolutions - 1)
+	angleTotal = math.radians(start)
+	extent = end - start
 	sidesCeiling = int(math.ceil(abs(sides) * extent / 360.0))
 	sideAngle = math.radians(extent) / sidesCeiling
-	startAngle = math.radians(start)
+	spiral = lineation.Spiral(0.5 * sideAngle / math.pi, xmlElement)
 	for side in xrange(sidesCeiling + (extent != 360.0)):
-		angle = float(side) * sideAngle + startAngle
-		point = euclidean.getWiddershinsUnitPolar(angle)
-		vertex = Vector3(point.real * radius.real, point.imag * radius.imag)
+		unitPolar = euclidean.getWiddershinsUnitPolar(angleTotal)
+		vertex = spiral.getSpiralPoint(unitPolar, Vector3(unitPolar.real * radius.real, unitPolar.imag * radius.imag))
+		angleTotal += sideAngle
 		loop.append(vertex)
 	sideLength = sideAngle * lineation.getAverageRadius(radius)
+	lineation.setClosedAttribute(revolutions, xmlElement)
 	return lineation.getGeometryOutputByLoop(lineation.SideLoop(loop, sideAngle, sideLength), xmlElement)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
-	"Get vector3 vertices from attribute dictionary by arguments."
-	if len(arguments) > 0:
-		xmlElement.attributeDictionary['radius'] = arguments[0]
+	"Get vector3 vertexes from attribute dictionary by arguments."
+	evaluate.setAttributeDictionaryByArguments(['radius', 'start', 'end', 'revolutions'], arguments, xmlElement)
 	return getGeometryOutput(xmlElement)
 
 def getWrappedFloat(floatValue, modulo):
@@ -61,6 +60,6 @@ def getWrappedFloat(floatValue, modulo):
 		return floatValue
 	return floatValue % modulo
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	lineation.processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement, xmlProcessor)
+	lineation.processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement)

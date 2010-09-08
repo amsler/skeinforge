@@ -48,7 +48,7 @@ def getNewRepository():
 
 class CuttingRepository:
 	"A class to handle the cutting settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'end_mill', self, 'skeinforge_plugins.profile_plugins.cutting.html')
 

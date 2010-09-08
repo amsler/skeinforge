@@ -219,10 +219,10 @@ def getSegmentsFromLoopListsPoints( loopLists, pointBegin, pointEnd ):
 
 def isCloseToLast( paths, point, radius ):
 	"Determine if the point is close to the last point of the last path."
-	if len( paths ) < 1:
+	if len(paths) < 1:
 		return False
-	lastPath = paths[ - 1 ]
-	return abs( lastPath[ - 1 ] - point ) < radius
+	lastPath = paths[-1]
+	return abs( lastPath[-1] - point ) < radius
 
 def isIntersectingItself( loop, width ):
 	"Determine if the loop is intersecting itself."
@@ -251,7 +251,7 @@ def writeOutput( fileName = ''):
 
 class InsetRepository:
 	"A class to handle the inset settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.inset.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Inset', self, '')
@@ -265,7 +265,7 @@ class InsetRepository:
 		self.turnExtruderHeaterOffAtShutDown = settings.BooleanSetting().getFromValue('Turn Extruder Heater Off at Shut Down', self, True )
 		self.executeTitle = 'Inset'
 
-	def execute( self ):
+	def execute(self):
 		"Inset button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -274,7 +274,7 @@ class InsetRepository:
 
 class InsetSkein:
 	"A class to inset a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.lineIndex = 0
@@ -306,12 +306,12 @@ class InsetSkein:
 			pointBegin = segment[0].point
 			if not isCloseToLast( perimeterPaths, pointBegin, muchSmallerThanRadius ):
 				path = [ pointBegin ]
-				perimeterPaths.append( path )
+				perimeterPaths.append(path)
 			path.append( segment[1].point )
 		if len( perimeterPaths ) > 1:
 			firstPath = perimeterPaths[0]
-			lastPath = perimeterPaths[ - 1 ]
-			if abs( lastPath[ - 1 ] - firstPath[0] ) < 0.1 * muchSmallerThanRadius:
+			lastPath = perimeterPaths[-1]
+			if abs( lastPath[-1] - firstPath[0] ) < 0.1 * muchSmallerThanRadius:
 				connectedBeginning = lastPath[ : - 1 ] + firstPath
 				perimeterPaths[0] = connectedBeginning
 				perimeterPaths.remove( lastPath )
@@ -350,7 +350,7 @@ class InsetSkein:
 			self.distanceFeedRate.addPerimeterBlock( loop, z )
 		addAlreadyFilledArounds( loopLists, loop, self.overlapRemovalWidth )
 
-	def addInitializationToOutput( self ):
+	def addInitializationToOutput(self):
 		"Add initialization gcode to the output."
 		if self.repository.addCustomCodeForTemperatureReading.value:
 			self.distanceFeedRate.addLine('M105') # Custom code for temperature reading.
@@ -379,7 +379,7 @@ class InsetSkein:
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

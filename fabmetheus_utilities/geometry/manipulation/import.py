@@ -32,7 +32,7 @@ def getXMLFromCarvingFileName( fileName ):
 	carving.addXML( 0, output )
 	return output.getvalue()
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
 	fileName = evaluate.getEvaluatedValue('file', xmlElement )
 	if fileName == None:
@@ -61,7 +61,4 @@ def processXMLElement( xmlElement, xmlProcessor ):
 		for attributeDictionaryKey in child.attributeDictionary.keys():
 			if attributeDictionaryKey != 'version':
 				xmlElement.attributeDictionary[ attributeDictionaryKey ] = child.attributeDictionary[ attributeDictionaryKey ]
-	group.processShape( group.Group, xmlElement, xmlProcessor )
-	root = xmlElement.getRoot()
-	root.idDictionary[ xmlElement.importName ] = evaluate.ElementID(xmlElement)
-	root.nameDictionary[ xmlElement.importName ] = evaluate.ElementName(xmlElement)
+	group.processShape( group.Group, xmlElement)

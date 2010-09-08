@@ -55,6 +55,13 @@ def getCarvingFromParser( xmlParser ):
 	root.xmlProcessor.processChildren( booleanGeometryElement )
 	return booleanGeometryElement.object
 
+def getGeometryToolsDirectoryPath(subName=''):
+	"Get the geometry tools directory path."
+	path = evaluate.getGeometryDirectoryPath('geometry_tools')
+	if subName == '':
+		return path
+	return os.path.join(path, subName)
+
 
 class XMLBooleanGeometryProcessor():
 	"A class to process xml boolean geometry elements."
@@ -70,7 +77,8 @@ class XMLBooleanGeometryProcessor():
 		self.namePathDictionary.update(self.manipulationEvaluatorDictionary)
 		self.namePathDictionary.update(self.manipulationPathDictionary)
 		self.namePathDictionary.update(self.manipulationShapeDictionary)
-		settings.addToNamePathDictionary(evaluate.getGeometryDirectoryPath('geometry_tools'), self.namePathDictionary)
+		settings.addToNamePathDictionary(getGeometryToolsDirectoryPath(), self.namePathDictionary)
+		settings.addToNamePathDictionary(getGeometryToolsDirectoryPath('path_elements'), self.namePathDictionary)
 		settings.addToNamePathDictionary(evaluate.getGeometryDirectoryPath('solids'), self.namePathDictionary)
 		settings.addToNamePathDictionary(evaluate.getGeometryDirectoryPath('statements'), self.namePathDictionary)
 
@@ -87,21 +95,21 @@ class XMLBooleanGeometryProcessor():
 		if pluginModule == None:
 			return None
 		xmlElement.className = lowerClassName
-		return pluginModule.convertXMLElement( geometryOutput[ firstKey ], xmlElement, self )
+		return pluginModule.convertXMLElement(geometryOutput[ firstKey ], xmlElement)
 
 	def createChildren( self, geometryOutput, parent ):
 		"Create children for the parent."
 		for geometryOutputChild in geometryOutput:
 			child = xml_simple_reader.XMLElement()
 			child.setParentAddToChildren( parent )
-			self.convertXMLElement( geometryOutputChild, child )
+			self.convertXMLElement(geometryOutputChild, child)
 
-	def processChildren( self, xmlElement ):
+	def processChildren(self, xmlElement):
 		"Process the children of the xml element."
 		for child in xmlElement.children:
 			self.processXMLElement( child )
 
-	def processXMLElement( self, xmlElement ):
+	def processXMLElement(self, xmlElement):
 		"Process the xml element."
 		lowerClassName = xmlElement.className.lower()
 		if lowerClassName not in self.namePathDictionary:
@@ -110,7 +118,7 @@ class XMLBooleanGeometryProcessor():
 		if pluginModule == None:
 			return None
 		try:
-			return pluginModule.processXMLElement( xmlElement, self )
+			return pluginModule.processXMLElement(xmlElement)
 		except:
 			print('Warning, could not processXMLElement in fabmetheus for:')
 			print( pluginModule )

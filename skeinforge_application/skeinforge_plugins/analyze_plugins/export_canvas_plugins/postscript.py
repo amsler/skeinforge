@@ -34,13 +34,13 @@ def getNewRepository():
 
 class PostscriptRepository:
 	"A class to handle the export settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.postscript.html', '', self )
 		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, '')
 		self.postscriptProgram = settings.StringSetting().getFromValue('Postscript Program:', self, 'gimp')
 
-	def execute( self ):
+	def execute(self):
 		"Convert to postscript button has been clicked."
 		"Export the canvas as a postscript file."
 		postscriptFileName = gcodec.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )

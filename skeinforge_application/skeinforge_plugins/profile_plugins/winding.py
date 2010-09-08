@@ -48,7 +48,7 @@ def getNewRepository():
 
 class WindingRepository:
 	"A class to handle the winding settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'free_wire', self, 'skeinforge_plugins.profile_plugins.winding.html')
 

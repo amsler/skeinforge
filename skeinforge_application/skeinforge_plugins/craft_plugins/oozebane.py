@@ -132,7 +132,7 @@ def writeOutput( fileName = ''):
 
 class OozebaneRepository:
 	"A class to handle the oozebane settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.oozebane.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Oozebane', self, '')
@@ -148,7 +148,7 @@ class OozebaneRepository:
 		self.slowdownStartupSteps = settings.IntSpin().getFromValue( 2, 'Slowdown Startup Steps (positive integer):', self, 5, 3 )
 		self.executeTitle = 'Oozebane'
 
-	def execute( self ):
+	def execute(self):
 		"Oozebane button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -157,7 +157,7 @@ class OozebaneRepository:
 
 class OozebaneSkein:
 	"A class to oozebane a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.distanceFromThreadEndToThreadBeginning = None
 		self.earlyStartupDistance = None
@@ -193,7 +193,7 @@ class OozebaneSkein:
 		self.distanceFeedRate.addLine(line)
 		self.isShutdownEarly = True
 
-	def getActiveFeedRateRatio( self ):
+	def getActiveFeedRateRatio(self):
 		"Get the feed rate of the first active move over the operating feed rate."
 		isSearchExtruderActive = self.isExtruderActive
 		for afterIndex in xrange( self.lineIndex, len( self.lines ) ):
@@ -296,7 +296,7 @@ class OozebaneSkein:
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
-	def getDistanceAfterThreadBeginning( self ):
+	def getDistanceAfterThreadBeginning(self):
 		"Get the distance after the beginning of the thread."
 		line = self.lines[ self.lineIndex ]
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
@@ -337,7 +337,7 @@ class OozebaneSkein:
 				return totalDistance
 		return None
 
-	def getDistanceToThreadBeginning( self ):
+	def getDistanceToThreadBeginning(self):
 		"Get the distance to the beginning of the thread."
 		if self.earlyStartupDistance == None:
 			return None
@@ -386,7 +386,7 @@ class OozebaneSkein:
 				threadEndReached = True
 		return None
 
-	def getDistanceToThreadEnd( self ):
+	def getDistanceToThreadEnd(self):
 		"Get the distance to the end of the thread."
 		if self.shutdownStepIndex >= len( self.earlyShutdownDistances ):
 			return None
@@ -439,7 +439,7 @@ class OozebaneSkein:
 			return True
 		return self.isClose( location, otherLocationSecond )
 
-	def isDistanceAfterThreadBeginningGreater( self ):
+	def isDistanceAfterThreadBeginningGreater(self):
 		"Determine if the distance after the thread beginning is greater than the step index after startup distance."
 		if self.startupStepIndex >= len( self.afterStartupDistances ):
 			return False
@@ -524,7 +524,7 @@ class OozebaneSkein:
 			else:
 				self.afterStartupFlowRates.append( afterMiddleWay )
 		if afterStartupSteps > 0:
-			self.afterStartupFlowRates.append( 1.0 )
+			self.afterStartupFlowRates.append(1.0)
 
 	def setEarlyStartupDistance( self, splitLine ):
 		"Set the early startup distance."
@@ -558,10 +558,10 @@ class OozebaneSkein:
 		self.earlyStartupDistanceConstant = oozebaneRepository.earlyStartupDistanceConstant.value
 		self.minimumDistanceForEarlyStartup = oozebaneRepository.minimumDistanceForEarlyStartup.value
 		self.minimumDistanceForEarlyShutdown = oozebaneRepository.minimumDistanceForEarlyShutdown.value
-		self.setEarlyShutdownFlowRates( 1.0 )
-		self.setAfterStartupFlowRates( 1.0 )
+		self.setEarlyShutdownFlowRates(1.0)
+		self.setAfterStartupFlowRates(1.0)
 
-	def setEarlyShutdown( self ):
+	def setEarlyShutdown(self):
 		"Set the early shutdown variables."
 		distanceToThreadBeginning = self.getDistanceToThreadBeginningAfterThreadEnd( self.minimumDistanceForEarlyShutdown )
 		earlyShutdownRatio = 1.0

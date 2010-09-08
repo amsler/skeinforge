@@ -64,7 +64,7 @@ def indexOfStartingWithSecond( letter, splitLine ):
 
 class GcodeSmallSkein:
 	"A class to remove redundant z and feed rate parameters from a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.lastFeedRateString = None
 		self.lastZString = None
 		self.output = cStringIO.StringIO()

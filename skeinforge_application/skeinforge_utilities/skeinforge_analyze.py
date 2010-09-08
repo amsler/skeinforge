@@ -46,7 +46,7 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 
 class AnalyzeRepository:
 	"A class to handle the analyze settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_analyze.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Analyze', self, '')
@@ -54,7 +54,7 @@ class AnalyzeRepository:
 		settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		self.executeTitle = 'Analyze'
 
-	def execute( self ):
+	def execute(self):
 		"Analyze button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:

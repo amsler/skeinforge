@@ -141,7 +141,7 @@ def writeOutput( fileName = ''):
 
 class Average:
 	"A class to hold values and get the average."
-	def __init__( self ):
+	def __init__(self):
 		self.reset()
 
 	def addValue( self, value ):
@@ -149,14 +149,14 @@ class Average:
 		self.numberOfValues += 1
 		self.total += value
 
-	def getAverage( self ):
+	def getAverage(self):
 		"Get the average."
 		if self.numberOfValues == 0:
 			print('should never happen, self.numberOfValues in Average is zero')
 			return 0.0
 		return self.total / float( self.numberOfValues )
 
-	def reset( self ):
+	def reset(self):
 		"Set the number of values and the total to the default."
 		self.numberOfValues = 0
 		self.total = 0.0
@@ -164,7 +164,7 @@ class Average:
 
 class MillRepository:
 	"A class to handle the mill settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.mill.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Mill', self, '')
@@ -179,7 +179,7 @@ class MillRepository:
 		self.millWidthOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.8, 'Mill Width over Perimeter Width (ratio):', self, 1.8, 1.0 )
 		self.executeTitle = 'Mill'
 
-	def execute( self ):
+	def execute(self):
 		"Mill button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -189,7 +189,7 @@ class MillRepository:
 
 class MillSkein:
 	"A class to mill a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.aroundPixelTable = {}
 		self.average = Average()
 		self.boundaryLayers = []
@@ -214,7 +214,7 @@ class MillSkein:
 		"Add a thread to the output."
 		self.distanceFeedRate.addGcodeFromThreadZ( thread, z )
 
-	def addMillThreads( self ):
+	def addMillThreads(self):
 		"Add the mill htreads to the skein."
 		boundaryLayer = self.boundaryLayers[ self.layerIndex ]
 		endpoints = euclidean.getEndpointsFromSegmentTable( boundaryLayer.segmentTable )
@@ -303,7 +303,7 @@ class MillSkein:
 			verticalSegmentTable[ xIntersectionsTableKey ] = segments
 		return verticalSegmentTable
 
-	def parseBoundaries( self ):
+	def parseBoundaries(self):
 		"Parse the boundaries and add them to the boundary layers."
 		boundaryLoop = None
 		boundaryLayer = None
@@ -343,7 +343,7 @@ class MillSkein:
 		for boundaryLayerIndex in xrange( len( self.boundaryLayers ) ):
 			self.addSegmentTableLoops( boundaryLayerIndex )
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

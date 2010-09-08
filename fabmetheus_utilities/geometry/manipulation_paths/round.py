@@ -31,7 +31,7 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	if radius == 0.0:
 		return loop
 	roundLoop = []
-	sidesPerRadian = 0.5 / math.pi * evaluate.getSidesMinimumThree(sideLength, xmlElement)
+	sidesPerRadian = 0.5 / math.pi * evaluate.getSidesMinimumThreeBasedOnPrecision(sideLength, xmlElement)
 	for pointIndex in xrange(len(loop)):
 		begin = loop[(pointIndex + len(loop) - 1) % len(loop)]
 		center = loop[pointIndex]
@@ -78,6 +78,6 @@ def getRoundPath( begin, center, close, end, radius, sidesPerRadian ):
 		roundPath.append( arcPoint )
 	return roundPath + [ endBevel ]
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	lineation.processXMLElementByFunction( getManipulatedPaths, xmlElement, xmlProcessor )
+	lineation.processXMLElementByFunction(getManipulatedPaths, xmlElement)

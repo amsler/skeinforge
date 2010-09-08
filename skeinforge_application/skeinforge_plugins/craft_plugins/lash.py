@@ -103,7 +103,7 @@ def writeOutput( fileName = ''):
 
 class LashRepository:
 	"A class to handle the lash settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.lash.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Lash', self, '')
@@ -113,7 +113,7 @@ class LashRepository:
 		self.yBacklash = settings.FloatSpin().getFromValue( 0.1, 'Y Backlash (mm):', self, 0.5, 0.3 )
 		self.executeTitle = 'Lash'
 
-	def execute( self ):
+	def execute(self):
 		"Lash button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -122,7 +122,7 @@ class LashRepository:
 
 class LashSkein:
 	"A class to lash a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRateMinute = 958.0
 		self.lineIndex = 0
@@ -155,7 +155,7 @@ class LashSkein:
 			line = self.distanceFeedRate.getLineWithY( line, splitLine, location.y - self.yBacklash )
 		return line
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

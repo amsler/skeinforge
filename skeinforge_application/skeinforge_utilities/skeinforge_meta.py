@@ -32,7 +32,7 @@ def getNewRepository():
 
 class MetaRepository:
 	"A class to handle the meta settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_meta.html', '', self )
 		importantFileNames = ['polyfile']

@@ -17,6 +17,7 @@ Chop is a script to chop a shape into svg slice layers.<br>
  <br>
 <br />
 <a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Add Layer Template to SVG">Add Layer Template to SVG</a><br />
 &nbsp;&nbsp;<a href="#Add Extra Top Layer if Necessary">Add Extra Top Layer if Necessary</a><br />
 &nbsp;&nbsp;<a href="#Extra Decimal Places">Extra Decimal Places</a><br />
 &nbsp;&nbsp;<a href="#Import Coarseness">Import Coarseness</a><br />
@@ -34,6 +35,14 @@ Chop is a script to chop a shape into svg slice layers.<br>
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
+<a name="Add Layer Template to SVG" id="Add Layer Template to SVG"></a><h3>Add Layer Template to SVG</h3>
+
+Default is on.<br>
+ <br>
+When selected, the layer template will be added to the svg output, which adds javascript control boxes.  So 'Add Layer Template to SVG' should be selected when the svg will be viewed in a browser.<br>
+ <br>
+When off, no controls will be added, the svg output will only include the fabrication paths.  So 'Add Layer Template to SVG' should be deselected when the svg will be used by other software, like Inkscape.<br>
+ <br>
 <a name="Add Extra Top Layer if Necessary" id="Add Extra Top Layer if Necessary"></a><h3>Add Extra Top Layer if Necessary</h3>
 
 Default is on.<br>
@@ -125,7 +134,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the chop dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; chop.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
+&gt;&gt;&gt; chop.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The chop tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>

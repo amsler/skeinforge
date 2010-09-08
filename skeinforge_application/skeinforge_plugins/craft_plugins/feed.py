@@ -111,7 +111,7 @@ def writeOutput( fileName = ''):
 
 class FeedRepository:
 	"A class to handle the feed settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.feed.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Feed', self, '')
@@ -123,7 +123,7 @@ class FeedRepository:
 		self.travelFeedRatePerSecond = settings.FloatSpin().getFromValue( 2.0, 'Travel Feed Rate (mm/s):', self, 50.0, 16.0 )
 		self.executeTitle = 'Feed'
 
-	def execute( self ):
+	def execute(self):
 		"Feed button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -132,7 +132,7 @@ class FeedRepository:
 
 class FeedSkein:
 	"A class to feed a skein of cuttings."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRatePerSecond = 16.0
 		self.isExtruderActive = False
@@ -163,7 +163,7 @@ class FeedSkein:
 			feedRateMinute = self.travelFeedRatePerMinute
 		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, location.dropAxis( 2 ), location.z )
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

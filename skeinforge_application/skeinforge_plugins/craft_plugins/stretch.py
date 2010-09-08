@@ -127,7 +127,7 @@ class LineIteratorBackward:
 		self.lineIndex = lineIndex
 		self.lines = lines
 
-	def getIndexBeforeNextDeactivate( self ):
+	def getIndexBeforeNextDeactivate(self):
 		"Get index two lines before the deactivate command."
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
@@ -138,7 +138,7 @@ class LineIteratorBackward:
 		print('This should never happen in stretch, no deactivate command was found for this thread.')
 		raise StopIteration, "You've reached the end of the line."
 
-	def getNext( self ):
+	def getNext(self):
 		"Get next line going backward or raise exception."
 		while self.lineIndex > 3:
 			if self.lineIndex == self.firstLineIndex:
@@ -166,7 +166,7 @@ class LineIteratorBackward:
 			self.lineIndex = nextLineIndex
 		raise StopIteration, "You've reached the end of the line."
 
-	def isBeforeExtrusion( self ):
+	def isBeforeExtrusion(self):
 		"Determine if index is two or more before activate command."
 		linearMoves = 0
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
@@ -191,7 +191,7 @@ class LineIteratorForward:
 		self.lineIndex = lineIndex
 		self.lines = lines
 
-	def getIndexJustAfterActivate( self ):
+	def getIndexJustAfterActivate(self):
 		"Get index just after the activate command."
 		for lineIndex in xrange( self.lineIndex - 1, 3, - 1 ):
 			line = self.lines[ lineIndex ]
@@ -202,7 +202,7 @@ class LineIteratorForward:
 		print('This should never happen in stretch, no activate command was found for this thread.')
 		raise StopIteration, "You've reached the end of the line."
 
-	def getNext( self ):
+	def getNext(self):
 		"Get next line or raise exception."
 		while self.lineIndex < len( self.lines ):
 			if self.lineIndex == self.firstLineIndex:
@@ -226,7 +226,7 @@ class LineIteratorForward:
 
 class StretchRepository:
 	"A class to handle the stretch settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.stretch.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Stretch', self, '')
@@ -235,15 +235,15 @@ class StretchRepository:
 		self.crossLimitDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 3.0, 'Cross Limit Distance Over Perimeter Width (ratio):', self, 10.0, 5.0 )
 		self.loopStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.05, 'Loop Stretch Over Perimeter Width (ratio):', self, 0.25, 0.11 )
 		self.pathStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.0, 'Path Stretch Over Perimeter Width (ratio):', self, 0.2, 0.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Perimeter -', self )
 		self.perimeterInsideStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.12, 'Perimeter Inside Stretch Over Perimeter Width (ratio):', self, 0.52, 0.32 )
 		self.perimeterOutsideStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.05, 'Perimeter Outside Stretch Over Perimeter Width (ratio):', self, 0.25, 0.1 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		self.stretchFromDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Stretch From Distance Over Perimeter Width (ratio):', self, 3.0, 2.0 )
 		self.executeTitle = 'Stretch'
 
-	def execute( self ):
+	def execute(self):
 		"Stretch button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -252,7 +252,7 @@ class StretchRepository:
 
 class StretchSkein:
 	"A class to stretch a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.feedRateMinute = 959.0
@@ -354,7 +354,7 @@ class StretchSkein:
 		stretchedPoint = location.dropAxis( 2 ) + absoluteStretch
 		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.feedRateMinute, stretchedPoint, location.z )
 
-	def isJustBeforeExtrusion( self ):
+	def isJustBeforeExtrusion(self):
 		"Determine if activate command is before linear move command."
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ lineIndex ]
@@ -367,7 +367,7 @@ class StretchSkein:
 #		print('This should never happen in isJustBeforeExtrusion in stretch, no activate or deactivate command was found for this thread.')
 		return False
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
@@ -417,7 +417,7 @@ class StretchSkein:
 			self.setStretchToPath()
 		self.distanceFeedRate.addLine(line)
 
-	def setStretchToPath( self ):
+	def setStretchToPath(self):
 		"Set the thread stretch to path stretch and is loop false."
 		self.isLoop = False
 		self.threadMaximumAbsoluteStretch = self.pathAbsoluteStretch

@@ -98,7 +98,7 @@ def writeOutput( fileName = ''):
 
 class WhittleRepository:
 	"A class to handle the whittle settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.whittle.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Whittled', self, '')
@@ -106,7 +106,7 @@ class WhittleRepository:
 		self.maximumVerticalStep = settings.FloatSpin().getFromValue( 0.02, 'Maximum Vertical Step (mm):', self, 0.42, 0.1 )
 		self.executeTitle = 'Whittle'
 
-	def execute( self ):
+	def execute(self):
 		"Whittle button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -115,7 +115,7 @@ class WhittleRepository:
 
 class WhittleSkein:
 	"A class to whittle a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.layerThickness = 0.3333333333
 		self.lineIndex = 0
@@ -139,7 +139,7 @@ class WhittleSkein:
 		self.oldLocation = location
 		return self.distanceFeedRate.getLineWithZ( line, splitLine, z )
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ].lstrip()
@@ -166,7 +166,7 @@ class WhittleSkein:
 			self.repeatLines()
 		self.distanceFeedRate.addLine(line)
 
-	def repeatLines( self ):
+	def repeatLines(self):
 		"Repeat the lines at decreasing altitude."
 		for layerDelta in self.layerDeltas[ 1 : ]:
 			for movementLine in self.movementLines:

@@ -33,7 +33,7 @@ class ZoomIn( MouseToolBase ):
 		scrollPaneCenter = self.window.getScrollPaneCenter() + delta
 		self.window.updateNewDestroyOld( scrollPaneCenter )
 
-	def click( self, event = None ):
+	def click(self, event=None):
 		"Set the window mouse tool to this."
 		self.window.destroyMouseToolRaiseMouseButtons()
 		self.window.mouseTool = self
@@ -45,6 +45,6 @@ class ZoomIn( MouseToolBase ):
 		self.mouseButton = None
 		return self
 
-	def getMultiplier( self ):
+	def getMultiplier(self):
 		"Get the scale multiplier."
 		return 2.0

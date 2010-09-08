@@ -155,7 +155,7 @@ The width of each type of thread and of each axis can be changed.  If the width 
  <br>
 <a name="Width of Extrusion Thread" id="Width of Extrusion Thread"></a><h4>Width of Extrusion Thread</h4>
 
-Default is two.<br>
+Default is three.<br>
  <br>
 The "Width of Extrusion Thread" sets the width of the extrusion threads.<br>
  <br>
@@ -212,7 +212,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the skeinview dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; skeinview.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>( 'Screw Holder_penultimate.gcode' )<br>
+&gt;&gt;&gt; skeinview.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>('Screw Holder_penultimate.gcode')<br>
 This brings up the skeinview viewer to view each layer of a gcode file.</tt>
 <br />
 <br />
@@ -323,6 +323,8 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyz
 <dl><dt><a name="SkeinWindow-button1"><strong>button1</strong></a>(self, event)</dt><dd><tt>The&nbsp;button&nbsp;was&nbsp;clicked.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-buttonRelease1"><strong>buttonRelease1</strong></a>(self, event)</dt><dd><tt>The&nbsp;button&nbsp;was&nbsp;released.</tt></dd></dl>
+
+<dl><dt><a name="SkeinWindow-cancel"><strong>cancel</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;all&nbsp;entities&nbsp;to&nbsp;their&nbsp;saved&nbsp;state.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-cancelTimer"><strong>cancelTimer</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Cancel&nbsp;the&nbsp;timer&nbsp;and&nbsp;set&nbsp;it&nbsp;to&nbsp;none.</tt></dd></dl>
 

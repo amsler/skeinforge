@@ -16,6 +16,6 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	evaluate.processCondition( xmlElement, xmlProcessor )
+	evaluate.processCondition(xmlElement)

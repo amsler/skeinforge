@@ -140,7 +140,7 @@ def getWindowAnalyzeFile( fileName ):
 
 class InterpretRepository:
 	"A class to handle the interpret settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.interpret.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Interpret', self, '')
@@ -149,7 +149,7 @@ class InterpretRepository:
 		self.textProgram = settings.StringSetting().getFromValue('Text Program:', self, 'webbrowser')
 		self.executeTitle = 'Interpret'
 
-	def execute( self ):
+	def execute(self):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:

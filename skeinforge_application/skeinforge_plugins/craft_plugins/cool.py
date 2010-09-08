@@ -138,7 +138,7 @@ def writeOutput( fileName = ''):
 
 class CoolRepository:
 	"A class to handle the cool settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.cool.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Cool', self, '')
@@ -154,7 +154,7 @@ class CoolRepository:
 		self.turnFanOffAtEnding = settings.BooleanSetting().getFromValue('Turn Fan Off at Ending', self, True )
 		self.executeTitle = 'Cool'
 
-	def execute( self ):
+	def execute(self):
 		"Cool button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -163,7 +163,7 @@ class CoolRepository:
 
 class CoolSkein:
 	"A class to cool a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.boundaryLayer = None
 		self.coolTemperature = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
@@ -185,9 +185,9 @@ class CoolSkein:
 		if len( insetBoundaryLoops ) < 1:
 			insetBoundaryLoops = self.boundaryLayer.loops
 		largestLoop = euclidean.getLargestLoop( insetBoundaryLoops )
-		loopArea = abs( euclidean.getPolygonArea( largestLoop ) )
+		loopArea = abs( euclidean.getAreaLoop( largestLoop ) )
 		if loopArea < self.minimumArea:
-			center = 0.5 * ( euclidean.getMaximumFromPoints( largestLoop ) + euclidean.getMinimumFromPoints( largestLoop ) )
+			center = 0.5 * ( euclidean.getMaximumByPathComplex( largestLoop ) + euclidean.getMinimumByPathComplex( largestLoop ) )
 			centerXBounded = max( center.real, self.boundingRectangle.cornerMinimum.real )
 			centerXBounded = min( centerXBounded, self.boundingRectangle.cornerMaximum.real )
 			centerYBounded = max( center.imag, self.boundingRectangle.cornerMinimum.imag )
@@ -195,7 +195,7 @@ class CoolSkein:
 			center = complex( centerXBounded, centerYBounded )
 			maximumCorner = center + self.halfCorner
 			minimumCorner = center - self.halfCorner
-			largestLoop = euclidean.getSquareLoop( minimumCorner, maximumCorner )
+			largestLoop = euclidean.getSquareLoopWiddershins( minimumCorner, maximumCorner )
 		pointComplex = euclidean.getXYComplexFromVector3( self.oldLocation )
 		if pointComplex != None:
 			largestLoop = euclidean.getLoopStartingNearest( self.perimeterWidth, pointComplex, largestLoop )
@@ -265,7 +265,7 @@ class CoolSkein:
 			self.distanceFeedRate.addLine('M107')
 		return self.distanceFeedRate.output.getvalue()
 
-	def getLayerTime( self ):
+	def getLayerTime(self):
 		"Get the time the extruder spends on the layer."
 		feedRateMinute = self.feedRateMinute
 		layerTime = 0.0
@@ -285,7 +285,7 @@ class CoolSkein:
 				return layerTime
 		return layerTime
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

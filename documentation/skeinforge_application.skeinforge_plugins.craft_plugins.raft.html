@@ -43,6 +43,7 @@ The important values for the raft settings are the temperatures of the raft, the
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Layers">Base Layers</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Nozzle Lift over Base Layer Thickness">Base Nozzle Lift over Base Layer Thickness</a><br />
 &nbsp;&nbsp;<a href="#Bottom Altitude">Bottom Altitude</a><br />
+&nbsp;&nbsp;<a href="#Initial Circling">Initial Circling</a><br />
 &nbsp;&nbsp;<a href="#Infill Overhang over Extrusion Width">Infill Overhang over Extrusion Width</a><br />
 &nbsp;&nbsp;<a href="#Interface">Interface</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Feed Rate Multiplier">Interface Feed Rate Multiplier</a><br />
@@ -130,6 +131,12 @@ Defines the amount the nozzle is above the center of the base extrusion divided 
 Default is zero.<br>
  <br>
 Defines the altitude of the bottom of the raft.<br>
+ <br>
+<a name="Initial Circling" id="Initial Circling"></a><h3>Initial Circling</h3>
+
+Default is off.<br>
+ <br>
+When selected, the extruder will initially circle around until it reaches operating temperature.<br>
  <br>
 <a name="Infill Overhang over Extrusion Width" id="Infill Overhang over Extrusion Width"></a><h3>Infill Overhang over Extrusion Width</h3>
 
@@ -301,7 +308,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the raft dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; raft.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
+&gt;&gt;&gt; raft.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 Screw Holder Bottom.stl<br>
 The raft tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>

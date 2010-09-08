@@ -21,32 +21,40 @@ __license__ = "GPL 3.0"
 
 
 def getGeometryOutput(xmlElement):
-	"Get vector3 vertices from attribute dictionary."
-	inradius = complex( 1.0, 1.0 )
-	inradius = lineation.getComplexByPrefixes( ['demisize', 'inradius'], inradius, xmlElement )
-	inradius = lineation.getComplexByMultiplierPrefix( 2.0, 'size', inradius, xmlElement )
-	demiwidth = lineation.getFloatByPrefixBeginEnd('demiwidth', 'width', inradius.real, xmlElement )
-	demiheight = lineation.getFloatByPrefixBeginEnd('demiheight', 'height', inradius.imag, xmlElement )
-	bottomDemiwidth = lineation.getFloatByPrefixBeginEnd('bottomdemiwidth', 'bottomwidth', demiwidth, xmlElement )
-	topDemiwidth = lineation.getFloatByPrefixBeginEnd('topdemiwidth', 'topwidth', demiwidth, xmlElement )
-	interiorAngle = evaluate.getEvaluatedFloatDefault( 90.0, 'interiorangle', xmlElement )
-	topRight = complex( topDemiwidth, demiheight )
-	topLeft = complex( - topDemiwidth, demiheight )
-	bottomLeft = complex( - bottomDemiwidth, - demiheight )
-	bottomRight = complex( bottomDemiwidth, - demiheight )
+	"Get vector3 vertexes from attribute dictionary."
+	inradius = lineation.getComplexByPrefixes(['demisize', 'inradius'], complex(1.0, 1.0), xmlElement)
+	inradius = lineation.getComplexByMultiplierPrefix(2.0, 'size', inradius, xmlElement)
+	demiwidth = lineation.getFloatByPrefixBeginEnd('demiwidth', 'width', inradius.real, xmlElement)
+	demiheight = lineation.getFloatByPrefixBeginEnd('demiheight', 'height', inradius.imag, xmlElement)
+	bottomDemiwidth = lineation.getFloatByPrefixBeginEnd('bottomdemiwidth', 'bottomwidth', demiwidth, xmlElement)
+	topDemiwidth = lineation.getFloatByPrefixBeginEnd('topdemiwidth', 'topwidth', demiwidth, xmlElement)
+	interiorAngle = evaluate.getEvaluatedFloatDefault(90.0, 'interiorangle', xmlElement)
+	topRight = complex(topDemiwidth, demiheight)
+	topLeft = complex(-topDemiwidth, demiheight)
+	bottomLeft = complex(-bottomDemiwidth, -demiheight)
+	bottomRight = complex(bottomDemiwidth, -demiheight)
 	if interiorAngle != 90.0:
-		interiorPlaneAngle = euclidean.getWiddershinsUnitPolar( math.radians( interiorAngle - 90.0 ) )
-		topRight = ( topRight - bottomRight ) * interiorPlaneAngle + bottomRight
-		topLeft = ( topLeft - bottomLeft ) * interiorPlaneAngle + bottomLeft
-	loop = [
-		Vector3( topRight.real, topRight.imag ),
-		Vector3( topLeft.real, topLeft.imag ),
-		Vector3( bottomLeft.real, bottomLeft.imag ),
-		Vector3( bottomRight.real, bottomRight.imag ) ]
-	return lineation.getGeometryOutputByLoop( lineation.SideLoop( loop, 0.5 * math.pi ), xmlElement )
+		interiorPlaneAngle = euclidean.getWiddershinsUnitPolar(math.radians(interiorAngle - 90.0))
+		topRight = (topRight - bottomRight) * interiorPlaneAngle + bottomRight
+		topLeft = (topLeft - bottomLeft) * interiorPlaneAngle + bottomLeft
+	revolutions = evaluate.getEvaluatedIntOne('revolutions', xmlElement)
+	lineation.setClosedAttribute(revolutions, xmlElement)
+	complexLoop = [topRight, topLeft, bottomLeft, bottomRight]
+	originalLoop = complexLoop[:]
+	for revolution in xrange(1, revolutions):
+		complexLoop += originalLoop
+	spiral = lineation.Spiral(0.25, xmlElement)
+	loop = []
+	loopCentroid = euclidean.getLoopCentroid(originalLoop)
+	for point in complexLoop:
+		unitPolar = euclidean.getNormalized(point - loopCentroid)
+		loop.append(spiral.getSpiralPoint(unitPolar, Vector3(point.real, point.imag)))
+	return lineation.getGeometryOutputByLoop(lineation.SideLoop(loop, 0.5 * math.pi), xmlElement)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
-	"Get vector3 vertices from attribute dictionary by arguments."
+	"Get vector3 vertexes from attribute dictionary by arguments."
+	if len(arguments) < 1:
+		return getGeometryOutput(xmlElement)
 	inradius = 0.5 * euclidean.getFloatFromValue(arguments[0])
 	xmlElement.attributeDictionary['inradius.x'] = str(inradius)
 	if len(arguments) > 1:
@@ -54,6 +62,6 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	xmlElement.attributeDictionary['inradius.y'] = str(inradius)
 	return getGeometryOutput(xmlElement)
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	lineation.processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement, xmlProcessor)
+	lineation.processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement)

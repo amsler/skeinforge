@@ -66,7 +66,7 @@ class ColoredLine:
 		self.end = end
 		self.tagString = tagString
 	
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this colored index line."
 		return '%s, %s, %s, %s' % ( self.colorName, self.begin, self.end, self.tagString )
 
@@ -81,7 +81,7 @@ class ExportCanvasDialog:
 		self.suffix = suffix
 		menu.add_command( label = settings.getEachWordCapitalized( self.name ), command = self.display )
 
-	def display( self ):
+	def display(self):
 		"Display the export canvas repository dialog."
 		for repositoryDialog in settings.globalRepositoryDialogListTable:
 			if repositoryDialog.repository.lowerName == self.name:
@@ -99,34 +99,34 @@ class ExportCanvasDialog:
 
 class TableauRepository:
 	"The viewer base repository class."
-	def addAnimation( self ):
+	def addAnimation(self):
 		"Add the animation settings."
 		self.frameList = settings.FrameList().getFromValue('Frame List', self, [] )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Animation -', self )
 		self.animationLineQuickening = settings.FloatSpinUpdate().getFromValue( 0.5, 'Animation Line Quickening (ratio):', self, 4.5, 1.0 )
 		self.animationSlideShowRate = settings.FloatSpinUpdate().getFromValue( 1.0, 'Animation Slide Show Rate (layers/second):', self, 5.0, 2.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 
-	def addScaleScreenSlide( self ):
+	def addScaleScreenSlide(self):
 		"Add the scale, screen and slide show settings."
 		self.scale = settings.FloatSpinNotOnMenu().getFromValue( 10.0, 'Scale (pixels per millimeter):', self, 50.0, 15.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Screen Inset -', self )
 		self.screenHorizontalInset = settings.IntSpin().getFromValue( 80, 'Screen Horizontal Inset (pixels):', self, 1000, 100 )
 		self.screenVerticalInset = settings.IntSpin().getFromValue( 120, 'Screen Vertical Inset (pixels):', self, 1000, 220 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 
-	def setToDisplaySave( self, event = None ):
+	def setToDisplaySave(self, event=None):
 		"Set the setting values to the display, save the new values."
 		for menuEntity in self.menuEntities:
 			if menuEntity in self.archive:
 				menuEntity.setToDisplay()
-		settings.writeSettings( self )
+		settings.writeSettings(self)
 
 
 class TableauWindow:
-	def activateMouseModeTool( self ):
+	def activateMouseModeTool(self):
 		"Activate the mouse mode tool."
 		self.repository.setToDisplaySave()
 		self.canvas.focus_set()
@@ -209,12 +209,12 @@ class TableauWindow:
 
 	def addMouseInstantTool( self, fileName, gridPosition, mouseInstantTool ):
 		"Add the mouse instant tool and derived photo button."
-		mouseInstantTool.getReset( self )
+		mouseInstantTool.getReset(self)
 		photoButton = self.getPhotoButtonGridIncrement( mouseInstantTool.click, fileName, gridPosition )
 		mouseInstantTool.mouseButton = photoButton
 		self.mouseInstantButtons.append( photoButton )
 
-	def addMouseToolsBind( self ):
+	def addMouseToolsBind(self):
 		"Add the mouse tool and bind button one clicked, button one released and motion."
 		self.xScrollbar.config( command = self.relayXview )
 		self.yScrollbar.config( command = self.relayYview )
@@ -237,7 +237,7 @@ class TableauWindow:
 				self.gridPosition.incrementGivenNumberOfColumns( 3 )
 				entity.addToDialog( getGridHorizontalFrame( self.gridPosition ) )
 		for menuRadio in self.repository.mouseMode.menuRadios:
-			menuRadio.mouseTool = menuRadio.getNewMouseToolFunction().getReset( self )
+			menuRadio.mouseTool = menuRadio.getNewMouseToolFunction().getReset(self)
 			self.mouseTool = menuRadio.mouseTool
 		self.createMouseModeTool()
 		self.canvas.bind('<Button-1>', self.button1 )
@@ -305,33 +305,37 @@ class TableauWindow:
 		movedGeometryString = '%sx%s+%s' % ( self.root.winfo_reqwidth(), self.root.winfo_reqheight(), '0+0')
 		self.root.geometry( movedGeometryString )
 
-	def button1( self, event ):
+	def button1(self, event):
 		"The button was clicked."
-		self.mouseTool.button1( event )
+		self.mouseTool.button1(event)
 
-	def buttonRelease1( self, event ):
+	def buttonRelease1(self, event):
 		"The button was released."
-		self.mouseTool.buttonRelease1( event )
+		self.mouseTool.buttonRelease1(event)
 
-	def cancelTimer( self, event = None ):
+	def cancel(self, event=None):
+		"Set all entities to their saved state."
+		settings.cancelRepository(self.repository)
+
+	def cancelTimer(self, event=None):
 		"Cancel the timer and set it to none."
 		if self.timerID != None:
-			self.canvas.after_cancel ( self.timerID )
+			self.canvas.after_cancel(self.timerID)
 			self.timerID = None
 
-	def cancelTimerResetButtons( self ):
+	def cancelTimerResetButtons(self):
 		"Cancel the timer and set it to none."
 		self.cancelTimer()
 		self.resetPeriodicButtonsText()
 
-	def close( self, event = None ):
+	def close(self, event=None):
 		"The dialog was closed."
 		try:
 			self.root.after( 1, self.root.destroy ) # to get around 'Font Helvetica -12 still in cache.' segmentation bug, instead of simply calling self.root.destroy()
 		except:
 			pass
 
-	def createMouseModeTool( self ):
+	def createMouseModeTool(self):
 		"Create the mouse mode tool."
 		self.destroyMouseToolRaiseMouseButtons()
 		for menuRadio in self.repository.mouseMode.menuRadios:
@@ -339,9 +343,9 @@ class TableauWindow:
 				self.mouseTool = menuRadio.mouseTool
 				menuRadio.mouseButton['relief'] = settings.Tkinter.SUNKEN
 
-	def destroyAllDialogWindows( self ):
+	def destroyAllDialogWindows(self):
 		"Destroy all the dialog windows."
-		settings.writeSettings( self.repository )
+		settings.writeSettings(self.repository)
 		return
 		for menuEntity in self.repository.menuEntities:
 			lowerName = menuEntity.name.lower()
@@ -350,7 +354,7 @@ class TableauWindow:
 				for globalRepositoryDialogValue in globalRepositoryDialogValues:
 					settings.quitWindow( globalRepositoryDialogValue.root )
 
-	def destroyMouseToolRaiseMouseButtons( self ):
+	def destroyMouseToolRaiseMouseButtons(self):
 		"Destroy the mouse tool and raise the mouse buttons."
 		self.mouseTool.destroyEverything()
 		for menuRadio in self.repository.mouseMode.menuRadios:
@@ -358,7 +362,7 @@ class TableauWindow:
 		for mouseInstantButton in self.mouseInstantButtons:
 			mouseInstantButton['relief'] = settings.Tkinter.RAISED
 
-	def dive( self ):
+	def dive(self):
 		"Dive, go down periodically."
 		oldDiveButtonText = self.diveButton['text']
 		self.cancelTimerResetButtons()
@@ -366,7 +370,7 @@ class TableauWindow:
 			return
 		self.diveCycle()
 
-	def diveCycle( self ):
+	def diveCycle(self):
 		"Start the dive cycle."
 		self.cancelTimer()
 		self.repository.layer.value -= 1
@@ -409,7 +413,7 @@ class TableauWindow:
 			anchorTowardCenter += settings.Tkinter.W
 		return self.canvas.create_text( int( location.real ), int( location.imag ), anchor = anchorTowardCenter, tags = tags, text = text )
 
-	def getEntityFromName( self, name ):
+	def getEntityFromName(self, name):
 		"Get the entity of the given name."
 		for entity in self.repository.displayEntities:
 			if entity.name == name:
@@ -440,27 +444,27 @@ class TableauWindow:
 		"Get the separation width in pixels."
 		return euclidean.getIncrementFromRank( rank ) * self.skein.scale
 
-	def getScrollPaneCenter( self ):
+	def getScrollPaneCenter(self):
 		"Get the center of the scroll pane."
 		return self.getScrollPaneFraction() + self.canvasScreenCenter
 
-	def getScrollPaneFraction( self ):
+	def getScrollPaneFraction(self):
 		"Get the center of the scroll pane."
 		return complex( self.xScrollbar.get()[0], self.yScrollbar.get()[0] )
 
-	def getSlideShowDelay( self ):
+	def getSlideShowDelay(self):
 		"Get the slide show delay in milliseconds."
 		slideShowDelay = int( round( 1000.0 / self.repository.animationSlideShowRate.value ) )
 		return max( slideShowDelay, 1 )
 
-	def getUpdateSkeinPanes( self ):
+	def getUpdateSkeinPanes(self):
 		"Get the update skein panes."
 		layerPlusExtraSpan = self.repository.layer.value + self.repository.layerExtraSpan.value
 		layersFrom = max( 0, min( self.repository.layer.value, layerPlusExtraSpan ) )
 		layersTo = min( len( self.skeinPanes ), max( self.repository.layer.value, layerPlusExtraSpan ) + 1 )
 		return self.skeinPanes[ layersFrom : layersTo ]
 
-	def isLineBelowZeroSetLayer( self ):
+	def isLineBelowZeroSetLayer(self):
 		"Determine if the line index is below zero, and if so set the layer index."
 		if self.repository.line.value >= 0:
 			return False
@@ -470,7 +474,7 @@ class TableauWindow:
 			return True
 		return False
 
-	def isLineBeyondListSetLayer( self ):
+	def isLineBeyondListSetLayer(self):
 		"Determine if the line index is beyond the end of the list, and if so set the layer index."
 		coloredLinesLength = len( self.getColoredLines() )
 		if self.repository.line.value < coloredLinesLength:
@@ -481,36 +485,36 @@ class TableauWindow:
 			return True
 		return False
 
-	def keyPressDown( self, event ):
+	def keyPressDown(self, event):
 		"The down arrow was pressed."
-		self.mouseTool.keyPressDown( event )
+		self.mouseTool.keyPressDown(event)
 
-	def keyPressLeft( self, event ):
+	def keyPressLeft(self, event):
 		"The left arrow was pressed."
-		self.mouseTool.keyPressLeft( event )
+		self.mouseTool.keyPressLeft(event)
 
-	def keyPressReturn( self, event ):
+	def keyPressReturn(self, event):
 		"The return key was pressed."
-		self.mouseTool.keyPressReturn( event )
+		self.mouseTool.keyPressReturn(event)
 
-	def keyPressRight( self, event ):
+	def keyPressRight(self, event):
 		"The right arrow was pressed."
-		self.mouseTool.keyPressRight( event )
+		self.mouseTool.keyPressRight(event)
 
-	def keyPressUp( self, event ):
+	def keyPressUp(self, event):
 		"The up arrow was pressed."
-		self.mouseTool.keyPressUp( event )
+		self.mouseTool.keyPressUp(event)
 
-	def layerEntryReturnPressed( self, event = None ):
+	def layerEntryReturnPressed(self, event=None):
 		"The layer index entry return was pressed."
 		self.setLayerIndex( int( self.layerEntry.get() ) )
 
-	def limitIndex( self ):
+	def limitIndex(self):
 		"Limit the index so it is not below zero or above the top."
 		self.repository.layer.value = max( 0, self.repository.layer.value )
 		self.repository.layer.value = min( len( self.skeinPanes ) - 1, self.repository.layer.value )
 
-	def limitIndexSetArrowMouseDeleteCanvas( self ):
+	def limitIndexSetArrowMouseDeleteCanvas(self):
 		"Limit the index, set the arrow type, and delete all the canvas items."
 		self.limitIndex()
 		self.arrowType = None
@@ -518,7 +522,7 @@ class TableauWindow:
 			self.arrowType = 'last'
 		self.canvas.delete( settings.Tkinter.ALL )
 
-	def lineEntryReturnPressed( self, event = None ):
+	def lineEntryReturnPressed(self, event=None):
 		"The line index entry return was pressed."
 		self.repository.line.value = int( self.lineEntry.get() )
 		if self.isLineBelowZeroSetLayer():
@@ -529,7 +533,7 @@ class TableauWindow:
 		self.updateMouseToolIfSelection()
 		self.setLineButtonsState()
 
-	def lineDive( self ):
+	def lineDive(self):
 		"Line dive, go down periodically."
 		oldLineDiveButtonText = self.lineDiveButton['text']
 		self.cancelTimerResetButtons()
@@ -537,7 +541,7 @@ class TableauWindow:
 			return
 		self.lineDiveCycle()
 
-	def lineDiveCycle( self ):
+	def lineDiveCycle(self):
 		"Start the line dive cycle."
 		self.cancelTimer()
 		self.repository.line.value -= 1
@@ -555,7 +559,7 @@ class TableauWindow:
 		coloredLine = self.getColoredLines()[ self.repository.line.value ]
 		self.timerID = self.canvas.after( self.getAnimationLineDelay( coloredLine ), self.lineDiveCycle )
 
-	def lineSoar( self ):
+	def lineSoar(self):
 		"Line soar, go up periodically."
 		oldLineSoarButtonText = self.lineSoarButton['text']
 		self.cancelTimerResetButtons()
@@ -563,7 +567,7 @@ class TableauWindow:
 			return
 		self.lineSoarCycle()
 
-	def lineSoarCycle( self ):
+	def lineSoarCycle(self):
 		"Start the line soar cycle."
 		self.cancelTimer()
 		self.repository.line.value += 1
@@ -582,11 +586,11 @@ class TableauWindow:
 		coloredLine = self.getColoredLines()[ self.repository.line.value ]
 		self.timerID = self.canvas.after( self.getAnimationLineDelay( coloredLine ), self.lineSoarCycle )
 
-	def motion( self, event ):
+	def motion(self, event):
 		"The mouse moved."
-		self.mouseTool.motion( event )
+		self.mouseTool.motion(event)
 
-	def phoenixUpdate( self ):
+	def phoenixUpdate(self):
 		"Update the skein, and deiconify a new window and destroy the old."
 		self.updateNewDestroyOld( self.getScrollPaneCenter() )
 
@@ -598,28 +602,28 @@ class TableauWindow:
 		"Relay yview changes."
 		self.canvas.yview( *args )
 
-	def resetPeriodicButtonsText( self ):
+	def resetPeriodicButtonsText(self):
 		"Reset the text of the periodic buttons."
 		self.setButtonImageText( self.diveButton, 'dive')
 		self.setButtonImageText( self.soarButton, 'soar')
 		self.setButtonImageText( self.lineDiveButton, 'dive')
 		self.setButtonImageText( self.lineSoarButton, 'soar')
 
-	def redisplayWindowUpdate( self, event = None ):
+	def redisplayWindowUpdate(self, event=None):
 		"Deiconify a new window and destroy the old."
 		self.repository.setToDisplaySave()
 		self.getCopy().updateDeiconify( self.getScrollPaneCenter() )
 		self.root.after( 1, self.root.destroy ) # to get around 'Font Helvetica -12 still in cache.' segmentation bug, instead of simply calling self.root.destroy()
 
-	def save( self ):
+	def save(self):
 		"Set the setting values to the display, save the new values."
 		for menuEntity in self.repository.menuEntities:
 			if menuEntity in self.repository.archive:
 				menuEntity.setToDisplay()
 		self.setInsetToDisplay()
-		settings.writeSettings( self.repository )
+		settings.writeSettings(self.repository)
 
-	def scaleEntryReturnPressed( self, event = None ):
+	def scaleEntryReturnPressed(self, event=None):
 		"The scale entry return was pressed."
 		self.repository.scale.value = float( self.scaleEntry.get() )
 		self.phoenixUpdate()
@@ -631,7 +635,7 @@ class TableauWindow:
 			button['image'] = photoImage
 		button['text'] = text
 
-	def setDisplayLayerIndex( self ):
+	def setDisplayLayerIndex(self):
 		"Set the display of the layer index entry field and buttons."
 		coloredLines = self.getColoredLines()
 		isAboveFloor = self.repository.layer.value > 0
@@ -645,7 +649,7 @@ class TableauWindow:
 		self.mouseTool.update()
 		self.setInsetToDisplay()
 
-	def setInsetToDisplay( self ):
+	def setInsetToDisplay(self):
 		"Set the archive to the display."
 		if self.root.state() != 'normal':
 			return
@@ -679,7 +683,7 @@ class TableauWindow:
 			self.lineEntry['to'] = getLengthMinusOneMinimumOne( coloredLines )
 		self.update()
 
-	def setLineButtonsState( self ):
+	def setLineButtonsState(self):
 		"Set the state of the line buttons."
 		coloredLines = self.getColoredLines()
 		isAboveFloor = self.repository.layer.value > 0
@@ -692,25 +696,25 @@ class TableauWindow:
 		mouseTool.getNewMouseToolFunction = getNewMouseToolFunction
 		mouseTool.setUpdateFunction( self.activateMouseModeTool )
 
-	def setWindowToDisplaySavePhoenixUpdate( self, event = None ):
+	def setWindowToDisplaySavePhoenixUpdate(self, event=None):
 		"Set the setting values to the display, save the new values, then call the update function."
 		self.repository.setToDisplaySave()
 		self.phoenixUpdate()
 
-	def setWindowToDisplaySaveUpdate( self, event = None ):
+	def setWindowToDisplaySaveUpdate(self, event=None):
 		"Set the setting values to the display, save the new values, then call the update function."
 		self.repository.setToDisplaySave()
 		self.update()
 
-	def shiftButtonRelease1( self, event ):
+	def shiftButtonRelease1(self, event):
 		"The button was released while the shift key was pressed."
 		self.mouseTool.buttonRelease1( event, True )
 
-	def shiftMotion( self, event ):
+	def shiftMotion(self, event):
 		"The mouse moved."
 		self.mouseTool.motion( event, True )
 
-	def soar( self ):
+	def soar(self):
 		"Soar, go up periodically."
 		oldSoarButtonText = self.soarButton['text']
 		self.cancelTimerResetButtons()
@@ -718,7 +722,7 @@ class TableauWindow:
 			return
 		self.soarCycle()
 
-	def soarCycle( self ):
+	def soarCycle(self):
 		"Start the soar cycle."
 		self.cancelTimer()
 		self.repository.layer.value += 1
@@ -735,7 +739,7 @@ class TableauWindow:
 		self.update()
 		self.root.deiconify()
 
-	def updateMouseToolIfSelection( self ):
+	def updateMouseToolIfSelection(self):
 		"Update the mouse tool if it is a selection tool."
 		if self.mouseTool == None:
 			return

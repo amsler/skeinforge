@@ -189,7 +189,7 @@ def writeOutput( fileName = ''):
 
 class ExportRepository:
 	"A class to handle the export settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Export', self, '')
@@ -221,7 +221,7 @@ class ExportRepository:
 		self.savePenultimateGcode = settings.BooleanSetting().getFromValue('Save Penultimate Gcode', self, False )
 		self.executeTitle = 'Export'
 
-	def execute( self ):
+	def execute(self):
 		"Export button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -230,7 +230,7 @@ class ExportRepository:
 
 class ExportSkein:
 	"A class to export a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.decimalPlacesExported = 2
 		self.output = cStringIO.StringIO()
 

@@ -9,7 +9,6 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
-from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 
@@ -23,17 +22,17 @@ __license__ = "GPL 3.0"
 globalExecutionOrder = 380
 
 
-def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
+def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get equated paths."
 	translatePoints( loop, prefix, xmlElement )
 	return [loop]
 
-def getManipulatedGeometryOutput( geometryOutput, xmlElement ):
+def getManipulatedGeometryOutput(geometryOutput, xmlElement):
 	"Get equated geometryOutput."
-	translatePoints( matrix.getConnectionVertices( geometryOutput ), 'translate.', xmlElement )
+	translatePoints( matrix.getConnectionVertexes(geometryOutput), 'translate.', xmlElement )
 	return geometryOutput
 
-def manipulateXMLElement(target, xmlElement, xmlProcessor):
+def manipulateXMLElement(target, xmlElement):
 	"Manipulate the xml element."
 	translateMatrixTetragrid = matrix.getTranslateMatrixTetragrid('', xmlElement)
 	if translateMatrixTetragrid == None:
@@ -42,13 +41,13 @@ def manipulateXMLElement(target, xmlElement, xmlProcessor):
 		return
 	matrix.setAttributeDictionaryToMultipliedTetragrid(translateMatrixTetragrid, target)
 
-def processXMLElement(xmlElement, xmlProcessor):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	solid.processXMLElementByFunction(manipulateXMLElement, xmlElement, xmlProcessor)
+	solid.processXMLElementByFunction(manipulateXMLElement, xmlElement)
 
 def translatePoints(points, prefix, xmlElement):
 	"Translate the points."
-	translateVector3 = matrix.getCumulativeVector3(prefix, Vector3(), xmlElement)
+	translateVector3 = matrix.getCumulativeVector3Remove(prefix, Vector3(), xmlElement)
 	if abs(translateVector3) <= 0.0:
 		return
 	for point in points:

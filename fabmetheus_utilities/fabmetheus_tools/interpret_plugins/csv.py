@@ -75,7 +75,7 @@ class CSVElement( xml_simple_reader.XMLElement ):
 		splitLineStripped = lineStripped.split('\t')
 		key = splitLineStripped[0]
 		value = splitLineStripped[1]
-		self.attributeDictionary[ key ] = value
+		self.attributeDictionary[key] = value
 		self.addToIDDictionaryIFIDExists()
 
 	def continueParsingTable( self, line, lineStripped ):
@@ -94,7 +94,7 @@ class CSVElement( xml_simple_reader.XMLElement ):
 			if columnIndex in self.headingDictionary:
 				key = self.headingDictionary[ columnIndex ]
 				value = lineDictionary[ columnIndex ]
-				csvElement.attributeDictionary[ key ] = value
+				csvElement.attributeDictionary[key] = value
 		csvElement.addToIDDictionaryIFIDExists()
 		if len( csvElement.attributeDictionary ) == 0 or oldAttributeDictionaryLength == 0 or self.parent == None:
 			return
@@ -109,7 +109,7 @@ class CSVElement( xml_simple_reader.XMLElement ):
 		self.parent = oldElement
 		while leadingTabCount <= self.parent.getNumberOfParents():
 			self.parent = self.parent.parent
-		self.parent.children.append( self )
+		self.parent.children.append(self)
 		return self
 
 	def getElementFromTable( self, leadingTabCount, lineStripped, oldElement ):
@@ -117,7 +117,7 @@ class CSVElement( xml_simple_reader.XMLElement ):
 		self.headingDictionary = None
 		return self.getElementFromObject( leadingTabCount, lineStripped, oldElement )
 
-	def getNumberOfParents( self ):
+	def getNumberOfParents(self):
 		"Get the number of parents."
 		if self.parent == None:
 			return 0

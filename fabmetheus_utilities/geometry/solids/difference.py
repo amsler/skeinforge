@@ -18,13 +18,13 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def convertXMLElement( geometryOutput, xmlElement, xmlProcessor ):
+def convertXMLElement(geometryOutput, xmlElement):
 	"Convert the xml element to a difference xml element."
-	xmlProcessor.createChildren( geometryOutput, xmlElement )
+	xmlElement.getXMLProcessor().createChildren(geometryOutput['shapes'], xmlElement)
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	group.processShape( Difference, xmlElement, xmlProcessor )
+	group.processShape(Difference, xmlElement)
 
 
 class Difference( booleansolid.BooleanSolid ):
@@ -33,6 +33,6 @@ class Difference( booleansolid.BooleanSolid ):
 		"Get loops from visible object loops list."
 		return self.getDifference( importRadius, visibleObjectLoopsList )
 
-	def getXMLClassName( self ):
+	def getXMLClassName(self):
 		"Get xml class name."
 		return self.__class__.__name__.lower()

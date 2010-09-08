@@ -146,32 +146,32 @@ def writeOutput( fileName = ''):
 
 class WipeRepository:
 	"A class to handle the wipe settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.wipe.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Wipe', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Wipe')
 		self.activateWipe = settings.BooleanSetting().getFromValue('Activate Wipe', self, False )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Location Arrival -', self )
 		self.locationArrivalX = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival X (mm):', self, 100.0, - 70.0 )
 		self.locationArrivalY = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival Y (mm):', self, 100.0, - 50.0 )
 		self.locationArrivalZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Arrival Z (mm):', self, 100.0, 50.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Location Departure -', self )
 		self.locationDepartureX = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure X (mm):', self, 100.0, - 70.0 )
 		self.locationDepartureY = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure Y (mm):', self, 100.0, - 40.0 )
 		self.locationDepartureZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Departure Z (mm):', self, 100.0, 50.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Location Wipe -', self )
 		self.locationWipeX = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe X (mm):', self, 100.0, - 70.0 )
 		self.locationWipeY = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe Y (mm):', self, 100.0, - 70.0 )
 		self.locationWipeZ = settings.FloatSpin().getFromValue( - 100.0, 'Location Wipe Z (mm):', self, 100.0, 50.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		self.wipePeriod = settings.IntSpin().getFromValue( 1, 'Wipe Period (layers):', self, 5, 3 )
 		self.executeTitle = 'Wipe'
 
-	def execute( self ):
+	def execute(self):
 		"Wipe button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -180,7 +180,7 @@ class WipeRepository:
 
 class WipeSkein:
 	"A class to wipe a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.highestZ = None
@@ -193,7 +193,7 @@ class WipeSkein:
 
 	def addHop( self, begin, end ):
 		"Add hop to highest point."
-		beginEndDistance = begin.distance( end )
+		beginEndDistance = begin.distance(end)
 		if beginEndDistance < 3.0 * self.absolutePerimeterWidth:
 			return
 		alongWay = self.absolutePerimeterWidth / beginEndDistance

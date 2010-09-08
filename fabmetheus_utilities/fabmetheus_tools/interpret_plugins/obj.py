@@ -61,7 +61,7 @@ def addFacesGivenText( objText, triangleMesh ):
 		splitLine = line.split()
 		firstWord = gcodec.getFirstWord( splitLine )
 		if firstWord == 'v':
-			triangleMesh.vertices.append( getVertexGivenLine(line) )
+			triangleMesh.vertexes.append( getVertexGivenLine(line) )
 		elif firstWord == 'f':
 			triangleMesh.faces.append( getFaceGivenLine( line, triangleMesh ) )
 
@@ -75,7 +75,7 @@ def getFaceGivenLine( line, triangleMesh ):
 		vertexStringWithSpaces = vertexString.replace('/', ' ')
 		vertexStringSplit = vertexStringWithSpaces.split()
 		vertexIndex = int( vertexStringSplit[0] ) - 1
-		faceGivenLine.vertexIndexes.append( vertexIndex )
+		faceGivenLine.vertexIndexes.append(vertexIndex)
 	return faceGivenLine
 
 def getCarving( fileName = ''):

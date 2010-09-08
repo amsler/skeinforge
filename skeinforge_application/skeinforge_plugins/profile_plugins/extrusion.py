@@ -39,7 +39,7 @@ __license__ = "GPL 3.0"
 
 def getCraftSequence():
 	"Get the extrusion craft sequence."
-	return 'carve,preface,widen,inset,fill,multiply,speed,temperature,raft,chamber,tower,jitter,comb,clip,cool,stretch,hop,wipe,oozebane,splodge,home,lash,fillet,limit,dimension,unpause,export'.split(',')
+	return 'carve,preface,widen,inset,fill,multiply,speed,temperature,raft,chamber,tower,jitter,clip,stretch,comb,cool,hop,wipe,oozebane,splodge,home,lash,fillet,limit,dimension,unpause,export'.split(',')
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -48,7 +48,7 @@ def getNewRepository():
 
 class ExtrusionRepository:
 	"A class to handle the export settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsSetCraftProfileArchive( getCraftSequence(), 'ABS', self, 'skeinforge_plugins.profile_plugins.extrusion.html')
 

@@ -105,7 +105,7 @@ def getIsIntersectingWithinLoop( loop, otherLoop, outsetLoop ):
 def getIsPointInsideALoop( loops, point ):
 	"Determine if a point is inside a loop of a loop list."
 	for loop in loops:
-		if euclidean.isPointInsideLoop( loop, point ):
+		if euclidean.isPointInsideLoop(loop, point):
 			return True
 	return False
 
@@ -132,7 +132,7 @@ def writeOutput( fileName = ''):
 
 class WidenRepository:
 	"A class to handle the widen settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.widen.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Widen', self, '')
@@ -140,7 +140,7 @@ class WidenRepository:
 		self.activateWiden = settings.BooleanSetting().getFromValue('Activate Widen:', self, False )
 		self.executeTitle = 'Widen'
 
-	def execute( self ):
+	def execute(self):
 		"Widen button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -149,7 +149,7 @@ class WidenRepository:
 
 class WidenSkein:
 	"A class to widen a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.lineIndex = 0
@@ -186,7 +186,7 @@ class WidenSkein:
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

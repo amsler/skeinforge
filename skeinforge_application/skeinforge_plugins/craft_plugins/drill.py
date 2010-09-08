@@ -92,7 +92,7 @@ def getPolygonCenter( polygon ):
 	areaSum = 0.0
 	for pointIndex in xrange( len( polygon ) ):
 		pointBegin = polygon[ pointIndex ]
-		pointEnd  = polygon[ ( pointIndex + 1 ) % len( polygon ) ]
+		pointEnd  = polygon[ (pointIndex + 1) % len( polygon ) ]
 		area = pointBegin.real * pointEnd.imag - pointBegin.imag * pointEnd.real
 		areaSum += area
 		pointSum += complex( pointBegin.real + pointEnd.real, pointBegin.imag + pointEnd.imag ) * area
@@ -112,14 +112,14 @@ class ThreadLayer:
 		self.points = []
 		self.z = z
 
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this thread layer."
 		return '%s, %s' % ( self.z, self.points )
 
 
 class DrillRepository:
 	"A class to handle the drill settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.drill.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Drill', self, '')
@@ -128,7 +128,7 @@ class DrillRepository:
 		self.drillingMarginOnTop = settings.FloatSpin().getFromValue( 0.0, 'Drilling Margin on Top (millimeters):', self, 20.0, 3.0 )
 		self.executeTitle = 'Drill'
 
-	def execute( self ):
+	def execute(self):
 		"Drill button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -137,7 +137,7 @@ class DrillRepository:
 
 class DrillSkein:
 	"A class to drill a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
@@ -150,7 +150,7 @@ class DrillSkein:
 		self.threadLayer = None
 		self.threadLayers = []
 
-	def addDrillHoles( self ):
+	def addDrillHoles(self):
 		"Parse a gcode line."
 		self.isDrilled = True
 		if len( self.threadLayers ) < 1:
@@ -170,7 +170,7 @@ class DrillSkein:
 		self.distanceFeedRate.addGcodeMovementZ( point, zEnd )
 		self.distanceFeedRate.addLine( "M103" ) # Turn extruder off.
 
-	def addThreadLayerIfNone( self ):
+	def addThreadLayerIfNone(self):
 		"Add a thread layer if it is none."
 		if self.threadLayer != None:
 			return
@@ -212,7 +212,7 @@ class DrillSkein:
 			self.boundary = None
 		self.oldLocation = location
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

@@ -1,0 +1,279 @@
+<?xml version='1.0' ?>
+<fabmetheus overhang.span="45" overhang.supportangle="35" step=".2" twistprecision="10" version="2010-03-29">
+	<trianglemesh id="inset_extrude" name="write_test" end="(8.8, 7.7, 2.9)" target="path
+{'target': '=document.getElementByID(spiral)', 'radius': '1', 'closed': 'false', 'copy': 'true', 'id': 'curve_outline', 'name': 'write_test'}
+">
+			<vertex index="0" x="23.7224411376" y="-0.83540011553" />
+			<vertex index="1" x="24.7016010808" y="-1.17504104339" />
+			<vertex index="2" x="25.7360253675" y="-0.794907396853" />
+			<vertex index="3" x="26.1944895836" y="0.207263125838" />
+			<vertex index="4" x="25.9310607664" y="1.20961805928" />
+			<vertex index="5" x="2.18386571174" y="26.8565887183" />
+			<vertex index="6" x="1.0123973823" y="27.315733241" />
+			<vertex index="7" x="-0.986228527051" y="27.3898579634" />
+			<vertex index="8" x="-2.18848913247" y="27.0187499248" />
+			<vertex index="9" x="-28.8625990557" y="2.18423378936" />
+			<vertex index="10" x="-29.3184326718" y="1.0115892609" />
+			<vertex index="11" x="-29.3874390813" y="-0.987219913444" />
+			<vertex index="12" x="-29.0135625865" y="-2.18850915518" />
+			<vertex index="13" x="-2.18454039715" y="-30.867808737" />
+			<vertex index="14" x="-1.01087959047" y="-31.3207751061" />
+			<vertex index="15" x="0.988078474844" y="-31.3853247237" />
+			<vertex index="16" x="2.18851773622" y="-31.0090219194" />
+			<vertex index="17" x="32.8723676799" y="-2.18479924512" />
+			<vertex index="18" x="33.3228269582" y="-1.01025149292" />
+			<vertex index="19" x="33.3834607877" y="0.98882918047" />
+			<vertex index="20" x="33.0050141497" y="2.18851835929" />
+			<vertex index="21" x="2.18502033291" y="34.8763905892" />
+			<vertex index="22" x="1.00969172194" y="35.3246391328" />
+			<vertex index="23" x="-0.989491119295" y="35.3818052707" />
+			<vertex index="24" x="-2.18851343088" y="35.0014507033" />
+			<vertex index="25" x="-36.8799667177" y="2.18521110757" />
+			<vertex index="26" x="-37.3262513024" y="1.00918974067" />
+			<vertex index="27" x="-37.3803250662" y="-0.990079132714" />
+			<vertex index="28" x="-36.998261598" y="-2.18850463821" />
+			<vertex index="29" x="-1.2673292764" y="-39.8508387069" />
+			<vertex index="30" x="-0.284120682605" y="-40.1785749048" />
+			<vertex index="31" x="0.745615467912" y="-39.7859190067" />
+			<vertex index="32" x="1.19188703085" y="-38.7782598946" />
+			<vertex index="33" x="0.916316456117" y="-37.7791748068" />
+			<vertex index="34" x="-34.3715383165" y="-0.583868424871" />
+			<vertex index="35" x="-34.3438206689" y="0.440935959131" />
+			<vertex index="36" x="-0.587744323451" y="32.3723595291" />
+			<vertex index="37" x="0.436633274898" y="32.3430677056" />
+			<vertex index="38" x="30.3732816297" y="0.592077026236" />
+			<vertex index="39" x="30.3422267483" y="-0.431793867833" />
+			<vertex index="40" x="0.596952352882" y="-28.3743243605" />
+			<vertex index="41" x="-0.426310644685" y="-28.3412815287" />
+			<vertex index="42" x="-26.3755129549" y="-0.602479059094" />
+			<vertex index="43" x="-26.3402115447" y="0.420045996489" />
+			<vertex index="44" x="-0.608797049056" y="24.376880182" />
+			<vertex index="45" x="0.412820098671" y="24.3389906065" />
+			<vertex index="46" x="32.5224411376" y="6.86459988447" z="2.9" />
+			<vertex index="47" x="33.5016010808" y="6.52495895661" z="2.9" />
+			<vertex index="48" x="34.5360253675" y="6.90509260315" z="2.9" />
+			<vertex index="49" x="34.9944895836" y="7.90726312584" z="2.9" />
+			<vertex index="50" x="34.7310607664" y="8.90961805928" z="2.9" />
+			<vertex index="51" x="10.9838657117" y="34.5565887183" z="2.9" />
+			<vertex index="52" x="9.8123973823" y="35.015733241" z="2.9" />
+			<vertex index="53" x="7.81377147295" y="35.0898579634" z="2.9" />
+			<vertex index="54" x="6.61151086753" y="34.7187499248" z="2.9" />
+			<vertex index="55" x="-20.0625990557" y="9.88423378936" z="2.9" />
+			<vertex index="56" x="-20.5184326718" y="8.7115892609" z="2.9" />
+			<vertex index="57" x="-20.5874390813" y="6.71278008656" z="2.9" />
+			<vertex index="58" x="-20.2135625865" y="5.51149084482" z="2.9" />
+			<vertex index="59" x="6.61545960285" y="-23.167808737" z="2.9" />
+			<vertex index="60" x="7.78912040953" y="-23.6207751061" z="2.9" />
+			<vertex index="61" x="9.78807847484" y="-23.6853247237" z="2.9" />
+			<vertex index="62" x="10.9885177362" y="-23.3090219194" z="2.9" />
+			<vertex index="63" x="41.6723676799" y="5.51520075488" z="2.9" />
+			<vertex index="64" x="42.1228269582" y="6.68974850708" z="2.9" />
+			<vertex index="65" x="42.1834607877" y="8.68882918047" z="2.9" />
+			<vertex index="66" x="41.8050141497" y="9.88851835929" z="2.9" />
+			<vertex index="67" x="10.9850203329" y="42.5763905892" z="2.9" />
+			<vertex index="68" x="9.80969172194" y="43.0246391328" z="2.9" />
+			<vertex index="69" x="7.81050888071" y="43.0818052707" z="2.9" />
+			<vertex index="70" x="6.61148656912" y="42.7014507033" z="2.9" />
+			<vertex index="71" x="-28.0799667177" y="9.88521110757" z="2.9" />
+			<vertex index="72" x="-28.5262513024" y="8.70918974067" z="2.9" />
+			<vertex index="73" x="-28.5803250662" y="6.70992086729" z="2.9" />
+			<vertex index="74" x="-28.198261598" y="5.51149536179" z="2.9" />
+			<vertex index="75" x="7.5326707236" y="-32.1508387069" z="2.9" />
+			<vertex index="76" x="8.5158793174" y="-32.4785749048" z="2.9" />
+			<vertex index="77" x="9.54561546791" y="-32.0859190067" z="2.9" />
+			<vertex index="78" x="9.99188703085" y="-31.0782598946" z="2.9" />
+			<vertex index="79" x="9.71631645612" y="-30.0791748068" z="2.9" />
+			<vertex index="80" x="-25.5715383165" y="7.11613157513" z="2.9" />
+			<vertex index="81" x="-25.5438206689" y="8.14093595913" z="2.9" />
+			<vertex index="82" x="8.21225567655" y="40.0723595291" z="2.9" />
+			<vertex index="83" x="9.2366332749" y="40.0430677056" z="2.9" />
+			<vertex index="84" x="39.1732816297" y="8.29207702624" z="2.9" />
+			<vertex index="85" x="39.1422267483" y="7.26820613217" z="2.9" />
+			<vertex index="86" x="9.39695235288" y="-20.6743243605" z="2.9" />
+			<vertex index="87" x="8.37368935532" y="-20.6412815287" z="2.9" />
+			<vertex index="88" x="-17.5755129549" y="7.09752094091" z="2.9" />
+			<vertex index="89" x="-17.5402115447" y="8.12004599649" z="2.9" />
+			<vertex index="90" x="8.19120295094" y="32.076880182" z="2.9" />
+			<vertex index="91" x="9.21282009867" y="32.0389906065" z="2.9" />
+		<face vertex0="45" vertex1="44" vertex2="43" />
+		<face vertex0="45" vertex1="43" vertex2="42" />
+		<face vertex0="45" vertex1="42" vertex2="41" />
+		<face vertex0="45" vertex1="41" vertex2="40" />
+		<face vertex0="45" vertex1="40" vertex2="39" />
+		<face vertex0="45" vertex1="39" vertex2="38" />
+		<face vertex0="45" vertex1="38" vertex2="37" />
+		<face vertex0="45" vertex1="37" vertex2="36" />
+		<face vertex0="45" vertex1="36" vertex2="35" />
+		<face vertex0="45" vertex1="35" vertex2="34" />
+		<face vertex0="45" vertex1="34" vertex2="33" />
+		<face vertex0="45" vertex1="33" vertex2="32" />
+		<face vertex0="45" vertex1="32" vertex2="31" />
+		<face vertex0="45" vertex1="31" vertex2="30" />
+		<face vertex0="45" vertex1="30" vertex2="29" />
+		<face vertex0="45" vertex1="29" vertex2="28" />
+		<face vertex0="45" vertex1="28" vertex2="27" />
+		<face vertex0="45" vertex1="27" vertex2="26" />
+		<face vertex0="45" vertex1="26" vertex2="25" />
+		<face vertex0="45" vertex1="25" vertex2="24" />
+		<face vertex0="45" vertex1="24" vertex2="23" />
+		<face vertex0="45" vertex1="23" vertex2="22" />
+		<face vertex0="45" vertex1="22" vertex2="21" />
+		<face vertex0="45" vertex1="21" vertex2="20" />
+		<face vertex0="45" vertex1="20" vertex2="19" />
+		<face vertex0="45" vertex1="19" vertex2="18" />
+		<face vertex0="45" vertex1="18" vertex2="17" />
+		<face vertex0="45" vertex1="17" vertex2="16" />
+		<face vertex0="45" vertex1="16" vertex2="15" />
+		<face vertex0="45" vertex1="15" vertex2="14" />
+		<face vertex0="45" vertex1="14" vertex2="13" />
+		<face vertex0="45" vertex1="13" vertex2="12" />
+		<face vertex0="45" vertex1="12" vertex2="11" />
+		<face vertex0="45" vertex1="11" vertex2="10" />
+		<face vertex0="45" vertex1="10" vertex2="9" />
+		<face vertex0="45" vertex1="9" vertex2="8" />
+		<face vertex0="45" vertex1="8" vertex2="7" />
+		<face vertex0="45" vertex1="7" vertex2="6" />
+		<face vertex0="45" vertex1="6" vertex2="5" />
+		<face vertex0="45" vertex1="5" vertex2="4" />
+		<face vertex0="45" vertex1="4" vertex2="3" />
+		<face vertex0="45" vertex1="3" vertex2="2" />
+		<face vertex0="45" vertex1="2" vertex2="1" />
+		<face vertex0="45" vertex1="1" vertex2="0" />
+		<face vertex0="0" vertex1="1" vertex2="47" />
+		<face vertex0="0" vertex1="47" vertex2="46" />
+		<face vertex0="1" vertex1="2" vertex2="48" />
+		<face vertex0="1" vertex1="48" vertex2="47" />
+		<face vertex0="2" vertex1="3" vertex2="49" />
+		<face vertex0="2" vertex1="49" vertex2="48" />
+		<face vertex0="3" vertex1="4" vertex2="50" />
+		<face vertex0="3" vertex1="50" vertex2="49" />
+		<face vertex0="4" vertex1="5" vertex2="51" />
+		<face vertex0="4" vertex1="51" vertex2="50" />
+		<face vertex0="5" vertex1="6" vertex2="52" />
+		<face vertex0="5" vertex1="52" vertex2="51" />
+		<face vertex0="6" vertex1="7" vertex2="53" />
+		<face vertex0="6" vertex1="53" vertex2="52" />
+		<face vertex0="7" vertex1="8" vertex2="54" />
+		<face vertex0="7" vertex1="54" vertex2="53" />
+		<face vertex0="8" vertex1="9" vertex2="55" />
+		<face vertex0="8" vertex1="55" vertex2="54" />
+		<face vertex0="9" vertex1="10" vertex2="56" />
+		<face vertex0="9" vertex1="56" vertex2="55" />
+		<face vertex0="10" vertex1="11" vertex2="57" />
+		<face vertex0="10" vertex1="57" vertex2="56" />
+		<face vertex0="11" vertex1="12" vertex2="58" />
+		<face vertex0="11" vertex1="58" vertex2="57" />
+		<face vertex0="12" vertex1="13" vertex2="59" />
+		<face vertex0="12" vertex1="59" vertex2="58" />
+		<face vertex0="13" vertex1="14" vertex2="60" />
+		<face vertex0="13" vertex1="60" vertex2="59" />
+		<face vertex0="14" vertex1="15" vertex2="61" />
+		<face vertex0="14" vertex1="61" vertex2="60" />
+		<face vertex0="15" vertex1="16" vertex2="62" />
+		<face vertex0="15" vertex1="62" vertex2="61" />
+		<face vertex0="16" vertex1="17" vertex2="63" />
+		<face vertex0="16" vertex1="63" vertex2="62" />
+		<face vertex0="17" vertex1="18" vertex2="64" />
+		<face vertex0="17" vertex1="64" vertex2="63" />
+		<face vertex0="18" vertex1="19" vertex2="65" />
+		<face vertex0="18" vertex1="65" vertex2="64" />
+		<face vertex0="19" vertex1="20" vertex2="66" />
+		<face vertex0="19" vertex1="66" vertex2="65" />
+		<face vertex0="20" vertex1="21" vertex2="67" />
+		<face vertex0="20" vertex1="67" vertex2="66" />
+		<face vertex0="21" vertex1="22" vertex2="68" />
+		<face vertex0="21" vertex1="68" vertex2="67" />
+		<face vertex0="22" vertex1="23" vertex2="69" />
+		<face vertex0="22" vertex1="69" vertex2="68" />
+		<face vertex0="23" vertex1="24" vertex2="70" />
+		<face vertex0="23" vertex1="70" vertex2="69" />
+		<face vertex0="24" vertex1="25" vertex2="71" />
+		<face vertex0="24" vertex1="71" vertex2="70" />
+		<face vertex0="25" vertex1="26" vertex2="72" />
+		<face vertex0="25" vertex1="72" vertex2="71" />
+		<face vertex0="26" vertex1="27" vertex2="73" />
+		<face vertex0="26" vertex1="73" vertex2="72" />
+		<face vertex0="27" vertex1="28" vertex2="74" />
+		<face vertex0="27" vertex1="74" vertex2="73" />
+		<face vertex0="28" vertex1="29" vertex2="75" />
+		<face vertex0="28" vertex1="75" vertex2="74" />
+		<face vertex0="29" vertex1="30" vertex2="76" />
+		<face vertex0="29" vertex1="76" vertex2="75" />
+		<face vertex0="30" vertex1="31" vertex2="77" />
+		<face vertex0="30" vertex1="77" vertex2="76" />
+		<face vertex0="31" vertex1="32" vertex2="78" />
+		<face vertex0="31" vertex1="78" vertex2="77" />
+		<face vertex0="32" vertex1="33" vertex2="79" />
+		<face vertex0="32" vertex1="79" vertex2="78" />
+		<face vertex0="33" vertex1="34" vertex2="80" />
+		<face vertex0="33" vertex1="80" vertex2="79" />
+		<face vertex0="34" vertex1="35" vertex2="81" />
+		<face vertex0="34" vertex1="81" vertex2="80" />
+		<face vertex0="35" vertex1="36" vertex2="82" />
+		<face vertex0="35" vertex1="82" vertex2="81" />
+		<face vertex0="36" vertex1="37" vertex2="83" />
+		<face vertex0="36" vertex1="83" vertex2="82" />
+		<face vertex0="37" vertex1="38" vertex2="84" />
+		<face vertex0="37" vertex1="84" vertex2="83" />
+		<face vertex0="38" vertex1="39" vertex2="85" />
+		<face vertex0="38" vertex1="85" vertex2="84" />
+		<face vertex0="39" vertex1="40" vertex2="86" />
+		<face vertex0="39" vertex1="86" vertex2="85" />
+		<face vertex0="40" vertex1="41" vertex2="87" />
+		<face vertex0="40" vertex1="87" vertex2="86" />
+		<face vertex0="41" vertex1="42" vertex2="88" />
+		<face vertex0="41" vertex1="88" vertex2="87" />
+		<face vertex0="42" vertex1="43" vertex2="89" />
+		<face vertex0="42" vertex1="89" vertex2="88" />
+		<face vertex0="43" vertex1="44" vertex2="90" />
+		<face vertex0="43" vertex1="90" vertex2="89" />
+		<face vertex0="44" vertex1="45" vertex2="91" />
+		<face vertex0="44" vertex1="91" vertex2="90" />
+		<face vertex0="45" vertex1="0" vertex2="46" />
+		<face vertex0="45" vertex1="46" vertex2="91" />
+		<face vertex0="46" vertex1="47" vertex2="48" />
+		<face vertex0="46" vertex1="48" vertex2="49" />
+		<face vertex0="46" vertex1="49" vertex2="50" />
+		<face vertex0="46" vertex1="50" vertex2="51" />
+		<face vertex0="46" vertex1="51" vertex2="52" />
+		<face vertex0="46" vertex1="52" vertex2="53" />
+		<face vertex0="46" vertex1="53" vertex2="54" />
+		<face vertex0="46" vertex1="54" vertex2="55" />
+		<face vertex0="46" vertex1="55" vertex2="56" />
+		<face vertex0="46" vertex1="56" vertex2="57" />
+		<face vertex0="46" vertex1="57" vertex2="58" />
+		<face vertex0="46" vertex1="58" vertex2="59" />
+		<face vertex0="46" vertex1="59" vertex2="60" />
+		<face vertex0="46" vertex1="60" vertex2="61" />
+		<face vertex0="46" vertex1="61" vertex2="62" />
+		<face vertex0="46" vertex1="62" vertex2="63" />
+		<face vertex0="46" vertex1="63" vertex2="64" />
+		<face vertex0="46" vertex1="64" vertex2="65" />
+		<face vertex0="46" vertex1="65" vertex2="66" />
+		<face vertex0="46" vertex1="66" vertex2="67" />
+		<face vertex0="46" vertex1="67" vertex2="68" />
+		<face vertex0="46" vertex1="68" vertex2="69" />
+		<face vertex0="46" vertex1="69" vertex2="70" />
+		<face vertex0="46" vertex1="70" vertex2="71" />
+		<face vertex0="46" vertex1="71" vertex2="72" />
+		<face vertex0="46" vertex1="72" vertex2="73" />
+		<face vertex0="46" vertex1="73" vertex2="74" />
+		<face vertex0="46" vertex1="74" vertex2="75" />
+		<face vertex0="46" vertex1="75" vertex2="76" />
+		<face vertex0="46" vertex1="76" vertex2="77" />
+		<face vertex0="46" vertex1="77" vertex2="78" />
+		<face vertex0="46" vertex1="78" vertex2="79" />
+		<face vertex0="46" vertex1="79" vertex2="80" />
+		<face vertex0="46" vertex1="80" vertex2="81" />
+		<face vertex0="46" vertex1="81" vertex2="82" />
+		<face vertex0="46" vertex1="82" vertex2="83" />
+		<face vertex0="46" vertex1="83" vertex2="84" />
+		<face vertex0="46" vertex1="84" vertex2="85" />
+		<face vertex0="46" vertex1="85" vertex2="86" />
+		<face vertex0="46" vertex1="86" vertex2="87" />
+		<face vertex0="46" vertex1="87" vertex2="88" />
+		<face vertex0="46" vertex1="88" vertex2="89" />
+		<face vertex0="46" vertex1="89" vertex2="90" />
+		<face vertex0="46" vertex1="90" vertex2="91" />
+	</trianglemesh>
+</fabmetheus>

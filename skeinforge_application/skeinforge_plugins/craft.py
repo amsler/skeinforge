@@ -70,7 +70,7 @@ class CraftMenuSaveListener:
 		addToCraftMenu( menu )
 		euclidean.addElementToListTableIfNotThere( self, window, settings.globalProfileSaveListenerListTable )
 
-	def save( self ):
+	def save(self):
 		"Profile has been saved and profile menu should be updated."
 		settings.deleteMenuItems( self.menu )
 		addToCraftMenu( self.menu )
@@ -91,14 +91,14 @@ class CraftRadioButtonsSaveListener:
 		self.name = 'CraftRadioButtonsSaveListener'
 		self.radioPlugins = radioPlugins
 		self.repository = repository
-		repository.displayEntities.append( self )
+		repository.displayEntities.append(self)
 		return self
 
-	def save( self ):
+	def save(self):
 		"Profile has been saved and craft radio plugins should be updated."
 		self.setRadioButtons()
 
-	def setRadioButtons( self ):
+	def setRadioButtons(self):
 		"Profile has been saved and craft radio plugins should be updated."
 		craftSequence = skeinforge_profile.getCraftTypePluginModule().getCraftSequence()
 		gridPosition = self.gridPosition.getCopy()

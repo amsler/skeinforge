@@ -10,7 +10,6 @@ import __init__
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.solids import group
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -27,9 +26,9 @@ def getGeometryOutput(xmlElement):
 	geometryOutput = []
 	paths = evaluate.getPathsByKeys( ['path', 'paths', 'target'], xmlElement )
 	for path in paths:
-		sideLoop = SideLoop( path )
+		sideLoop = SideLoop(path)
 		geometryOutput += getGeometryOutputByLoop( sideLoop, xmlElement )
-	return getUnpackedLoops( geometryOutput )
+	return getUnpackedLoops(geometryOutput)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
 	"Get triangle mesh from attribute dictionary by arguments."
@@ -40,43 +39,43 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 #	sideLoop.rotate(xmlElement)
 #	return getUnpackedLoops( getGeometryOutputByManipulation( sideLoop, xmlElement ) )
 #
-#def processXMLElement( xmlElement, xmlProcessor ):
+#def processXMLElement(xmlElement):
 #	"Process the xml element."
-#	processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement, xmlProcessor)
+#	processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement)
 
-#def processXMLElementByGeometry( geometryOutput, xmlElement, xmlProcessor ):
+#def processXMLElementByGeometry(geometryOutput, xmlElement):
 #	"Process the xml element by geometryOutput."
 #	firstElement = None
-#	if len( geometryOutput ) > 0:
+#	if len(geometryOutput) > 0:
 #		firstElement = geometryOutput[0]
 #	if firstElement.__class__ == list:
 #		if len( firstElement ) > 1:
-#			group.convertXMLElementRenameByPaths( geometryOutput, xmlElement, xmlProcessor )
+#			path.convertXMLElementRenameByPaths(geometryOutput, xmlElement)
 #		else:
-#			path.convertXMLElementRename( firstElement, xmlElement, xmlProcessor )
+#			path.convertXMLElementRename(firstElement, xmlElement)
 #	else:
-#		path.convertXMLElementRename( geometryOutput, xmlElement, xmlProcessor )
-#	xmlProcessor.processXMLElement(xmlElement)
+#		path.convertXMLElementRename(geometryOutput, xmlElement)
+#	path.processXMLElement(xmlElement)
 
-def getGeometryOutputByManipulation( geometryOutput, xmlElement ):
+def getGeometryOutputByManipulation(geometryOutput, xmlElement):
 	"Get geometryOutput manipulated by the plugins in the manipulation shapes & solids folders."
 	xmlProcessor = xmlElement.getXMLProcessor()
-	matchingPlugins = evaluate.getFromCreationEvaluatorPlugins( xmlProcessor.manipulationEvaluatorDictionary, xmlElement )
-	matchingPlugins += evaluate.getMatchingPlugins( xmlProcessor.manipulationShapeDictionary, xmlElement )
-	matchingPlugins.sort( evaluate.compareExecutionOrderAscending )
+	matchingPlugins = evaluate.getFromCreationEvaluatorPlugins(xmlProcessor.manipulationEvaluatorDictionary, xmlElement)
+	matchingPlugins += evaluate.getMatchingPlugins(xmlProcessor.manipulationShapeDictionary, xmlElement)
+	matchingPlugins.sort(evaluate.compareExecutionOrderAscending)
 	for matchingPlugin in matchingPlugins:
-		geometryOutput = matchingPlugin.getManipulatedGeometryOutput( geometryOutput, xmlElement )
+		geometryOutput = matchingPlugin.getManipulatedGeometryOutput(geometryOutput, xmlElement)
 	return geometryOutput
 
-def processXMLElementByFunction(manipulationFunction, xmlElement, xmlProcessor):
+def processXMLElementByFunction(manipulationFunction, xmlElement):
 	"Process the xml element."
 	if 'target' not in xmlElement.attributeDictionary:
 		print('Warning, there was no target in processXMLElementByFunction in solid for:')
 		print(xmlElement)
-		return None
+		return
 	target = evaluate.getEvaluatedLinkValue(str(xmlElement.attributeDictionary['target']).strip(), xmlElement)
 	if target.__class__.__name__ == 'XMLElement':
-		manipulationFunction(target, xmlElement, xmlProcessor)
+		manipulationFunction(target, xmlElement)
 		return
-	lineation.processXMLElementByGeometry(target, xmlElement, xmlProcessor)
-	manipulationFunction(xmlElement, xmlElement, xmlProcessor)
+	lineation.processXMLElementByGeometry(target, xmlElement)
+	manipulationFunction(xmlElement, xmlElement)

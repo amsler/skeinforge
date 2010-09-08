@@ -99,7 +99,7 @@ def writeOutput( fileName = ''):
 
 class LimitRepository:
 	"A class to handle the limit settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.limit.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Limit', self, '')
@@ -108,7 +108,7 @@ class LimitRepository:
 		self.maximumInitialFeedRate = settings.FloatSpin().getFromValue( 0.5, 'Maximum Initial Feed Rate (mm/s):', self, 10.0, 1.0 )
 		self.executeTitle = 'Limit'
 
-	def execute( self ):
+	def execute(self):
 		"Limit button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -117,7 +117,7 @@ class LimitRepository:
 
 class LimitSkein:
 	"A class to limit a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRateMinute = None
 		self.isExtruderActive = False
@@ -141,7 +141,7 @@ class LimitSkein:
 		self.oldLocation = location
 		return line
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

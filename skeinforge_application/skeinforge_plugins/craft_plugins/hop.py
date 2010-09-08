@@ -100,7 +100,7 @@ def writeOutput( fileName = ''):
 
 class HopRepository:
 	"A class to handle the hop settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.hop.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Hop', self, '')
@@ -110,7 +110,7 @@ class HopRepository:
 		self.minimumHopAngle = settings.FloatSpin().getFromValue( 20.0, 'Minimum Hop Angle (degrees):', self, 60.0, 30.0 )
 		self.executeTitle = 'Hop'
 
-	def execute( self ):
+	def execute(self):
 		"Hop button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -119,7 +119,7 @@ class HopRepository:
 
 class HopSkein:
 	"A class to hop a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.feedRateMinute = 961.0
@@ -171,7 +171,7 @@ class HopSkein:
 			return self.distanceFeedRate.getLineWithZ( line, splitLine, highestZHop )
 		return line
 
-	def isNextTravel( self ):
+	def isNextTravel(self):
 		"Determine if there is another linear travel before the thread ends."
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]

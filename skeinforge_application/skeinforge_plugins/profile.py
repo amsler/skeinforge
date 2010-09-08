@@ -87,7 +87,7 @@ class ProfileMenuRadio:
 			self.menu.invoke( self.menuLength )
 		self.activate = True
 
-	def clickRadio( self ):
+	def clickRadio(self):
 		"Workaround for Tkinter bug, invoke and set the value when clicked."
 		if not self.activate:
 			return
@@ -112,7 +112,7 @@ class ProfileMenuSaveListener:
 		addToProfileMenu( menu )
 		euclidean.addElementToListTableIfNotThere( self, window, settings.globalProfileSaveListenerListTable )
 
-	def save( self ):
+	def save(self):
 		"Profile has been saved and profile menu should be updated."
 		settings.deleteMenuItems( self.menu )
 		addToProfileMenu( self.menu )

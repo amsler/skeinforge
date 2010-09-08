@@ -18,11 +18,11 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
 	target = evaluate.getXMLElementByKey('target', xmlElement )
 	if target == None:
-		print('Warning, translate could not get target.')
+		print('Warning, copy could not get target.')
 		return
 	translateDictionary = xmlElement.attributeDictionary.copy()
 	targetMatrixCopy = matrix.getFromObjectOrXMLElement(target)
@@ -32,4 +32,4 @@ def processXMLElement( xmlElement, xmlProcessor ):
 	xmlElement.className = target.className
 	matrix.setXMLElementDictionaryToOtherElementDictionary( xmlElement, targetMatrixCopy, 'matrix.', xmlElement )
 	target.copyXMLChildren( xmlElement.getIDSuffix(), xmlElement )
-	xmlProcessor.processXMLElement(xmlElement)
+	xmlElement.getXMLProcessor().processXMLElement(xmlElement)

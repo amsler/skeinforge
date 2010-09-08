@@ -35,7 +35,7 @@ An example of an xml boolean geometry format file follows below.
 	</difference>
 </fabmetheus>
 
-In the 'fabmetheus' format, all class names are lower case.  The defined geometric objects are cube, cylinder, difference, group, sphere, trianglemesh and union.  The id attribute is not necessary.  The default matrix is a four by four identity matrix.  The attributes of the cube, cylinder and sphere default to one.  The attributes of the vertices in the triangle mesh default to zero.  The boolean solids are difference, intersection and union.  The difference solid is the first solid minus the remaining solids.  The combined_shape.xml example in the xml_models folder in the models folder is pasted below.
+In the 'fabmetheus' format, all class names are lower case.  The defined geometric objects are cube, cylinder, difference, group, sphere, trianglemesh and union.  The id attribute is not necessary.  The default matrix is a four by four identity matrix.  The attributes of the cube, cylinder and sphere default to one.  The attributes of the vertexes in the triangle mesh default to zero.  The boolean solids are difference, intersection and union.  The difference solid is the first solid minus the remaining solids.  The combined_shape.xml example in the xml_models folder in the models folder is pasted below.
 
 <?xml version='1.0' ?>
 <fabmetheus version="2010-03-29">

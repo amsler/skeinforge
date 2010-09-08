@@ -202,7 +202,7 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 
 class SkeinviewRepository( tableau.TableauRepository ):
 	"A class to handle the skeinview settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.skeinview.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Skeinview', self, '')
@@ -211,25 +211,25 @@ class SkeinviewRepository( tableau.TableauRepository ):
 		self.addAnimation()
 		self.drawArrows = settings.BooleanSetting().getFromValue('Draw Arrows', self, True )
 		self.goAroundExtruderOffTravel = settings.BooleanSetting().getFromValue('Go Around Extruder Off Travel', self, False )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Layers -', self )
 		self.layer = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Layer (index):', self, 912345678, 0 )
 		self.layerExtraSpan = settings.IntSpinUpdate().getSingleIncrementFromValue( - 3, 'Layer Extra Span (integer):', self, 3, 0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		self.line = settings.IntSpinNotOnMenu().getSingleIncrementFromValue( 0, 'Line (index):', self, 912345678, 0 )
 		self.mouseMode = settings.MenuButtonDisplay().getFromName('Mouse Mode:', self )
 		self.displayLine = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'Display Line', self, True )
 		self.viewMove = settings.MenuRadio().getFromMenuButtonDisplay( self.mouseMode, 'View Move', self, False )
 		self.numericPointer = settings.BooleanSetting().getFromValue('Numeric Pointer', self, True )
 		self.addScaleScreenSlide()
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Width -', self )
 		self.widthOfExtrusionThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Extrusion Thread (pixels):', self, 5, 3 )
 		self.widthOfSelectionThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Selection Thread (pixels):', self, 10, 6 )
 		self.widthOfTravelThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Travel Thread (pixels):', self, 5, 1 )
 		self.executeTitle = 'Skeinview'
 
-	def execute( self ):
+	def execute(self):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -238,7 +238,7 @@ class SkeinviewRepository( tableau.TableauRepository ):
 
 class SkeinviewSkein:
 	"A class to write a get a scalable vector graphics text for a gcode skein."
-	def __init__( self ):
+	def __init__(self):
 		self.extrusionNumber = 0
 		self.feedRateMinute = 960.1
 		self.isThereALayerStartWord = False
@@ -273,7 +273,7 @@ class SkeinviewSkein:
 		pointComplex = complex( pointComplex.real, self.cornerImaginaryTotal - pointComplex.imag )
 		return self.scale * pointComplex - self.marginCornerLow
 
-	def initializeActiveLocation( self ):
+	def initializeActiveLocation(self):
 		"Set variables to default."
 		self.extruderActive = False
 		self.oldLocation = None
@@ -345,7 +345,7 @@ class SkeinviewSkein:
 			line = self.lines[ self.lineIndex ]
 			self.parseLine(line)
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
@@ -444,7 +444,7 @@ class SkeinWindow( tableau.TableauWindow ):
 		"Create a horizontal line for the horizontal ruler."
 		self.verticalRulerCanvas.create_line( begin, yPixel, self.rulingExtent, yPixel, fill = 'black')
 
-	def createRulers( self ):
+	def createRulers(self):
 		"Create the rulers.."
 		self.rulingExtentShort = 0.382 * self.rulingExtent
 		self.rulingExtentTiny = 0.764 * self.rulingExtent
@@ -471,15 +471,15 @@ class SkeinWindow( tableau.TableauWindow ):
 		"Create a vertical line for the horizontal ruler."
 		self.horizontalRulerCanvas.create_line( xPixel, begin, xPixel, self.rulingExtent, fill = 'black')
 
-	def getColoredLines( self ):
+	def getColoredLines(self):
 		"Get the colored lines from the skein pane."
 		return self.skeinPanes[ self.repository.layer.value ]
 
-	def getCopy( self ):
+	def getCopy(self):
 		"Get a copy of this window."
 		return SkeinWindow( self.repository, self.skein )
 
-	def getCopyWithNewSkein( self ):
+	def getCopyWithNewSkein(self):
 		"Get a copy of this window with a new skein."
 		return getWindowGivenTextRepository( self.skein.fileName, self.skein.gcodeText, self.repository )
 
@@ -504,9 +504,9 @@ class SkeinWindow( tableau.TableauWindow ):
 		"Get the drawn selected colored line."
 		return self.getDrawnColoredLine( coloredLine, 'mouse_item', self.repository.widthOfSelectionThread.value )
 
-	def motion( self, event ):
+	def motion(self, event):
 		"The mouse moved."
-		self.mouseTool.motion( event )
+		self.mouseTool.motion(event)
 		x = self.canvas.canvasx( event.x )
 		y = self.canvas.canvasy( event.y )
 		self.horizontalRulerCanvas.delete('pointer')
@@ -537,7 +537,7 @@ class SkeinWindow( tableau.TableauWindow ):
 		self.canvas.yview( *args )
 		self.verticalRulerCanvas.yview( *args )
 
-	def update( self ):
+	def update(self):
 		"Update the window."
 		if len( self.skeinPanes ) < 1:
 			return

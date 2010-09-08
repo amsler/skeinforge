@@ -47,28 +47,28 @@ __license__ = "GPL 3.0"
 
 def addFacesGivenBinary( stlData, triangleMesh, vertexIndexTable ):
 	"Add faces given stl binary."
-	numberOfVertices = ( len( stlData ) - 84 ) / 50
-	vertices = []
-	for vertexIndex in xrange( numberOfVertices ):
+	numberOfVertexes = ( len( stlData ) - 84 ) / 50
+	vertexes = []
+	for vertexIndex in xrange( numberOfVertexes ):
 		byteIndex = 84 + vertexIndex * 50
-		vertices.append( getVertexGivenBinary( byteIndex + 12, stlData ) )
-		vertices.append( getVertexGivenBinary( byteIndex + 24, stlData ) )
-		vertices.append( getVertexGivenBinary( byteIndex + 36, stlData ) )
-	addFacesGivenVertices( triangleMesh, vertexIndexTable, vertices )
+		vertexes.append( getVertexGivenBinary( byteIndex + 12, stlData ) )
+		vertexes.append( getVertexGivenBinary( byteIndex + 24, stlData ) )
+		vertexes.append( getVertexGivenBinary( byteIndex + 36, stlData ) )
+	addFacesGivenVertexes( triangleMesh, vertexIndexTable, vertexes )
 
 def addFacesGivenText( stlText, triangleMesh, vertexIndexTable ):
 	"Add faces given stl text."
 	lines = gcodec.getTextLines( stlText )
-	vertices = []
+	vertexes = []
 	for line in lines:
 		if line.find('vertex') != - 1:
-			vertices.append( getVertexGivenLine(line) )
-	addFacesGivenVertices( triangleMesh, vertexIndexTable, vertices )
+			vertexes.append( getVertexGivenLine(line) )
+	addFacesGivenVertexes( triangleMesh, vertexIndexTable, vertexes )
 
-def addFacesGivenVertices( triangleMesh, vertexIndexTable, vertices ):
+def addFacesGivenVertexes( triangleMesh, vertexIndexTable, vertexes ):
 	"Add faces given stl text."
-	for vertexIndex in xrange( 0, len( vertices ), 3 ):
-		triangleMesh.faces.append( getFaceGivenLines( triangleMesh, vertexIndex, vertexIndexTable, vertices ) )
+	for vertexIndex in xrange( 0, len(vertexes), 3 ):
+		triangleMesh.faces.append( getFaceGivenLines( triangleMesh, vertexIndex, vertexIndexTable, vertexes ) )
 
 def getCarving( fileName = ''):
 	"Get the triangle mesh for the stl file."
@@ -89,18 +89,18 @@ def getCarving( fileName = ''):
 	triangleMesh.setEdgesForAllFaces()
 	return triangleMesh
 
-def getFaceGivenLines( triangleMesh, vertexStartIndex, vertexIndexTable, vertices ):
+def getFaceGivenLines( triangleMesh, vertexStartIndex, vertexIndexTable, vertexes ):
 	"Add face given line index and lines."
 	faceGivenLines = face.Face()
 	faceGivenLines.index = len( triangleMesh.faces )
 	for vertexIndex in xrange( vertexStartIndex, vertexStartIndex + 3 ):
-		vertex = vertices[ vertexIndex ]
+		vertex = vertexes[ vertexIndex ]
 		vertexUniqueIndex = len( vertexIndexTable )
 		if str(vertex) in vertexIndexTable:
 			vertexUniqueIndex = vertexIndexTable[ str(vertex) ]
 		else:
 			vertexIndexTable[ str(vertex) ] = vertexUniqueIndex
-			triangleMesh.vertices.append(vertex)
+			triangleMesh.vertexes.append(vertex)
 		faceGivenLines.vertexIndexes.append( vertexUniqueIndex )
 	return faceGivenLines
 

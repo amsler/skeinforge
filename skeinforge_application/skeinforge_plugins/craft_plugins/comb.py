@@ -142,7 +142,7 @@ def writeOutput( fileName = ''):
 
 class CombRepository:
 	"A class to handle the comb settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.comb.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Comb', self, '')
@@ -150,7 +150,7 @@ class CombRepository:
 		self.activateComb = settings.BooleanSetting().getFromValue('Activate Comb', self, False )
 		self.executeTitle = 'Comb'
 
-	def execute( self ):
+	def execute(self):
 		"Comb button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -159,7 +159,7 @@ class CombRepository:
 
 class CombSkein:
 	"A class to comb a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.betweenTable = {}
 		self.boundaryLoop = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
@@ -201,7 +201,7 @@ class CombSkein:
 		if self.boundaryLoop != None:
 			self.boundaryLoop.append( location.dropAxis( 2 ) )
 
-	def getBetweens( self ):
+	def getBetweens(self):
 		"Set betweens for the layer."
 		if self.layerZ in self.betweenTable:
 			return self.betweenTable[ self.layerZ ]
@@ -212,7 +212,7 @@ class CombSkein:
 			self.betweenTable[ self.layerZ ] += intercircle.getInsetLoopsFromLoop( self.betweenInset, boundaryLoop )
 		return self.betweenTable[ self.layerZ ]
 
-	def getBoundaries( self ):
+	def getBoundaries(self):
 		"Get boundaries for the layer."
 		if self.layerZ in self.layerTable:
 			return self.layerTable[ self.layerZ ]
@@ -244,7 +244,7 @@ class CombSkein:
 		jumpStartPoint = lastPoint - nearestEndMinusLastSegment * runningJumpSpace
 		if euclidean.isLineIntersectingLoops( betweens, penultimatePoint, jumpStartPoint ):
 			return False
-		pathAround[ - 1 ] = jumpStartPoint
+		pathAround[-1] = jumpStartPoint
 		return True
 
 	def getPathBetween(self, loop, points):

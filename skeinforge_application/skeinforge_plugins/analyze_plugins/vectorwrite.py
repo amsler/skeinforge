@@ -121,7 +121,7 @@ class SVGWriterVectorwrite( svg_writer.SVGWriter ):
 		"Add paths to the output."
 		pathString = ''
 		for path in paths:
-			pathString += self.getSVGStringForPath( path ) + ' '
+			pathString += self.getSVGStringForPath(path) + ' '
 		if len( pathString ) < 1:
 			return
 		pathXMLElementCopy = self.pathXMLElement.getCopy('', self.pathXMLElement.parent )
@@ -153,29 +153,29 @@ class ThreadLayer:
 		self.paths = []
 		self.z = z
 
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this loop layer."
 		return '%s, %s' % ( self.innerLoops, self.innerPerimeters, self.outerLoops, self.outerPerimeters, self.paths, self.z )
 
 
 class VectorwriteRepository:
 	"A class to handle the vectorwrite settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.vectorwrite.html', self )
 		self.activateVectorwrite = settings.BooleanSetting().getFromValue('Activate Vectorwrite', self, False )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to Write Vector Graphics for', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Vectorwrite')
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Layers -', self )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
 		self.layersTo = settings.IntSpin().getSingleIncrementFromValue( 0, 'Layers To (index):', self, 912345678, 912345678 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		self.executeTitle = 'Vectorwrite'
 
-	def execute( self ):
+	def execute(self):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -186,10 +186,10 @@ class VectorwriteSkein:
 	"A class to vectorwrite a carving."
 	def addRotatedLoopLayer( self, z ):
 		"Add rotated loop layer."
-		self.rotatedBoundaryLayer = ThreadLayer( z )
+		self.rotatedBoundaryLayer = ThreadLayer(z)
 		self.rotatedBoundaryLayers.append( self.rotatedBoundaryLayer )
 
-	def addToLoops( self ):
+	def addToLoops(self):
 		"Add the thread to the loops."
 		self.isLoop = False
 		if len( self.thread ) < 1:
@@ -197,7 +197,7 @@ class VectorwriteSkein:
 		self.rotatedBoundaryLayer.loops.append( self.thread )
 		self.thread = []
 
-	def addToPerimeters( self ):
+	def addToPerimeters(self):
 		"Add the thread to the perimeters."
 		self.isPerimeter = False
 		if len( self.thread ) < 1:
@@ -208,15 +208,15 @@ class VectorwriteSkein:
 			self.rotatedBoundaryLayer.innerPerimeters.append( self.thread )
 		self.thread = []
 
-	def getCarveCornerMaximum( self ):
-		"Get the corner maximum of the vertices."
+	def getCarveCornerMaximum(self):
+		"Get the corner maximum of the vertexes."
 		return self.cornerMaximum
 
-	def getCarveCornerMinimum( self ):
-		"Get the corner minimum of the vertices."
+	def getCarveCornerMinimum(self):
+		"Get the corner minimum of the vertexes."
 		return self.cornerMinimum
 
-	def getCarveLayerThickness( self ):
+	def getCarveLayerThickness(self):
 		"Get the layer thickness."
 		return self.layerThickness
 
@@ -251,7 +251,7 @@ class VectorwriteSkein:
 			self.thread.append( location.dropAxis( 2 ) )
 		self.oldLocation = location
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

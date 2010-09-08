@@ -115,16 +115,16 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 
 class StatisticRepository:
 	"A class to handle the statistics settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html', '', self )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic')
 		self.activateStatistic = settings.BooleanSetting().getFromValue('Activate Statistic', self, True )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Cost -', self )
 		self.machineTime = settings.FloatSpin().getFromValue( 0.0, 'Machine Time ($/hour):', self, 2.0, 1.0 )
 		self.material = settings.FloatSpin().getFromValue( 0.0, 'Material ($/kg):', self, 20.0, 10.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		self.density = settings.FloatSpin().getFromValue( 500.0, 'Density (kg/m3):', self, 2000.0, 930.0 )
 		self.extrusionDiameterOverThickness = settings.FloatSpin().getFromValue( 1.0, 'Extrusion Diameter over Thickness (ratio):', self, 1.5, 1.25 )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to Generate Statistics for', self, '')
@@ -132,7 +132,7 @@ class StatisticRepository:
 		self.saveStatistics = settings.BooleanSetting().getFromValue('Save Statistics', self, False )
 		self.executeTitle = 'Generate Statistics'
 
-	def execute( self ):
+	def execute(self):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, ['_comment'] )
 		for fileName in fileNames:
@@ -141,7 +141,7 @@ class StatisticRepository:
 
 class StatisticSkein:
 	"A class to get statistics for a gcode skein."
-	def __init__( self ):
+	def __init__(self):
 		self.extrusionDiameter = None
 		self.oldLocation = None
 		self.operatingFeedRatePerSecond = None

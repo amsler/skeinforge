@@ -10,11 +10,11 @@ The GNU Triangulated Surface (.gts) format is described at:
 http://gts.sourceforge.net/reference/gts-surfaces.html#GTS-SURFACE-WRITE
 
 Quoted from http://gts.sourceforge.net/reference/gts-surfaces.html#GTS-SURFACE-WRITE
-"All the lines beginning with GTS_COMMENTS (#!) are ignored. The first line contains three unsigned integers separated by spaces. The first integer is the number of vertices, nv, the second is the number of edges, ne and the third is the number of faces, nf.
+"All the lines beginning with GTS_COMMENTS (#!) are ignored. The first line contains three unsigned integers separated by spaces. The first integer is the number of vertexes, nv, the second is the number of edges, ne and the third is the number of faces, nf.
 
-Follows nv lines containing the x, y and z coordinates of the vertices. Follows ne lines containing the two indices (starting from one) of the vertices of each edge. Follows nf lines containing the three ordered indices (also starting from one) of the edges of each face.
+Follows nv lines containing the x, y and z coordinates of the vertexes. Follows ne lines containing the two indices (starting from one) of the vertexes of each edge. Follows nf lines containing the three ordered indices (also starting from one) of the edges of each face.
 
-The format described above is the least common denominator to all GTS files. Consistent with an object-oriented approach, the GTS file format is extensible. Each of the lines of the file can be extended with user-specific attributes accessible through the read() and write() virtual methods of each of the objects written (surface, vertices, edges or faces). When read with different object classes, these extra attributes are just ignored."
+The format described above is the least common denominator to all GTS files. Consistent with an object-oriented approach, the GTS file format is extensible. Each of the lines of the file can be extended with user-specific attributes accessible through the read() and write() virtual methods of each of the objects written (surface, vertexes, edges or faces). When read with different object classes, these extra attributes are just ignored."
 
 This example gets a carving for the gts file Screw Holder Bottom.gts.  This example is run in a terminal in the folder which contains Screw Holder Bottom.gts and gts.py.
 
@@ -60,22 +60,22 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 			if firstCharacter != '#' and firstCharacter != '!':
 				linesWithoutComments.append(line)
 	splitLine = linesWithoutComments[0].split()
-	numberOfVertices = int( splitLine[0] )
+	numberOfVertexes = int( splitLine[0] )
 	numberOfEdges = int( splitLine[1] )
 	numberOfFaces = int( splitLine[2] )
 	faceTriples = []
-	for vertexIndex in xrange( numberOfVertices ):
+	for vertexIndex in xrange( numberOfVertexes ):
 		line = linesWithoutComments[ vertexIndex + 1 ]
 		splitLine = line.split()
 		vertex = Vector3( float( splitLine[0] ), float( splitLine[1] ), float( splitLine[2] ) )
-		triangleMesh.vertices.append(vertex)
-	edgeStart = numberOfVertices + 1
+		triangleMesh.vertexes.append(vertex)
+	edgeStart = numberOfVertexes + 1
 	for edgeIndex in xrange( numberOfEdges ):
 		line = linesWithoutComments[ edgeIndex + edgeStart ]
 		splitLine = line.split()
 		vertexIndexes = []
 		for word in splitLine[ : 2 ]:
-			vertexIndexes.append( int( word ) - 1 )
+			vertexIndexes.append( int(word) - 1 )
 		edge = face.Edge().getFromVertexIndexes( edgeIndex, vertexIndexes )
 		triangleMesh.edges.append( edge )
 	faceStart = edgeStart + numberOfEdges
@@ -84,7 +84,7 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 		splitLine = line.split()
 		edgeIndexes = []
 		for word in splitLine[ : 3 ]:
-			edgeIndexes.append( int( word ) - 1 )
+			edgeIndexes.append( int(word) - 1 )
 		triangleMesh.faces.append( face.Face().getFromEdgeIndexes( edgeIndexes, triangleMesh.edges, faceIndex ) )
 	return triangleMesh
 

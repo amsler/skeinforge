@@ -21,14 +21,14 @@ __license__ = "GPL 3.0"
 globalExecutionOrder = 60
 
 
-def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
+def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get segment loop."
 	if len(loop) < 3:
 		return [loop]
 	path = evaluate.getPathByPrefix( getSegmentPathDefault(), prefix, xmlElement )
 	if path == getSegmentPathDefault():
 		return [loop]
-	path = getXNormalizedVector3Path( path )
+	path = getXNormalizedVector3Path(path)
 	segmentCenter = evaluate.getVector3ByPrefix( prefix + 'center', None, xmlElement )
 	if euclidean.getIsWiddershinsByVector3(loop):
 		path = path[ : : - 1 ]
@@ -86,9 +86,9 @@ def getSegmentPathDefault():
 	"Get segment path default."
 	return [ Vector3(), Vector3( 0.0, 1.0 ) ]
 
-def getXNormalizedVector3Path( path ):
+def getXNormalizedVector3Path(path):
 	"Get path where the x ranges from 0 to 1."
-	if len( path ) < 1:
+	if len(path) < 1:
 		return path
 	minimumX = path[0].x
 	for point in path[ 1 : ]:
@@ -134,6 +134,6 @@ def getWiddershinsAverageByVector3( centerMinusBeginComplex, endMinusCenterCompl
 	endMinusCenterWiddershins = Vector3( - endMinusCenterComplex.imag, endMinusCenterComplex.real )
 	return ( centerMinusBeginWiddershins + endMinusCenterWiddershins ).getNormalized()
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	lineation.processXMLElementByFunction( getManipulatedPaths, xmlElement, xmlProcessor )
+	lineation.processXMLElementByFunction(getManipulatedPaths, xmlElement)

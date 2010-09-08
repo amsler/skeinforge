@@ -25,9 +25,9 @@ Below are examples of euclidean use.<br>
 &gt;&gt;&gt; <a href="#-getMaximum">getMaximum</a>(right,back)<br>
 1.0, 1.0<br>
 &gt;&gt;&gt; polygon=[origin, right, back]<br>
-&gt;&gt;&gt; <a href="#-getPolygonLength">getPolygonLength</a>(polygon)<br>
+&gt;&gt;&gt; <a href="#-getLoopLength">getLoopLength</a>(polygon)<br>
 3.4142135623730949<br>
-&gt;&gt;&gt; <a href="#-getPolygonArea">getPolygonArea</a>(polygon)<br>
+&gt;&gt;&gt; <a href="#-getAreaLoop">getAreaLoop</a>(polygon)<br>
 0.5</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -38,8 +38,9 @@ Below are examples of euclidean use.<br>
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
+</td><td width="25%" valign=top><a href="random.html">random</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.xml_simple_writer.html">fabmetheus_utilities.xml_simple_writer</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -272,6 +273,8 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-concatenateRemovePath"><strong>concatenateRemovePath</strong></a>(connectedPaths, pathIndex, paths, pixelTable, segments, width)</dt><dd><tt>Get&nbsp;connected&nbsp;paths&nbsp;from&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-getAngleAroundZAxisDifference"><strong>getAngleAroundZAxisDifference</strong></a>(subtractFromVec3, subtractVec3)</dt><dd><tt>Get&nbsp;the&nbsp;angle&nbsp;around&nbsp;the&nbsp;Z&nbsp;axis&nbsp;difference&nbsp;between&nbsp;a&nbsp;pair&nbsp;of&nbsp;Vector3s.</tt></dd></dl>
  <dl><dt><a name="-getAngleDifferenceByComplex"><strong>getAngleDifferenceByComplex</strong></a>(subtractFromComplex, subtractComplex)</dt><dd><tt>Get&nbsp;the&nbsp;angle&nbsp;between&nbsp;a&nbsp;pair&nbsp;of&nbsp;normalized&nbsp;complexes.</tt></dd></dl>
+ <dl><dt><a name="-getAreaLoop"><strong>getAreaLoop</strong></a>(loop)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon.</tt></dd></dl>
+ <dl><dt><a name="-getAreaLoops"><strong>getAreaLoops</strong></a>(loops)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;of&nbsp;a&nbsp;list&nbsp;of&nbsp;complex&nbsp;polygons.</tt></dd></dl>
  <dl><dt><a name="-getAroundLoop"><strong>getAroundLoop</strong></a>(begin, end, loop)</dt><dd><tt>Get&nbsp;an&nbsp;arc&nbsp;around&nbsp;a&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getAwayPoints"><strong>getAwayPoints</strong></a>(points, radius)</dt><dd><tt>Get&nbsp;a&nbsp;path&nbsp;with&nbsp;only&nbsp;the&nbsp;points&nbsp;that&nbsp;are&nbsp;far&nbsp;enough&nbsp;away&nbsp;from&nbsp;each&nbsp;other.</tt></dd></dl>
  <dl><dt><a name="-getBackOfLoops"><strong>getBackOfLoops</strong></a>(loops)</dt><dd><tt>Get&nbsp;the&nbsp;back&nbsp;of&nbsp;the&nbsp;loops.</tt></dd></dl>
@@ -299,6 +302,9 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getEndpointFromPath"><strong>getEndpointFromPath</strong></a>(path, pathIndex)</dt><dd><tt>Get&nbsp;endpoint&nbsp;segment&nbsp;from&nbsp;a&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getEndpointsFromSegmentTable"><strong>getEndpointsFromSegmentTable</strong></a>(segmentTable)</dt><dd><tt>Get&nbsp;the&nbsp;endpoints&nbsp;from&nbsp;the&nbsp;segment&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-getEndpointsFromSegments"><strong>getEndpointsFromSegments</strong></a>(segments)</dt><dd><tt>Get&nbsp;endpoints&nbsp;from&nbsp;segments.</tt></dd></dl>
+ <dl><dt><a name="-getEnumeratorKeys"><strong>getEnumeratorKeys</strong></a>(enumerator, keys)</dt><dd><tt>Get&nbsp;enumerator&nbsp;keys.</tt></dd></dl>
+ <dl><dt><a name="-getEnumeratorKeysAlwaysList"><strong>getEnumeratorKeysAlwaysList</strong></a>(enumerator, keys)</dt><dd><tt>Get&nbsp;enumerator&nbsp;keys.</tt></dd></dl>
+ <dl><dt><a name="-getEnumeratorKeysExceptForOneArgument"><strong>getEnumeratorKeysExceptForOneArgument</strong></a>(enumerator, keys)</dt><dd><tt>Get&nbsp;enumerator&nbsp;keys,&nbsp;except&nbsp;when&nbsp;there&nbsp;is&nbsp;one&nbsp;argument.</tt></dd></dl>
  <dl><dt><a name="-getFillOfSurroundings"><strong>getFillOfSurroundings</strong></a>(surroundingLoops)</dt><dd><tt>Get&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;of&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getFloatDefaultByDictionary"><strong>getFloatDefaultByDictionary</strong></a>(defaultFloat, dictionary, key)</dt><dd><tt>Get&nbsp;the&nbsp;value&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
  <dl><dt><a name="-getFloatFromValue"><strong>getFloatFromValue</strong></a>(value)</dt><dd><tt>Get&nbsp;the&nbsp;value&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
@@ -321,19 +327,26 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getLeftPoint"><strong>getLeftPoint</strong></a>(points)</dt><dd><tt>Get&nbsp;the&nbsp;leftmost&nbsp;complex&nbsp;point&nbsp;in&nbsp;the&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getLeftPointIndex"><strong>getLeftPointIndex</strong></a>(points)</dt><dd><tt>Get&nbsp;the&nbsp;index&nbsp;of&nbsp;the&nbsp;leftmost&nbsp;complex&nbsp;point&nbsp;in&nbsp;the&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getListTableElements"><strong>getListTableElements</strong></a>(listTable)</dt><dd><tt>Get&nbsp;all&nbsp;the&nbsp;element&nbsp;in&nbsp;a&nbsp;list&nbsp;table.</tt></dd></dl>
+ <dl><dt><a name="-getLoopCentroid"><strong>getLoopCentroid</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon&nbsp;using&nbsp;<a href="http://en.wikipedia.org/wiki/Centroid">http://en.wikipedia.org/wiki/Centroid</a>.</tt></dd></dl>
+ <dl><dt><a name="-getLoopConvex"><strong>getLoopConvex</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;convex&nbsp;hull&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon&nbsp;using&nbsp;gift&nbsp;wrap&nbsp;algorithm.</tt></dd></dl>
+ <dl><dt><a name="-getLoopConvexAddedIndex"><strong>getLoopConvexAddedIndex</strong></a>(around, lastAddedIndex, lastPoint, segment)</dt><dd><tt>Get&nbsp;polygon&nbsp;convex&nbsp;added&nbsp;index.</tt></dd></dl>
+ <dl><dt><a name="-getLoopConvexCentroid"><strong>getLoopConvexCentroid</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;centroid&nbsp;of&nbsp;the&nbsp;convex&nbsp;hull&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon.</tt></dd></dl>
  <dl><dt><a name="-getLoopInsideContainingLoop"><strong>getLoopInsideContainingLoop</strong></a>(containingLoop, loops)</dt><dd><tt>Get&nbsp;a&nbsp;loop&nbsp;that&nbsp;is&nbsp;inside&nbsp;the&nbsp;containing&nbsp;loop.</tt></dd></dl>
+ <dl><dt><a name="-getLoopLength"><strong>getLoopLength</strong></a>(polygon)</dt><dd><tt>Get&nbsp;the&nbsp;length&nbsp;of&nbsp;a&nbsp;polygon&nbsp;perimeter.</tt></dd></dl>
  <dl><dt><a name="-getLoopStartingNearest"><strong>getLoopStartingNearest</strong></a>(extrusionHalfWidth, location, loop)</dt><dd><tt>Add&nbsp;to&nbsp;threads&nbsp;from&nbsp;the&nbsp;last&nbsp;location&nbsp;from&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getLoopWithoutCloseSequentialPoints"><strong>getLoopWithoutCloseSequentialPoints</strong></a>(close, loop)</dt><dd><tt>Get&nbsp;loop&nbsp;without&nbsp;close&nbsp;sequential&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getMaximum"><strong>getMaximum</strong></a>(firstComplex, secondComplex)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;maximum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;a&nbsp;pair&nbsp;of&nbsp;complexes.</tt></dd></dl>
- <dl><dt><a name="-getMaximumFromPoints"><strong>getMaximumFromPoints</strong></a>(points)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;maximum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;a&nbsp;list&nbsp;of&nbsp;complex&nbsp;points.</tt></dd></dl>
+ <dl><dt><a name="-getMaximumByPathComplex"><strong>getMaximumByPathComplex</strong></a>(path)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;maximum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;a&nbsp;list&nbsp;of&nbsp;complex&nbsp;points.</tt></dd></dl>
+ <dl><dt><a name="-getMaximumByPathsComplex"><strong>getMaximumByPathsComplex</strong></a>(paths)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;maximum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;lists&nbsp;of&nbsp;complex&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getMaximumSpan"><strong>getMaximumSpan</strong></a>(loop)</dt><dd><tt>Get&nbsp;the&nbsp;maximum&nbsp;span&nbsp;of&nbsp;the&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getMinimum"><strong>getMinimum</strong></a>(firstComplex, secondComplex)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;minimum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;a&nbsp;pair&nbsp;of&nbsp;complexes.</tt></dd></dl>
- <dl><dt><a name="-getMinimumFromPoints"><strong>getMinimumFromPoints</strong></a>(points)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;minimum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;a&nbsp;list&nbsp;of&nbsp;complex&nbsp;points.</tt></dd></dl>
+ <dl><dt><a name="-getMinimumByPathComplex"><strong>getMinimumByPathComplex</strong></a>(path)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;minimum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;a&nbsp;list&nbsp;of&nbsp;complex&nbsp;points.</tt></dd></dl>
+ <dl><dt><a name="-getMinimumByPathsComplex"><strong>getMinimumByPathsComplex</strong></a>(paths)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;minimum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;lists&nbsp;of&nbsp;complex&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getMinimumFromVec3List"><strong>getMinimumFromVec3List</strong></a>(vec3List)</dt><dd><tt>Get&nbsp;a&nbsp;complex&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;minimum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;a&nbsp;list&nbsp;of&nbsp;Vector3s.</tt></dd></dl>
  <dl><dt><a name="-getNearestDistanceIndex"><strong>getNearestDistanceIndex</strong></a>(point, loop)</dt><dd><tt>Get&nbsp;the&nbsp;distance&nbsp;squared&nbsp;to&nbsp;the&nbsp;nearest&nbsp;segment&nbsp;of&nbsp;the&nbsp;loop&nbsp;and&nbsp;index&nbsp;of&nbsp;that&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-getNearestPointOnSegment"><strong>getNearestPointOnSegment</strong></a>(segmentBegin, segmentEnd, point)</dt><dd><tt>Get&nbsp;the&nbsp;nearest&nbsp;point&nbsp;on&nbsp;the&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-getNormalized"><strong>getNormalized</strong></a>(complexNumber)</dt><dd><tt>Get&nbsp;the&nbsp;normalized&nbsp;complex.</tt></dd></dl>
- <dl><dt><a name="-getNumberOfIntersectionsToLeft"><strong>getNumberOfIntersectionsToLeft</strong></a>(loop, point)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;intersections&nbsp;through&nbsp;the&nbsp;loops&nbsp;for&nbsp;the&nbsp;line&nbsp;starting&nbsp;from&nbsp;the&nbsp;left&nbsp;point&nbsp;and&nbsp;going&nbsp;left.</tt></dd></dl>
+ <dl><dt><a name="-getNumberOfIntersectionsToLeft"><strong>getNumberOfIntersectionsToLeft</strong></a>(loop, point)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;intersections&nbsp;through&nbsp;the&nbsp;loop&nbsp;for&nbsp;the&nbsp;line&nbsp;going&nbsp;left.</tt></dd></dl>
  <dl><dt><a name="-getNumberOfIntersectionsToLeftOfLoops"><strong>getNumberOfIntersectionsToLeftOfLoops</strong></a>(loops, point)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;intersections&nbsp;through&nbsp;the&nbsp;loop&nbsp;for&nbsp;the&nbsp;line&nbsp;starting&nbsp;from&nbsp;the&nbsp;left&nbsp;point&nbsp;and&nbsp;going&nbsp;left.</tt></dd></dl>
  <dl><dt><a name="-getOrderedSurroundingLoops"><strong>getOrderedSurroundingLoops</strong></a>(perimeterWidth, surroundingLoops)</dt><dd><tt>Get&nbsp;ordered&nbsp;surrounding&nbsp;loops&nbsp;from&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getPathLength"><strong>getPathLength</strong></a>(path)</dt><dd><tt>Get&nbsp;the&nbsp;length&nbsp;of&nbsp;a&nbsp;path&nbsp;(&nbsp;an&nbsp;open&nbsp;polyline&nbsp;).</tt></dd></dl>
@@ -344,12 +357,7 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getPointMinimum"><strong>getPointMinimum</strong></a>(firstPoint, secondPoint)</dt><dd><tt>Get&nbsp;a&nbsp;point&nbsp;with&nbsp;each&nbsp;component&nbsp;the&nbsp;minimum&nbsp;of&nbsp;the&nbsp;respective&nbsp;components&nbsp;of&nbsp;a&nbsp;pair&nbsp;of&nbsp;Vector3s.</tt></dd></dl>
  <dl><dt><a name="-getPointPlusSegmentWithLength"><strong>getPointPlusSegmentWithLength</strong></a>(length, point, segment)</dt><dd><tt>Get&nbsp;point&nbsp;plus&nbsp;a&nbsp;segment&nbsp;scaled&nbsp;to&nbsp;a&nbsp;given&nbsp;length.</tt></dd></dl>
  <dl><dt><a name="-getPointsRoundZAxis"><strong>getPointsRoundZAxis</strong></a>(planeAngle, points)</dt><dd><tt>Get&nbsp;points&nbsp;rotated&nbsp;by&nbsp;the&nbsp;plane&nbsp;angle</tt></dd></dl>
- <dl><dt><a name="-getPolygonArea"><strong>getPolygonArea</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon.</tt></dd></dl>
- <dl><dt><a name="-getPolygonCentroid"><strong>getPolygonCentroid</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon&nbsp;using&nbsp;<a href="http://en.wikipedia.org/wiki/Centroid">http://en.wikipedia.org/wiki/Centroid</a>.</tt></dd></dl>
- <dl><dt><a name="-getPolygonConvex"><strong>getPolygonConvex</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;convex&nbsp;hull&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon&nbsp;using&nbsp;gift&nbsp;wrap&nbsp;algorithm.</tt></dd></dl>
- <dl><dt><a name="-getPolygonConvexAddedIndex"><strong>getPolygonConvexAddedIndex</strong></a>(around, lastAddedIndex, lastPoint, segment)</dt><dd><tt>Get&nbsp;polygon&nbsp;convex&nbsp;added&nbsp;index.</tt></dd></dl>
- <dl><dt><a name="-getPolygonConvexCentroid"><strong>getPolygonConvexCentroid</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;centroid&nbsp;of&nbsp;the&nbsp;convex&nbsp;hull&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon.</tt></dd></dl>
- <dl><dt><a name="-getPolygonLength"><strong>getPolygonLength</strong></a>(polygon)</dt><dd><tt>Get&nbsp;the&nbsp;length&nbsp;of&nbsp;a&nbsp;polygon&nbsp;perimeter.</tt></dd></dl>
+ <dl><dt><a name="-getRandomComplex"><strong>getRandomComplex</strong></a>(begin, end)</dt><dd><tt>Get&nbsp;random&nbsp;complex.</tt></dd></dl>
  <dl><dt><a name="-getRank"><strong>getRank</strong></a>(width)</dt><dd><tt>Get&nbsp;the&nbsp;rank&nbsp;which&nbsp;is&nbsp;0&nbsp;at&nbsp;1&nbsp;and&nbsp;increases&nbsp;by&nbsp;three&nbsp;every&nbsp;power&nbsp;of&nbsp;ten.</tt></dd></dl>
  <dl><dt><a name="-getRotatedWiddershinsQuarterAroundZAxis"><strong>getRotatedWiddershinsQuarterAroundZAxis</strong></a>(vector3)</dt><dd><tt>Get&nbsp;Vector3&nbsp;rotated&nbsp;a&nbsp;quarter&nbsp;widdershins&nbsp;turn&nbsp;around&nbsp;Z&nbsp;axis.</tt></dd></dl>
  <dl><dt><a name="-getRoundZAxisByPlaneAngle"><strong>getRoundZAxisByPlaneAngle</strong></a>(planeAngle, vector3)</dt><dd><tt>Get&nbsp;Vector3&nbsp;rotated&nbsp;by&nbsp;a&nbsp;plane&nbsp;angle.</tt></dd></dl>
@@ -365,7 +373,7 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getSimplifiedLoops"><strong>getSimplifiedLoops</strong></a>(loops, radius)</dt><dd><tt>Get&nbsp;the&nbsp;simplified&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getSimplifiedPath"><strong>getSimplifiedPath</strong></a>(path, radius)</dt><dd><tt>Get&nbsp;path&nbsp;with&nbsp;points&nbsp;inside&nbsp;the&nbsp;channel&nbsp;removed.</tt></dd></dl>
  <dl><dt><a name="-getSquareIsOccupied"><strong>getSquareIsOccupied</strong></a>(pixelTable, x, y)</dt><dd><tt>Determine&nbsp;if&nbsp;a&nbsp;square&nbsp;around&nbsp;the&nbsp;x&nbsp;and&nbsp;y&nbsp;pixel&nbsp;coordinates&nbsp;is&nbsp;occupied.</tt></dd></dl>
- <dl><dt><a name="-getSquareLoop"><strong>getSquareLoop</strong></a>(beginComplex, endComplex)</dt><dd><tt>Get&nbsp;a&nbsp;square&nbsp;loop&nbsp;from&nbsp;the&nbsp;beginning&nbsp;to&nbsp;the&nbsp;end&nbsp;and&nbsp;back.</tt></dd></dl>
+ <dl><dt><a name="-getSquareLoopWiddershins"><strong>getSquareLoopWiddershins</strong></a>(beginComplex, endComplex)</dt><dd><tt>Get&nbsp;a&nbsp;square&nbsp;loop&nbsp;from&nbsp;the&nbsp;beginning&nbsp;to&nbsp;the&nbsp;end&nbsp;and&nbsp;back.</tt></dd></dl>
  <dl><dt><a name="-getSquareValues"><strong>getSquareValues</strong></a>(pixelTable, x, y)</dt><dd><tt>Get&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;values&nbsp;in&nbsp;a&nbsp;square&nbsp;around&nbsp;the&nbsp;x&nbsp;and&nbsp;y&nbsp;pixel&nbsp;coordinates.</tt></dd></dl>
  <dl><dt><a name="-getSquareValuesFromPoint"><strong>getSquareValuesFromPoint</strong></a>(pixelTable, point)</dt><dd><tt>Get&nbsp;a&nbsp;list&nbsp;of&nbsp;the&nbsp;values&nbsp;in&nbsp;a&nbsp;square&nbsp;around&nbsp;the&nbsp;point.</tt></dd></dl>
  <dl><dt><a name="-getStepKey"><strong>getStepKey</strong></a>(x, y)</dt><dd><tt>Get&nbsp;step&nbsp;key&nbsp;for&nbsp;x&nbsp;and&nbsp;y.</tt></dd></dl>
@@ -375,8 +383,8 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getTransferClosestSurroundingLoop"><strong>getTransferClosestSurroundingLoop</strong></a>(oldOrderedLocation, remainingSurroundingLoops, skein)</dt><dd><tt>Get&nbsp;and&nbsp;transfer&nbsp;the&nbsp;closest&nbsp;remaining&nbsp;surrounding&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getTransferredPaths"><strong>getTransferredPaths</strong></a>(insides, loop)</dt><dd><tt>Get&nbsp;transferred&nbsp;paths&nbsp;from&nbsp;inside&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-getTransferredSurroundingLoops"><strong>getTransferredSurroundingLoops</strong></a>(insides, loop)</dt><dd><tt>Get&nbsp;transferred&nbsp;paths&nbsp;from&nbsp;inside&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
- <dl><dt><a name="-getVector3Path"><strong>getVector3Path</strong></a>(complexPath)</dt><dd><tt>Get&nbsp;the&nbsp;vector3&nbsp;path&nbsp;from&nbsp;the&nbsp;complex&nbsp;path.</tt></dd></dl>
- <dl><dt><a name="-getVector3Paths"><strong>getVector3Paths</strong></a>(complexPaths)</dt><dd><tt>Get&nbsp;the&nbsp;vector3&nbsp;paths&nbsp;from&nbsp;the&nbsp;complex&nbsp;paths.</tt></dd></dl>
+ <dl><dt><a name="-getVector3Path"><strong>getVector3Path</strong></a>(complexPath, z<font color="#909090">=0.0</font>)</dt><dd><tt>Get&nbsp;the&nbsp;vector3&nbsp;path&nbsp;from&nbsp;the&nbsp;complex&nbsp;path.</tt></dd></dl>
+ <dl><dt><a name="-getVector3Paths"><strong>getVector3Paths</strong></a>(complexPaths, z<font color="#909090">=0.0</font>)</dt><dd><tt>Get&nbsp;the&nbsp;vector3&nbsp;paths&nbsp;from&nbsp;the&nbsp;complex&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-getWiddershinsUnitPolar"><strong>getWiddershinsUnitPolar</strong></a>(angle)</dt><dd><tt>Get&nbsp;polar&nbsp;complex&nbsp;from&nbsp;counterclockwise&nbsp;angle&nbsp;from&nbsp;1,&nbsp;0.</tt></dd></dl>
  <dl><dt><a name="-getXIntersectionIfExists"><strong>getXIntersectionIfExists</strong></a>(beginComplex, endComplex, y)</dt><dd><tt>Get&nbsp;the&nbsp;x&nbsp;intersection&nbsp;if&nbsp;it&nbsp;exists.</tt></dd></dl>
  <dl><dt><a name="-getXIntersectionsFromIntersections"><strong>getXIntersectionsFromIntersections</strong></a>(xIntersectionIndexList)</dt><dd><tt>Get&nbsp;x&nbsp;intersections&nbsp;from&nbsp;the&nbsp;x&nbsp;intersection&nbsp;index&nbsp;list,&nbsp;in&nbsp;other&nbsp;words&nbsp;subtract&nbsp;non&nbsp;negative&nbsp;intersections&nbsp;from&nbsp;negatives.</tt></dd></dl>
@@ -434,7 +442,9 @@ Below are examples of euclidean use.<br>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
 <strong>__license__</strong> = 'GPL 3.0'<br>
-<strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
+<strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
+<strong>globalGoldenAngle</strong> = 3.8832220774509332<br>
+<strong>globalGoldenRatio</strong> = 1.6180339887498949</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

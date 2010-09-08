@@ -52,7 +52,7 @@ When selected, export will delete the comments.  The comments are not necessary 
  <br>
 <a name="Export Operations" id="Export Operations"></a><h3>Export Operations</h3>
 
-Export presents the user with a choice of the export plugins in the export_plugins folder.  The chosen plugin will then modify the gcode or translate it into another format.  There is also the "Do Not Change Output" choice, which will not change the output.  An export plugin is a script in the export_plugins folder which has the functions getOutput, isReplaceable and if it's output is not replaceable, writeOutput.<br>
+Export presents the user with a choice of the export plugins in the export_plugins folder.  The chosen plugin will then modify the gcode or translate it into another format.  There is also the "Do Not Change Output" choice, which will not change the output.  An export plugin is a script in the export_plugins folder which has the getOutput function, the globalIsReplaceable variable and if it's output is not replaceable, the writeOutput function.<br>
  <br>
 <a name="File Extension" id="File Extension"></a><h3>File Extension</h3>
 
@@ -102,7 +102,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the export dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; export.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
+&gt;&gt;&gt; export.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The export tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>

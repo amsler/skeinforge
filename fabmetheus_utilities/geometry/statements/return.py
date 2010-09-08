@@ -16,17 +16,17 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	functions = xmlProcessor.functions
-	if len( functions ) < 1:
+	functions = xmlElement.getXMLProcessor().functions
+	if len(functions) < 1:
 		return
-	function = functions[ - 1 ]
+	function = functions[-1]
 	function.shouldReturn = True
 	if xmlElement.object == None:
 		if 'return' in xmlElement.attributeDictionary:
 			value = xmlElement.attributeDictionary['return']
-			xmlElement.object = evaluate.getEvaluatorSplitWords( value )
+			xmlElement.object = evaluate.getEvaluatorSplitWords(value)
 		else:
 			xmlElement.object = []
 	if len( xmlElement.object ) > 0:

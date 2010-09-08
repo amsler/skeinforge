@@ -21,7 +21,7 @@ __license__ = "GPL 3.0"
 
 
 def getGeometryOutput(xmlElement):
-	"Get vector3 vertices from attribute dictionary."
+	"Get vector3 vertexes from attribute dictionary."
 	sides = evaluate.getEvaluatedFloatDefault(4.0, 'sides', xmlElement)
 	sideAngle = 2.0 * math.pi / sides
 	radius = complex(1.0, 1.0)
@@ -31,22 +31,21 @@ def getGeometryOutput(xmlElement):
 	loop = []
 	sidesCeiling = int(math.ceil(abs(sides)))
 	startEnd = lineation.StartEnd(sidesCeiling, '', xmlElement)
+	spiral = lineation.Spiral(0.5 * sideAngle / math.pi, xmlElement)
 	for side in xrange(startEnd.start, startEnd.end):
 		angle = float(side) * sideAngle
-		point = euclidean.getWiddershinsUnitPolar(angle)
-		vertex = Vector3(point.real * radius.real, point.imag * radius.imag)
+		unitPolar = euclidean.getWiddershinsUnitPolar(angle)
+		vertex = spiral.getSpiralPoint(unitPolar, Vector3(unitPolar.real * radius.real, unitPolar.imag * radius.imag))
 		loop.append(vertex)
 	sideLength = sideAngle * lineation.getAverageRadius(radius)
+	lineation.setClosedAttribute(startEnd.revolutions, xmlElement)
 	return lineation.getGeometryOutputByLoop(lineation.SideLoop(loop, sideAngle, sideLength), xmlElement)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
-	"Get vector3 vertices from attribute dictionary by arguments."
-	if len(arguments) > 0:
-		xmlElement.attributeDictionary['sides'] = arguments[0]
-	if len(arguments) > 1:
-		xmlElement.attributeDictionary['radius'] = arguments[1]
+	"Get vector3 vertexes from attribute dictionary by arguments."
+	evaluate.setAttributeDictionaryByArguments(['sides', 'radius'], arguments, xmlElement)
 	return getGeometryOutput(xmlElement)
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	lineation.processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement, xmlProcessor)
+	lineation.processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement)

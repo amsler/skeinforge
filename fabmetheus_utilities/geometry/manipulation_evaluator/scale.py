@@ -9,7 +9,6 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
-from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 
@@ -23,17 +22,17 @@ __license__ = "GPL 3.0"
 globalExecutionOrder = 340
 
 
-def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
+def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get equated paths."
 	scalePoints( loop, prefix, xmlElement )
 	return [loop]
 
-def getManipulatedGeometryOutput( geometryOutput, xmlElement ):
+def getManipulatedGeometryOutput(geometryOutput, xmlElement):
 	"Get equated geometryOutput."
-	scalePoints( matrix.getConnectionVertices( geometryOutput ), 'scale.', xmlElement )
+	scalePoints( matrix.getConnectionVertexes(geometryOutput), 'scale.', xmlElement )
 	return geometryOutput
 
-def manipulateXMLElement(target, xmlElement, xmlProcessor):
+def manipulateXMLElement(target, xmlElement):
 	"Manipulate the xml element."
 	scaleMatrixTetragrid = matrix.getScaleMatrixTetragrid('', xmlElement)
 	if scaleMatrixTetragrid == None:
@@ -42,14 +41,14 @@ def manipulateXMLElement(target, xmlElement, xmlProcessor):
 		return
 	matrix.setAttributeDictionaryToMultipliedTetragrid(scaleMatrixTetragrid, target)
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	solid.processXMLElementByFunction( manipulateXMLElement, xmlElement, xmlProcessor )
+	solid.processXMLElementByFunction( manipulateXMLElement, xmlElement)
 
-def scalePoints( points, prefix, xmlElement ):
+def scalePoints(points, prefix, xmlElement):
 	"Scale the points."
-	scaleDefaultVector3 = Vector3( 1.0, 1.0, 1.0 )
-	scaleVector3 = matrix.getCumulativeVector3( prefix, scaleDefaultVector3.copy(), xmlElement )
+	scaleDefaultVector3 = Vector3(1.0, 1.0, 1.0)
+	scaleVector3 = matrix.getCumulativeVector3Remove(prefix, scaleDefaultVector3.copy(), xmlElement)
 	if scaleVector3 == scaleDefaultVector3:
 		return
 	for point in points:

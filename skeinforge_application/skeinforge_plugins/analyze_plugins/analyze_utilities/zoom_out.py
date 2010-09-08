@@ -24,6 +24,6 @@ def getNewMouseTool():
 
 class ZoomOut( zoom_in.ZoomIn ):
 	"The zoom out mouse tool."
-	def getMultiplier( self ):
+	def getMultiplier(self):
 		"Get the scale multiplier."
 		return 0.5

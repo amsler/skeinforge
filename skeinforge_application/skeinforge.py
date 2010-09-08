@@ -214,56 +214,62 @@ import os
 import sys
 
 
-# manipulate path xmlelement
-# outline strokeWidth, closed=false
-# flip axis center & origin
-# line
+# circle documentation
+# get reducing bottom polygon, get reducing top polygon, check for intersection then go along, concave mesh
+# gear profile, gear extrude, holes, rack, annulus
+# get list of XMLElements for paths
 # mirror axis center & origin, concatenate
-# line, parabolic interpolation if there is no endpoint angle then symmetrical, bysymmetricalplane, bysymmetricalsolid
-# curve, relative, control type - parabolic cubic circular, between
-# quadratic, cubic vertexes; distance in equation
 # matrixTetragrid to tetragrid, matrix.transform, target
-# inset, outset path
-# grid within bounds and row/column, maybe subgrid or subarray
-# combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
+# maybe matrix array form a00 a01.. also
 # matrix rotate around axis http://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
-# pixel, voxel, surfaxel/boxel, lattice, mesh
-# array? targetequation radius xyz give index
+# linear bearing
+# grate separate
+# xml_creation
+# fill rename shortenedSegmentList gridSegmentList and delete comments
+# array paths, follow paths, later maybe targetequation radius xyz give index
 # connectionfrom, to, connect, xaxis
-# documentation Add Layer Template to SVG
 # add overview link to crnsdoo index and svg page
 # bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
-# look over copy module
-#
-# append, delete, copy
-# _getAccessibleDictionary, _getAccessibleFunctions
-# Vector2 & Vector3 also maybe in list
+# look over copy module, make copy solid like copy lineation
+# document gear script
+# big save, initial circling moved to raft from temperature
 #
 # classify more of evaluate.xml
 # maybe in svgReader if loop intersection with previous union else add
 #
 # unimportant
+# minor outline problem when an end path goes through a path, like in the letter A
 # carve time is missing
 # view profile 1 mm thickness
 # svg inskcape layer label, import into inskscape in general
 # only parse svg once, do not parse again if yAxisPointingUpward="true"
+# getControlPoints, also handle no controlPoint in which case make coincident
+# maybe vector3 relative to previous
 #
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # del previous, add begin & end if far  get actual path
 # polling
-# svgCanvas with xmlWriter
+# svgCanvas with xmlWriter instead of directly writing
+# speed up CircleIntersection by performing isWithinCircles before creation
 # getNormal, getIsFlat?
-# getVerticesByKey in geomancer should also get from a geometry string, array along loop or path in process and getManipulated
-# transform
+# write svg for visible paths
+# distance in equation
+# combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
+# getConnection of some kind like getConnectionVertexes, getConnection
+# import module, overwriteRoot
+# pixel, voxel, surfaxel/boxel, lattice, mesh
+# equation for vertexes if not already
 # mesh. for cube, then cyliner, then sphere after lathe
-# tube, rotor
+# extrude take radius
+# tube
+# rotor
 # test translate
 # lathe
 # think about setActualMinimumZ in boolean_geometry
 # pyramid
 # round extrusion ?, fillet
 # manipulate solid, maybe manipulate around elements
-# gear, hollow top
+# hollow top
 # boolean loop corner outset
 # work out close and radius
 # voronoi average location intersection looped inset intercircles
@@ -285,10 +291,9 @@ import sys
 # maybe try to get rid of comment if possible
 # check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # remove cool set at end of layer
-# add circling when hot in chamber
+# add fan on when hot in chamber
 # maybe measuring rod
 # remove comments from clip, bend
-# add hook _extrusion
 # winding into coiling, coil into wind & weave
 # later, precision
 # add initial loops option
@@ -299,10 +304,15 @@ import sys
 # getInterpretation, getInterpretationSuffix for importPlugins, importPlugins to interpretPlugins
 #
 #
-#
+# add hook _extrusion
+# implement acceleration & collinear removal in penultimate viewers _extrusion
+# integral thin width _extrusion
+# layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
+# maybe double height shells option _extrusion
+# raft triple layer base, middle interface with hot loop or ties
+# somehow, add pattern to outside, http://blog.makerbot.com/2010/09/03/lampshades/
 #
 # arch, ceiling
-# implement acceleration & collinear removal in penultimate viewers _extrusion
 # add polish, has perimeter, has cut first layer (False)
 # probably not set addedLocation in distanceFeedRate after arc move
 # maybe horizontal bridging and/or check to see if the ends are standing on anything
@@ -311,7 +321,6 @@ import sys
 # save all analyze viewers of the same name except itself, update help menu self.wikiManualPrimary.setUpdateFunction
 # check alterations folder first, if there is something copy it to the home directory, if not check the home directory
 # set temperature in temperature
-# raft unified base, separate inside, tie
 # move alterations and profiles to top level
 #
 #
@@ -319,16 +328,14 @@ import sys
 # help primary menu item refresh
 # add plugin help menu, add craft below menu
 # give option of saving when switching profiles
-# integral thin width _extrusion
 # xml & svg more forgiving, svg make defaults for layerThickness, maxZ, minZ, add layer z to svg_template, make the slider on the template track even when mouse is outside
-# layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
 # option of surrounding lines in display
 # maybe add connecting line in display line
 # maybe check inset loops to see if they are smaller, but this would be slow
 # maybe status bar
 # maybe measurement ruler mouse tool
 # search rss from blogs, add search links for common materials, combine created on or progress bar with searchable help
-#boundaries, center radius z bottom top, circular or rectangular, polygon, put cool minimum radius orbits within boundaries
+# boundaries, center radius z bottom top, circular or rectangular, polygon, put cool minimum radius orbits within boundaries
 # move & rotate model
 # possible jitter bug http://cpwebste.blogspot.com/2010/04/hydras-first-print.html
 # trial, meta in a grid settings
@@ -354,7 +361,6 @@ import sys
 # search items, search links, choice entry field
 # svg triangle mesh, svg polygon mesh
 # simulate
-#document gear script
 #transform
 #extrude loops I guess make circles? and/or run along sparse infill
 #custom inclined plane, inclined plane from model, screw, fillet travel as well maybe
@@ -366,7 +372,6 @@ import sys
 #maybe add full underscored date name for version
 #maybe add rarely used tool option
 #angle shape for overhang extrusions
-# maybe double height shells option _extrusion
 #maybe m111? countdown
 #common tool
 #first time tool tip
@@ -391,7 +396,8 @@ import sys
 #5 14319,2536
 #6 16855,3226
 #7 20081, 2189
-#8 22270
+#8 22270, 2625
+#9 24895
 #85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?
@@ -439,6 +445,7 @@ import sys
 # concept, blog, frequent updates, mix associated news
 # concept, range voting for posters, informative, complainer, funny, insightful, rude, spammer, literacy,  troll?
 # concept, intermittent cloud with multiple hash functions
+# concept, demodiu xml articles
 
 
 __author__ = "Enrique Perez (perez_enrique@yahoo.com)"
@@ -507,7 +514,7 @@ def writeOutput( fileName ):
 
 class SkeinforgeRepository:
 	"A class to handle the skeinforge settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '')
@@ -527,13 +534,13 @@ class SkeinforgeRepository:
 		getRadioPluginsAddPluginGroupFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		self.executeTitle = 'Skeinforge'
 
-	def execute( self ):
+	def execute(self):
 		"Skeinforge button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName )
 
-	def save( self ):
+	def save(self):
 		"Profile has been saved and profile menu should be updated."
 		self.profileType.removeMenus()
 		self.profileSelection.removeMenus()

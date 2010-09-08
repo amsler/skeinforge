@@ -108,7 +108,7 @@ def writeOutput( fileName = ''):
 
 class UnpauseRepository:
 	"A class to handle the unpause settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.unpause.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Unpause', self, '')
@@ -118,7 +118,7 @@ class UnpauseRepository:
 		self.maximumSpeed = settings.FloatSpin().getFromValue( 1.1, 'Maximum Speed (ratio):', self, 1.9, 1.3 )
 		self.executeTitle = 'Unpause'
 
-	def execute( self ):
+	def execute(self):
 		"Unpause button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -127,7 +127,7 @@ class UnpauseRepository:
 
 class UnpauseSkein:
 	"A class to unpause a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.feedRateMinute = 959.0
@@ -197,7 +197,7 @@ class UnpauseSkein:
 		self.oldLocation = location
 		return self.distanceFeedRate.getLineWithFeedRate( unpausedFeedRateMinute, line, splitLine )
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

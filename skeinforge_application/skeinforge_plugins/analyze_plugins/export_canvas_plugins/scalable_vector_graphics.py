@@ -40,7 +40,7 @@ def parseLineReplace( firstWordTable, line, output ):
 
 class ScalableVectorGraphicsRepository:
 	"A class to handle the export settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', '', self )
 		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, '')
@@ -59,7 +59,7 @@ class ScalableVectorGraphicsRepository:
 		line = '<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-width="%spx"/>\n' % ( xBegin, yBegin, xEnd, yEnd, color, width )
 		canvasLinesOutput.write( line + '\n')
 
-	def execute( self ):
+	def execute(self):
 		"Export the canvas as an svg file."
 		svgFileName = gcodec.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )
 		boundingBox = self.canvas.bbox( settings.Tkinter.ALL ) # tuple (w, n, e, s)
@@ -108,7 +108,7 @@ class ScalableVectorGraphicsRepository:
 			print('Try installing the %s program or look for another one, like Image Magick which can be found at:' % svgViewer )
 			print('http://www.imagemagick.org/script/index.php')
 
-	def getCanvasLinesOutput( self ):
+	def getCanvasLinesOutput(self):
 		"Add the canvas line to the output."
 		canvasLinesOutput = cStringIO.StringIO()
 		objectIDNumbers = self.canvas.find_all()

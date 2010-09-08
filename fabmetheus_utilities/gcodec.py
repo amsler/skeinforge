@@ -84,7 +84,7 @@ def getAbsoluteFolderPath( filePath, folderName = ''):
 		return absoluteFolderPath
 	return os.path.join( absoluteFolderPath, folderName )
 
-def getDoubleAfterFirstLetter( word ):
+def getDoubleAfterFirstLetter(word):
 	"Get the double value of the word after the first letter."
 	return float( word[ 1 : ] )
 
@@ -214,9 +214,9 @@ def getModuleWithDirectoryPath( directoryPath, fileName ):
 		print('')
 	return None
 
-def getModuleWithPath( path ):
+def getModuleWithPath(path):
 	"Get the module from the path."
-	return getModuleWithDirectoryPath( os.path.dirname( path ), os.path.basename( path ) )
+	return getModuleWithDirectoryPath( os.path.dirname(path), os.path.basename(path) )
 
 def getPluginFileNamesFromDirectoryPath( directoryPath ):
 	"Get the file names of the python plugins in the directory path."
@@ -320,7 +320,7 @@ def getUntilDot( text ):
 	dotIndex = text.rfind('.')
 	if dotIndex < 0:
 		return text
-	return text[ : dotIndex ]
+	return text[: dotIndex]
 
 def getVersionFileName():
 	"Get the file name of the version date."
@@ -384,7 +384,7 @@ def getXMLLines( text ):
 		lastCharacter = None
 		if len( strippedLine ) > 1:
 			firstCharacter = strippedLine[0]
-			lastCharacter = strippedLine[ - 1 ]
+			lastCharacter = strippedLine[-1]
 		if firstCharacter == '<' and lastCharacter != '>' and accumulatedOutput == None:
 			accumulatedOutput = cStringIO.StringIO()
 			accumulatedOutput.write( textLine )
@@ -420,7 +420,7 @@ def isFileWithFileTypeWithoutWords( fileType, fileName, words ):
 	if not fileName.endswith( fileTypeDot ):
 		return False
 	for word in words:
-		if fileName.find( word ) >= 0:
+		if fileName.find(word) >= 0:
 			return False
 	return True
 
@@ -454,6 +454,15 @@ def isThereAFirstWord( firstWord, lines, startIndex ):
 		if firstWord == getFirstWord( splitLine ):
 			return True
 	return False
+
+def makeDirectory(directory):
+	"Make a directory if it does not already exist."
+	if os.path.isdir(directory):
+		return
+	try:
+		os.makedirs(directory)
+	except OSError:
+		print('Skeinforge can not make the directory %s so give it read/write permission for that directory and the containing directory.' % directory)
 
 def replaceWords( fileNames, original, replacement ):
 	"Replace in files the original with the replacement."
@@ -520,7 +529,7 @@ class BoundingRectangle:
 
 class DistanceFeedRate:
 	"A class to limit the z feed rate and round values."
-	def __init__( self ):
+	def __init__(self):
 		self.absoluteDistanceMode = True
 		self.decimalPlacesCarried = 3
 		self.extrusionDistanceFormat = ''
@@ -642,7 +651,7 @@ class DistanceFeedRate:
 
 	def getLinearGcodeMovement( self, point, z ):
 		"Get a linear gcode movement."
-		return "G1 X%s Y%s Z%s" % ( self.getRounded( point.real ), self.getRounded( point.imag ), self.getRounded( z ) )
+		return "G1 X%s Y%s Z%s" % ( self.getRounded( point.real ), self.getRounded( point.imag ), self.getRounded(z) )
 
 	def getLinearGcodeMovementWithFeedRate( self, feedRateMinute, point, z ):
 		"Get a z limited gcode movement."
@@ -699,7 +708,7 @@ class DistanceFeedRate:
 
 	def getLineWithZ( self, line, splitLine, z ):
 		"Get the line with a z."
-		roundedZString = 'Z' + self.getRounded( z )
+		roundedZString = 'Z' + self.getRounded(z)
 		indexOfZ = indexOfStartingWithSecond('Z', splitLine )
 		if indexOfZ == - 1:
 			return line + ' ' + roundedZString

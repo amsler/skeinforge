@@ -92,14 +92,14 @@ def writeOutput( fileName = ''):
 
 class OutsetRepository:
 	"A class to handle the outset settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.outset.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Outset', self, '')
 		self.activateOutset = settings.BooleanSetting().getFromValue('Activate Outset:', self, True )
 		self.executeTitle = 'Outset'
 
-	def execute( self ):
+	def execute(self):
 		"Outset button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -108,7 +108,7 @@ class OutsetRepository:
 
 class OutsetSkein:
 	"A class to outset a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.lineIndex = 0
@@ -138,7 +138,7 @@ class OutsetSkein:
 			self.parseLine( lineIndex )
 		return self.distanceFeedRate.output.getvalue()
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ].lstrip()

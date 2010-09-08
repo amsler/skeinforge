@@ -82,7 +82,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the vectorwrite dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; vectorwrite.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>( 'Screw Holder_penultimate.gcode' )<br>
+&gt;&gt;&gt; vectorwrite.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>('Screw Holder_penultimate.gcode')<br>
 The vectorwrite file is saved as Screw_Holder_penultimate_vectorwrite.svg</tt>
 <br />
 <br />
@@ -143,7 +143,7 @@ The vectorwrite file is saved as Screw_Holder_penultimate_vectorwrite.svg</tt>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.svg_writer.html#SVGWriter">fabmetheus_utilities.svg_writer.SVGWriter</a>:<br>
-<dl><dt><a name="SVGWriterVectorwrite-__init__"><strong>__init__</strong></a>(self, carving, decimalPlacesCarried, perimeterWidth<font color="#909090">=None</font>)</dt></dl>
+<dl><dt><a name="SVGWriterVectorwrite-__init__"><strong>__init__</strong></a>(self, addLayerTemplateToSVG, carving, decimalPlacesCarried, perimeterWidth<font color="#909090">=None</font>)</dt></dl>
 
 <dl><dt><a name="SVGWriterVectorwrite-addLayerBegin"><strong>addLayerBegin</strong></a>(self, layerIndex, rotatedBoundaryLayer)</dt><dd><tt>Add&nbsp;the&nbsp;start&nbsp;lines&nbsp;for&nbsp;the&nbsp;layer.</tt></dd></dl>
 
@@ -209,9 +209,9 @@ Methods inherited from <a href="fabmetheus_utilities.svg_writer.html#SVGWriter">
 
 <dl><dt><a name="VectorwriteSkein-addToPerimeters"><strong>addToPerimeters</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;thread&nbsp;to&nbsp;the&nbsp;perimeters.</tt></dd></dl>
 
-<dl><dt><a name="VectorwriteSkein-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertices.</tt></dd></dl>
+<dl><dt><a name="VectorwriteSkein-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
 
-<dl><dt><a name="VectorwriteSkein-getCarveCornerMinimum"><strong>getCarveCornerMinimum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;minimum&nbsp;of&nbsp;the&nbsp;vertices.</tt></dd></dl>
+<dl><dt><a name="VectorwriteSkein-getCarveCornerMinimum"><strong>getCarveCornerMinimum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;minimum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="VectorwriteSkein-getCarveLayerThickness"><strong>getCarveLayerThickness</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;layer&nbsp;thickness.</tt></dd></dl>
 

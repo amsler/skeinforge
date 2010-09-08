@@ -13,7 +13,9 @@
 <a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.stl.html">Previous</a> / <a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-The svg.py script is an import translator plugin to get a carving from an svg file.<br>
+The svg.py script is an import translator plugin to get a carving from an svg file.  This script will read an svg file made by skeinforge or by inkscape.<br>
+ <br>
+An example inkscape svg file is inkscape_star.svg in the models folder.<br>
  <br>
 An import plugin is a script in the interpret_plugins folder which has the function getCarving.  It is meant to be run from the interpret tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.<br>
  <br>
@@ -78,9 +80,9 @@ many more lines of the carving<br>
 
 <dl><dt><a name="SVGCarving-addXML"><strong>addXML</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;xml&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
 
-<dl><dt><a name="SVGCarving-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertices.</tt></dd></dl>
+<dl><dt><a name="SVGCarving-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
 
-<dl><dt><a name="SVGCarving-getCarveCornerMinimum"><strong>getCarveCornerMinimum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;minimum&nbsp;of&nbsp;the&nbsp;vertices.</tt></dd></dl>
+<dl><dt><a name="SVGCarving-getCarveCornerMinimum"><strong>getCarveCornerMinimum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;minimum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="SVGCarving-getCarveLayerThickness"><strong>getCarveLayerThickness</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;layer&nbsp;thickness.</tt></dd></dl>
 

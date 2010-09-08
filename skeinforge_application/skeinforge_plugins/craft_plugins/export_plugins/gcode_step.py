@@ -130,7 +130,7 @@ def writeOutput( fileName, gcodeText = ''):
 
 class GcodeStepRepository:
 	"A class to handle the export settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		#Set the default settings.
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.gcode_step.html', '', self )
@@ -151,7 +151,7 @@ class GcodeStepRepository:
 		#Create the archive, title of the execute button, title of the dialog & settings fileName.
 		self.executeTitle = 'Convert to Gcode Step'
 
-	def execute( self ):
+	def execute(self):
 		"Convert to gcode step button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, ['.gcode'], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -160,7 +160,7 @@ class GcodeStepRepository:
 
 class GcodeStepSkein:
 	"A class to convert gcode into 16 byte binary segments."
-	def __init__( self ):
+	def __init__(self):
 		self.oldFeedRateString = None
 		self.oldZString = None
 		self.output = cStringIO.StringIO()

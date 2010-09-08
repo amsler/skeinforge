@@ -18,12 +18,10 @@ Temperature is a script to set the temperature for the object and raft.<br>
 <br />
 <a href="#Operation">Operation</a><br />
 <a href="#Settings">Settings</a><br />
-&nbsp;&nbsp;<a href="#Initial Circling">Initial Circling</a><br />
 &nbsp;&nbsp;<a href="#Rate">Rate</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Cooling Rate">Cooling Rate</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Heating Rate">Heating Rate</a><br />
 &nbsp;&nbsp;<a href="#Temperature">Temperature</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Chamber Temperature">Chamber Temperature</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Temperature">Base Temperature</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Temperature">Interface Temperature</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Object First Layer Infill Temperature">Object First Layer Infill Temperature</a><br />
@@ -41,12 +39,6 @@ The default 'Activate Temperature' checkbox is on.  When it is on, the functions
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
-<a name="Initial Circling" id="Initial Circling"></a><h3>Initial Circling</h3>
-
-Default is off.<br>
- <br>
-When selected, the extruder will initially circle around until it reaches operating temperature.<br>
- <br>
 <a name="Rate" id="Rate"></a><h3>Rate</h3>
 
 The default cooling rate and heating rate for the extruder were both been derived from bothacker's graph at:<br>
@@ -66,12 +58,6 @@ Defines the heating rate of the extruder.<br>
  <br>
 <a name="Temperature" id="Temperature"></a><h3>Temperature</h3>
 
-<a name="Chamber Temperature" id="Chamber Temperature"></a><h4>Chamber Temperature</h4>
-
-Default is twenty five degrees Celcius.<br>
- <br>
-Defines the chamber temperature.  If there is no chamber, the chamber temperature will be slightly higher than room temperature.<br>
- <br>
 <a name="Base Temperature" id="Base Temperature"></a><h4>Base Temperature</h4>
 
 Default for ABS is two hundred degrees Celcius.<br>
@@ -141,7 +127,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the temperature dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; temperature.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
+&gt;&gt;&gt; temperature.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The temperature tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>

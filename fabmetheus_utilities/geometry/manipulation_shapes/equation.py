@@ -1,5 +1,5 @@
 """
-Equation for vertices.
+Equation for vertexes.
 
 """
 
@@ -51,21 +51,21 @@ def equateCylindricalDotZ( point, returnValue ):
 
 def equatePoints( points, prefix, revolutions, xmlElement ):
 	"Equate the points."
-	equateVerticesByFunction( equateCylindrical, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateCylindricalDotAzimuth, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateCylindricalDotRadius, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateCylindricalDotZ, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equatePolar, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equatePolarDotAzimuth, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equatePolarDotRadius, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateRectangular, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateRectangularDotX, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateRectangularDotY, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateRectangularDotZ, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateSpherical, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateSphericalDotAzimuth, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateSphericalDotElevation, points, prefix, revolutions, xmlElement )
-	equateVerticesByFunction( equateSphericalDotRadius, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateCylindrical, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateCylindricalDotAzimuth, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateCylindricalDotRadius, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateCylindricalDotZ, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equatePolar, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equatePolarDotAzimuth, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equatePolarDotRadius, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateRectangular, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateRectangularDotX, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateRectangularDotY, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateRectangularDotZ, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateSpherical, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateSphericalDotAzimuth, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateSphericalDotElevation, points, prefix, revolutions, xmlElement )
+	equateVertexesByFunction( equateSphericalDotRadius, points, prefix, revolutions, xmlElement )
 
 def equatePolar( point, returnValue ):
 	"Get equation for polar."
@@ -113,7 +113,7 @@ def equateSphericalDotAzimuth( point, returnValue ):
 
 def equateSphericalDotElevation( point, returnValue ):
 	"Get equation for spherical elevation."
-	radius = abs( point )
+	radius = abs(point)
 	if radius <= 0.0:
 		return
 	azimuthComplex = point.dropAxis()
@@ -128,34 +128,34 @@ def equateSphericalDotElevation( point, returnValue ):
 
 def equateSphericalDotRadius( point, returnValue ):
 	"Get equation for spherical radius."
-	originalRadius = abs( point )
+	originalRadius = abs(point)
 	if originalRadius > 0.0:
 		point *= returnValue / originalRadius
 
-def equateVerticesByFunction( equationFunction, points, prefix, revolutions, xmlElement ):
+def equateVertexesByFunction( equationFunction, points, prefix, revolutions, xmlElement ):
 	"Get equated points by equation function."
 	prefixedEquationName = prefix + equationFunction.__name__[ len('equate') : ].replace('Dot', '.').lower()
 	if prefixedEquationName not in xmlElement.attributeDictionary:
 		return
 	equationResult = EquationResult( prefixedEquationName, revolutions, xmlElement )
 	for point in points:
-		returnValue = equationResult.getReturnValue( point )
+		returnValue = equationResult.getReturnValue(point)
 		if returnValue == None:
-			print('Warning, returnValue in alterVerticesByEquation in equation is None for:')
-			print( point )
+			print('Warning, returnValue in alterVertexesByEquation in equation is None for:')
+			print(point)
 			print(xmlElement)
 		else:
 			equationFunction( point, returnValue )
 	equationResult.function.reset()
 
-def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
+def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get equated paths."
 	equatePoints( loop, prefix, 0.0, xmlElement )
 	return [loop]
 
-def getManipulatedGeometryOutput( geometryOutput, xmlElement ):
+def getManipulatedGeometryOutput(geometryOutput, xmlElement):
 	"Get equated geometryOutput."
-	equatePoints( matrix.getConnectionVertices( geometryOutput ), 'equation.', None, xmlElement )
+	equatePoints( matrix.getConnectionVertexes(geometryOutput), 'equation.', None, xmlElement )
 	return geometryOutput
 
 
@@ -163,7 +163,7 @@ class EquationResult:
 	"Class to get equation results."
 	def __init__( self, key, revolutions, xmlElement ):
 		"Initialize."
-		self.function = evaluate.Function( evaluate.getEvaluatorSplitWords( xmlElement.attributeDictionary[ key ] ), xmlElement )
+		self.function = evaluate.Function( evaluate.getEvaluatorSplitWords(xmlElement.attributeDictionary[key]), xmlElement )
 		self.points = []
 		self.revolutions = revolutions
 
@@ -175,7 +175,7 @@ class EquationResult:
 		self.function.localDictionary['radius'] = abs( point.dropAxis() )
 		if self.revolutions != None:
 			if len( self.points ) > 0:
-				self.revolutions += 0.5 / math.pi * euclidean.getAngleAroundZAxisDifference( point, self.points[ - 1 ] )
+				self.revolutions += 0.5 / math.pi * euclidean.getAngleAroundZAxisDifference( point, self.points[-1] )
 			self.function.localDictionary['revolutions'] = self.revolutions
 		self.function.localDictionary['vertex'] = point
 		self.function.localDictionary['vertexes'] = self.points
@@ -183,5 +183,5 @@ class EquationResult:
 		self.function.localDictionary['x'] = point.x
 		self.function.localDictionary['y'] = point.y
 		self.function.localDictionary['z'] = point.z
-		self.points.append( point )
+		self.points.append(point)
 		return self.function.getReturnValueWithoutDeletion()

@@ -10,10 +10,12 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 import cStringIO
+import math
 import os
 
 
@@ -37,9 +39,26 @@ def getSliceDictionary(xmlElement):
 				return child.attributeDictionary
 	return {}
 
+def getSVGByLoopLayers(addLayerTemplateToSVG, rotatedLoopLayers, svgCarving):
+	"Get the svg text."
+	if len(rotatedLoopLayers) < 1:
+		return ''
+	decimalPlacesCarried = max(0, 2 - int(math.floor(math.log10(svgCarving.layerThickness))))
+	svgWriter = SVGWriter(addLayerTemplateToSVG, svgCarving, decimalPlacesCarried)
+	return svgWriter.getReplacedSVGTemplate(svgCarving.fileName, 'basic', rotatedLoopLayers)
+
 def getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ):
 	"Get the truncated rotated boundary layers."
 	return rotatedBoundaryLayers[ repository.layersFrom.value : repository.layersTo.value ]
+
+def setSVGCarvingCorners(rotatedLoopLayers, svgCarving):
+	"Parse SVG text and store the layers."
+	for rotatedBoundaryLayer in rotatedLoopLayers:
+		for loop in rotatedBoundaryLayer.loops:
+			for point in loop:
+				pointVector3 = Vector3(point.real, point.imag, rotatedBoundaryLayer.z)
+				svgCarving.cornerMaximum = euclidean.getPointMaximum(svgCarving.cornerMaximum, pointVector3)
+				svgCarving.cornerMinimum = euclidean.getPointMinimum(svgCarving.cornerMinimum, pointVector3)
 
 
 class SVGWriter:
@@ -75,7 +94,7 @@ class SVGWriter:
 			self.pathDictionary['transform'] = self.getTransformString()
 		else:
 			del self.pathDictionary['transform']
-		self.pathDictionary['d'] = self.getSVGStringForLoops( rotatedBoundaryLayer.loops )
+		self.pathDictionary['d'] = self.getSVGStringForLoops(rotatedBoundaryLayer.loops)
 
 	def addRotatedLoopLayersToOutput( self, rotatedBoundaryLayers ):
 		"Add rotated boundary layers to the output."
@@ -166,10 +185,10 @@ class SVGWriter:
 			stringBeginning = 'M '
 			if len( svgLoopString ) > 0:
 				stringBeginning = ' L '
-			svgLoopString += stringBeginning + self.getRoundedComplexString( point )
+			svgLoopString += stringBeginning + self.getRoundedComplexString(point)
 		return svgLoopString
 
-	def getTransformString( self ):
+	def getTransformString(self):
 		"Get the svg transform string."
 		cornerMinimumXString = self.getRounded( - self.carving.getCarveCornerMinimum().x )
 		cornerMinimumYString = self.getRounded( - self.carving.getCarveCornerMinimum().y )
@@ -177,6 +196,6 @@ class SVGWriter:
 
 	def setMetadataNoscriptElement( self, prefix, value ):
 		"Set the metadata value and the NoJavascript text."
-		valueString = self.getRounded( value )
+		valueString = self.getRounded(value)
 		self.sliceDictionary[ prefix ] = valueString
 		self.svgElement.getXMLElementByID( prefix + 'NoJavascript').text = valueString

@@ -24,47 +24,47 @@ __license__ = "GPL 3.0"
 globalExecutionOrder = 300
 
 
-def addConnectionVertices( connectionVertices, geometryOutput ):
-	"Add the connections and vertices."
+def addConnectionVertexes( connectionVertexes, geometryOutput ):
+	"Add the connections and vertexes."
 	if geometryOutput.__class__ == list:
 		for element in geometryOutput:
-			addConnectionVertices( connectionVertices, element )
+			addConnectionVertexes( connectionVertexes, element )
 		return
 	if geometryOutput.__class__ != dict:
 		return
 	for geometryOutputKey in geometryOutput.keys():
 		geometryOutputValue = geometryOutput[ geometryOutputKey ]
-		if geometryOutputKey == 'connectionfrom' or geometryOutputKey == 'connectionto':
-			connectionVertices.append( geometryOutputValue )
+		if geometryOutputKey == 'connectionFrom' or geometryOutputKey == 'connectionTo':
+			connectionVertexes.append( geometryOutputValue )
 		elif geometryOutputKey == 'vertex':
 			for vertex in geometryOutputValue:
-				connectionVertices.append(vertex)
+				connectionVertexes.append(vertex)
 		else:
-			addConnectionVertices( connectionVertices, geometryOutputValue )
+			addConnectionVertexes( connectionVertexes, geometryOutputValue )
 
-def getConnectionVertices( geometryOutput ):
-	"Get the connections and vertices."
-	connectionVertices = []
-	addConnectionVertices( connectionVertices, geometryOutput )
-	return connectionVertices
+def getConnectionVertexes(geometryOutput):
+	"Get the connections and vertexes."
+	connectionVertexes = []
+	addConnectionVertexes( connectionVertexes, geometryOutput )
+	return connectionVertexes
 
-def getCumulativeVector3( prefix, vector3, xmlElement ):
+def getCumulativeVector3Remove(prefix, vector3, xmlElement):
 	"Get cumulative vector3 and delete the prefixed attributes."
-	cumulativeVector3 = evaluate.getVector3RemoveByPrefix( prefix + 'rectangular', vector3, xmlElement )
-	cylindrical = evaluate.getVector3RemoveByPrefix( prefix + 'cylindrical', Vector3(), xmlElement )
+	cumulativeVector3 = evaluate.getVector3RemoveByPrefix(prefix + 'rectangular', vector3, xmlElement)
+	cylindrical = evaluate.getVector3RemoveByPrefix(prefix + 'cylindrical', Vector3(), xmlElement)
 	if not cylindrical.getIsDefault():
-		cylindricalComplex = euclidean.getWiddershinsUnitPolar( math.radians( cylindrical.y ) ) * cylindrical.x
-		cumulativeVector3 += Vector3( cylindricalComplex.real, cylindricalComplex.imag, cylindrical.z )
-	polar = evaluate.getVector3RemoveByPrefix( prefix + 'polar', Vector3(), xmlElement )
+		cylindricalComplex = euclidean.getWiddershinsUnitPolar(math.radians(cylindrical.y)) * cylindrical.x
+		cumulativeVector3 += Vector3(cylindricalComplex.real, cylindricalComplex.imag, cylindrical.z)
+	polar = evaluate.getVector3RemoveByPrefix(prefix + 'polar', Vector3(), xmlElement)
 	if not polar.getIsDefault():
-		polarComplex = euclidean.getWiddershinsUnitPolar( math.radians( polar.y ) ) * polar.x
-		cumulativeVector3 += Vector3( polarComplex.real, polarComplex.imag )
-	spherical = evaluate.getVector3RemoveByPrefix( prefix + 'spherical', Vector3(), xmlElement )
+		polarComplex = euclidean.getWiddershinsUnitPolar(math.radians(polar.y)) * polar.x
+		cumulativeVector3 += Vector3(polarComplex.real, polarComplex.imag)
+	spherical = evaluate.getVector3RemoveByPrefix(prefix + 'spherical', Vector3(), xmlElement)
 	if not spherical.getIsDefault():
 		radius = spherical.x
-		elevationComplex = euclidean.getWiddershinsUnitPolar( math.radians( spherical.z ) ) * radius
-		azimuthComplex = euclidean.getWiddershinsUnitPolar( math.radians( spherical.y ) ) * elevationComplex.real
-		cumulativeVector3 += Vector3( azimuthComplex.real, azimuthComplex.imag, elevationComplex.imag )
+		elevationComplex = euclidean.getWiddershinsUnitPolar(math.radians(spherical.z)) * radius
+		azimuthComplex = euclidean.getWiddershinsUnitPolar(math.radians(spherical.y)) * elevationComplex.real
+		cumulativeVector3 += Vector3(azimuthComplex.real, azimuthComplex.imag, elevationComplex.imag)
 	return cumulativeVector3
 
 def getDiagonalSwitchedTetragrid(angleDegrees, diagonals):
@@ -92,14 +92,14 @@ def getIdentityMatrixTetragrid(tetragrid=None):
 		return [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
 	return tetragrid
 
-def getManipulatedPaths( close, loop, prefix, sideLength, xmlElement ):
+def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get equated paths."
 	matrixPoints( loop, prefix, xmlElement )
 	return [loop]
 
-def getManipulatedGeometryOutput( geometryOutput, xmlElement ):
+def getManipulatedGeometryOutput(geometryOutput, xmlElement):
 	"Get equated geometryOutput."
-	matrixPoints( getConnectionVertices( geometryOutput ), 'scale.', xmlElement )
+	matrixPoints( getConnectionVertexes(geometryOutput), 'scale.', xmlElement )
 	return geometryOutput
 
 def getMatrixKey(row, column, prefix=''):
@@ -216,13 +216,13 @@ def getRemovedFloatByKeys( keys, prefix, xmlElement ):
 				print('for xmlElement dictionary value:')
 				print( xmlElement.attributeDictionary[ prefixKey ] )
 				print('for xmlElement dictionary:')
-				print( xmlElement.attributeDictionary )
+				print(xmlElement.attributeDictionary)
 			else:
 				removedFloat += floatValue
 			del xmlElement.attributeDictionary[ prefixKey ]
 	return removedFloat
 
-def getRotateMatrixTetragrid( prefix, xmlElement ):
+def getRotateMatrixTetragrid(prefix, xmlElement):
 	"Get rotate matrix tetragrid and delete the rotate attributes."
 	# http://en.wikipedia.org/wiki/Rotation_matrix zxy
 	rotateMatrix = Matrix()
@@ -240,13 +240,20 @@ def getRotateMatrixTetragrid( prefix, xmlElement ):
 		rotateMatrix.matrixTetragrid = rotateMatrix.getOtherTimesSelf(getDiagonalSwitchedTetragrid(yAngle, [0, 2])).matrixTetragrid
 	return rotateMatrix.matrixTetragrid
 
-def getScaleMatrixTetragrid( prefix, xmlElement ):
+def getScaleMatrixTetragrid(prefix, xmlElement):
 	"Get scale matrix and delete the scale attributes."
-	scaleDefaultVector3 = Vector3( 1.0, 1.0, 1.0 )
-	scale = getCumulativeVector3( prefix, scaleDefaultVector3.copy(), xmlElement )
+	scaleDefaultVector3 = Vector3(1.0, 1.0, 1.0)
+	scale = getCumulativeVector3Remove( prefix, scaleDefaultVector3.copy(), xmlElement )
 	if scale == scaleDefaultVector3:
 		return None
 	return [[scale.x, 0.0, 0.0, 0.0], [0.0, scale.y, 0.0, 0.0], [0.0, 0.0, scale.z, 0.0], [0.0, 0.0, 0.0, 1.0]]
+
+def getTetragridCopy(tetragrid):
+	"Get tetragrid copy."
+	tetragridCopy = []
+	for tetragridRow in tetragrid:
+		tetragridCopy.append(tetragridRow[:])
+	return tetragridCopy
 
 def getTetragridTimesOther(firstTetragrid, otherTetragrid ):
 	"Get this matrix multiplied by the other matrix."
@@ -276,7 +283,7 @@ def getTransformedVector3s(matrixTetragrid, vector3s):
 
 def getTranslateMatrixTetragrid(prefix, xmlElement):
 	"Get translate matrix and delete the translate attributes."
-	translation = getCumulativeVector3(prefix, Vector3(), xmlElement)
+	translation = getCumulativeVector3Remove(prefix, Vector3(), xmlElement)
 	if translation.getIsDefault():
 		return None
 	return [[1.0, 0.0, 0.0, translation.x], [0.0, 1.0, 0.0, translation.y], [0.0, 0.0, 1.0, translation.z], [0.0, 0.0, 0.0, 1.0]]
@@ -300,7 +307,7 @@ def matrixPoints(points, prefix, xmlElement):
 	for point in points:
 		transformVector3ByMatrix(matrixMatrixTetragrid, point)
 
-def processXMLElement(xmlElement, xmlProcessor):
+def processXMLElement(xmlElement):
 	"Process the xml element."
 	xmlElement.parent.object.matrix4X4.getFromXMLElement('', xmlElement)
 	setAttributeDictionaryToMatrix(xmlElement.parent.attributeDictionary, xmlElement.parent.object.matrix4X4)
@@ -311,7 +318,7 @@ def setAttributeDictionaryToMatrix( attributeDictionary, matrix4X4 ):
 	for row in xrange( 4 ):
 		for column in xrange( 4 ):
 			key = getMatrixKey( row, column )
-			attributeDictionary[ key ] = str( matrixTetragrid[ row ][ column ] )
+			attributeDictionary[key] = str( matrixTetragrid[ row ][ column ] )
 
 def setAttributeDictionaryMatrixToMatrix(matrix4X4, xmlElement):
 	"Set the element attribute dictionary and element matrix to the matrix."
@@ -341,9 +348,19 @@ class Matrix:
 		if matrixTetragrid == None:
 			self.matrixTetragrid = None
 			return
-		self.matrixTetragrid = []
-		for matrixTetragridRow in matrixTetragrid:
-			self.matrixTetragrid.append(matrixTetragridRow[:])
+		self.matrixTetragrid = getTetragridCopy(matrixTetragrid)
+
+	def __eq__(self, other):
+		"Determine whether this matrix is identical to other one."
+		if other == None:
+			return False
+		if other.__class__ != self.__class__:
+			return False
+		return other.matrixTetragrid == self.matrixTetragrid
+
+	def __ne__(self, other):
+		"Determine whether this vector is not identical to other one."
+		return not self.__eq__( other )
 
 	def __repr__(self):
 		"Get the string representation of this four by four matrix."
@@ -351,13 +368,13 @@ class Matrix:
 		self.addXML(0, output)
 		return output.getvalue()
 
-	def addXML( self, depth, output ):
+	def addXML(self, depth, output):
 		"Add xml for this object."
 		attributeDictionary = self.getAttributeDictionary()
-		if len( attributeDictionary ) > 0:
+		if len(attributeDictionary) > 0:
 			xml_simple_writer.addClosedXMLTag( attributeDictionary, self.__class__.__name__.lower(), depth, output )
 
-	def getAttributeDictionary( self ):
+	def getAttributeDictionary(self):
 		"Get the attributeDictionary from row column attribute strings, counting from one."
 		attributeDictionary = {}
 		if self.matrixTetragrid == None:
@@ -367,7 +384,7 @@ class Matrix:
 				default = float( column == row )
 				value = self.matrixTetragrid[ row ][ column ]
 				if abs( value - default ) > 0.00000000000001:
-					if abs( value ) < 0.00000000000001:
+					if abs(value) < 0.00000000000001:
 						value = 0.0
 					attributeDictionary[ getMatrixKey( row, column ) ] = value
 		return attributeDictionary

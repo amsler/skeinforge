@@ -100,7 +100,7 @@ def writeOutput( fileName = ''):
 
 class LiftRepository:
 	"A class to handle the lift settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.lift.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Lifted', self, '')
@@ -109,7 +109,7 @@ class LiftRepository:
 		self.clearanceAboveTop = settings.FloatSpin().getFromValue( 0.0, 'Clearance above Top (mm):', self, 10.0, 5.0 )
 		self.executeTitle = 'Lift'
 
-	def execute( self ):
+	def execute(self):
 		"Lift button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -118,7 +118,7 @@ class LiftRepository:
 
 class LiftSkein:
 	"A class to lift a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.layerStep = None
@@ -129,7 +129,7 @@ class LiftSkein:
 		self.previousActiveMovementLine = None
 		self.previousInactiveMovementLine = None
 
-	def addPreviousInactiveMovementLineIfNecessary( self ):
+	def addPreviousInactiveMovementLineIfNecessary(self):
 		"Add the previous inactive movement line if necessary."
 		if self.previousInactiveMovementLine != None:
 			self.distanceFeedRate.addLine( self.previousInactiveMovementLine )
@@ -163,7 +163,7 @@ class LiftSkein:
 		self.previousInactiveMovementLine = line
 		return ''
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ].lstrip()
@@ -197,7 +197,7 @@ class LiftSkein:
 			self.extruderActive = False
 		self.distanceFeedRate.addLine(line)
 
-	def setMaximumZ( self ):
+	def setMaximumZ(self):
 		"Set maximum  z."
 		localOldLocation = None
 		for line in self.lines[self.lineIndex :]:

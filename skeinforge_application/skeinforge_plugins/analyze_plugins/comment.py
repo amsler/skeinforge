@@ -87,7 +87,7 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 
 class CommentRepository:
 	"A class to handle the comment settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.comment.html', '', self )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comment')
@@ -96,7 +96,7 @@ class CommentRepository:
 		#Create the archive, title of the execute button, title of the dialog & settings fileName.
 		self.executeTitle = 'Write Comments'
 
-	def execute( self ):
+	def execute(self):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled, ['_comment'] )
 		for fileName in fileNames:
@@ -105,7 +105,7 @@ class CommentRepository:
 
 class CommentSkein:
 	"A class to comment a gcode skein."
-	def __init__( self ):
+	def __init__(self):
 		self.oldLocation = None
 		self.output = cStringIO.StringIO()
 

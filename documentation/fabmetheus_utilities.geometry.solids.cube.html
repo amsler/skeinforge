@@ -10,7 +10,7 @@
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/geometry/solids/cube.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/fabmetheus_utilities/geometry/solids/cube.py</a></font></td></tr></table>
     <p>
-<a href="fabmetheus_utilities.geometry.geometry_utilities.booleansolid.html">Previous</a> / <a href="fabmetheus_utilities.svg_reader.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="fabmetheus_utilities.geometry.geometry_utilities.booleansolid.html">Previous</a> / <a href="skeinforge_application.skeinforge.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
 The xml.py script is an import translator plugin to get a carving from an Art of Illusion xml file.<br>
@@ -38,7 +38,7 @@ An xml file can be exported from Art of Illusion by going to the "File" menu, th
 <br />
 <br />
 <p>
-<a href="fabmetheus_utilities.geometry.geometry_utilities.booleansolid.html">Previous</a> / <a href="fabmetheus_utilities.svg_reader.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="fabmetheus_utilities.geometry.geometry_utilities.booleansolid.html">Previous</a> / <a href="skeinforge_application.skeinforge.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>
@@ -95,9 +95,9 @@ Methods defined here:<br>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a>:<br>
 <dl><dt><a name="Cube-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Add&nbsp;empty&nbsp;lists.</tt></dd></dl>
 
-<dl><dt><a name="Cube-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertices.</tt></dd></dl>
+<dl><dt><a name="Cube-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
 
-<dl><dt><a name="Cube-getCarveCornerMinimum"><strong>getCarveCornerMinimum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;minimum&nbsp;of&nbsp;the&nbsp;vertices.</tt></dd></dl>
+<dl><dt><a name="Cube-getCarveCornerMinimum"><strong>getCarveCornerMinimum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;minimum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getCarveLayerThickness"><strong>getCarveLayerThickness</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;layer&nbsp;thickness.</tt></dd></dl>
 
@@ -109,7 +109,11 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 
 <dl><dt><a name="Cube-getLoopsFromMesh"><strong>getLoopsFromMesh</strong></a>(self, z)</dt><dd><tt>Get&nbsp;loops&nbsp;from&nbsp;a&nbsp;carve&nbsp;of&nbsp;a&nbsp;mesh.</tt></dd></dl>
 
-<dl><dt><a name="Cube-getVertices"><strong>getVertices</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;vertices.</tt></dd></dl>
+<dl><dt><a name="Cube-getTransformedVertexes"><strong>getTransformedVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;transformed&nbsp;vertexes.</tt></dd></dl>
+
+<dl><dt><a name="Cube-getTriangleMeshes"><strong>getTriangleMeshes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;triangleMeshes.</tt></dd></dl>
+
+<dl><dt><a name="Cube-getVertexes"><strong>getVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
 
@@ -141,9 +145,15 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 
 <dl><dt><a name="Cube-getAttributeDictionary"><strong>getAttributeDictionary</strong></a>(self)</dt><dd><tt>Get&nbsp;attribute&nbsp;table.</tt></dd></dl>
 
-<dl><dt><a name="Cube-getComplexPathLists"><strong>getComplexPathLists</strong></a>(self)</dt><dd><tt>Get&nbsp;complex&nbsp;path&nbsp;lists.</tt></dd></dl>
+<dl><dt><a name="Cube-getComplexTransformedPathLists"><strong>getComplexTransformedPathLists</strong></a>(self)</dt><dd><tt>Get&nbsp;complex&nbsp;transformed&nbsp;path&nbsp;lists.</tt></dd></dl>
+
+<dl><dt><a name="Cube-getFabricationExtension"><strong>getFabricationExtension</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;extension.</tt></dd></dl>
+
+<dl><dt><a name="Cube-getFabricationText"><strong>getFabricationText</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getPaths"><strong>getPaths</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;paths.</tt></dd></dl>
+
+<dl><dt><a name="Cube-getTransformedPaths"><strong>getTransformedPaths</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;transformed&nbsp;paths.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getType"><strong>getType</strong></a>(self)</dt><dd><tt>Get&nbsp;type.</tt></dd></dl>
 
@@ -156,7 +166,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-processXMLElement"><strong>processXMLElement</strong></a>(xmlElement, xmlProcessor)</dt><dd><tt>Process&nbsp;the&nbsp;xml&nbsp;element.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-processXMLElement"><strong>processXMLElement</strong></a>(xmlElement)</dt><dd><tt>Process&nbsp;the&nbsp;xml&nbsp;element.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

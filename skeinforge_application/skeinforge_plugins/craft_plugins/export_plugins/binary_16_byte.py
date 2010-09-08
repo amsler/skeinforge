@@ -154,7 +154,7 @@ def writeOutput( fileName, gcodeText = ''):
 
 class Binary16ByteRepository:
 	"A class to handle the export settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		#Set the default settings.
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.binary_16_byte.html', '', self )
@@ -172,7 +172,7 @@ class Binary16ByteRepository:
 		#Create the archive, title of the execute button, title of the dialog & settings fileName.
 		self.executeTitle = 'Convert to Binary 16 Byte'
 
-	def execute( self ):
+	def execute(self):
 		"Convert to binary 16 byte button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, ['.gcode'], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -181,7 +181,7 @@ class Binary16ByteRepository:
 
 class Binary16ByteSkein:
 	"A class to convert gcode into 16 byte binary segments."
-	def __init__( self ):
+	def __init__(self):
 		self.output = cStringIO.StringIO()
 
 	def getCraftedGcode( self, gcodeText, binary16ByteRepository ):

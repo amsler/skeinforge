@@ -37,25 +37,25 @@ class ViewpointMove( MouseToolBase ):
 		"The left button was released, <ButtonRelease-1> function."
 		self.destroyEverything()
 
-	def destroyEverything( self ):
+	def destroyEverything(self):
 		"Destroy items."
 		self.buttonOnePressedScreenCoordinate = None
 
-	def keyPressDown( self, event ):
+	def keyPressDown(self, event):
 		"The down arrow was pressed."
 		self.setScrollPaneMove( complex( 0.0, 1.0 ) )
 
-	def keyPressLeft( self, event ):
+	def keyPressLeft(self, event):
 		"The left arrow was pressed."
 		self.setScrollPaneMove( complex( - 1.0, 0.0 ) )
 
-	def keyPressRight( self, event ):
+	def keyPressRight(self, event):
 		"The right arrow was pressed."
 		self.setScrollPaneMove( complex( 1.0, 0.0 ) )
 
-	def keyPressUp( self, event ):
+	def keyPressUp(self, event):
 		"The up arrow was pressed."
-		self.setScrollPaneMove( complex( 0.0, - 1.0 ) )
+		self.setScrollPaneMove( complex(0.0, -1.0) )
 
 	def motion( self, event, shift = False ):
 		"The mouse moved, <Motion> function."

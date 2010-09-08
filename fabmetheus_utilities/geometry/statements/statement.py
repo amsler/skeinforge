@@ -19,19 +19,19 @@ __license__ = "GPL 3.0"
 def getLocalAttribute(xmlElement):
 	"Get the local attribute if any."
 	for key in xmlElement.attributeDictionary:
-		if key[ : 1 ].isalpha():
-			value = evaluate.getEvaluatorSplitWords( xmlElement.attributeDictionary[ key ] )
+		if key[: 1].isalpha():
+			value = evaluate.getEvaluatorSplitWords(xmlElement.attributeDictionary[key])
 			if key.startswith('local.'):
 				return evaluate.KeyValue( key[ len('local.') : ], value )
 			return evaluate.KeyValue( key, value )
 	return evaluate.KeyValue()
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	functions = xmlProcessor.functions
-	if len( functions ) < 1:
+	functions = xmlElement.getXMLProcessor().functions
+	if len(functions) < 1:
 		return
-	function = functions[ - 1 ]
+	function = functions[-1]
 	if xmlElement.object == None:
 		xmlElement.object = getLocalAttribute(xmlElement)
 	if xmlElement.object.keyTuple[1] != None:

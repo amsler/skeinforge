@@ -118,9 +118,13 @@
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-addCircleIntersectionLoop"><strong>addCircleIntersectionLoop</strong></a>(circleIntersectionPaths, circleIntersections)</dt><dd><tt>Add&nbsp;a&nbsp;circle&nbsp;intersection&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-addEndCap"><strong>addEndCap</strong></a>(begin, end, points, radius)</dt><dd><tt>Get&nbsp;a&nbsp;pair&nbsp;of&nbsp;side&nbsp;points.</tt></dd></dl>
+ <dl><dt><a name="-addInsetPointFromClockwiseTriple"><strong>addInsetPointFromClockwiseTriple</strong></a>(begin, center, end, loop, radius)</dt><dd><tt>Get&nbsp;inset&nbsp;point&nbsp;with&nbsp;possible&nbsp;intersection&nbsp;from&nbsp;clockwise&nbsp;triple,&nbsp;out&nbsp;from&nbsp;widdershins&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-addOrbits"><strong>addOrbits</strong></a>(distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChangeTime, z)</dt><dd><tt>Add&nbsp;orbits&nbsp;with&nbsp;the&nbsp;extruder&nbsp;off.</tt></dd></dl>
  <dl><dt><a name="-addOrbitsIfLarge"><strong>addOrbitsIfLarge</strong></a>(distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChangeTime, z)</dt><dd><tt>Add&nbsp;orbits&nbsp;with&nbsp;the&nbsp;extruder&nbsp;off&nbsp;if&nbsp;the&nbsp;orbits&nbsp;are&nbsp;large&nbsp;enough.</tt></dd></dl>
  <dl><dt><a name="-addPointsFromSegment"><strong>addPointsFromSegment</strong></a>(pointBegin, pointEnd, points, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Add&nbsp;point&nbsp;complexes&nbsp;between&nbsp;the&nbsp;endpoints&nbsp;of&nbsp;a&nbsp;segment.</tt></dd></dl>
+ <dl><dt><a name="-directLoop"><strong>directLoop</strong></a>(isWiddershins, loop)</dt><dd><tt>Direct&nbsp;the&nbsp;loop.</tt></dd></dl>
+ <dl><dt><a name="-directLoopLists"><strong>directLoopLists</strong></a>(isWiddershins, loopLists)</dt><dd><tt>Direct&nbsp;the&nbsp;loop&nbsp;lists.</tt></dd></dl>
+ <dl><dt><a name="-directLoops"><strong>directLoops</strong></a>(isWiddershins, loops)</dt><dd><tt>Direct&nbsp;the&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getAroundsFromLoop"><strong>getAroundsFromLoop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getAroundsFromLoops"><strong>getAroundsFromLoops</strong></a>(loops, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getAroundsFromPath"><strong>getAroundsFromPath</strong></a>(path, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;arounds&nbsp;from&nbsp;the&nbsp;path.</tt></dd></dl>
@@ -136,13 +140,10 @@
  <dl><dt><a name="-getCircleIntersectionsFromCircleNodes"><strong>getCircleIntersectionsFromCircleNodes</strong></a>(circleNodes)</dt><dd><tt>Get&nbsp;all&nbsp;the&nbsp;circle&nbsp;intersections&nbsp;which&nbsp;exist&nbsp;between&nbsp;all&nbsp;the&nbsp;circle&nbsp;nodes.</tt></dd></dl>
  <dl><dt><a name="-getCircleNodesFromLoop"><strong>getCircleNodesFromLoop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;circle&nbsp;nodes&nbsp;from&nbsp;every&nbsp;point&nbsp;on&nbsp;a&nbsp;loop&nbsp;and&nbsp;between&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getCircleNodesFromPoints"><strong>getCircleNodesFromPoints</strong></a>(points, radius)</dt><dd><tt>Get&nbsp;the&nbsp;circle&nbsp;nodes&nbsp;from&nbsp;a&nbsp;path.</tt></dd></dl>
- <dl><dt><a name="-getDecreasingRadiuses"><strong>getDecreasingRadiuses</strong></a>(radius)</dt><dd><tt>Get&nbsp;the&nbsp;decreasing&nbsp;radiuses&nbsp;for&nbsp;getting&nbsp;the&nbsp;largest&nbsp;inset&nbsp;loop.</tt></dd></dl>
- <dl><dt><a name="-getInsetFromClockwiseLoop"><strong>getInsetFromClockwiseLoop</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;loop&nbsp;inset&nbsp;from&nbsp;clockwise&nbsp;loop,&nbsp;out&nbsp;from&nbsp;widdershins&nbsp;loop.</tt></dd></dl>
- <dl><dt><a name="-getInsetFromClockwiseTriple"><strong>getInsetFromClockwiseTriple</strong></a>(aheadAbsolute, behindAbsolute, center, radius)</dt><dd><tt>Get&nbsp;loop&nbsp;inset&nbsp;from&nbsp;clockwise&nbsp;triple,&nbsp;out&nbsp;from&nbsp;widdershins&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getInsetLoopsFromLoop"><strong>getInsetLoopsFromLoop</strong></a>(inset, loop, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;inset&nbsp;loops,&nbsp;which&nbsp;might&nbsp;overlap.</tt></dd></dl>
  <dl><dt><a name="-getInsetLoopsFromLoops"><strong>getInsetLoopsFromLoops</strong></a>(inset, loops)</dt><dd><tt>Get&nbsp;the&nbsp;inset&nbsp;loops,&nbsp;which&nbsp;might&nbsp;overlap.</tt></dd></dl>
+ <dl><dt><a name="-getInsetLoopsFromVector3Loop"><strong>getInsetLoopsFromVector3Loop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;inset&nbsp;loops&nbsp;from&nbsp;vector3&nbsp;loop,&nbsp;which&nbsp;might&nbsp;overlap.</tt></dd></dl>
  <dl><dt><a name="-getInsetSeparateLoopsFromLoops"><strong>getInsetSeparateLoopsFromLoops</strong></a>(inset, loops, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;separate&nbsp;inset&nbsp;loops.</tt></dd></dl>
- <dl><dt><a name="-getIntersectionAtInset"><strong>getIntersectionAtInset</strong></a>(ahead, behind, inset)</dt><dd><tt>Get&nbsp;circle&nbsp;intersection&nbsp;loop&nbsp;at&nbsp;inset&nbsp;from&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-getLargestCenterOutsetLoopFromLoop"><strong>getLargestCenterOutsetLoopFromLoop</strong></a>(loop, radius, thresholdRatio<font color="#909090">=0.90000000000000002</font>)</dt><dd><tt>Get&nbsp;the&nbsp;largest&nbsp;circle&nbsp;outset&nbsp;loop&nbsp;from&nbsp;the&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getLargestCenterOutsetLoopFromLoopRegardless"><strong>getLargestCenterOutsetLoopFromLoopRegardless</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;the&nbsp;largest&nbsp;circle&nbsp;outset&nbsp;loop&nbsp;from&nbsp;the&nbsp;loop,&nbsp;even&nbsp;if&nbsp;the&nbsp;radius&nbsp;has&nbsp;to&nbsp;be&nbsp;shrunk&nbsp;and&nbsp;even&nbsp;if&nbsp;there&nbsp;is&nbsp;still&nbsp;no&nbsp;outset&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getLargestInsetLoopFromLoop"><strong>getLargestInsetLoopFromLoop</strong></a>(loop, radius)</dt><dd><tt>Get&nbsp;the&nbsp;largest&nbsp;inset&nbsp;loop&nbsp;from&nbsp;the&nbsp;loop.</tt></dd></dl>
@@ -168,7 +169,8 @@
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
 <strong>__license__</strong> = 'GPL 3.0'<br>
-<strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
+<strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
+<strong>globalDecreasingRadiusMultipliers</strong> = [1.0, 0.55000000000000004, 0.34999999999999998, 0.20000000000000001]</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

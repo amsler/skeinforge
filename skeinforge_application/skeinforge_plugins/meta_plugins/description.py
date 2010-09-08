@@ -44,7 +44,7 @@ def getNewRepository():
 
 class DescriptionRepository:
 	"A class to handle the description settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.meta_plugins.description.html', '', self )
 		description = 'Write your description of the profile here.\n\nSuggested format is a description, followed by a link to the profile post or web page.'

@@ -24,17 +24,18 @@ def processChildrenByIndexValue( function, index, indexValue, value, xmlElement 
 		function.localDictionary[ indexValue.valueName ] = value
 	function.processChildren(xmlElement)
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
 	if xmlElement.object == None:
 		xmlElement.object = IndexValue(xmlElement)
 	if xmlElement.object.inSplitWords == None:
 		return
+	xmlProcessor = xmlElement.getXMLProcessor()
 	if len( xmlProcessor.functions ) < 1:
 		print('Warning, "for" element is not in a function in processXMLElement in for.py for:')
 		print(xmlElement)
 		return
-	function = xmlProcessor.functions[ - 1 ]
+	function = xmlProcessor.functions[-1]
 	inValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.inSplitWords, xmlElement )
 	if inValue.__class__ == list or inValue.__class__ == str:
 		for index, value in enumerate( inValue ):
@@ -49,7 +50,7 @@ def processXMLElement( xmlElement, xmlProcessor ):
 
 class IndexValue:
 	"Class to get the in attribute, the index name and the value name."
-	def __init__( self, xmlElement ):
+	def __init__(self, xmlElement):
 		"Initialize."
 		self.inSplitWords = None
 		self.indexName = ''

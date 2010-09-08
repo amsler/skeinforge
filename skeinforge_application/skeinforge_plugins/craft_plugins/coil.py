@@ -98,7 +98,7 @@ def writeOutput( fileName = ''):
 
 class CoilRepository:
 	"A class to handle the coil settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.coil.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Coil', self, '')
@@ -106,7 +106,7 @@ class CoilRepository:
 		self.minimumToolDistance = settings.FloatSpin().getFromValue( 10.0, 'Minimum Tool Distance (millimeters):', self, 50.0, 20.0 )
 		self.executeTitle = 'Coil'
 
-	def execute( self ):
+	def execute(self):
 		"Coil button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -116,7 +116,7 @@ class CoilRepository:
 
 class CoilSkein:
 	"A class to coil a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.boundaryLayers = []
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.lineIndex = 0
@@ -141,14 +141,14 @@ class CoilSkein:
 		self.distanceFeedRate.addLine('(</surroundingLoop>)')
 		self.distanceFeedRate.addLine('(</layer>)')
 
-	def addCoilLayers( self ):
+	def addCoilLayers(self):
 		"Add the coil layers."
 		numberOfLayersFloat = round( self.perimeterWidth / self.layerThickness )
 		numberOfLayers = int( numberOfLayersFloat )
 		halfLayerThickness = 0.5 * self.layerThickness
 		startOutset = self.repository.minimumToolDistance.value + halfLayerThickness
 		startZ = self.boundaryLayers[0].z + halfLayerThickness
-		zRange = self.boundaryLayers[ - 1 ].z - self.boundaryLayers[0].z
+		zRange = self.boundaryLayers[-1].z - self.boundaryLayers[0].z
 		zIncrement = 0.0
 		if zRange >= 0.0:
 			zIncrement = zRange / numberOfLayersFloat
@@ -165,7 +165,7 @@ class CoilSkein:
 		if len(loop) < 1:
 			return
 		loop = euclidean.getLoopStartingNearest( self.halfPerimeterWidth, self.oldLocationComplex, loop )
-		length = euclidean.getPolygonLength(loop)
+		length = euclidean.getLoopLength(loop)
 		if length <= 0.0:
 			return
 		oldPoint = loop[0]
@@ -177,7 +177,7 @@ class CoilSkein:
 			location = Vector3( point.real, point.imag, z )
 			thread.append( location )
 			oldPoint = point
-		self.oldLocationComplex = loop[ - 1 ]
+		self.oldLocationComplex = loop[-1]
 
 	def addGcodeFromThread( self, thread ):
 		"Add a thread to the output."
@@ -206,7 +206,7 @@ class CoilSkein:
 		self.distanceFeedRate.addLines( self.shutdownLines )
 		return self.distanceFeedRate.output.getvalue()
 
-	def parseBoundaries( self ):
+	def parseBoundaries(self):
 		"Parse the boundaries and add them to the boundary layers."
 		boundaryLoop = None
 		boundaryLayer = None
@@ -234,7 +234,7 @@ class CoilSkein:
 		self.boundaryReverseLayers = self.boundaryLayers[ : ]
 		self.boundaryReverseLayers.reverse()
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
@@ -251,7 +251,7 @@ class CoilSkein:
 				self.halfPerimeterWidth = 0.5 * self.perimeterWidth
 			self.distanceFeedRate.addLine(line)
 
-	def parseUntilLayer( self ):
+	def parseUntilLayer(self):
 		"Parse until the layer line and add it to the coil skein."
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]

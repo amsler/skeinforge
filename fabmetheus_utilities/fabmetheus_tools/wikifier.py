@@ -65,7 +65,7 @@ def getNavigationHypertext( fileText, transferredFileNameIndex, transferredFileN
 			if headingsToBeenAdded:
 				output.write('<br />\n')
 				for heading in headings:
-					heading.addToOutput( output )
+					heading.addToOutput(output)
 				output.write('<br />\n')
 				headingsToBeenAdded = False
 			if line in headingLineTable:

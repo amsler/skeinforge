@@ -46,27 +46,27 @@ def getCommonVertexIndex( edgeFirst, edgeSecond ):
 	print( edgeSecond )
 	return 0
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
 	face = Face()
 	face.index = len( xmlElement.parent.object.faces )
 	for vertexIndexIndex in xrange( 3 ):
-		face.vertexIndexes.append( evaluate.getEvaluatedInt('vertex' + str( vertexIndexIndex ), xmlElement ) )
+		face.vertexIndexes.append( evaluate.getEvaluatedInt('vertex' + str(vertexIndexIndex), xmlElement ) )
 	xmlElement.parent.object.faces.append( face )
 
 
 class Edge:
 	"An edge of a triangle mesh."
-	def __init__( self ):
+	def __init__(self):
 		"Set the face indexes to None."
 		self.faceIndexes = []
 		self.vertexIndexes = []
 		self.zMaximum = None
 		self.zMinimum = None
 	
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this Edge."
-		return str( self.index ) + ' ' + str( self.faceIndexes ) + ' ' + str( self.vertexIndexes )
+		return str( self.index ) + ' ' + str( self.faceIndexes ) + ' ' + str(self.vertexIndexes)
 
 	def addFaceIndex( self, faceIndex ):
 		"Add first None face index to input face index."
@@ -82,28 +82,28 @@ class Edge:
 
 class Face:
 	"A face of a triangle mesh."
-	def __init__( self ):
-		"Set the edge indexes to None."
+	def __init__(self):
+		"Initialize."
 		self.edgeIndexes = []
 		self.index = None
 		self.vertexIndexes = []
 
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this object info."
 		output = cStringIO.StringIO()
 		self.addXML( 2, output )
 		return output.getvalue()
 
-	def addToAttributeDictionary( self, attributeDictionary ):
+	def addToAttributeDictionary(self, attributeDictionary):
 		"Add to the attribute dictionary."
-		for vertexIndexIndex in xrange( len( self.vertexIndexes ) ):
-			vertexIndex = self.vertexIndexes[ vertexIndexIndex ]
-			attributeDictionary['vertex' + str( vertexIndexIndex ) ] = str( vertexIndex )
+		for vertexIndexIndex in xrange(len(self.vertexIndexes)):
+			vertexIndex = self.vertexIndexes[vertexIndexIndex]
+			attributeDictionary['vertex' + str(vertexIndexIndex)] = str(vertexIndex)
 
-	def addXML( self, depth, output ):
+	def addXML(self, depth, output):
 		"Add the xml for this object."
 		attributeDictionary = {}
-		self.addToAttributeDictionary( attributeDictionary )
+		self.addToAttributeDictionary(attributeDictionary)
 		xml_simple_writer.addClosedXMLTag( attributeDictionary, 'face', depth, output )
 
 	def getFromEdgeIndexes( self, edgeIndexes, edges, faceIndex ):

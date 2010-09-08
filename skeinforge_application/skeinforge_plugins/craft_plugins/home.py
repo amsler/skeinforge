@@ -96,7 +96,7 @@ def writeOutput( fileName = ''):
 
 class HomeRepository:
 	"A class to handle the home settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.home.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Home', self, '')
@@ -105,7 +105,7 @@ class HomeRepository:
 		self.nameOfHomingFile = settings.StringSetting().getFromValue('Name of Homing File:', self, 'homing.gcode')
 		self.executeTitle = 'Home'
 
-	def execute( self ):
+	def execute(self):
 		"Home button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -114,7 +114,7 @@ class HomeRepository:
 
 class HomeSkein:
 	"A class to home a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.highestZ = None
@@ -127,7 +127,7 @@ class HomeSkein:
 
 	def addFloat( self, begin, end ):
 		"Add dive to the original height."
-		beginEndDistance = begin.distance( end )
+		beginEndDistance = begin.distance(end)
 		alongWay = self.absolutePerimeterWidth / beginEndDistance
 		closeToEnd = euclidean.getIntermediateLocation( alongWay, end, begin )
 		closeToEnd.z = self.highestZ

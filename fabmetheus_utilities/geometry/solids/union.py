@@ -18,13 +18,13 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def convertXMLElement( geometryOutput, xmlElement, xmlProcessor ):
+def convertXMLElement(geometryOutput, xmlElement):
 	"Convert the xml element to a union xml element."
-	xmlProcessor.createChildren( geometryOutput, xmlElement )
+	xmlElement.getXMLProcessor().createChildren(geometryOutput['shapes'], xmlElement)
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	group.processShape( Union, xmlElement, xmlProcessor )
+	group.processShape( Union, xmlElement)
 
 
 class Union( difference.Difference ):

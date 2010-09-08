@@ -46,7 +46,7 @@ __license__ = "GPL 3.0"
 
 class BooleanGeometry:
 	"A shape scene."
-	def __init__( self ):
+	def __init__(self):
 		"Add empty lists."
 		self.archivableObjects = []
 		self.belowLoops = []
@@ -55,65 +55,67 @@ class BooleanGeometry:
 		self.layerThickness = 0.4
 		self.rotatedBoundaryLayers = []
 
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this carving."
 		xmlElement = None
-		if len( self.archivableObjects ) > 0:
+		if len(self.archivableObjects) > 0:
 			xmlElement = self.archivableObjects[0].xmlElement
 		output = xml_simple_writer.getBeginGeometryXMLOutput(xmlElement)
 		self.addXML( 1, output )
-		return xml_simple_writer.getEndGeometryXMLString( output )
+		return xml_simple_writer.getEndGeometryXMLString(output)
 
-	def addXML( self, depth, output ):
+	def addXML(self, depth, output):
 		"Add xml for this object."
 		xml_simple_writer.addXMLFromObjects( depth, self.archivableObjects, output )
 
-	def getCarveCornerMaximum( self ):
-		"Get the corner maximum of the vertices."
+	def getCarveCornerMaximum(self):
+		"Get the corner maximum of the vertexes."
 		return self.cornerMaximum
 
-	def getCarveCornerMinimum( self ):
-		"Get the corner minimum of the vertices."
+	def getCarveCornerMinimum(self):
+		"Get the corner minimum of the vertexes."
 		return self.cornerMinimum
 
-	def getCarveLayerThickness( self ):
+	def getCarveLayerThickness(self):
 		"Get the layer thickness."
 		return self.layerThickness
 
-	def getCarveRotatedBoundaryLayers( self ):
+	def getCarveRotatedBoundaryLayers(self):
 		"Get the rotated boundary layers."
-		vertices = evaluate.getVerticesFromArchivableObjects( self.archivableObjects )
-		if len( vertices ) < 1:
+		vertexes = []
+		for visibleObject in evaluate.getVisibleObjects(self.archivableObjects):
+			vertexes += visibleObject.getTransformedVertexes()
+		if len(vertexes) < 1:
 			return []
-		self.cornerMaximum = Vector3( - 999999999.0, - 999999999.0, - 9999999999.9 )
-		self.cornerMinimum = Vector3( 999999999.0, 999999999.0, 9999999999.9 )
-		for vertex in vertices:
-			self.cornerMaximum.z = max( self.cornerMaximum.z, vertex.z )
-			self.cornerMinimum.z = min( self.cornerMinimum.z, vertex.z )
+		self.cornerMaximum = Vector3(-999999999.0, - 999999999.0, - 9999999999.9)
+		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 9999999999.9)
+		for vertex in vertexes:
+			self.cornerMaximum.z = max(self.cornerMaximum.z, vertex.z)
+			self.cornerMinimum.z = min(self.cornerMinimum.z, vertex.z)
 		halfHeight = 0.5 * self.layerThickness
 		layerTop = self.cornerMaximum.z - halfHeight
-		self.setActualMinimumZ( halfHeight, layerTop )
-		trianglemesh.initializeZoneIntervalTable( self, vertices )
+		self.setActualMinimumZ(halfHeight, layerTop)
+		trianglemesh.initializeZoneIntervalTable(self, vertexes)
 		z = self.cornerMinimum.z + halfHeight
 		while z < layerTop:
-			z = self.getZAddExtruderPaths( z )
+			z = self.getZAddExtruderPaths(z)
 		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
 			for loop in rotatedBoundaryLayer.loops:
 				for point in loop:
-					pointVector3 = Vector3( point.real, point.imag, rotatedBoundaryLayer.z )
-					self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, pointVector3 )
-					self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, pointVector3 )
+					pointVector3 = Vector3(point.real, point.imag, rotatedBoundaryLayer.z)
+					self.cornerMaximum = euclidean.getPointMaximum(self.cornerMaximum, pointVector3)
+					self.cornerMinimum = euclidean.getPointMinimum(self.cornerMinimum, pointVector3)
 		self.cornerMaximum.z = layerTop + halfHeight
-		for rotatedBoundaryLayerIndex in xrange( len( self.rotatedBoundaryLayers ) - 1, - 1, - 1 ):
-			rotatedBoundaryLayer = self.rotatedBoundaryLayers[ rotatedBoundaryLayerIndex ]
-			if len( rotatedBoundaryLayer.loops ) > 0:
-				return self.rotatedBoundaryLayers[ : rotatedBoundaryLayerIndex + 1 ]
+		for rotatedBoundaryLayerIndex in xrange(len(self.rotatedBoundaryLayers) -1, -1, -1):
+			rotatedBoundaryLayer = self.rotatedBoundaryLayers[rotatedBoundaryLayerIndex]
+			if len(rotatedBoundaryLayer.loops) > 0:
+				return self.rotatedBoundaryLayers[: rotatedBoundaryLayerIndex + 1]
 		return []
 
 	def getExtruderPaths( self, shouldPrintWarning, z ):
 		"Get extruder loops."
-		rotatedBoundaryLayer = euclidean.RotatedLoopLayer( z )
-		visibleObjectLoopsList = booleansolid.getVisibleObjectLoopsList( self.importRadius, evaluate.getVisibleObjects( self.archivableObjects ), z )
+		rotatedBoundaryLayer = euclidean.RotatedLoopLayer(z)
+		visibleObjectLoopsList = booleansolid.getVisibleObjectLoopsList( self.importRadius, evaluate.getVisibleObjects(self.archivableObjects), z )
 		rotatedBoundaryLayer.loops = euclidean.getConcatenatedList( visibleObjectLoopsList )
 		if euclidean.isLoopListIntersecting( rotatedBoundaryLayer.loops, z ):
 			rotatedBoundaryLayer.loops = booleansolid.getLoopsUnified( self.importRadius, visibleObjectLoopsList )
@@ -121,10 +123,10 @@ class BooleanGeometry:
 				print('Warning, the triangle mesh slice intersects itself.')
 				print( "Something will still be printed, but there is no guarantee that it will be the correct shape." )
 				print('Once the gcode is saved, you should check over the layer with a z of:')
-				print( z )
+				print(z)
 		return rotatedBoundaryLayer
 
-	def getInterpretationSuffix( self ):
+	def getInterpretationSuffix(self):
 		"Return the suffix for a boolean carving."
 		return 'xml'
 

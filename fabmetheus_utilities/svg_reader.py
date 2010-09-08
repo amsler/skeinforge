@@ -8,7 +8,6 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.geometry_utilities import booleansolid
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import euclidean
@@ -16,7 +15,6 @@ from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
 from fabmetheus_utilities import settings
 from fabmetheus_utilities import svg_writer
-from fabmetheus_utilities import xml_simple_writer
 import math
 import os
 import sys
@@ -29,30 +27,49 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
+globalNumberOfCornerPoints = 11
+globalNumberOfBezierPoints = globalNumberOfCornerPoints + globalNumberOfCornerPoints
+globalNumberOfCirclePoints = 4 * globalNumberOfCornerPoints
+
+
 def addFunctionsToDictionary( dictionary, functions, prefix ):
 	"Add functions to dictionary."
 	for function in functions:
 		dictionary[ function.__name__[ len( prefix ) : ] ] = function
 
-def getArcComplexes( begin, end, largeArcFlag, radius, sweepFlag, xAxisRotation ):
+def getArcComplexes(begin, end, largeArcFlag, radius, sweepFlag, xAxisRotation):
 	'Get the arc complexes, procedure at http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes'
-	beginTransformed = complex( begin.real / radius.real, begin.imag / radius.imag )
-	endTransformed = complex( end.real / radius.real, end.imag / radius.imag )
-	midpointTransformed = 0.5 * ( beginTransformed + endTransformed )
+	xAxisRotationComplex = euclidean.getWiddershinsUnitPolar(xAxisRotation)
+	reverseXAxisRotationComplex = complex(xAxisRotationComplex.real, -xAxisRotationComplex.imag)
+	beginRotated = begin * reverseXAxisRotationComplex
+	beginTransformed = complex(beginRotated.real / radius.real, beginRotated.imag / radius.imag)
+	endRotated = end * reverseXAxisRotationComplex
+	endTransformed = complex(endRotated.real / radius.real, endRotated.imag / radius.imag)
+	midpointTransformed = 0.5 * (beginTransformed + endTransformed)
 	midMinusBeginTransformed = midpointTransformed - beginTransformed
-	midMinusBeginTransformedLength = abs( midMinusBeginTransformed )
-	midWiddershinsTransformed = complex( - midMinusBeginTransformed.imag, midMinusBeginTransformed.real )
-	midWiddershinsLength = math.sqrt( 1.0 - midMinusBeginTransformedLength * midMinusBeginTransformedLength )
-	midWiddershinsTransformed *= midWiddershinsLength / abs( midWiddershinsTransformed )
+	midMinusBeginTransformedLength = abs(midMinusBeginTransformed)
+	midWiddershinsTransformed = complex(-midMinusBeginTransformed.imag, midMinusBeginTransformed.real)
+	midWiddershinsLengthSquared = 1.0 - midMinusBeginTransformedLength * midMinusBeginTransformedLength
+	if midWiddershinsLengthSquared < 0.0:
+		print('Warning, the radius is too small for getArcComplexes in svgReader')
+		print(begin)
+		print(end)
+		print(radius)
+		return []
+	midWiddershinsLength = midWiddershinsLengthSquared
+	midWiddershinsTransformed *= midWiddershinsLength / abs(midWiddershinsTransformed)
 	centerTransformed = midpointTransformed
 	if largeArcFlag == sweepFlag:
 		centerTransformed -= midWiddershinsTransformed
 	else:
 		centerTransformed += midWiddershinsTransformed
 	beginMinusCenterTransformed = beginTransformed - centerTransformed
-	beginAngle = math.atan2( beginMinusCenterTransformed.imag, beginMinusCenterTransformed.real )
+	beginMinusCenterTransformedLength = abs(beginMinusCenterTransformed)
+	if beginMinusCenterTransformedLength <= 0.0:
+		return end
+	beginAngle = math.atan2(beginMinusCenterTransformed.imag, beginMinusCenterTransformed.real)
 	endMinusCenterTransformed = endTransformed - centerTransformed
-	angleDifference = euclidean.getAngleDifferenceByComplex( endMinusCenterTransformed, beginMinusCenterTransformed )
+	angleDifference = euclidean.getAngleDifferenceByComplex(endMinusCenterTransformed, beginMinusCenterTransformed)
 	if sweepFlag:
 		if angleDifference < 0.0:
 			angleDifference += 2.0 * math.pi
@@ -60,15 +77,16 @@ def getArcComplexes( begin, end, largeArcFlag, radius, sweepFlag, xAxisRotation 
 		if angleDifference > 0.0:
 			angleDifference -= 2.0 * math.pi
 	global globalSideAngle
-	sides = int( math.ceil( abs( angleDifference ) / globalSideAngle ) )
-	sideAngle = angleDifference / sides
+	sides = int(math.ceil(abs(angleDifference) / globalSideAngle))
+	sideAngle = angleDifference / float(sides)
 	arcComplexes = []
-	center = complex(centerTransformed.real * radius.real, centerTransformed.imag * radius.imag)
-	for side in xrange( 1, sides ):
-		unitPolar = euclidean.getWiddershinsUnitPolar( beginAngle + float(side) * sideAngle )
-		point = center + complex( unitPolar.real * radius.real, unitPolar.imag * radius.imag )
-		arcComplexes.append( point )
-	arcComplexes.append( end )
+	center = complex(centerTransformed.real * radius.real, centerTransformed.imag * radius.imag) * xAxisRotationComplex
+	for side in xrange(1, sides):
+		unitPolar = euclidean.getWiddershinsUnitPolar(beginAngle + float(side) * sideAngle)
+		circumferential = complex(unitPolar.real * radius.real, unitPolar.imag * radius.imag) * beginMinusCenterTransformedLength
+		point = center + circumferential * xAxisRotationComplex
+		arcComplexes.append(point)
+	arcComplexes.append(end)
 	return arcComplexes
 
 def getChainMatrixSVG(matrixSVG, xmlElement):
@@ -85,20 +103,19 @@ def getChainMatrixSVGIfNecessary(xmlElement, yAxisPointingUpward):
 		return matrixSVG
 	return getChainMatrixSVG(matrixSVG, xmlElement)
 
-def getCubicComplex( along, begin, controlPoints, end ):
-	'Get the cubic complex.'
-	segmentBegin = getQuadraticComplex( along, begin, controlPoints[0], controlPoints[1] )
-	segmentEnd = getQuadraticComplex( along, controlPoints[0], controlPoints[1], end )
+def getCubicPoint( along, begin, controlPoints, end ):
+	'Get the cubic point.'
+	segmentBegin = getQuadraticPoint( along, begin, controlPoints[0], controlPoints[1] )
+	segmentEnd = getQuadraticPoint( along, controlPoints[0], controlPoints[1], end )
 	return ( 1.0 - along ) * segmentBegin + along * segmentEnd
 
-def getCubicComplexes( begin, controlPoints, end ):
-	'Get the cubic complexes.'
-	global globalNumberOfBezierPoints
-	global globalBezierPortion
-	cubicComplexes = []
-	for bezierIndex in xrange( 1, globalNumberOfBezierPoints + 1 ):
-		cubicComplexes.append( getCubicComplex( globalBezierPortion * bezierIndex, begin, controlPoints, end ) )
-	return cubicComplexes
+def getCubicPoints( begin, controlPoints, end, numberOfBezierPoints=globalNumberOfBezierPoints):
+	'Get the cubic points.'
+	bezierPortion = 1.0 / float(numberOfBezierPoints)
+	cubicPoints = []
+	for bezierIndex in xrange( 1, numberOfBezierPoints + 1 ):
+		cubicPoints.append(getCubicPoint(bezierPortion * bezierIndex, begin, controlPoints, end))
+	return cubicPoints
 
 def getFontReader(fontFamily):
 	"Get the font reader for the fontFamily."
@@ -120,12 +137,12 @@ def getFontsDirectoryPath():
 	"Get the fonts directory path."
 	return settings.getPathInFabmetheusUtilities('fonts')
 
-def getLabelString( dictionary ):
+def getLabelString(dictionary):
 	"Get the label string for the dictionary."
 	for key in dictionary:
 		labelIndex = key.find('label')
 		if labelIndex >= 0:
-			return dictionary[ key ]
+			return dictionary[key]
 	return ''
 
 def getMatrixSVG(xmlElement):
@@ -146,21 +163,20 @@ def getMatrixSVG(xmlElement):
 			matrixSVG = matrixSVG.getSelfTimesOther(globalGetTricomplexDictionary[ transformWord ](transformString.split()))
 	return matrixSVG
 
-def getQuadraticComplex( along, begin, controlPoint, end ):
-	'Get the quadratic complex.'
+def getQuadraticPoint( along, begin, controlPoint, end ):
+	'Get the quadratic point.'
 	oneMinusAlong = 1.0 - along
 	segmentBegin = oneMinusAlong * begin + along * controlPoint
 	segmentEnd = oneMinusAlong * controlPoint + along * end
 	return oneMinusAlong * segmentBegin + along * segmentEnd
 
-def getQuadraticComplexes( begin, controlPoint, end ):
-	'Get the quadratic complexes.'
-	global globalNumberOfBezierPoints
-	global globalBezierPortion
-	quadraticComplexes = []
-	for bezierIndex in xrange( 1, globalNumberOfBezierPoints + 1 ):
-		quadraticComplexes.append( getQuadraticComplex( globalBezierPortion * bezierIndex, begin, controlPoint, end ) )
-	return quadraticComplexes
+def getQuadraticPoints(begin, controlPoint, end, numberOfBezierPoints=globalNumberOfBezierPoints):
+	'Get the quadratic points.'
+	bezierPortion = 1.0 / float(numberOfBezierPoints)
+	quadraticPoints = []
+	for bezierIndex in xrange(1, numberOfBezierPoints + 1):
+		quadraticPoints.append(getQuadraticPoint(bezierPortion * bezierIndex, begin, controlPoint, end))
+	return quadraticPoints
 
 def getRightStripAlphabetPercent(word):
 	"Get word with alphabet characters and the percent sign stripped from the right."
@@ -197,6 +213,17 @@ def getStyleValue(defaultValue, key, xmlElement):
 	if xmlElement.parent == None:
 		return defaultValue
 	return getStyleValue(defaultValue, key, xmlElement.parent)
+
+def getTextComplexLoops(fontFamily, fontSize, text, yAxisPointingUpward=True):
+	"Get text as complex loops."
+	textComplexLoops = []
+	fontReader = getFontReader(fontFamily)
+	horizontalAdvanceX = 0.0
+	for character in text:
+		glyph = fontReader.getGlyph(character, yAxisPointingUpward)
+		textComplexLoops += glyph.getSizedAdvancedLoops(fontSize, horizontalAdvanceX, yAxisPointingUpward)
+		horizontalAdvanceX += glyph.horizontalAdvanceX
+	return textComplexLoops
 
 def getTransformedFillOutline(loop, xmlElement, yAxisPointingUpward):
 	"Get the loops if fill is on, otherwise get the outlines."
@@ -270,7 +297,7 @@ def processSVGElementcircle( svgReader, xmlElement ):
 	radius = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'r')
 	if radius == 0.0:
 		print('Warning, in processSVGElementcircle in svgReader radius is zero in:')
-		print( attributeDictionary )
+		print(attributeDictionary)
 		return
 	global globalNumberOfCirclePoints
 	global globalSideAngle
@@ -288,7 +315,7 @@ def processSVGElementellipse( svgReader, xmlElement ):
 	radius = euclidean.getComplexDefaultByDictionaryKeys( complex(), attributeDictionary, 'rx', 'ry')
 	if radius.real == 0.0 or radius.imag == 0.0:
 		print('Warning, in processSVGElementellipse in svgReader radius is zero in:')
-		print( attributeDictionary )
+		print(attributeDictionary)
 		return
 	global globalNumberOfCirclePoints
 	global globalSideAngle
@@ -309,7 +336,7 @@ def processSVGElementg( svgReader, xmlElement ):
 		return
 	zIndex = idString.find('z:')
 	if zIndex < 0:
-		idString = getLabelString( xmlElement.attributeDictionary )
+		idString = getLabelString(xmlElement.attributeDictionary)
 		zIndex = idString.find('z:')
 	if zIndex < 0:
 		return
@@ -329,21 +356,21 @@ def processSVGElementpath( svgReader, xmlElement ):
 	"Process xmlElement by svgReader."
 	if 'd' not in xmlElement.attributeDictionary:
 		print('Warning, in processSVGElementpath in svgReader can not get a value for d in:')
-		print( xmlElement.attributeDictionary )
+		print(xmlElement.attributeDictionary)
 		return
 	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
-	PathReader(rotatedLoopLayer.loops, svgReader, xmlElement)
+	PathReader(rotatedLoopLayer.loops, xmlElement, svgReader.yAxisPointingUpward)
 
 def processSVGElementpolygon( svgReader, xmlElement ):
 	"Process xmlElement by svgReader."
 	if 'points' not in xmlElement.attributeDictionary:
 		print('Warning, in processSVGElementpolygon in svgReader can not get a value for d in:')
-		print( xmlElement.attributeDictionary )
+		print(xmlElement.attributeDictionary)
 		return
 	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
 	words = getRightStripMinusSplit(xmlElement.attributeDictionary['points'].replace(',', ' '))
 	loop = []
-	for wordIndex in xrange( 0, len( words ), 2 ):
+	for wordIndex in xrange( 0, len(words), 2 ):
 		loop.append(euclidean.getComplexByWords(words[wordIndex :]))
 	rotatedLoopLayer.loops += getTransformedFillOutline(loop, xmlElement, svgReader.yAxisPointingUpward)
 
@@ -366,12 +393,12 @@ def processSVGElementrect( svgReader, xmlElement ):
 	height = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'height')
 	if height == 0.0:
 		print('Warning, in processSVGElementrect in svgReader height is zero in:')
-		print( attributeDictionary )
+		print(attributeDictionary)
 		return
 	width = euclidean.getFloatDefaultByDictionary( 0.0, attributeDictionary, 'width')
 	if width == 0.0:
 		print('Warning, in processSVGElementrect in svgReader width is zero in:')
-		print( attributeDictionary )
+		print(attributeDictionary)
 		return
 	center = euclidean.getComplexDefaultByDictionaryKeys(complex(), attributeDictionary, 'x', 'y')
 	inradius = 0.5 * complex( width, height )
@@ -415,19 +442,16 @@ def processSVGElementtext(svgReader, xmlElement):
 	"Process xmlElement by svgReader."
 	if svgReader.yAxisPointingUpward:
 		return
-	translate = euclidean.getComplexDefaultByDictionaryKeys(complex(), xmlElement.attributeDictionary, 'x', 'y')
 	fontFamily = getStyleValue('Gentium Basic Regular', 'font-family', xmlElement)
-	global globalFontReaderDictionary
-	fontReader = getFontReader(fontFamily)
 	fontSize = getRightStripAlphabetPercent(getStyleValue('12.0', 'font-size', xmlElement))
-	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
-	horizontalAdvanceX = 0.0
 	matrixSVG = getChainMatrixSVGIfNecessary(xmlElement, svgReader.yAxisPointingUpward)
-	for character in xmlElement.text:
-		glyph = fontReader.getGlyph(character, svgReader)
-		glyphLoops = glyph.getSizedAdvancedLoops(fontSize, horizontalAdvanceX, translate, svgReader.yAxisPointingUpward)
-		rotatedLoopLayer.loops += matrixSVG.getTransformedPaths(glyphLoops)
-		horizontalAdvanceX += glyph.horizontalAdvanceX
+	rotatedLoopLayer = svgReader.getRotatedLoopLayer()
+	translate = euclidean.getComplexDefaultByDictionaryKeys(complex(), xmlElement.attributeDictionary, 'x', 'y')
+	for textComplexLoop in getTextComplexLoops(fontFamily, fontSize, xmlElement.text, svgReader.yAxisPointingUpward):
+		translatedLoop = []
+		for textComplexPoint in textComplexLoop:
+			translatedLoop.append(textComplexPoint + translate )
+		rotatedLoopLayer.loops.append(matrixSVG.getTransformedPath(translatedLoop))
 
 
 class FontReader:
@@ -447,20 +471,21 @@ class FontReader:
 		for glyphXMLElement in glyphXMLElements:
 			self.glyphXMLElementDictionary[glyphXMLElement.attributeDictionary['unicode']] = glyphXMLElement
 
-	def getGlyph(self, character, svgReader):
+	def getGlyph(self, character, yAxisPointingUpward):
 		"Get the glyph for the character."
 		if character not in self.glyphXMLElementDictionary:
 			if self.missingGlyph == None:
-				self.missingGlyph = Glyph(svgReader, self.unitsPerEM, self.fontXMLElement.getFirstChildWithClassName('missing-glyph'))
+				missingGlyphXMLElement = self.fontXMLElement.getFirstChildWithClassName('missing-glyph')
+				self.missingGlyph = Glyph(self.unitsPerEM, missingGlyphXMLElement, yAxisPointingUpward)
 			return self.missingGlyph
 		if character not in self.glyphDictionary:
-			self.glyphDictionary[character] = Glyph(svgReader, self.unitsPerEM, self.glyphXMLElementDictionary[character])
+			self.glyphDictionary[character] = Glyph(self.unitsPerEM, self.glyphXMLElementDictionary[character], yAxisPointingUpward)
 		return self.glyphDictionary[character]
 
 
 class Glyph:
 	"Class to handle a glyph."
-	def __init__(self, svgReader, unitsPerEM, xmlElement):
+	def __init__(self, unitsPerEM, xmlElement, yAxisPointingUpward):
 		"Initialize."
 		self.horizontalAdvanceX = float(xmlElement.attributeDictionary['horiz-adv-x'])
 		self.loops = []
@@ -468,12 +493,11 @@ class Glyph:
 		xmlElement.attributeDictionary['fill'] = ''
 		if 'd' not in xmlElement.attributeDictionary:
 			return
-		PathReader(self.loops, svgReader, xmlElement)
+		PathReader(self.loops, xmlElement, yAxisPointingUpward)
 
-	def getSizedAdvancedLoops(self, fontSize, horizontalAdvanceX, translate, yAxisPointingUpward):
+	def getSizedAdvancedLoops(self, fontSize, horizontalAdvanceX, yAxisPointingUpward=True):
 		"Get loops for font size, advanced horizontally."
 		multiplierX = fontSize / self.unitsPerEM
-		translate = complex(translate.real + multiplierX * horizontalAdvanceX, translate.imag)
 		multiplierY = multiplierX
 		if not yAxisPointingUpward:
 			multiplierY = -multiplierY
@@ -482,8 +506,7 @@ class Glyph:
 			sizedLoop = []
 			sizedLoops.append(sizedLoop)
 			for point in loop:
-				sizedPoint = complex(multiplierX * point.real, multiplierY * point.imag) + translate
-				sizedLoop.append(sizedPoint)
+				sizedLoop.append( complex(multiplierX * (point.real + horizontalAdvanceX), multiplierY * point.imag))
 		return sizedLoops
 
 
@@ -539,7 +562,7 @@ class MatrixSVG:
 
 class PathReader:
 	"Class to read svg path."
-	def __init__(self, loops, svgReader, xmlElement):
+	def __init__(self, loops, xmlElement, yAxisPointingUpward):
 		"Add to path string to loops."
 		self.controlPoints = None
 		self.loops = loops
@@ -547,6 +570,7 @@ class PathReader:
 		self.outlinePaths = []
 		self.path = []
 		self.xmlElement = xmlElement
+		self.yAxisPointingUpward = yAxisPointingUpward
 		pathString = xmlElement.attributeDictionary['d'].replace(',', ' ')
 		global globalProcessPathWordDictionary
 		processPathWordDictionaryKeys = globalProcessPathWordDictionary.keys()
@@ -556,10 +580,10 @@ class PathReader:
 		for self.wordIndex in xrange( len( self.words ) ):
 			word = self.words[ self.wordIndex ]
 			if word in processPathWordDictionaryKeys:
-				globalProcessPathWordDictionary[ word ]( self )
+				globalProcessPathWordDictionary[word](self)
 		if len(self.path) > 0:
 			self.outlinePaths.append(self.path)
-		self.loops += getTransformedOutlineByPaths(self.outlinePaths, xmlElement, svgReader.yAxisPointingUpward)
+		self.loops += getTransformedOutlineByPaths(self.outlinePaths, xmlElement, yAxisPointingUpward)
 
 	def addPathArc( self, end ):
 		"Add an arc to the path."
@@ -569,14 +593,14 @@ class PathReader:
 		xAxisRotation = math.radians(float(self.words[self.wordIndex + 3]))
 		largeArcFlag = euclidean.getBooleanFromValue(self.words[ self.wordIndex + 4 ])
 		sweepFlag = euclidean.getBooleanFromValue(self.words[ self.wordIndex + 5 ])
-		self.path += getArcComplexes( begin, end, largeArcFlag, radius, sweepFlag, xAxisRotation )
+		self.path += getArcComplexes(begin, end, largeArcFlag, radius, sweepFlag, xAxisRotation)
 		self.wordIndex += 8
 
 	def addPathCubic( self, controlPoints, end ):
 		"Add a cubic curve to the path."
 		begin = self.getOldPoint()
 		self.controlPoints = controlPoints
-		self.path += getCubicComplexes( begin, controlPoints, end )
+		self.path += getCubicPoints( begin, controlPoints, end )
 		self.wordIndex += 7
 
 	def addPathCubicReflected( self, controlPoint, end ):
@@ -587,7 +611,7 @@ class PathReader:
 			if len(self.controlPoints) == 2:
 				controlPointBegin = begin + begin - self.controlPoints[-1]
 		self.controlPoints = [controlPointBegin, controlPoint]
-		self.path += getCubicComplexes(begin, self.controlPoints, end)
+		self.path += getCubicPoints(begin, self.controlPoints, end)
 		self.wordIndex += 5
 
 	def addPathLine(self, lineFunction, point):
@@ -625,7 +649,7 @@ class PathReader:
 		"Add a quadratic curve to the path."
 		begin = self.getOldPoint()
 		self.controlPoints = [controlPoint]
-		self.path += getQuadraticComplexes(begin, controlPoint, end)
+		self.path += getQuadraticPoints(begin, controlPoint, end)
 		self.wordIndex += 5
 
 	def addPathQuadraticReflected( self, end ):
@@ -634,16 +658,16 @@ class PathReader:
 		controlPoint = begin
 		if self.controlPoints != None:
 			if len( self.controlPoints ) == 1:
-				controlPoint = begin + begin - self.controlPoints[ - 1 ]
+				controlPoint = begin + begin - self.controlPoints[-1]
 		self.controlPoints = [ controlPoint ]
-		self.path += getQuadraticComplexes( begin, controlPoint, end )
+		self.path += getQuadraticPoints(begin, controlPoint, end)
 		self.wordIndex += 3
 
 	def getComplexByExtraIndex( self, extraIndex=0 ):
 		'Get complex from the extraIndex.'
 		return euclidean.getComplexByWords(self.words, self.wordIndex + extraIndex)
 
-	def getComplexRelative( self ):
+	def getComplexRelative(self):
 		"Get relative complex."
 		return self.getComplexByExtraIndex() + self.getOldPoint()
 
@@ -653,7 +677,7 @@ class PathReader:
 		if totalIndex >= len(self.words):
 			return None
 		word = self.words[totalIndex]
-		if word[ : 1 ].isalpha():
+		if word[: 1].isalpha():
 			return None
 		return euclidean.getFloatFromValue(word)
 
@@ -663,26 +687,26 @@ class PathReader:
 			return self.path[-1]
 		return self.oldPoint
 
-	def processPathWordA( self ):
+	def processPathWordA(self):
 		'Process path word A.'
 		self.addPathArc( self.getComplexByExtraIndex( 6 ) )
 
-	def processPathWorda( self ):
+	def processPathWorda(self):
 		'Process path word a.'
 		self.addPathArc(self.getComplexByExtraIndex(6) + self.getOldPoint())
 
-	def processPathWordC( self ):
+	def processPathWordC(self):
 		'Process path word C.'
 		end = self.getComplexByExtraIndex( 5 )
 		self.addPathCubic( [ self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex( 3 ) ], end )
 
-	def processPathWordc( self ):
+	def processPathWordc(self):
 		'Process path word C.'
 		begin = self.getOldPoint()
 		end = self.getComplexByExtraIndex( 5 )
 		self.addPathCubic( [ self.getComplexByExtraIndex( 1 ) + begin, self.getComplexByExtraIndex( 3 ) + begin ], end + begin )
 
-	def processPathWordH( self ):
+	def processPathWordH(self):
 		"Process path word H."
 		beginY = self.getOldPoint().imag
 		self.addPathLineAxis(complex(float(self.words[self.wordIndex + 1]), beginY))
@@ -693,7 +717,7 @@ class PathReader:
 			self.path.append(complex(floatByExtraIndex, beginY))
 			self.wordIndex += 1
 
-	def processPathWordh( self ):
+	def processPathWordh(self):
 		"Process path word h."
 		begin = self.getOldPoint()
 		self.addPathLineAxis(complex(float(self.words[self.wordIndex + 1]) + begin.real, begin.imag))
@@ -704,49 +728,49 @@ class PathReader:
 			self.path.append(complex(floatByExtraIndex + self.getOldPoint().real, begin.imag))
 			self.wordIndex += 1
 
-	def processPathWordL( self ):
+	def processPathWordL(self):
 		"Process path word L."
 		self.addPathLine(self.getComplexByExtraIndex, self.getComplexByExtraIndex( 1 ))
 
-	def processPathWordl( self ):
+	def processPathWordl(self):
 		"Process path word l."
 		self.addPathLine(self.getComplexRelative, self.getComplexByExtraIndex(1) + self.getOldPoint())
 
-	def processPathWordM( self ):
+	def processPathWordM(self):
 		"Process path word M."
 		self.addPathMove(self.getComplexByExtraIndex, self.getComplexByExtraIndex(1))
 
-	def processPathWordm( self ):
+	def processPathWordm(self):
 		"Process path word m."
 		self.addPathMove(self.getComplexRelative, self.getComplexByExtraIndex(1) + self.getOldPoint())
 
-	def processPathWordQ( self ):
+	def processPathWordQ(self):
 		'Process path word Q.'
 		self.addPathQuadratic( self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex( 3 ) )
 
-	def processPathWordq( self ):
+	def processPathWordq(self):
 		'Process path word q.'
 		begin = self.getOldPoint()
 		self.addPathQuadratic(self.getComplexByExtraIndex(1) + begin, self.getComplexByExtraIndex(3) + begin)
 
-	def processPathWordS( self ):
+	def processPathWordS(self):
 		'Process path word S.'
 		self.addPathCubicReflected( self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex( 3 ) )
 
-	def processPathWords( self ):
+	def processPathWords(self):
 		'Process path word s.'
 		begin = self.getOldPoint()
 		self.addPathCubicReflected(self.getComplexByExtraIndex(1) + begin, self.getComplexByExtraIndex(3) + begin)
 
-	def processPathWordT( self ):
+	def processPathWordT(self):
 		'Process path word T.'
 		self.addPathQuadraticReflected( self.getComplexByExtraIndex( 1 ) )
 
-	def processPathWordt( self ):
+	def processPathWordt(self):
 		'Process path word t.'
 		self.addPathQuadraticReflected(self.getComplexByExtraIndex(1) + self.getOldPoint())
 
-	def processPathWordV( self ):
+	def processPathWordV(self):
 		"Process path word V."
 		beginX = self.getOldPoint().real
 		self.addPathLineAxis(complex(beginX, float(self.words[self.wordIndex + 1])))
@@ -757,7 +781,7 @@ class PathReader:
 			self.path.append(complex(beginX, floatByExtraIndex))
 			self.wordIndex += 1
 
-	def processPathWordv( self ):
+	def processPathWordv(self):
 		"Process path word v."
 		begin = self.getOldPoint()
 		self.addPathLineAxis(complex(begin.real, float(self.words[self.wordIndex + 1]) + begin.imag))
@@ -768,23 +792,23 @@ class PathReader:
 			self.path.append(complex(begin.real, floatByExtraIndex + self.getOldPoint().imag))
 			self.wordIndex += 1
 
-	def processPathWordZ( self ):
+	def processPathWordZ(self):
 		"Process path word Z."
 		self.controlPoints = None
 		if len(self.path) < 1:
 			return
-		self.loops.append(self.path)
+		self.loops.append(getChainMatrixSVGIfNecessary(self.xmlElement, self.yAxisPointingUpward).getTransformedPath(self.path))
 		self.oldPoint = self.path[0]
 		self.path = []
 
-	def processPathWordz( self ):
+	def processPathWordz(self):
 		"Process path word z."
 		self.processPathWordZ()
 
 
 class SVGReader:
 	"An svg carving."
-	def __init__( self ):
+	def __init__(self):
 		"Add empty lists."
 		self.bridgeRotation = None
 		self.rotatedLoopLayers = []
@@ -799,29 +823,33 @@ class SVGReader:
 		rotatedLoopLayer.loops = trianglemesh.getLoopsInOrderOfArea(trianglemesh.compareAreaDescending, rotatedLoopLayer.loops)
 		for loopIndex, loop in enumerate(rotatedLoopLayer.loops):
 			isInsideLoops = euclidean.isPointInsideLoopsZone(rotatedLoopLayer.loops[: loopIndex], euclidean.getLeftPoint(loop))
-			booleansolid.directLoop((not isInsideLoops), loop)
+			intercircle.directLoop((not isInsideLoops), loop)
 
-	def getRotatedLoopLayer( self ):
+	def getRotatedLoopLayer(self):
 		"Return the rotated loop layer."
 		if self.z != None:
 			rotatedLoopLayer = euclidean.RotatedLoopLayer( self.z )
 			self.rotatedLoopLayers.append( rotatedLoopLayer )
 			rotatedLoopLayer.rotation = self.bridgeRotation
 			self.z = None
-		return self.rotatedLoopLayers[ - 1 ]
+		return self.rotatedLoopLayers[-1]
 
-	def parseSVG( self, fileName, svgText ):
+	def parseSVG(self, fileName, svgText):
 		"Parse SVG text and store the layers."
 		self.fileName = fileName
-		self.xmlParser = XMLSimpleReader(fileName, None, svgText)
-		self.sliceDictionary = svg_writer.getSliceDictionary( self.xmlParser.getRoot() )
+		xmlParser = XMLSimpleReader(fileName, None, svgText)
+		self.parseSVGByXMLElement(xmlParser.getRoot())
+
+	def parseSVGByXMLElement(self, xmlElement):
+		"Parse SVG by xmlElement."
+		self.sliceDictionary = svg_writer.getSliceDictionary(xmlElement)
 		self.yAxisPointingUpward = euclidean.getBooleanFromDictionaryDefault(False, self.sliceDictionary, 'yAxisPointingUpward')
-		self.processXMLElement( self.xmlParser.getRoot() )
+		self.processXMLElement(xmlElement)
 		if not self.yAxisPointingUpward:
 			for rotatedLoopLayer in self.rotatedLoopLayers:
 				self.flipDirectLayer(rotatedLoopLayer)
 
-	def processXMLElement( self, xmlElement ):
+	def processXMLElement(self, xmlElement):
 		"Process the xml element."
 		if self.stopProcessing:
 			return
@@ -829,7 +857,7 @@ class SVGReader:
 		global globalProcessSVGElementDictionary
 		if lowerClassName in globalProcessSVGElementDictionary:
 			try:
-				globalProcessSVGElementDictionary[ lowerClassName ]( self, xmlElement )
+				globalProcessSVGElementDictionary[ lowerClassName ](self, xmlElement)
 			except:
 				print('Warning, in processXMLElement in svg_reader, could not process:')
 				print(xmlElement)
@@ -848,10 +876,6 @@ globalGetTricomplexFunctions = [
 	getTricomplexskewX,
 	getTricomplexskewY,
 	getTricomplextranslate ]
-globalNumberOfCornerPoints = 11
-globalNumberOfBezierPoints = globalNumberOfCornerPoints + globalNumberOfCornerPoints
-globalBezierPortion = 1.0 / float(globalNumberOfBezierPoints)
-globalNumberOfCirclePoints = 4 * globalNumberOfCornerPoints
 globalProcessPathWordFunctions = [
 	PathReader.processPathWordA,
 	PathReader.processPathWorda,

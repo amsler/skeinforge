@@ -134,7 +134,7 @@ def writeOutput( fileName = ''):
 
 class BevelSkein:
 	"A class to bevel a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.feedRateMinute = 960.0
@@ -149,7 +149,7 @@ class BevelSkein:
 		"Add a gcode linear move, feedRate and newline to the output."
 		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, point.dropAxis( 2 ), point.z ) )
 
-	def getCornerFeedRate( self ):
+	def getCornerFeedRate(self):
 		"Get the corner feed rate, which may be based on the intermediate feed rate."
 		feedRateMinute = self.feedRateMinute
 		if self.filletRepository.useIntermediateFeedRateInCorners.value:
@@ -194,7 +194,7 @@ class BevelSkein:
 		self.addLinearMovePoint( slowdownFeedRate, afterPoint )
 		return afterPoint
 
-	def getNextLocation( self ):
+	def getNextLocation(self):
 		"Get the next linear move.  Return none is none is found."
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
@@ -378,7 +378,7 @@ class ArcRadiusSkein( ArcPointSkein ):
 
 class FilletRepository:
 	"A class to handle the fillet settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.fillet.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '')
@@ -396,7 +396,7 @@ class FilletRepository:
 		self.useIntermediateFeedRateInCorners = settings.BooleanSetting().getFromValue('Use Intermediate Feed Rate in Corners', self, True )
 		self.executeTitle = 'Fillet'
 
-	def execute( self ):
+	def execute(self):
 		"Fillet button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:

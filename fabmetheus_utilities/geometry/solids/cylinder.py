@@ -22,23 +22,23 @@ __date__ = "$Date: 2008/21/04 $"
 __license__ = "GPL 3.0"
 
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
-	group.processShape( Cylinder, xmlElement, xmlProcessor )
+	group.processShape( Cylinder, xmlElement)
 
 
 class Cylinder( cube.Cube ):
 	"A cylinder object."
-	def __init__( self ):
+	def __init__(self):
 		"Add empty lists."
 		self.radiusZ = None
-		cube.Cube.__init__( self )
+		cube.Cube.__init__(self)
 
-	def createShape( self ):
+	def createShape(self):
 		"Create the shape."
 		polygonBottom = []
 		polygonTop = []
-		sides = evaluate.getSidesMinimumThree(max(self.inradius.x, self.inradius.y), self.xmlElement )
+		sides = evaluate.getSidesMinimumThreeBasedOnPrecision(max(self.inradius.x, self.inradius.y), self.xmlElement )
 		sideAngle = 2.0 * math.pi / sides
 		for side in xrange(int(sides)):
 			angle = float(side) * sideAngle
@@ -50,13 +50,13 @@ class Cylinder( cube.Cube ):
 		if self.topOverBottom <= 0.0:
 			polygonTop.append(complex())
 		bottomTopPolygon = [
-			trianglemesh.getAddIndexedLoop(polygonBottom, self.vertices, - self.inradius.z),
-			trianglemesh.getAddIndexedLoop(polygonTop, self.vertices, self.inradius.z)]
+			trianglemesh.getAddIndexedLoop(polygonBottom, self.vertexes, - self.inradius.z),
+			trianglemesh.getAddIndexedLoop(polygonTop, self.vertexes, self.inradius.z)]
 		trianglemesh.addPillarFromConvexLoops(self.faces, bottomTopPolygon)
 
-	def setToObjectAttributeDictionary( self ):
+	def setToObjectAttributeDictionary(self):
 		"Set the shape of this carvable object info."
-		self.inradius = evaluate.getVector3ByPrefixes( ['demisize', 'inradius', 'radius'], Vector3( 1.0, 1.0, 1.0 ), self.xmlElement )
+		self.inradius = evaluate.getVector3ByPrefixes( ['demisize', 'inradius', 'radius'], Vector3(1.0, 1.0, 1.0), self.xmlElement )
 		self.inradius = evaluate.getVector3ByMultiplierPrefixes( 2.0, ['diameter', 'size'], self.inradius, self.xmlElement )
 		self.inradius.z = 0.5 * evaluate.getEvaluatedFloatDefault( self.inradius.z + self.inradius.z, 'height', self.xmlElement )
 		self.topOverBottom = evaluate.getEvaluatedFloatOne('topoverbottom', self.xmlElement )

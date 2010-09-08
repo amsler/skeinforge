@@ -23,11 +23,11 @@ The GNU Triangulated Surface (.gts) format is described at:<br>
 <a href="http://gts.sourceforge.net/reference/gts-surfaces.html#GTS-SURFACE-WRITE">http://gts.sourceforge.net/reference/gts-surfaces.html#GTS-SURFACE-WRITE</a><br>
  <br>
 Quoted from <a href="http://gts.sourceforge.net/reference/gts-surfaces.html#GTS-SURFACE-WRITE">http://gts.sourceforge.net/reference/gts-surfaces.html#GTS-SURFACE-WRITE</a><br>
-"All the lines beginning with GTS_COMMENTS (#!) are ignored. The first line contains three unsigned integers separated by spaces. The first integer is the number of vertices, nv, the second is the number of edges, ne and the third is the number of faces, nf.<br>
+"All the lines beginning with GTS_COMMENTS (#!) are ignored. The first line contains three unsigned integers separated by spaces. The first integer is the number of vertexes, nv, the second is the number of edges, ne and the third is the number of faces, nf.<br>
  <br>
-Follows nv lines containing the x, y and z coordinates of the vertices. Follows ne lines containing the two indices (starting from one) of the vertices of each edge. Follows nf lines containing the three ordered indices (also starting from one) of the edges of each face.<br>
+Follows nv lines containing the x, y and z coordinates of the vertexes. Follows ne lines containing the two indices (starting from one) of the vertexes of each edge. Follows nf lines containing the three ordered indices (also starting from one) of the edges of each face.<br>
  <br>
-The format described above is the least common denominator to all GTS files. Consistent with an object-oriented approach, the GTS file format is extensible. Each of the lines of the file can be extended with user-specific attributes accessible through the read() and write() virtual methods of each of the objects written (surface, vertices, edges or faces). When read with different object classes, these extra attributes are just ignored."<br>
+The format described above is the least common denominator to all GTS files. Consistent with an object-oriented approach, the GTS file format is extensible. Each of the lines of the file can be extended with user-specific attributes accessible through the read() and write() virtual methods of each of the objects written (surface, vertexes, edges or faces). When read with different object classes, these extra attributes are just ignored."<br>
  <br>
 This example gets a carving for the gts file Screw Holder Bottom.gts.  This example is run in a terminal in the folder which contains Screw Holder Bottom.gts and gts.py.<br>
  <br>

@@ -15,7 +15,7 @@
 <p><tt><br>
 Gcode step is an export plugin to convert gcode from float position to number of steps.<br>
  <br>
-An export plugin is a script in the export_plugins folder which has the functions getOutput, isReplaceable and if it's output is not replaceable, writeOutput.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.<br>
+An export plugin is a script in the export_plugins folder which has the getOutput function, the globalIsReplaceable variable and if it's output is not replaceable, the writeOutput function.  It is meant to be run from the export tool.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.<br>
  <br>
 The getOutput function of this script takes a gcode text and returns it with the positions converted into number of steps.  The writeOutput function of this script takes a gcode text and writes that with the positions converted into number of steps.<br>
  <br>
@@ -186,8 +186,7 @@ Defines the Z axis step length.</tt>
 <td width="100%"><dl><dt><a name="-getCharacterIntegerString"><strong>getCharacterIntegerString</strong></a>(character, offset, splitLine, stepLength)</dt><dd><tt>Get&nbsp;a&nbsp;character&nbsp;and&nbsp;integer&nbsp;string.</tt></dd></dl>
  <dl><dt><a name="-getFloatFromCharacterSplitLine"><strong>getFloatFromCharacterSplitLine</strong></a>(character, splitLine)</dt><dd><tt>Get&nbsp;the&nbsp;float&nbsp;after&nbsp;the&nbsp;first&nbsp;occurence&nbsp;of&nbsp;the&nbsp;character&nbsp;in&nbsp;the&nbsp;split&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
- <dl><dt><a name="-getOutput"><strong>getOutput</strong></a>(gcodeText, gcodeStepRepository<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;exported&nbsp;version&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.&nbsp;&nbsp;This&nbsp;function,&nbsp;isReplaceable&nbsp;and&nbsp;if&nbsp;it's&nbsp;output&nbsp;is&nbsp;not&nbsp;replaceable,&nbsp;writeOutput&nbsp;are&nbsp;the&nbsp;only&nbsp;necessary&nbsp;functions&nbsp;in&nbsp;a&nbsp;skeinforge&nbsp;export&nbsp;plugin.</tt></dd></dl>
- <dl><dt><a name="-isReplaceable"><strong>isReplaceable</strong></a>()</dt><dd><tt>Return&nbsp;whether&nbsp;or&nbsp;not&nbsp;the&nbsp;output&nbsp;from&nbsp;this&nbsp;plugin&nbsp;is&nbsp;replaceable.&nbsp;&nbsp;This&nbsp;should&nbsp;be&nbsp;true&nbsp;if&nbsp;the&nbsp;output&nbsp;is&nbsp;text&nbsp;and&nbsp;false&nbsp;if&nbsp;it&nbsp;is&nbsp;binary.</tt></dd></dl>
+ <dl><dt><a name="-getOutput"><strong>getOutput</strong></a>(gcodeText, gcodeStepRepository<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;exported&nbsp;version&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;export&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, gcodeText<font color="#909090">=''</font>)</dt><dd><tt>Write&nbsp;the&nbsp;exported&nbsp;version&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
@@ -200,7 +199,8 @@ Defines the Z axis step length.</tt>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
 <strong>__license__</strong> = 'GPL 3.0'<br>
-<strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
+<strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
+<strong>globalIsReplaceable</strong> = True</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

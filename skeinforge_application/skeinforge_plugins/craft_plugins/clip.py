@@ -101,7 +101,7 @@ def writeOutput( fileName = ''):
 
 class ClipRepository:
 	"A class to handle the clip settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.clip.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Clip', self, '')
@@ -111,7 +111,7 @@ class ClipRepository:
 		self.maximumConnectionDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Maximum Connection Distance Over Perimeter Width (ratio):', self, 20.0, 10.0 )
 		self.executeTitle = 'Clip'
 
-	def execute( self ):
+	def execute(self):
 		"Clip button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -120,7 +120,7 @@ class ClipRepository:
 
 class ClipSkein:
 	"A class to clip a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.feedRateMinute = None
@@ -181,10 +181,10 @@ class ClipSkein:
 
 	def getConnectionIsCloseWithoutOverlap( self, location, path ):
 		"Determine if the connection is close enough and does not overlap another thread."
-		if len( path ) < 1:
+		if len(path) < 1:
 			return False
 		locationComplex = location.dropAxis( 2 )
-		segment = locationComplex - path[ - 1 ]
+		segment = locationComplex - path[-1]
 		segmentLength = abs( segment )
 		if segmentLength <= 0.0:
 			return True
@@ -194,7 +194,7 @@ class ClipSkein:
 		distance = self.connectingStepLength
 		segmentEndLength = segmentLength - self.connectingStepLength
 		while distance < segmentEndLength:
-			alongPoint = distance * segment + path[ - 1 ]
+			alongPoint = distance * segment + path[-1]
 			if not euclidean.isPointInsideLoopsZone( self.boundaryLoops, alongPoint ):
 				return False
 			distance += self.connectingStepLength
@@ -203,16 +203,16 @@ class ClipSkein:
 #			euclidean.removePixelTableFromPixelTable( self.maskPixelTableTable[ self.oldLocation ], removedLayerPixelTable )
 #		euclidean.addPathToPixelTable( path[ : - 2 ], removedLayerPixelTable, None, self.layerPixelWidth )
 		segmentTable = {}
-		euclidean.addSegmentToPixelTable( path[ - 1 ], locationComplex, segmentTable, 2.0, 2.0, self.layerPixelWidth )
-#		euclidean.addValueSegmentToPixelTable( path[ - 1 ], locationComplex, segmentTable, None, self.layerPixelWidth )
-#		euclidean.addValueSegmentToPixelTable( path[ - 1 ], locationComplex, segmentTable, None, self.layerPixelWidth )
+		euclidean.addSegmentToPixelTable( path[-1], locationComplex, segmentTable, 2.0, 2.0, self.layerPixelWidth )
+#		euclidean.addValueSegmentToPixelTable( path[-1], locationComplex, segmentTable, None, self.layerPixelWidth )
+#		euclidean.addValueSegmentToPixelTable( path[-1], locationComplex, segmentTable, None, self.layerPixelWidth )
 #		maskPixelTable = {}
 #		if location in self.maskPixelTableTable:
 #			maskPixelTable = self.maskPixelTableTable[ location ]
 		if euclidean.isPixelTableIntersecting( self.layerPixelTable, segmentTable, {} ):
 #		if euclidean.isPixelTableIntersecting( removedLayerPixelTable, segmentTable, {} ):
 			return False
-		euclidean.addValueSegmentToPixelTable( path[ - 1 ], locationComplex, self.layerPixelTable, None, self.layerPixelWidth )
+		euclidean.addValueSegmentToPixelTable( path[-1], locationComplex, self.layerPixelTable, None, self.layerPixelWidth )
 #		euclidean.addPixelTableToPixelTable( segmentTable, self.layerPixelTable )
 		return True
 
@@ -247,7 +247,7 @@ class ClipSkein:
 				return False
 		return False
 
-	def isNextExtruderOn( self ):
+	def isNextExtruderOn(self):
 		"Determine if there is an extruder on command before a move command."
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
@@ -317,7 +317,7 @@ class ClipSkein:
 		if self.loopPath == None:
 			self.distanceFeedRate.addLine(line)
 
-	def setLayerPixelTable( self ):
+	def setLayerPixelTable(self):
 		"Set the layer pixel table."
 		boundaryLoop = None
 		extruderActive = False

@@ -96,14 +96,14 @@ def addOrbits( distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChan
 	while timeInOrbit < temperatureChangeTime:
 		for point in loop:
 			distanceFeedRate.addGcodeMovementZWithFeedRate( 60.0 * orbitalFeedRatePerSecond, point, z )
-		timeInOrbit += euclidean.getPolygonLength(loop) / orbitalFeedRatePerSecond
+		timeInOrbit += euclidean.getLoopLength(loop) / orbitalFeedRatePerSecond
 
 def addOrbitsIfLarge( distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChangeTime, z ):
 	"Add orbits with the extruder off if the orbits are large enough."
 	if orbitsAreLarge( loop, temperatureChangeTime ):
 		addOrbits( distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChangeTime, z )
 
-def addPointsFromSegment( pointBegin, pointEnd, points, radius, thresholdRatio = 0.9 ):
+def addPointsFromSegment( pointBegin, pointEnd, points, radius, thresholdRatio=0.9 ):
 	"Add point complexes between the endpoints of a segment."
 	if radius <= 0.0:
 		print('This should never happen, radius should never be zero or less in addPointsFromSegment in intercircle.')
@@ -121,44 +121,50 @@ def addPointsFromSegment( pointBegin, pointEnd, points, radius, thresholdRatio =
 		print( pointEnd )
 		return
 	if extraCircles < 2:
-		lengthIncrement = segmentLength / ( float( extraCircles ) + 1.0 )
+		lengthIncrement = segmentLength / ( float(extraCircles) + 1.0 )
 		segment *= lengthIncrement / segmentLength
 		pointBegin += segment
 	else:
 		pointBegin += segment * thresholdDiameter / segmentLength
 		remainingLength = segmentLength - thresholdDiameter - thresholdDiameter
-		lengthIncrement = remainingLength / ( float( extraCircles ) - 1.0 )
+		lengthIncrement = remainingLength / ( float(extraCircles) - 1.0 )
 		segment *= lengthIncrement / segmentLength
-	for circleIndex in xrange( extraCircles ):
+	for circleIndex in xrange(extraCircles):
 		points.append( pointBegin )
 		pointBegin += segment
 
-def getAroundsFromLoop( loop, radius, thresholdRatio = 0.9 ):
-	"Get the arounds from the loop."
-	slightlyGreaterThanRadius = 1.01 * abs(radius)
-	points = getPointsFromLoop( loop, slightlyGreaterThanRadius, thresholdRatio )
-	return getAroundsFromPoints( points, radius )
+def directLoop(isWiddershins, loop):
+	"Direct the loop."
+	if euclidean.isWiddershins(loop) != isWiddershins:
+		loop.reverse()
 
-def getAroundsFromLoops( loops, radius, thresholdRatio = 0.9 ):
+def directLoops(isWiddershins, loops):
+	"Direct the loops."
+	for loop in loops:
+		directLoop(isWiddershins, loop)
+
+def directLoopLists(isWiddershins, loopLists):
+	"Direct the loop lists."
+	for loopList in loopLists:
+		directLoops(isWiddershins, loopList)
+
+def getAroundsFromLoop(loop, radius, thresholdRatio=0.9):
+	"Get the arounds from the loop."
+	return getAroundsFromPoints(getPointsFromLoop(loop, 1.01 * abs(radius), thresholdRatio), radius)
+
+def getAroundsFromLoops( loops, radius, thresholdRatio=0.9 ):
 	"Get the arounds from the loops."
-	slightlyGreaterThanRadius = 1.01 * abs(radius)
-	points = getPointsFromLoops(loops, slightlyGreaterThanRadius, thresholdRatio)
-	return getAroundsFromPoints(points, radius)
+	return getAroundsFromPoints(getPointsFromLoops(loops, 1.01 * abs(radius), thresholdRatio), radius)
 
 def getAroundsFromPath(path, radius, thresholdRatio=0.9):
 	"Get the arounds from the path."
-	radius *= 0.5
-	slightlyGreaterThanRadius = 1.01 * abs(radius)
-	points = getPointsFromPath(path, slightlyGreaterThanRadius, thresholdRatio)
-	return getAroundsFromPoints(points, radius)
+	return getAroundsFromPoints(getPointsFromPath(path, 1.01 * abs(radius), thresholdRatio), radius)
 
 def getAroundsFromPaths(paths, radius, thresholdRatio=0.9):
 	"Get the arounds from the path."
-	radius *= 0.5
-	slightlyGreaterThanRadius = 1.01 * abs(radius)
 	points = []
 	for path in paths:
-		points += getPointsFromPath(path, slightlyGreaterThanRadius, thresholdRatio)
+		points += getPointsFromPath(path, 1.01 * abs(radius), thresholdRatio)
 	return getAroundsFromPoints(points, radius)
 
 def getAroundsFromPoints( points, radius ):
@@ -249,7 +255,7 @@ def getCircleIntersectionLoops( circleIntersections ):
 			addCircleIntersectionLoop( circleIntersectionLoop, circleIntersections )
 	return circleIntersectionLoops
 
-def getCircleNodesFromLoop( loop, radius, thresholdRatio = 0.9 ):
+def getCircleNodesFromLoop(loop, radius, thresholdRatio=0.9):
 	"Get the circle nodes from every point on a loop and between points."
 	radius = abs(radius)
 	points = getPointsFromLoop( loop, radius, thresholdRatio )
@@ -264,19 +270,19 @@ def getCircleNodesFromPoints( points, radius ):
 		circleNodes.append( CircleNode( point * oneOverRadius, len( circleNodes ) ) )
 	return circleNodes
 
-def getInsetLoopsFromLoop( inset, loop, thresholdRatio = 0.9 ):
+def getInsetLoopsFromLoop(inset, loop, thresholdRatio=0.9):
 	"Get the inset loops, which might overlap."
 	isInset = inset > 0
 	insetLoops = []
 	isLoopWiddershins = euclidean.isWiddershins(loop)
 	arounds = getAroundsFromLoop( loop, inset, thresholdRatio )
 	for around in arounds:
-		leftPoint = euclidean.getLeftPoint( around )
-		shouldBeWithin = ( isInset == isLoopWiddershins )
-		if euclidean.isPointInsideLoop( loop, leftPoint ) == shouldBeWithin:
-			if isLoopWiddershins != euclidean.isWiddershins( around ):
+		leftPoint = euclidean.getLeftPoint(around)
+		shouldBeWithin = (isInset == isLoopWiddershins)
+		if euclidean.isPointInsideLoop(loop, leftPoint) == shouldBeWithin:
+			if isLoopWiddershins != euclidean.isWiddershins(around):
 				around.reverse()
-			insetLoops.append( around )
+			insetLoops.append(around)
 	return insetLoops
 
 def getInsetLoopsFromLoops( inset, loops ):
@@ -286,25 +292,32 @@ def getInsetLoopsFromLoops( inset, loops ):
 		insetLoops += getInsetLoopsFromLoop( inset, loop )
 	return insetLoops
 
-def getInsetSeparateLoopsFromLoops( inset, loops, thresholdRatio = 0.9 ):
+def getInsetLoopsFromVector3Loop(loop, radius, thresholdRatio=0.9):
+	"Get the inset loops from vector3 loop, which might overlap."
+	if len(loop) < 2:
+		return [loop]
+	loopComplex = euclidean.getComplexPath(loop)
+	loopComplexes = getInsetLoopsFromLoop(radius, loopComplex)
+	return euclidean.getVector3Paths(loopComplexes, loop[0].z)
+
+def getInsetSeparateLoopsFromLoops( inset, loops, thresholdRatio=0.9 ):
 	"Get the separate inset loops."
 	isInset = inset > 0
 	insetSeparateLoops = []
 	radius = abs(inset)
 	arounds = getAroundsFromLoops( loops, radius, thresholdRatio )
 	for around in arounds:
-		leftPoint = euclidean.getLeftPoint( around )
+		leftPoint = euclidean.getLeftPoint(around)
 		if isInset == euclidean.isInFilledRegion( loops, leftPoint ):
 			if isInset:
 				around.reverse()
-			insetSeparateLoops.append( around )
+			insetSeparateLoops.append(around)
 	return insetSeparateLoops
 
-def getLargestCenterOutsetLoopFromLoop( loop, radius, thresholdRatio = 0.9 ):
+def getLargestCenterOutsetLoopFromLoop(loop, radius, thresholdRatio=0.9):
 	"Get the largest circle outset loop from the loop."
 	radius = abs(radius)
-	slightlyGreaterThanRadius = 1.01 * radius
-	points = getPointsFromLoop( loop, slightlyGreaterThanRadius, thresholdRatio )
+	points = getPointsFromLoop( loop, 1.01 * radius, thresholdRatio )
 	centers = getCentersFromPoints( points, radius )
 	largestCenterOutset = None
 	largestOutsetArea = - 999999999.0
@@ -313,7 +326,7 @@ def getLargestCenterOutsetLoopFromLoop( loop, radius, thresholdRatio = 0.9 ):
 		if isLargeSameDirection( outset, center, radius ):
 			if euclidean.isPathInsideLoop( loop, outset ) != euclidean.isWiddershins(loop):
 				centerOutset = CenterOutset( center, outset )
-				outsetArea = abs( euclidean.getPolygonArea( outset ) )
+				outsetArea = abs( euclidean.getAreaLoop( outset ) )
 				if outsetArea > largestOutsetArea:
 					outsetArea = largestOutsetArea
 					largestCenterOutset = centerOutset
@@ -359,7 +372,7 @@ def getLoopsFromLoopsDirection( isWiddershins, loops ):
 			directionalLoops.append(loop)
 	return directionalLoops
 
-def getPointsFromLoop( loop, radius, thresholdRatio = 0.9 ):
+def getPointsFromLoop(loop, radius, thresholdRatio=0.9):
 	"Get the points from every point on a loop and between points."
 	radius = abs(radius)
 	points = []
@@ -370,7 +383,7 @@ def getPointsFromLoop( loop, radius, thresholdRatio = 0.9 ):
 		addPointsFromSegment( pointBegin, pointEnd, points, radius, thresholdRatio )
 	return points
 
-def getPointsFromLoops( loops, radius, thresholdRatio = 0.9 ):
+def getPointsFromLoops( loops, radius, thresholdRatio=0.9 ):
 	"Get the points from every point on a loop and between points."
 	points = []
 	for loop in loops:
@@ -470,7 +483,7 @@ def removeIntersection( loop ):
 		behind = loop[ ( pointIndex + len( loop ) - 1 ) % len( loop ) ]
 		behindEnd = loop[ ( pointIndex + len( loop ) - 2 ) % len( loop ) ]
 		behindMidpoint = 0.5 * ( behind + behindEnd )
-		aheadEnd = loop[ ( pointIndex + 1 ) % len( loop ) ]
+		aheadEnd = loop[ (pointIndex + 1) % len( loop ) ]
 		aheadMidpoint = 0.5 * ( ahead + aheadEnd )
 		normalizedSegment = behind - behindMidpoint
 		normalizedSegmentLength = abs( normalizedSegment )
@@ -493,21 +506,21 @@ def removeIntersection( loop ):
 
 class BoundingLoop:
 	"A class to hold a bounding loop composed of a minimum complex, a maximum complex and an outset loop."
-	def __eq__( self, other ):
+	def __eq__(self, other):
 		"Determine whether this bounding loop is identical to other one."
 		if other == None:
 			return False
 		return self.minimum == other.minimum and self.maximum == other.maximum and self.loop == other.loop
 
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this bounding loop."
 		return '%s, %s, %s' % ( self.minimum, self.maximum, self.loop )
 
 	def getFromLoop( self, loop ):
 		"Get the bounding loop from a path."
 		self.loop = loop
-		self.maximum = euclidean.getMaximumFromPoints(loop)
-		self.minimum = euclidean.getMinimumFromPoints(loop)
+		self.maximum = euclidean.getMaximumByPathComplex(loop)
+		self.minimum = euclidean.getMinimumByPathComplex(loop)
 		return self
 
 	def getOutsetBoundingLoop( self, outsetDistance ):
@@ -585,20 +598,20 @@ class CircleIntersection:
 			self.demichord = rotatedClockwiseQuarter * demichordWidth / rotatedClockwiseQuarterLength
 		self.positionRelativeToBehind = self.aheadMinusBehind + self.demichord
 
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this CircleIntersection."
 		return '%s, %s, %s, %s, %s' % ( self.index, self.getAbsolutePosition(), self.circleNodeBehind.index, self.circleNodeAhead.index, self.getCircleIntersectionAhead().index )
 
 	def addToList( self, circleIntersectionPath ):
 		"Add this to the circle intersection path, setting stepped on to be true."
 		self.steppedOn = True
-		circleIntersectionPath.append( self )
+		circleIntersectionPath.append(self)
 
-	def getAbsolutePosition( self ):
+	def getAbsolutePosition(self):
 		"Get the absolute position."
 		return self.positionRelativeToBehind + self.circleNodeBehind.circle
 
-	def getCircleIntersectionAhead( self ):
+	def getCircleIntersectionAhead(self):
 		"Get the first circle intersection on the circle node ahead."
 		circleIntersections = self.circleNodeAhead.circleIntersections
 		circleIntersectionAhead = None
@@ -617,7 +630,7 @@ class CircleIntersection:
 				print( circleIntersection.circleNodeAhead.circle )
 		return circleIntersectionAhead
 
-	def isWithinCircles( self, pixelTable ):
+	def isWithinCircles(self, pixelTable):
 		"Determine if this circle intersection is within the circle node circles."
 		absolutePosition = self.getAbsolutePosition()
 		squareValues = euclidean.getSquareValuesFromPoint( pixelTable, absolutePosition )
@@ -635,12 +648,12 @@ class CircleNode:
 		self.circleIntersections = []
 #		self.index = index # when debugging bring back index
 
-	def __repr__( self ):
+	def __repr__(self):
 		"Get the string representation of this CircleNode."
 #		return '%s, %s' % ( self.index, self.circle ) # when debugging bring back index
 		return self.circle
 
-	def getWithinNodes( self, pixelTable ):
+	def getWithinNodes(self, pixelTable):
 		"Get the nodes this circle node is within."
 		withinNodes = []
 		squareValues = euclidean.getSquareValuesFromPoint( pixelTable, 0.5 * self.circle )

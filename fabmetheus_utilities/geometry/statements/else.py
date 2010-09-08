@@ -16,15 +16,15 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = "GPL 3.0"
 
 
-def processElse( xmlElement, xmlProcessor ):
+def processElse(xmlElement):
 	"Process the else statement."
-	functions = xmlProcessor.functions
-	if len( functions ) < 1:
+	functions = xmlElement.getXMLProcessor().functions
+	if len(functions) < 1:
 		print('Warning, "else" element is not in a function in processElse in else.py for:')
 		print(xmlElement)
 		return
-	functions[ - 1 ].processChildren(xmlElement)
+	functions[-1].processChildren(xmlElement)
 
-def processXMLElement( xmlElement, xmlProcessor ):
+def processXMLElement(xmlElement):
 	"Process the xml element."
 	pass

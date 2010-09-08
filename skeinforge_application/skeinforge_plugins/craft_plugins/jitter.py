@@ -84,14 +84,14 @@ def getCraftedTextFromText( gcodeText, jitterRepository = None ):
 
 def getJitteredLoop( jitterDistance, jitterLoop ):
 	"Get a jittered loop path."
-	loopLength = euclidean.getPolygonLength( jitterLoop )
+	loopLength = euclidean.getLoopLength( jitterLoop )
 	lastLength = 0.0
 	pointIndex = 0
 	totalLength = 0.0
 	jitterPosition = ( jitterDistance + 256.0 * loopLength ) % loopLength
 	while totalLength < jitterPosition and pointIndex < len( jitterLoop ):
 		firstPoint = jitterLoop[ pointIndex ]
-		secondPoint  = jitterLoop[ ( pointIndex + 1 ) % len( jitterLoop ) ]
+		secondPoint  = jitterLoop[ (pointIndex + 1) % len( jitterLoop ) ]
 		pointIndex += 1
 		lastLength = totalLength
 		totalLength += abs( firstPoint - secondPoint )
@@ -127,7 +127,7 @@ def writeOutput( fileName = ''):
 
 class JitterRepository:
 	"A class to handle the jitter settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.jitter.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Jitter', self, '')
@@ -136,7 +136,7 @@ class JitterRepository:
 		self.jitterOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Jitter Over Perimeter Width (ratio):', self, 3.0, 2.0 )
 		self.executeTitle = 'Jitter'
 
-	def execute( self ):
+	def execute(self):
 		"Jitter button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -145,7 +145,7 @@ class JitterRepository:
 
 class JitterSkein:
 	"A class to jitter a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.beforeLoopLocation = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRateMinute = None
@@ -181,7 +181,7 @@ class JitterSkein:
 		for point in path:
 			self.addGcodeMovementZ( feedRateMinute, point, z )
 
-	def addTailoredLoopPath( self ):
+	def addTailoredLoopPath(self):
 		"Add a clipped and jittered loop path."
 		loop = self.loopPath.path[ : - 1 ]
 		if self.beforeLoopLocation != None:
@@ -222,7 +222,7 @@ class JitterSkein:
 		self.loopPath.path.append( location.dropAxis( 2 ) )
 		return ''
 
-	def isNextExtruderOn( self ):
+	def isNextExtruderOn(self):
 		"Determine if there is an extruder on command before a move command."
 		line = self.lines[ self.lineIndex ]
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)

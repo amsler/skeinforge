@@ -52,7 +52,7 @@ def getLastModule():
 	craftSequence = getReadCraftSequence()
 	if len( craftSequence ) < 1:
 		return None
-	return getCraftModule( craftSequence[ - 1 ] )
+	return getCraftModule( craftSequence[-1] )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -136,14 +136,14 @@ class CraftRadioButtonsSaveListener:
 		self.name = 'CraftRadioButtonsSaveListener'
 		self.radioPlugins = radioPlugins
 		self.repository = repository
-		repository.displayEntities.append( self )
+		repository.displayEntities.append(self)
 		return self
 
-	def save( self ):
+	def save(self):
 		"Profile has been saved and craft radio plugins should be updated."
 		self.setRadioButtons()
 
-	def setRadioButtons( self ):
+	def setRadioButtons(self):
 		"Profile has been saved and craft radio plugins should be updated."
 		craftSequence = skeinforge_profile.getCraftTypePluginModule().getCraftSequence()
 		gridPosition = self.gridPosition.getCopy()
@@ -163,7 +163,7 @@ class CraftRadioButtonsSaveListener:
 
 class CraftRepository:
 	"A class to handle the craft settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_craft.html', '', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Craft', self, '')
@@ -173,7 +173,7 @@ class CraftRepository:
 		CraftRadioButtonsSaveListener().getFromRadioPlugins( radioPlugins, self )
 		self.executeTitle = 'Craft'
 
-	def execute( self ):
+	def execute(self):
 		"Craft button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:

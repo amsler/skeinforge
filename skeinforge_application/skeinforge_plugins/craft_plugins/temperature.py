@@ -6,11 +6,6 @@ Temperature is a script to set the temperature for the object and raft.
 The default 'Activate Temperature' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
 ==Settings==
-===Initial Circling===
-Default is off.
-
-When selected, the extruder will initially circle around until it reaches operating temperature.
-
 ===Rate===
 The default cooling rate and heating rate for the extruder were both been derived from bothacker's graph at:
 http://bothacker.com/wp-content/uploads/2009/09/18h5m53s9.29.2009.png
@@ -26,11 +21,6 @@ Default is ten degrees Celcius per second.
 Defines the heating rate of the extruder.
 
 ===Temperature===
-====Chamber Temperature====
-Default is twenty five degrees Celcius.
-
-Defines the chamber temperature.  If there is no chamber, the chamber temperature will be slightly higher than room temperature.
-
 ====Base Temperature====
 Default for ABS is two hundred degrees Celcius.
 
@@ -148,20 +138,17 @@ def writeOutput( fileName = ''):
 
 class TemperatureRepository:
 	"A class to handle the temperature settings."
-	def __init__( self ):
+	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.temperature.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Temperature', self, '')
 		self.activateTemperature = settings.BooleanSetting().getFromValue('Activate Temperature:', self, True )
-		settings.LabelSeparator().getFromRepository( self )
-		self.initialCircling = settings.BooleanSetting().getFromValue('Initial Circling:', self, False )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Rate -', self )
 		self.coolingRate = settings.FloatSpin().getFromValue( 1.0, 'Cooling Rate (Celcius/second):', self, 20.0, 3.0 )
 		self.heatingRate = settings.FloatSpin().getFromValue( 1.0, 'Heating Rate (Celcius/second):', self, 20.0, 10.0 )
-		settings.LabelSeparator().getFromRepository( self )
+		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Temperature -', self )
-		self.chamberTemperature = settings.FloatSpin().getFromValue( 0.0, 'Chamber Temperature (Celcius):', self, 400.0, 25.0 )
 		self.baseTemperature = settings.FloatSpin().getFromValue( 140.0, 'Base Temperature (Celcius):', self, 260.0, 200.0 )
 		self.interfaceTemperature = settings.FloatSpin().getFromValue( 140.0, 'Interface Temperature (Celcius):', self, 260.0, 200.0 )
 		self.objectFirstLayerInfillTemperature = settings.FloatSpin().getFromValue( 140.0, 'Object First Layer Infill Temperature (Celcius):', self, 260.0, 195.0 )
@@ -171,7 +158,7 @@ class TemperatureRepository:
 		self.supportedLayersTemperature = settings.FloatSpin().getFromValue( 140.0, 'Supported Layers Temperature (Celcius):', self, 260.0, 230.0 )
 		self.executeTitle = 'Temperature'
 
-	def execute( self ):
+	def execute(self):
 		"Temperature button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
@@ -180,7 +167,7 @@ class TemperatureRepository:
 
 class TemperatureSkein:
 	"A class to temperature a skein of extrusions."
-	def __init__( self ):
+	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.lineIndex = 0
 		self.lines = None
@@ -199,7 +186,7 @@ class TemperatureSkein:
 		self.distanceFeedRate.addLines( self.lines[self.lineIndex :] )
 		return self.distanceFeedRate.output.getvalue()
 
-	def parseInitialization( self ):
+	def parseInitialization(self):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
@@ -212,8 +199,6 @@ class TemperatureSkein:
 			elif firstWord == '(<perimeterWidth>':
 				self.distanceFeedRate.addTagBracketedLine('coolingRate', self.repository.coolingRate.value )
 				self.distanceFeedRate.addTagBracketedLine('heatingRate', self.repository.heatingRate.value )
-				if self.repository.initialCircling.value:
-					self.distanceFeedRate.addTagBracketedLine('chamberTemperature', self.repository.chamberTemperature.value )
 				self.distanceFeedRate.addTagBracketedLine('baseTemperature', self.repository.baseTemperature.value )
 				self.distanceFeedRate.addTagBracketedLine('interfaceTemperature', self.repository.interfaceTemperature.value )
 				self.distanceFeedRate.addTagBracketedLine('objectFirstLayerInfillTemperature', self.repository.objectFirstLayerInfillTemperature.value )

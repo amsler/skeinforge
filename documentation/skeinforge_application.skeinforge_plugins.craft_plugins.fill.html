@@ -32,12 +32,14 @@ Allan Ecker aka The Masked Retriever has written the "Skeinforge Quicktip: Fill"
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Extra Shells on Base">Extra Shells on Base</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Extra Shells on Sparse Layer">Extra Shells on Sparse Layer</a><br />
 &nbsp;&nbsp;<a href="#Grid">Grid</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Circle Separation over Perimeter Width">Grid Circle Separation over Perimeter Width</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Extra Overlap">Grid Extra Overlap</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Junction Separation over Octogon Radius At End">Grid Junction Separation over Octogon Radius At End</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Junction Separation over Octogon Radius At Middle">Grid Junction Separation over Octogon Radius At Middle</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Junction Separation Band Height">Grid Junction Separation Band Height</a><br />
 &nbsp;&nbsp;<a href="#Infill">Infill</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Pattern">Infill Pattern</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Circular">Grid Circular</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Hexagonal">Grid Hexagonal</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Grid Rectangular">Grid Rectangular</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Line">Line</a><br />
@@ -106,6 +108,12 @@ Defines the number of extra shells on the sparse layers.  The solid layers are t
  <br>
 <a name="Grid" id="Grid"></a><h3>Grid</h3>
 
+<a name="Grid Circle Separation over Perimeter Width" id="Grid Circle Separation over Perimeter Width"></a><h4>Grid Circle Separation over Perimeter Width</h4>
+
+Default is 0.5.<br>
+ <br>
+Defines the ratio of the amount the grid circle is inset over the perimeter width, the default is zero.  With a value of zero the circles will touch, with a value of one two threads could be fitted between the circles.<br>
+ <br>
 <a name="Grid Extra Overlap" id="Grid Extra Overlap"></a><h4>Grid Extra Overlap</h4>
 
 Default is 0.1.<br>
@@ -116,7 +124,7 @@ Defines the amount of extra overlap added when extruding the grid to compensate 
 
 Default is zero.<br>
  <br>
-Defines the ratio of the amount the grid square is increased in each direction over the extrusion width at the end, the default is zero.  With a value of one or so the grid pattern will have large squares to go with the octogons.<br>
+Defines the ratio of the amount the grid square is increased in each direction over the extrusion width at the end.  With a value of one or so the grid pattern will have large squares to go with the octogons.<br>
  <br>
 <a name="Grid Junction Separation over Octogon Radius At Middle" id="Grid Junction Separation over Octogon Radius At Middle"></a><h4>Grid Junction Separation over Octogon Radius At Middle</h4>
 
@@ -135,6 +143,12 @@ Defines the height of the bands of the accordion pattern.<br>
 <a name="Infill Pattern" id="Infill Pattern"></a><h4>Infill Pattern</h4>
 
 Default is 'Line', since it is quicker to generate and does not add extra movements for the extruder.  The grid pattern has extra diagonal lines, so when choosing a grid option, set the infill solidity to 0.2 or less so that there is not too much plastic and the grid generation time, which increases with the third power of solidity, will be reasonable.<br>
+ <br>
+<a name="Grid Circular" id="Grid Circular"></a><h5>Grid Circular</h5>
+
+When selected, the infill will be a grid of separated circles.  Because the circles are separated, the pattern is weak, it only provides support for the top layer threads and some strength in the z direction.  The flip side is that this infill does not warp the object, the object will get warped only by the walls.<br>
+ <br>
+Because this pattern turns the extruder on and off often, it is best to use a stepper motor extruder.<br>
  <br>
 <a name="Grid Hexagonal" id="Grid Hexagonal"></a><h5>Grid Hexagonal</h5>
 
@@ -243,7 +257,7 @@ Type "help", "copyright", "credits" or "license" for more information.<br>
 This brings up the fill dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; fill.<a href="#-writeOutput">writeOutput</a>( 'Screw Holder Bottom.stl' )<br>
+&gt;&gt;&gt; fill.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The fill tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -319,6 +333,8 @@ The fill tool has created the file:<br>
 
 <dl><dt><a name="FillSkein-addGrid"><strong>addGrid</strong></a>(self, arounds, fillLoops, gridPointInsetX, layerIndex, paths, pixelTable, reverseZRotationAngle, surroundingCarves, width)</dt><dd><tt>Add&nbsp;the&nbsp;grid&nbsp;to&nbsp;the&nbsp;infill&nbsp;layer.</tt></dd></dl>
 
+<dl><dt><a name="FillSkein-addGridCircle"><strong>addGridCircle</strong></a>(self, center, infillPaths, layerRotationAroundZAngle, pixelTable, startAngle, width)</dt><dd><tt>Add&nbsp;circle&nbsp;to&nbsp;the&nbsp;grid.</tt></dd></dl>
+
 <dl><dt><a name="FillSkein-addGridLinePoints"><strong>addGridLinePoints</strong></a>(self, begin, end, gridPoints, gridRotationAngle, offset, y)</dt><dd><tt>Add&nbsp;the&nbsp;segments&nbsp;of&nbsp;one&nbsp;line&nbsp;of&nbsp;a&nbsp;grid&nbsp;to&nbsp;the&nbsp;infill.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-addRemainingGridPoints"><strong>addRemainingGridPoints</strong></a>(self, arounds, gridPointInsetX, gridPointInsetY, gridPoints, isBothOrNone, paths, pixelTable, width)</dt><dd><tt>Add&nbsp;the&nbsp;remaining&nbsp;grid&nbsp;points&nbsp;to&nbsp;the&nbsp;grid&nbsp;point&nbsp;list.</tt></dd></dl>
@@ -335,7 +351,9 @@ The fill tool has created the file:<br>
 
 <dl><dt><a name="FillSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
-<dl><dt><a name="FillSkein-getGridPoints"><strong>getGridPoints</strong></a>(self, fillLoops, reverseZRotationAngle)</dt><dd><tt>Get&nbsp;the&nbsp;grid&nbsp;pointsl.</tt></dd></dl>
+<dl><dt><a name="FillSkein-getGridPoints"><strong>getGridPoints</strong></a>(self, fillLoops, reverseZRotationAngle)</dt><dd><tt>Get&nbsp;the&nbsp;grid&nbsp;points.</tt></dd></dl>
+
+<dl><dt><a name="FillSkein-getIsDensitySolidityPositive"><strong>getIsDensitySolidityPositive</strong></a>(self)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;infillSolidity&nbsp;and&nbsp;infillInteriorDensityOverExteriorDensity&nbsp;are&nbsp;both&nbsp;positive.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-getLayerRoundZ"><strong>getLayerRoundZ</strong></a>(self, layerIndex)</dt><dd><tt>Get&nbsp;the&nbsp;plane&nbsp;angle&nbsp;around&nbsp;z&nbsp;that&nbsp;the&nbsp;layer&nbsp;is&nbsp;rotated&nbsp;by.</tt></dd></dl>
 
@@ -393,6 +411,7 @@ The fill tool has created the file:<br>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-addAroundGridPoint"><strong>addAroundGridPoint</strong></a>(arounds, gridPoint, gridPointInsetX, gridPointInsetY, gridPoints, gridSearchRadius, isBothOrNone, isDoubleJunction, isJunctionWide, paths, pixelTable, width)</dt><dd><tt>Add&nbsp;the&nbsp;path&nbsp;around&nbsp;the&nbsp;grid&nbsp;point.</tt></dd></dl>
+ <dl><dt><a name="-addLoop"><strong>addLoop</strong></a>(infillWidth, infillPaths, loop, rotationPlaneAngle)</dt><dd><tt>Add&nbsp;simplified&nbsp;path&nbsp;to&nbsp;fill.</tt></dd></dl>
  <dl><dt><a name="-addPath"><strong>addPath</strong></a>(infillWidth, infillPaths, path, rotationPlaneAngle)</dt><dd><tt>Add&nbsp;simplified&nbsp;path&nbsp;to&nbsp;fill.</tt></dd></dl>
  <dl><dt><a name="-addPathIndexFirstSegment"><strong>addPathIndexFirstSegment</strong></a>(gridPixel, pathIndexTable, pixelTable, segmentFirstPixel)</dt><dd><tt>Add&nbsp;the&nbsp;path&nbsp;index&nbsp;of&nbsp;the&nbsp;closest&nbsp;segment&nbsp;found&nbsp;toward&nbsp;the&nbsp;second&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-addPathIndexSecondSegment"><strong>addPathIndexSecondSegment</strong></a>(gridPixel, pathIndexTable, pixelTable, segmentSecondPixel)</dt><dd><tt>Add&nbsp;the&nbsp;path&nbsp;index&nbsp;of&nbsp;the&nbsp;closest&nbsp;segment&nbsp;found&nbsp;toward&nbsp;the&nbsp;second&nbsp;segment.</tt></dd></dl>
@@ -408,9 +427,10 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-createFillForSurroundings"><strong>createFillForSurroundings</strong></a>(radius, shouldExtraLoopsBeAdded, surroundingLoops)</dt><dd><tt>Create&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;for&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getAdditionalLength"><strong>getAdditionalLength</strong></a>(path, point, pointIndex)</dt><dd><tt>Get&nbsp;the&nbsp;additional&nbsp;length&nbsp;added&nbsp;by&nbsp;inserting&nbsp;a&nbsp;point&nbsp;into&nbsp;a&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getClosestOppositeIntersectionPaths"><strong>getClosestOppositeIntersectionPaths</strong></a>(yIntersectionPaths)</dt><dd><tt>Get&nbsp;the&nbsp;close&nbsp;to&nbsp;center&nbsp;paths,&nbsp;starting&nbsp;with&nbsp;the&nbsp;first&nbsp;and&nbsp;an&nbsp;additional&nbsp;opposite&nbsp;if&nbsp;it&nbsp;exists.</tt></dd></dl>
+ <dl><dt><a name="-getComplexPolygon"><strong>getComplexPolygon</strong></a>(center, radius, sides, startAngle)</dt><dd><tt>Get&nbsp;the&nbsp;complex&nbsp;polygon.</tt></dd></dl>
  <dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText<font color="#909090">=''</font>, repository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;file&nbsp;or&nbsp;gcode&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;gcode&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getExtraFillLoops"><strong>getExtraFillLoops</strong></a>(insideLoops, outsideLoop, radius)</dt><dd><tt>Get&nbsp;extra&nbsp;loops&nbsp;between&nbsp;inside&nbsp;and&nbsp;outside&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-getExtraFillLoops"><strong>getExtraFillLoops</strong></a>(loops, radius)</dt><dd><tt>Get&nbsp;extra&nbsp;loops&nbsp;between&nbsp;inside&nbsp;and&nbsp;outside&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getKeyIsInPixelTableAddValue"><strong>getKeyIsInPixelTableAddValue</strong></a>(key, pathIndexTable, pixelTable)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;key&nbsp;is&nbsp;in&nbsp;the&nbsp;pixel&nbsp;table,&nbsp;and&nbsp;if&nbsp;it&nbsp;is&nbsp;and&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;None&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;path&nbsp;index&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getNonIntersectingGridPointLine"><strong>getNonIntersectingGridPointLine</strong></a>(gridPointInsetX, isJunctionWide, paths, pixelTable, yIntersectionPath, width)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;around&nbsp;the&nbsp;grid&nbsp;point&nbsp;that&nbsp;is&nbsp;junction&nbsp;wide&nbsp;that&nbsp;do&nbsp;not&nbsp;intersect.</tt></dd></dl>
@@ -423,8 +443,6 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-isAddedPointOnPathFree"><strong>isAddedPointOnPathFree</strong></a>(path, pixelTable, point, pointIndex, width)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;point&nbsp;added&nbsp;to&nbsp;a&nbsp;path&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;pixel&nbsp;table&nbsp;or&nbsp;the&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-isAddedPointOnPathIntersectingPath"><strong>isAddedPointOnPathIntersectingPath</strong></a>(begin, path, point, pointIndex)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;point&nbsp;added&nbsp;to&nbsp;a&nbsp;path&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;path&nbsp;by&nbsp;checking&nbsp;line&nbsp;intersection.</tt></dd></dl>
  <dl><dt><a name="-isIntersectingLoopsPaths"><strong>isIntersectingLoopsPaths</strong></a>(loops, paths, pointBegin, pointEnd)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;segment&nbsp;between&nbsp;the&nbsp;first&nbsp;and&nbsp;second&nbsp;point&nbsp;is&nbsp;intersecting&nbsp;the&nbsp;loop&nbsp;list.</tt></dd></dl>
- <dl><dt><a name="-isPathAlwaysInsideLoop"><strong>isPathAlwaysInsideLoop</strong></a>(loop, path)</dt><dd><tt>Determine&nbsp;if&nbsp;all&nbsp;points&nbsp;of&nbsp;a&nbsp;path&nbsp;are&nbsp;inside&nbsp;another&nbsp;loop.</tt></dd></dl>
- <dl><dt><a name="-isPathAlwaysOutsideLoops"><strong>isPathAlwaysOutsideLoops</strong></a>(loops, path)</dt><dd><tt>Determine&nbsp;if&nbsp;all&nbsp;points&nbsp;in&nbsp;a&nbsp;path&nbsp;are&nbsp;outside&nbsp;another&nbsp;loop&nbsp;in&nbsp;a&nbsp;list.</tt></dd></dl>
  <dl><dt><a name="-isPointAddedAroundClosest"><strong>isPointAddedAroundClosest</strong></a>(aroundPixelTable, layerExtrusionWidth, paths, removedEndpointPoint, width)</dt><dd><tt>Add&nbsp;the&nbsp;closest&nbsp;removed&nbsp;endpoint&nbsp;to&nbsp;the&nbsp;path,&nbsp;with&nbsp;minimal&nbsp;twisting.</tt></dd></dl>
  <dl><dt><a name="-isSegmentAround"><strong>isSegmentAround</strong></a>(aroundSegments, segment)</dt><dd><tt>Determine&nbsp;if&nbsp;there&nbsp;is&nbsp;another&nbsp;segment&nbsp;around.</tt></dd></dl>
  <dl><dt><a name="-isSegmentCompletelyInAnIntersection"><strong>isSegmentCompletelyInAnIntersection</strong></a>(segment, xIntersections)</dt><dd><tt>Add&nbsp;sparse&nbsp;endpoints&nbsp;from&nbsp;a&nbsp;segment.</tt></dd></dl>
