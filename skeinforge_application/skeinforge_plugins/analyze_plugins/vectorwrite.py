@@ -72,20 +72,20 @@ import os
 import sys
 import time
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getNewRepository():
 	"Get the repository constructor."
 	return VectorwriteRepository()
 
-def getWindowAnalyzeFile( fileName ):
+def getWindowAnalyzeFile(fileName):
 	"Write scalable vector graphics for a gcode file."
-	gcodeText = gcodec.getFileText( fileName )
-	return getWindowAnalyzeFileGivenText( fileName, gcodeText )
+	gcodeText = gcodec.getFileText(fileName)
+	return getWindowAnalyzeFileGivenText(fileName, gcodeText)
 
 def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
 	"Write scalable vector graphics for a gcode file given the settings."
@@ -98,11 +98,11 @@ def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
 	if vectorwriteGcode == '':
 		return None
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '_vectorwrite.svg'
-	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace(' ', '_')
+	suffixDirectoryName = os.path.dirname(suffixFileName)
+	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, vectorwriteGcode )
-	print('The vectorwrite file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('The vectorwrite file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
 	print('It took %s to vectorwrite the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
@@ -179,7 +179,7 @@ class VectorwriteRepository:
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			getWindowAnalyzeFile( fileName )
+			getWindowAnalyzeFile(fileName)
 
 
 class VectorwriteSkein:
@@ -238,17 +238,17 @@ class VectorwriteSkein:
 		for line in self.lines[self.lineIndex :]:
 			self.parseLine(line)
 		svgWriter = SVGWriterVectorwrite(True, self, self.decimalPlacesCarried, self.perimeterWidth)
-		return svgWriter.getReplacedSVGTemplate(fileName, 'vectorwrite', self.rotatedBoundaryLayers)
+		return svgWriter.getReplacedSVGTemplate(fileName, 'vectorwrite', self.rotatedBoundaryLayers, None)
 
 	def linearMove( self, splitLine ):
 		"Get statistics for a linear move."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		self.cornerMaximum = euclidean.getPointMaximum( self.cornerMaximum, location )
 		self.cornerMinimum = euclidean.getPointMinimum( self.cornerMinimum, location )
 		if self.extruderActive:
 			if len( self.thread ) == 0:
-				self.thread = [ self.oldLocation.dropAxis( 2 ) ]
-			self.thread.append( location.dropAxis( 2 ) )
+				self.thread = [ self.oldLocation.dropAxis(2) ]
+			self.thread.append( location.dropAxis(2) )
 		self.oldLocation = location
 
 	def parseInitialization(self):
@@ -256,24 +256,24 @@ class VectorwriteSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == '(<decimalPlacesCarried>':
-				self.decimalPlacesCarried = int( splitLine[1] )
+				self.decimalPlacesCarried = int(splitLine[1])
 			elif firstWord == '(<layerThickness>':
-				self.layerThickness = float( splitLine[1] )
+				self.layerThickness = float(splitLine[1])
 			elif firstWord == '(<extrusion>)':
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[1] )
+				self.perimeterWidth = float(splitLine[1])
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the outset skein."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			self.linearMove( splitLine )
+			self.linearMove(splitLine)
 		elif firstWord == 'M101':
 			self.extruderActive = True
 		elif firstWord == 'M103':
@@ -289,13 +289,13 @@ class VectorwriteSkein:
 		elif firstWord == '(</boundaryPerimeter>)':
 			self.boundaryLoop = None
 		elif firstWord == '(<boundaryPoint>':
-			location = gcodec.getLocationFromSplitLine( None, splitLine )
+			location = gcodec.getLocationFromSplitLine(None, splitLine)
 			if self.boundaryLoop == None:
 				self.boundaryLoop = []
 				self.rotatedBoundaryLayer.boundaryLoops.append( self.boundaryLoop )
-			self.boundaryLoop.append( location.dropAxis( 2 ) )
+			self.boundaryLoop.append( location.dropAxis(2) )
 		elif firstWord == '(<layer>':
-			self.addRotatedLoopLayer( float( splitLine[1] ) )
+			self.addRotatedLoopLayer( float(splitLine[1]) )
 		elif firstWord == '(</loop>)':
 			self.addToLoops()
 		elif firstWord == '(<loop>':
@@ -310,7 +310,7 @@ class VectorwriteSkein:
 def main():
 	"Display the vectorwrite dialog."
 	if len( sys.argv ) > 1:
-		getWindowAnalyzeFile(' '.join( sys.argv[ 1 : ] ) )
+		getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

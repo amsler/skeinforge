@@ -16,9 +16,9 @@ from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getNewMouseTool():
@@ -33,18 +33,18 @@ class DisplayLine( MouseToolBase ):
 		self.destroyEverythingGetFocus()
 		x = self.canvas.canvasx( event.x )
 		y = self.canvas.canvasy( event.y )
-		tags = self.getTagsGivenXY( x, y )
+		tags = self.getTagsGivenXY(x, y)
 		if tags == 'pointer':
 			self.canvas.delete('pointer')
-			tags = self.getTagsGivenXY( x, y )
+			tags = self.getTagsGivenXY(x, y)
 		if tags == '':
 			return
 		if tags.startswith('colored_line_index:'):
 			splitLine = tags.split()
-			coloredLineIndex = int( splitLine[1] )
+			coloredLineIndex = int(splitLine[1])
 			self.repository.line.value = coloredLineIndex
 			tags = self.getSelectedColoredLine().displayString
-		self.drawLineText( complex( float( x ), float( y ) ), tags )
+		self.drawLineText( complex( float(x), float(y) ), tags )
 
 	def drawLineText( self, location, tags ):
 		"Draw the line text."

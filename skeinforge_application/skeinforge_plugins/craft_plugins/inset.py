@@ -95,9 +95,9 @@ import os
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/28/04 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def addAlreadyFilledArounds( alreadyFilledArounds, loop, radius ):
@@ -244,7 +244,7 @@ def isIntersectingWithinLists( loop, loopLists ):
 
 def writeOutput( fileName = ''):
 	"Inset the carving of a gcode file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'inset')
 
@@ -269,7 +269,7 @@ class InsetRepository:
 		"Inset button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class InsetSkein:
@@ -285,7 +285,7 @@ class InsetSkein:
 		segments = []
 		outlines = []
 		thickOutlines = []
-		allLoopLists = loopLists[ : ] + [ thickOutlines ]
+		allLoopLists = loopLists[:] + [ thickOutlines ]
 		aroundLists = loopLists
 		for pointIndex in xrange(len(loop)):
 			pointBegin = loop[pointIndex]
@@ -341,13 +341,13 @@ class InsetSkein:
 	def addGcodePerimeterBlockFromRemainingLoop( self, loop, loopLists, radius, z ):
 		"Add the perimter block remainder of the loop which does not overlap the alreadyFilledArounds loops."
 		if self.repository.overlapRemovalWidthOverPerimeterWidth.value < 0.2:
-			self.distanceFeedRate.addPerimeterBlock( loop, z )
+			self.distanceFeedRate.addPerimeterBlock(loop, z)
 			return
 		isIntersectingSelf = isIntersectingItself( loop, self.overlapRemovalWidth )
 		if isIntersectingWithinLists( loop, loopLists ) or isIntersectingSelf:
 			self.addGcodeFromPerimeterPaths( isIntersectingSelf, loop, loopLists, radius, z )
 		else:
-			self.distanceFeedRate.addPerimeterBlock( loop, z )
+			self.distanceFeedRate.addPerimeterBlock(loop, z)
 		addAlreadyFilledArounds( loopLists, loop, self.overlapRemovalWidth )
 
 	def addInitializationToOutput(self):
@@ -384,7 +384,7 @@ class InsetSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(<decimalPlacesCarried>':
 				self.addInitializationToOutput()
@@ -395,20 +395,20 @@ class InsetSkein:
 				self.distanceFeedRate.addLine(line)
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[1] )
+				self.perimeterWidth = float(splitLine[1])
 				self.halfPerimeterWidth = 0.5 * self.perimeterWidth
 				self.overlapRemovalWidth = self.perimeterWidth * self.repository.overlapRemovalWidthOverPerimeterWidth.value
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the inset skein."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == '(<boundaryPoint>':
-			location = gcodec.getLocationFromSplitLine( None, splitLine )
-			self.boundary.append( location.dropAxis( 2 ) )
+			location = gcodec.getLocationFromSplitLine(None, splitLine)
+			self.boundary.append( location.dropAxis(2) )
 		elif ( firstWord == '(<bridgeRotation>' or firstWord == '<!--bridgeRotation-->'):
 			secondWordWithoutBrackets = splitLine[1].replace('(', '').replace(')', '')
 			self.rotatedBoundaryLayer.rotation = complex( secondWordWithoutBrackets )
@@ -418,7 +418,7 @@ class InsetSkein:
 					self.distanceFeedRate.addLine('M104 S0') # Turn extruder heater off.
 				return
 		elif firstWord == '(<layer>':
-			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float( splitLine[1] ) )
+			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float(splitLine[1]) )
 			self.distanceFeedRate.addLine(line)
 		elif firstWord == '(</layer>)':
 			self.addInset( self.rotatedBoundaryLayer )
@@ -433,7 +433,7 @@ class InsetSkein:
 def main():
 	"Display the inset dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -64,9 +64,9 @@ import os
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text, homeRepository = None ):
@@ -89,7 +89,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Home a gcode linear move file.  Chain home the gcode if it is not already homed. If no fileName is specified, home the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'home')
 
@@ -109,7 +109,7 @@ class HomeRepository:
 		"Home button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class HomeSkein:
@@ -131,16 +131,16 @@ class HomeSkein:
 		alongWay = self.absolutePerimeterWidth / beginEndDistance
 		closeToEnd = euclidean.getIntermediateLocation( alongWay, end, begin )
 		closeToEnd.z = self.highestZ
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.travelFeedRatePerMinute, closeToEnd.dropAxis( 2 ), closeToEnd.z ) )
+		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.travelFeedRatePerMinute, closeToEnd.dropAxis(2), closeToEnd.z ) )
 
-	def addHopUp( self, location ):
+	def addHopUp(self, location):
 		"Add hop to highest point."
 		locationUp = Vector3( location.x, location.y, self.highestZ )
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.travelFeedRatePerMinute, locationUp.dropAxis( 2 ), locationUp.z ) )
+		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.travelFeedRatePerMinute, locationUp.dropAxis(2), locationUp.z ) )
 
 	def addHomeTravel( self, splitLine ):
 		"Add the home travel gcode."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		self.highestZ = max( self.highestZ, location.z )
 		if not self.shouldHome:
 			return
@@ -175,26 +175,26 @@ class HomeSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> home </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.absolutePerimeterWidth = abs( float( splitLine[1] ) )
+				self.absolutePerimeterWidth = abs( float(splitLine[1]) )
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float( splitLine[1] )
+				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the bevel gcode."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			self.addHomeTravel( splitLine )
-			self.oldLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			self.addHomeTravel(splitLine)
+			self.oldLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		elif firstWord == '(<layer>':
 			if self.homingText != '':
 				self.shouldHome = True
@@ -208,7 +208,7 @@ class HomeSkein:
 def main():
 	"Display the home dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

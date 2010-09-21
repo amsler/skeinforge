@@ -113,23 +113,23 @@ import sys
 import time
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get cleaved text."
 	if fileName.endswith('.svg'):
-		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
+		gcodeText = gcodec.getTextIfEmpty(fileName, gcodeText)
 		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'cleave'):
 			return gcodeText
-	carving = svg_writer.getCarving( fileName )
+	carving = svg_writer.getCarving(fileName)
 	if carving == None:
 		return ''
 	if repository == None:
 		repository = CleaveRepository()
-		settings.getReadRepository( repository )
+		settings.getReadRepository(repository)
 	return CleaveSkein().getCarvedSVG( carving, fileName, repository )
 
 def getNewRepository():
@@ -139,18 +139,18 @@ def getNewRepository():
 def writeOutput( fileName = ''):
 	"Cleave a GNU Triangulated Surface file.  If no fileName is specified, cleave the first GNU Triangulated Surface file in this folder."
 	startTime = time.time()
-	print('File ' + gcodec.getSummarizedFileName( fileName ) + ' is being cleaved.')
+	print('File ' + gcodec.getSummarizedFileName(fileName) + ' is being cleaved.')
 	repository = CleaveRepository()
-	settings.getReadRepository( repository )
+	settings.getReadRepository(repository)
 	cleaveGcode = getCraftedText( fileName, '', repository )
 	if cleaveGcode == '':
 		return
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '_cleave.svg'
-	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace(' ', '_')
+	suffixDirectoryName = os.path.dirname(suffixFileName)
+	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, cleaveGcode )
-	print('The cleaved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('The cleaved file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
 	print('It took %s to cleave the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
@@ -181,7 +181,7 @@ class CleaveRepository:
 		"Cleave button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class CleaveSkein:
@@ -201,13 +201,14 @@ class CleaveSkein:
 		layerThickness = carving.getCarveLayerThickness()
 		decimalPlacesCarried = max( 0, 1 + repository.extraDecimalPlaces.value - int( math.floor( math.log10( layerThickness ) ) ) )
 		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
-		return svgWriter.getReplacedSVGTemplate( fileName, 'cleave', svg_writer.getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ) )
+		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedBoundaryLayers)
+		return svgWriter.getReplacedSVGTemplate( fileName, 'cleave', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())
 
 
 def main():
 	"Display the cleave dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

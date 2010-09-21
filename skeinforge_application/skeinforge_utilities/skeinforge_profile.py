@@ -26,6 +26,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.hidden_scrollbar import HiddenScrollbar
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -33,13 +34,13 @@ import os
 import shutil
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
-def addListsSetCraftProfileArchive( craftSequence, defaultProfile, repository, fileNameHelp ):
-	"Set the craft profile archive."
+def addListsSetCraftProfile( craftSequence, defaultProfile, repository, fileNameHelp ):
+	"Set the craft profile repository."
 	settings.addListsToRepository( fileNameHelp, '', repository )
 	repository.craftSequenceLabel = settings.LabelDisplay().getFromName('Craft Sequence: ', repository )
 	craftToolStrings = []
@@ -54,8 +55,8 @@ def addListsSetCraftProfileArchive( craftSequence, defaultProfile, repository, f
 	repository.profileListbox = ProfileListboxSetting().getFromListSetting( repository.profileList, 'Profile Selection:', repository, defaultProfile )
 	repository.addListboxSelection = AddProfile().getFromProfileListboxSettingRepository( repository.profileListbox, repository )
 	repository.deleteListboxSelection = DeleteProfile().getFromProfileListboxSettingRepository( repository.profileListbox, repository )
-	directoryName = settings.getProfilesDirectoryPath()
-	gcodec.makeDirectory( directoryName )
+	directoryName = archive.getProfilesPath()
+	gcodec.makeDirectory(directoryName)
 	repository.windowPosition.value = '0+400'
 
 def addListsToCraftTypeRepository( fileNameHelp, repository ):
@@ -74,7 +75,7 @@ def cancelAll():
 	for globalRepositoryDialogValue in settings.getGlobalRepositoryDialogValues():
 		globalRepositoryDialogValue.cancel()
 
-def getCraftTypeName( subName = ''):
+def getCraftTypeName(subName=''):
 	"Get the craft type from the profile."
 	profileSettings = getReadProfileRepository()
 	craftTypeName = settings.getSelectedPluginName( profileSettings.craftRadios )
@@ -146,7 +147,7 @@ class AddProfile:
 			print('There is already a profile by the name of %s, so no profile will be added.' % entryText )
 			return
 		self.entry.delete( 0, settings.Tkinter.END )
-		craftTypeProfileDirectory = settings.getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName )
+		craftTypeProfileDirectory = archive.getProfilesPath( self.profileListboxSetting.listSetting.craftTypeName )
 		destinationDirectory = os.path.join( craftTypeProfileDirectory, entryText )
 		shutil.copytree( self.profileListboxSetting.getSelectedFolder(), destinationDirectory )
 		self.profileListboxSetting.listSetting.setValueToFolders()
@@ -209,11 +210,11 @@ class DeleteProfileDialog:
 		else:
 			print('No profile is selected, so no profile will be deleted.')
 			return
-		settings.deleteDirectory( settings.getProfilesDirectoryPath( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
+		settings.deleteDirectory( archive.getProfilesPath( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
 		settings.deleteDirectory( getProfilesDirectoryInAboveDirectory( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
 		self.profileListboxSetting.listSetting.setValueToFolders()
 		if len( self.profileListboxSetting.listSetting.value ) < 1:
-			defaultSettingsDirectory = settings.getProfilesDirectoryPath( os.path.join( self.profileListboxSetting.listSetting.craftTypeName, self.profileListboxSetting.defaultValue ) )
+			defaultSettingsDirectory = archive.getProfilesPath( os.path.join( self.profileListboxSetting.listSetting.craftTypeName, self.profileListboxSetting.defaultValue ) )
 			gcodec.makeDirectory( defaultSettingsDirectory )
 			self.profileListboxSetting.listSetting.setValueToFolders()
 		lastSelectionIndex = min( lastSelectionIndex, len( self.profileListboxSetting.listSetting.value ) - 1 )
@@ -238,7 +239,7 @@ class ProfileList:
 
 	def setValueToFolders(self):
 		"Set the value to the folders in the profiles directories."
-		self.value = settings.getFolders( settings.getProfilesDirectoryPath( self.craftTypeName ) )
+		self.value = settings.getFolders( archive.getProfilesPath( self.craftTypeName ) )
 		defaultFolders = settings.getFolders( settings.getProfilesDirectoryInAboveDirectory( self.craftTypeName ) )
 		for defaultFolder in defaultFolders:
 			if defaultFolder not in self.value:
@@ -276,13 +277,13 @@ class ProfileListboxSetting( settings.StringSetting ):
 		"Initialize."
 		self.getFromValueOnly( name, repository, value )
 		self.listSetting = listSetting
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
+		repository.preferences.append(self)
 		return self
 
 	def getSelectedFolder(self):
 		"Get the selected folder."
-		settingProfileSubfolder = settings.getSubfolderWithBasename( self.value, settings.getProfilesDirectoryPath( self.listSetting.craftTypeName ) )
+		settingProfileSubfolder = settings.getSubfolderWithBasename( self.value, archive.getProfilesPath( self.listSetting.craftTypeName ) )
 		if settingProfileSubfolder != None:
 			return settingProfileSubfolder
 		toolProfileSubfolder = settings.getSubfolderWithBasename( self.value, settings.getProfilesDirectoryInAboveDirectory( self.listSetting.craftTypeName ) )
@@ -351,8 +352,8 @@ class ProfileRepository:
 		ProfilePluginRadioButtonsSaveListener().getFromRadioPlugins( self.craftRadios, self )
 		for craftRadio in self.craftRadios:
 			craftRadio.updateFunction = self.updateRelay
-		directoryName = settings.getProfilesDirectoryPath()
-		gcodec.makeDirectory( directoryName )
+		directoryName = archive.getProfilesPath()
+		gcodec.makeDirectory(directoryName)
 		self.windowPosition.value = '0+200'
 
 	def updateRelay(self):

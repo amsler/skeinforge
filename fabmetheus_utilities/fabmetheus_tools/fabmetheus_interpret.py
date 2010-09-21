@@ -32,19 +32,19 @@ import os
 import time
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
-def getCarving( fileName ):
+def getCarving(fileName):
 	"Get carving."
-	pluginModule = getInterpretPlugin( fileName )
+	pluginModule = getInterpretPlugin(fileName)
 	if pluginModule == None:
 		return None
-	return pluginModule.getCarving( fileName )
+	return pluginModule.getCarving(fileName)
 
-def getFirstTranslatorFileNameUnmodified( fileName ):
+def getFirstTranslatorFileNameUnmodified(fileName):
 	"Get the first file name from the translators in the import plugins folder, if the file name is not already set."
 	if fileName != '':
 		return fileName
@@ -69,12 +69,12 @@ def getImportPluginFileNames():
 	"Get interpret plugin fileNames."
 	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 
-def getInterpretPlugin( fileName ):
+def getInterpretPlugin(fileName):
 	"Get the interpret plugin for the file."
 	importPluginFileNames = getImportPluginFileNames()
 	for importPluginFileName in importPluginFileNames:
 		fileTypeDot = '.' + importPluginFileName
-		if fileName[ - len( fileTypeDot ) : ].lower() == fileTypeDot:
+		if fileName[ - len(fileTypeDot) : ].lower() == fileTypeDot:
 			importPluginsDirectoryPath = getPluginsDirectoryPath()
 			pluginModule = gcodec.getModuleWithDirectoryPath( importPluginsDirectoryPath, importPluginFileName )
 			if pluginModule != None:
@@ -101,10 +101,10 @@ def getTranslatorFileTypeTuples():
 	fileTypeTuples.sort()
 	return fileTypeTuples
 
-def getWindowAnalyzeFile( fileName ):
+def getWindowAnalyzeFile(fileName):
 	"Get file interpretion."
 	startTime = time.time()
-	carving = getCarving( fileName )
+	carving = getCarving(fileName)
 	if carving == None:
 		return None
 	interpretGcode = str( carving )
@@ -114,19 +114,19 @@ def getWindowAnalyzeFile( fileName ):
 	if repository.printInterpretion.value:
 		print( interpretGcode )
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '_interpret.' + carving.getInterpretationSuffix()
-	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace(' ', '_')
+	suffixDirectoryName = os.path.dirname(suffixFileName)
+	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, interpretGcode )
-	print('The interpret file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('The interpret file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
 	print('It took %s to interpret the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	textProgram = repository.textProgram.value
 	if textProgram == '':
 		return None
 	if textProgram == 'webbrowser':
-		settings.openWebPage( suffixFileName )
+		settings.openWebPage(suffixFileName)
 		return None
-	textFilePath = '"' + os.path.normpath( suffixFileName ) + '"' # " to send in file name with spaces
+	textFilePath = '"' + os.path.normpath(suffixFileName) + '"' # " to send in file name with spaces
 	shellCommand = textProgram + ' ' + textFilePath
 	print('Sending the shell command:')
 	print( shellCommand )
@@ -153,4 +153,4 @@ class InterpretRepository:
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			getWindowAnalyzeFile( fileName )
+			getWindowAnalyzeFile(fileName)

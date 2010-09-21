@@ -75,9 +75,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, towerRepository = None ):
 	"Tower a gcode linear move file or text."
@@ -99,7 +99,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Tower a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'tower')
 
@@ -114,8 +114,8 @@ class Island:
 	def addToBoundary( self, splitLine ):
 		"Add to the boundary if it is not complete."
 		if self.boundingLoop == None:
-			location = gcodec.getLocationFromSplitLine( None, splitLine )
-			self.boundary.append( location.dropAxis( 2 ) )
+			location = gcodec.getLocationFromSplitLine(None, splitLine)
+			self.boundary.append( location.dropAxis(2) )
 			self.z = location.z
 
 	def createBoundingLoop(self):
@@ -154,7 +154,7 @@ class TowerRepository:
 		"Tower button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class TowerSkein:
@@ -186,13 +186,13 @@ class TowerSkein:
 			self.distanceFeedRate.addLines( island.lines )
 		self.distanceFeedRate.addLines( threadLayer.afterExtrusionLines )
 
-	def addHighThread( self, location ):
+	def addHighThread(self, location):
 		"Add thread with a high move if necessary to clear the previous extrusion."
 		if self.oldLocation != None:
 			if self.oldLocation.z + self.minimumBelow < self.highestZ:
-				self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, self.oldLocation.dropAxis( 2 ), self.highestZ )
+				self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, self.oldLocation.dropAxis(2), self.highestZ )
 		if location.z + self.minimumBelow < self.highestZ:
-			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, location.dropAxis( 2 ), self.highestZ )
+			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, location.dropAxis(2), self.highestZ )
 
 	def addThreadLayerIfNone(self):
 		"Add a thread layer if it is none."
@@ -276,7 +276,7 @@ class TowerSkein:
 		closestDistance = 999999999999999999.0
 		closestSurroundingLoop = None
 		for remainingSurroundingLoop in remainingSurroundingLoops:
-			distance = euclidean.getNearestDistanceIndex( oldOrderedLocation.dropAxis( 2 ), remainingSurroundingLoop.boundary ).distance
+			distance = euclidean.getNearestDistanceIndex( oldOrderedLocation.dropAxis(2), remainingSurroundingLoop.boundary ).distance
 			if distance < closestDistance:
 				closestDistance = distance
 				closestSurroundingLoop = remainingSurroundingLoop
@@ -284,9 +284,9 @@ class TowerSkein:
 		hasTravelledHighRoad = False
 		for line in closestSurroundingLoop.lines:
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'G1':
-				location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+				location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 				if not hasTravelledHighRoad:
 					hasTravelledHighRoad = True
 					self.addHighThread( location )
@@ -316,25 +316,25 @@ class TowerSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> tower </procedureDone>)')
 			elif firstWord == '(<layer>':
 				return
 			elif firstWord == '(<layerThickness>':
-				self.minimumBelow = 0.1 * float( splitLine[1] )
+				self.minimumBelow = 0.1 * float(splitLine[1])
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[1] )
+				self.perimeterWidth = float(splitLine[1])
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float( splitLine[1] )
+				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, lineIndex ):
 		"Parse a gcode line."
-		line = self.lines[ lineIndex ]
+		line = self.lines[lineIndex]
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		self.afterExtrusionLines.append(line)
@@ -343,7 +343,7 @@ class TowerSkein:
 		elif firstWord == '(</boundaryPerimeter>)':
 			self.island.createBoundingLoop()
 		elif firstWord == '(<boundaryPoint>':
-			self.island.addToBoundary( splitLine )
+			self.island.addToBoundary(splitLine)
 		elif firstWord == '(</extrusion>)':
 			self.shutdownLineIndex = lineIndex
 		elif firstWord == '(<layer>':
@@ -381,10 +381,10 @@ class TowerSkein:
 		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.addLine(line)
 			if firstWord == 'G1':
-				self.oldLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+				self.oldLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 				if self.oldLocation.z > self.highestZ:
 					self.highestZ = self.oldLocation.z
 			if firstWord == '(<operatingLayerEnd>':
@@ -394,7 +394,7 @@ class TowerSkein:
 def main():
 	"Display the tower dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

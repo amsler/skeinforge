@@ -37,16 +37,16 @@ from fabmetheus_utilities import xml_simple_writer
 import math
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCarving( fileName = ''):
 	"Get the triangle mesh for the gts file."
 	carving = SVGCarving()
-	carving.parseSVG( fileName, gcodec.getFileText( fileName ) )
+	carving.parseSVG( fileName, gcodec.getFileText(fileName) )
 	return carving
 
 
@@ -86,6 +86,10 @@ class SVGCarving:
 	def getCarveRotatedBoundaryLayers(self):
 		"Get the rotated boundary layers."
 		return self.svgReader.rotatedLoopLayers
+
+	def getFabmetheusXML(self):
+		"Return the fabmetheus XML."
+		return None
 
 	def getInterpretationSuffix(self):
 		"Return the suffix for a carving."

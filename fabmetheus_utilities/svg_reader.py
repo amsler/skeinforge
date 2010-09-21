@@ -10,6 +10,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
@@ -21,10 +22,10 @@ import sys
 import traceback
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 globalNumberOfCornerPoints = 11
@@ -135,7 +136,7 @@ def getFontReader(fontFamily):
 
 def getFontsDirectoryPath():
 	"Get the fonts directory path."
-	return settings.getPathInFabmetheusUtilities('fonts')
+	return archive.getFabmetheusUtilitiesPath('fonts')
 
 def getLabelString(dictionary):
 	"Get the label string for the dictionary."
@@ -426,7 +427,7 @@ def processSVGElementrect( svgReader, xmlElement ):
 	cornerPoints = []
 	for point in ellipsePath:
 		cornerPoints.append( point + inradiusMinusCorner )
-	cornerPointsReversed = cornerPoints[ : : - 1 ]
+	cornerPointsReversed = cornerPoints[: : -1]
 	for cornerPoint in cornerPoints:
 		loop.append( center + cornerPoint )
 	for cornerPoint in cornerPointsReversed:
@@ -822,7 +823,7 @@ class SVGReader:
 				loop[pointIndex] = complex(point.real, -point.imag)
 		rotatedLoopLayer.loops = trianglemesh.getLoopsInOrderOfArea(trianglemesh.compareAreaDescending, rotatedLoopLayer.loops)
 		for loopIndex, loop in enumerate(rotatedLoopLayer.loops):
-			isInsideLoops = euclidean.isPointInsideLoopsZone(rotatedLoopLayer.loops[: loopIndex], euclidean.getLeftPoint(loop))
+			isInsideLoops = euclidean.getIsInFilledRegion(rotatedLoopLayer.loops[: loopIndex], euclidean.getLeftPoint(loop))
 			intercircle.directLoop((not isInsideLoops), loop)
 
 	def getRotatedLoopLayer(self):
@@ -861,7 +862,7 @@ class SVGReader:
 			except:
 				print('Warning, in processXMLElement in svg_reader, could not process:')
 				print(xmlElement)
-				traceback.print_exc( file = sys.stdout )
+				traceback.print_exc(file=sys.stdout)
 		for child in xmlElement.children:
 			self.processXMLElement( child )
 

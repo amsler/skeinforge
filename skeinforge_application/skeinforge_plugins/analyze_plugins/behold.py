@@ -156,12 +156,12 @@ Default is one.
 The "Width of Infill Thread" sets the width of the green extrusion threads, those threads which are not loops and not part of the raft.
 
 ====Width of Fill Bottom Thread====
-Default is three.
+Default is two.
 
 The "Width of Fill Bottom Thread" sets the width of the olive extrusion threads at the bottom of the model.
 
 ====Width of Fill Top Thread====
-Default is three.
+Default is two.
 
 The "Width of Fill Top Thread" sets the width of the blue extrusion threads at the top of the model.
 
@@ -252,9 +252,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def compareLayerSequence( first, second ):
@@ -271,10 +271,10 @@ def getNewRepository():
 	"Get the repository constructor."
 	return BeholdRepository()
 
-def getWindowAnalyzeFile( fileName ):
+def getWindowAnalyzeFile(fileName):
 	"Behold a gcode file."
-	gcodeText = gcodec.getFileText( fileName )
-	return getWindowAnalyzeFileGivenText( fileName, gcodeText )
+	gcodeText = gcodec.getFileText(fileName)
+	return getWindowAnalyzeFileGivenText(fileName, gcodeText)
 
 def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
 	"Display a beholded gcode file for a gcode file."
@@ -360,7 +360,7 @@ class BeholdRepository( tableau.TableauRepository ):
 		"Write button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrGcodeDirectory( self.fileNameInput.value, self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			getWindowAnalyzeFile( fileName )
+			getWindowAnalyzeFile(fileName)
 
 
 class BeholdSkein:
@@ -425,7 +425,7 @@ class BeholdSkein:
 			return firstWord == '(<layer>'
 		if firstWord != 'G1' and firstWord != 'G2' and firstWord != 'G3':
 			return False
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		if location.z - self.oldZ > 0.1:
 			self.oldZ = location.z
 			return True
@@ -433,7 +433,7 @@ class BeholdSkein:
 
 	def linearCorner( self, splitLine ):
 		"Update the bounding corners."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		if self.extruderActive or self.goAroundExtruderOffTravel:
 			self.cornerHigh = euclidean.getPointMaximum( self.cornerHigh, location )
 			self.cornerLow = euclidean.getPointMinimum( self.cornerLow, location )
@@ -474,22 +474,22 @@ class BeholdSkein:
 			return
 		self.setColoredThread( ( 0.0, 255.0, 0.0 ), self.skeinPane.infillLines ) #green
 
-	def parseCorner( self, line ):
+	def parseCorner(self, line):
 		"Parse a gcode line and use the location to update the bounding corners."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			self.linearCorner( splitLine )
+			self.linearCorner(splitLine)
 		elif firstWord == 'M101':
 			self.extruderActive = True
 		elif firstWord == 'M103':
 			self.extruderActive = False
 		elif firstWord == '(<layer>':
-			self.layerTopZ = float( splitLine[1] ) + self.thirdLayerThickness
+			self.layerTopZ = float(splitLine[1]) + self.thirdLayerThickness
 		elif firstWord == '(<layerThickness>':
-			self.thirdLayerThickness = 0.33333333333 * float( splitLine[1] )
+			self.thirdLayerThickness = 0.33333333333 * float(splitLine[1])
 		elif firstWord == '(<surroundingLoop>)':
 			if self.layerTopZ > self.getLayerTop():
 				self.layerTops.append( self.layerTopZ )
@@ -513,12 +513,12 @@ class BeholdSkein:
 		if len( self.layerTops ) > 1:
 			self.oneMinusBrightnessOverTopLayerIndex = ( 1.0 - repository.bottomLayerBrightness.value ) / float( len( self.layerTops ) - 1 )
 		self.firstTopLayer = len( self.layerTops ) - self.repository.numberOfFillTopLayers.value
-		self.centerComplex = 0.5 * ( self.cornerHigh.dropAxis( 2 ) + self.cornerLow.dropAxis( 2 ) )
+		self.centerComplex = 0.5 * ( self.cornerHigh.dropAxis(2) + self.cornerLow.dropAxis(2) )
 		self.centerBottom = Vector3( self.centerComplex.real, self.centerComplex.imag, self.cornerLow.z )
 		self.scale = repository.scale.value
 		self.scaleCenterBottom = self.scale * self.centerBottom
-		self.scaleCornerHigh = self.scale * self.cornerHigh.dropAxis( 2 )
-		self.scaleCornerLow = self.scale * self.cornerLow.dropAxis( 2 )
+		self.scaleCornerHigh = self.scale * self.cornerHigh.dropAxis(2)
+		self.scaleCornerLow = self.scale * self.cornerLow.dropAxis(2)
 		print( "The lower left corner of the behold window is at %s, %s" % ( self.cornerLow.x, self.cornerLow.y ) )
 		print( "The upper right corner of the behold window is at %s, %s" % ( self.cornerHigh.x, self.cornerHigh.y ) )
 		self.cornerImaginaryTotal = self.cornerHigh.y + self.cornerLow.y
@@ -535,23 +535,23 @@ class BeholdSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
-				self.feedRateMinute = 60.0 * float( splitLine[1] )
+				self.feedRateMinute = 60.0 * float(splitLine[1])
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the vector output."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if self.isLayerStart( firstWord, splitLine ):
 			self.skeinPane = SkeinPane( len( self.skeinPanes ) )
 			self.skeinPanes.append( self.skeinPane )
 		if firstWord == 'G1':
-			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			self.linearMove( line, location )
 			self.oldLocation = location
 		elif firstWord == 'M101':
@@ -576,7 +576,7 @@ class BeholdSkein:
 		elif firstWord == '(<surroundingLoop>)':
 			self.hasASurroundingLoopBeenReached = True
 		if firstWord == 'G2' or firstWord == 'G3':
-			relativeLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			relativeLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			relativeLocation.z = 0.0
 			location = self.oldLocation + relativeLocation
 			self.linearMove( line, location )
@@ -847,7 +847,7 @@ class SkeinWindow( tableau.TableauWindow ):
 		self.repository.viewpointLatitude.value = view_rotate.getBoundedLatitude( self.repository.viewpointLatitude.value )
 		self.repository.viewpointLongitude.value = round( self.repository.viewpointLongitude.value, 1 )
 		projectiveSpace = euclidean.ProjectiveSpace().getByLatitudeLongitude( self.repository.viewpointLatitude.value, self.repository.viewpointLongitude.value )
-		skeinPanesCopy = self.getUpdateSkeinPanes()[ : ]
+		skeinPanesCopy = self.getUpdateSkeinPanes()[:]
 		skeinPanesCopy.sort( compareLayerSequence )
 		if projectiveSpace.basisZ.z > 0.0:
 			self.drawXYAxisLines( projectiveSpace )
@@ -874,7 +874,7 @@ class SkeinWindow( tableau.TableauWindow ):
 def main():
 	"Display the behold dialog."
 	if len( sys.argv ) > 1:
-		tableau.startMainLoopFromWindow( getWindowAnalyzeFile(' '.join( sys.argv[ 1 : ] ) ) )
+		tableau.startMainLoopFromWindow( getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

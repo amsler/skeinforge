@@ -16,10 +16,10 @@ from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def processXMLElement(xmlElement):

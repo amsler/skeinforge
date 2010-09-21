@@ -35,15 +35,15 @@ from fabmetheus_utilities import gcodec
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCarving( fileName = ''):
 	"Get the carving for the csv file."
-	csvText = gcodec.getFileText( fileName )
+	csvText = gcodec.getFileText(fileName)
 	if csvText == '':
 		return None
 	csvParser = CSVSimpleParser( fileName, None, csvText )
@@ -57,7 +57,7 @@ def getLineDictionary(line):
 	"Get the line dictionary."
 	lineDictionary = {}
 	splitLine = line.split('\t')
-	for splitLineIndex in xrange( len( splitLine ) ):
+	for splitLineIndex in xrange( len(splitLine) ):
 		word = splitLine[ splitLineIndex ]
 		if word != '':
 			lineDictionary[ splitLineIndex ] = word
@@ -149,7 +149,7 @@ class CSVSimpleParser( xml_simple_reader.XMLSimpleReader ):
 		self.oldCSVElement = CSVElement().getElementFromObject( leadingTabCount, lineStripped, self.oldCSVElement )
 		self.continueFunction = self.oldCSVElement.continueParsingObject
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the inset skein."
 		lineStripped = line.lstrip()
 		if len( lineStripped ) < 1:
@@ -169,7 +169,7 @@ class CSVSimpleParser( xml_simple_reader.XMLSimpleReader ):
 def main():
 	"Display the inset dialog."
 	if len( sys.argv ) > 1:
-		getCarving(' '.join( sys.argv[ 1 : ] ) )
+		getCarving(' '.join( sys.argv[1 :] ) )
 
 if __name__ == "__main__":
 	main()

@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -17,10 +18,10 @@ import sys
 import traceback
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 globalModuleFunctionsDictionary = {}
@@ -194,13 +195,6 @@ def getDictionarySplitWords(dictionary, value):
 		dictionarySplitWords.append(word)
 	return dictionarySplitWords
 
-def getElementsDirectoryPath(subName=''):
-	"Get the evaluate_elements directory path."
-	path = getGeometryUtilitiesDirectoryPath('evaluate_elements')
-	if subName == '':
-		return path
-	return os.path.join(path, subName)
-
 def getEndIndexConvertEquationValue( bracketEndIndex, evaluatorIndex, evaluators ):
 	'Get the bracket end index and convert the equation value evaluators into a string.'
 	evaluator = evaluators[evaluatorIndex]
@@ -254,7 +248,7 @@ def getEvaluatedExpressionValue(value, xmlElement):
 	except:
 		print('Warning, in getEvaluatedExpressionValue in evaluate could not get a value for:')
 		print(value)
-		traceback.print_exc( file = sys.stdout )
+		traceback.print_exc(file=sys.stdout)
 		return None
 
 def getEvaluatedExpressionValueBySplitLine(words, xmlElement):
@@ -495,37 +489,7 @@ def getFromCreationEvaluatorPlugins( namePathDictionary, xmlElement ):
 		return getMatchingPlugins( namePathDictionary, xmlElement )
 	return []
 
-def getFundamentalsDirectoryPath(subName=''):
-	"Get the evaluate_fundamentals directory path."
-	path = getGeometryUtilitiesDirectoryPath('evaluate_fundamentals')
-	if subName == '':
-		return path
-	return os.path.join(path, subName)
-
-def getGeometryDictionary(folderName):
-	"Get to the geometry name path dictionary."
-	geometryDictionary={}
-	geometryDirectory = getGeometryDirectoryPath()
-	settings.addToNamePathDictionary(os.path.join(geometryDirectory, folderName), geometryDictionary)
-	geometryPluginsDirectory = settings.getPathInFabmetheusUtilities('geometry_plugins')
-	settings.addToNamePathDictionary(os.path.join(geometryPluginsDirectory, folderName), geometryDictionary)
-	return geometryDictionary
-
-def getGeometryDirectoryPath(subName=''):
-	"Get the geometry directory path."
-	path = settings.getPathInFabmetheusUtilities('geometry')
-	if subName == '':
-		return path
-	return os.path.join(path, subName)
-
-def getGeometryUtilitiesDirectoryPath(subName=''):
-	"Get the geometry_utilities directory path."
-	path = getGeometryDirectoryPath('geometry_utilities')
-	if subName == '':
-		return path
-	return os.path.join(path, subName)
-
-def getKeys( repository ):
+def getKeys(repository):
 	'Get keys for repository.'
 	repositoryClass = repository.__class__
 	if repositoryClass == list or repositoryClass == tuple:
@@ -542,7 +506,7 @@ def getIntFromFloatString(value):
 	dotIndex = floatString.find('.')
 	if dotIndex < 0:
 		return int(value)
-	return int( round( float( floatString ) ) )
+	return int( round( float(floatString) ) )
 
 def getIsBracketed(word):
 	"Determine if the word is bracketed."
@@ -566,7 +530,7 @@ def getIsQuoted(word):
 
 def getLayerThickness(xmlElement):
 	"Get the layer thickness."
-	return xmlElement.getCascadeFloat(5.0 * getPrecision(xmlElement), 'layerThickness')
+	return xmlElement.getCascadeFloat(0.4, 'layerThickness')
 
 def getMatchingPlugins( namePathDictionary, xmlElement ):
 	"Get the plugins whose names are in the attribute dictionary."
@@ -1380,7 +1344,7 @@ class EvaluatorConcatenate(Evaluator):
 			return
 		if leftValue.__class__ == list and rightValue.__class__ == int:
 			if rightValue > 0:
-				originalList = leftValue[ : ]
+				originalList = leftValue[:]
 				for copyIndex in xrange( rightValue - 1 ):
 					leftValue += originalList
 				evaluators[leftIndex].value = leftValue
@@ -1452,7 +1416,7 @@ class EvaluatorElement(Evaluator):
 			return
 		pluginModule = None
 		if moduleName in globalElementNameSet:
-			pluginModule = gcodec.getModuleWithPath(getElementsDirectoryPath(moduleName))
+			pluginModule = gcodec.getModuleWithPath(archive.getElementsPath(moduleName))
 		if pluginModule == None:
 			print('Warning, EvaluatorElement in evaluate can not get a pluginModule for:')
 			print(moduleName)
@@ -1557,11 +1521,11 @@ class EvaluatorFundamental(EvaluatorAttribute):
 			return
 		pluginModule = None
 		if moduleName in globalFundamentalNameSet:
-			pluginModule = gcodec.getModuleWithPath(getFundamentalsDirectoryPath(moduleName))
+			pluginModule = gcodec.getModuleWithPath(archive.getFundamentalsPath(moduleName))
 		else:
 			underscoredName = '_' + moduleName
 			if underscoredName in globalFundamentalNameSet:
-				pluginModule = gcodec.getModuleWithPath(getFundamentalsDirectoryPath(underscoredName))
+				pluginModule = gcodec.getModuleWithPath(archive.getFundamentalsPath(underscoredName))
 		if pluginModule == None:
 			print('Warning, EvaluatorFundamental in evaluate can not get a pluginModule for:')
 			print(moduleName)
@@ -1771,11 +1735,11 @@ class KeyValue:
 		self.keyTuple = ( line[: dotIndex], line[ dotIndex + 1 : ] )
 		return self
 
-	def getByDot( self, line ):
+	def getByDot(self, line):
 		"Get by dot."
 		return self.getByCharacter('.', line )
 
-	def getByEqual( self, line ):
+	def getByEqual(self, line):
 		"Get by dot."
 		return self.getByCharacter('=', line )
 
@@ -1817,7 +1781,7 @@ class ModuleXMLElement:
 			self.pluginModule.processElse( self.elseElement)
 
 
-globalCreationDictionary = getGeometryDictionary('creation')
+globalCreationDictionary = archive.getGeometryDictionary('creation')
 globalDictionaryOperatorBegin = {
 	'||' : EvaluatorConcatenate,
 	'==' : EvaluatorEqual,
@@ -1826,9 +1790,9 @@ globalDictionaryOperatorBegin = {
 	'!=' : EvaluatorNotEqual,
 	'**' : EvaluatorPower }
 globalModuleEvaluatorDictionary = {}
-globalFundamentalNameSet = set(gcodec.getPluginFileNamesFromDirectoryPath(getFundamentalsDirectoryPath()))
+globalFundamentalNameSet = set(gcodec.getPluginFileNamesFromDirectoryPath(archive.getFundamentalsPath()))
 addPrefixDictionary(globalModuleEvaluatorDictionary, globalFundamentalNameSet, EvaluatorFundamental)
-globalElementNameSet = set(gcodec.getPluginFileNamesFromDirectoryPath(getElementsDirectoryPath()))
+globalElementNameSet = set(gcodec.getPluginFileNamesFromDirectoryPath(archive.getElementsPath()))
 addPrefixDictionary(globalModuleEvaluatorDictionary, globalElementNameSet, EvaluatorElement)
 globalSplitDictionaryOperator = {
 	'+' : EvaluatorAddition,

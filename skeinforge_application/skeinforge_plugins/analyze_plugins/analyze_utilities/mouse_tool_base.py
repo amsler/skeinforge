@@ -8,9 +8,9 @@ from __future__ import absolute_import
 import __init__
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 class MouseToolBase:
@@ -40,7 +40,7 @@ class MouseToolBase:
 
 	def getTagsGivenXY( self, x, y ):
 		"Get the tag for the x and y."
-		tags = self.canvas.itemcget( self.canvas.find_closest( x, y ), 'tags')
+		tags = self.canvas.itemcget( self.canvas.find_closest(x, y), 'tags')
 		currentEnd = ' current'
 		if tags.find( currentEnd ) != - 1:
 			return tags[ : - len( currentEnd ) ]

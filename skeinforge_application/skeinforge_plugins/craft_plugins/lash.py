@@ -71,9 +71,9 @@ from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text, lashRepository = None ):
@@ -96,7 +96,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Lash a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'lash')
 
@@ -117,7 +117,7 @@ class LashRepository:
 		"Lash button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class LashSkein:
@@ -160,21 +160,21 @@ class LashSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> lash </procedureDone>)')
 				return
 			self.distanceFeedRate.addLine(line)
 
-	def parseLash( self, line ):
+	def parseLash(self, line):
 		"Parse a gcode line and add it to the lash skein."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			line = self.getLashedLine( line, location, splitLine )
 			self.oldLocation = location
 		self.distanceFeedRate.addLine(line)
@@ -183,7 +183,7 @@ class LashSkein:
 def main():
 	"Display the lash dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -114,9 +114,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text, wipeRepository = None ):
@@ -139,7 +139,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Wipe a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'wipe')
 
@@ -175,7 +175,7 @@ class WipeRepository:
 		"Wipe button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class WipeSkein:
@@ -206,7 +206,7 @@ class WipeSkein:
 
 	def addWipeTravel( self, splitLine ):
 		"Add the wipe travel gcode."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		self.highestZ = max( self.highestZ, location.z )
 		if not self.shouldWipe:
 			return
@@ -237,33 +237,33 @@ class WipeSkein:
 
 	def getLinearMoveWithFeedRate( self, feedRate, location ):
 		"Get a linear move line with the feedRate."
-		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRate, location.dropAxis( 2 ), location.z )
+		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRate, location.dropAxis(2), location.z )
 
 	def parseInitialization( self, wipeRepository ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> wipe </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.absolutePerimeterWidth = abs( float( splitLine[1] ) )
+				self.absolutePerimeterWidth = abs( float(splitLine[1]) )
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float( splitLine[1] )
+				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the bevel gcode."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			self.addWipeTravel( splitLine )
-			self.oldLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			self.addWipeTravel(splitLine)
+			self.oldLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		elif firstWord == '(<layer>':
 			self.layerIndex += 1
 			if self.layerIndex % self.wipePeriod == 0:
@@ -278,7 +278,7 @@ class WipeSkein:
 def main():
 	"Display the wipe dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

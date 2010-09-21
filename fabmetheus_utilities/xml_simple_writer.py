@@ -11,10 +11,10 @@ import __init__
 import cStringIO
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def addBeginEndInnerXMLTag( attributeDictionary, className, depth, innerText, output, text = ''):
@@ -35,7 +35,7 @@ def addClosedXMLTag( attributeDictionary, className, depth, output, text = ''):
 	"Add the closed xml tag."
 	depthStart = '\t' * depth
 	attributeDictionaryString = getAttributeDictionaryString(attributeDictionary)
-	if len( text ) > 0:
+	if len(text) > 0:
 		output.write('%s<%s%s >%s</%s>\n' % ( depthStart, className, attributeDictionaryString, text, className ) )
 	else:
 		output.write('%s<%s%s />\n' % ( depthStart, className, attributeDictionaryString ) )
@@ -60,17 +60,17 @@ def addXMLFromObjects( depth, objects, output ):
 
 def addXMLFromVertexes( depth, output, vertexes ):
 	"Add xml from loop."
-	for vertexIndex in xrange( len(vertexes) ):
-		vertex = vertexes[ vertexIndex ]
+	for vertexIndex in xrange(len(vertexes)):
+		vertex = vertexes[vertexIndex]
 		addXMLFromXYZ( depth + 1, vertexIndex, output, vertex.x, vertex.y, vertex.z )
 
 def addXMLFromXYZ( depth, index, output, x, y, z ):
 	"Add xml from x, y & z."
 	attributeDictionary = { 'index' : str( index ) }
 	if x != 0.0:
-		attributeDictionary['x'] = str( x )
+		attributeDictionary['x'] = str(x)
 	if y != 0.0:
-		attributeDictionary['y'] = str( y )
+		attributeDictionary['y'] = str(y)
 	if z != 0.0:
 		attributeDictionary['z'] = str(z)
 	addClosedXMLTag( attributeDictionary, 'vertex', depth, output )
@@ -95,8 +95,11 @@ def getAttributeDictionaryString(attributeDictionary):
 	attributeDictionaryKeys = attributeDictionary.keys()
 	attributeDictionaryKeys.sort( compareAttributeKeyAscending )
 	for attributeDictionaryKey in attributeDictionaryKeys:
-		value = attributeDictionary[ attributeDictionaryKey ]
-		attributeDictionaryString += ' %s="%s"' % (attributeDictionaryKey, value)
+		valueString = str(attributeDictionary[attributeDictionaryKey])
+		if '"' in valueString:
+			attributeDictionaryString += " %s='%s'" % (attributeDictionaryKey, valueString)
+		else:
+			attributeDictionaryString += ' %s="%s"' % (attributeDictionaryKey, valueString)
 	return attributeDictionaryString
 
 def getBeginGeometryXMLOutput(xmlElement):

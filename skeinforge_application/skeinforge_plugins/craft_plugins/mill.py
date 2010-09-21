@@ -93,14 +93,14 @@ import os
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Mill the file or gcodeText."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, gcodeText ), repository )
+	return getCraftedTextFromText( gcodec.getTextIfEmpty(fileName, gcodeText), repository )
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Mill a gcode linear move gcodeText."
@@ -133,7 +133,7 @@ def isPointOfTableInLoop( loop, pointTable ):
 
 def writeOutput( fileName = ''):
 	"Mill a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
 		return
 	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'mill')
@@ -183,7 +183,7 @@ class MillRepository:
 		"Mill button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 
@@ -207,7 +207,7 @@ class MillSkein:
 			self.oldLocation = Vector3()
 		self.oldLocation.z = z
 		for loop in loops:
-			self.distanceFeedRate.addGcodeFromThreadZ( loop, z )
+			self.distanceFeedRate.addGcodeFromThreadZ(loop, z)
 			euclidean.addToThreadsFromLoop( self.halfPerimeterWidth, 'loop', loop, self.oldLocation, self )
 
 	def addGcodeFromThreadZ( self, thread, z ):
@@ -250,8 +250,7 @@ class MillSkein:
 		boundaryLayer.innerLoops = []
 		boundaryLayer.outerLoops = []
 		millRadius = 0.75 * self.millWidth
-		loops = trianglemesh.getInclusiveLoops( betweenPoints, betweenPoints, millRadius )
-		loops = euclidean.getSimplifiedLoops( loops, millRadius )
+		loops = trianglemesh.getDescendingAreaLoops(betweenPoints, betweenPoints, millRadius)
 		for loop in loops:
 			if isPointOfTableInLoop( loop, innerPointTable ):
 				boundaryLayer.innerLoops.append(loop)
@@ -309,17 +308,17 @@ class MillSkein:
 		boundaryLayer = None
 		for line in self.lines[self.lineIndex :]:
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == '(</boundaryPerimeter>)':
 				boundaryLoop = None
 			elif firstWord == '(<boundaryPoint>':
-				location = gcodec.getLocationFromSplitLine( None, splitLine )
+				location = gcodec.getLocationFromSplitLine(None, splitLine)
 				if boundaryLoop == None:
 					boundaryLoop = []
 					boundaryLayer.loops.append( boundaryLoop )
-				boundaryLoop.append( location.dropAxis( 2 ) )
+				boundaryLoop.append( location.dropAxis(2) )
 			elif firstWord == '(<layer>':
-				boundaryLayer = euclidean.LoopLayer( float( splitLine[1] ) )
+				boundaryLayer = euclidean.LoopLayer( float(splitLine[1]) )
 				self.boundaryLayers.append( boundaryLayer )
 		if len( self.boundaryLayers ) < 2:
 			return
@@ -348,13 +347,13 @@ class MillSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> mill </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[1] )
+				self.perimeterWidth = float(splitLine[1])
 				self.aroundWidth = 0.1 * self.perimeterWidth
 				self.halfPerimeterWidth = 0.5 * self.perimeterWidth
 				self.millWidth = self.perimeterWidth * self.repository.millWidthOverPerimeterWidth.value
@@ -362,18 +361,18 @@ class MillSkein:
 				self.loopOuterOutset = self.halfPerimeterWidth + self.perimeterWidth * self.repository.loopOuterOutsetOverPerimeterWidth.value
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the mill skein."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			if self.isExtruderActive:
-				self.average.addValue( location.z )
+				self.average.addValue(location.z)
 				if self.oldLocation != None:
-					euclidean.addValueSegmentToPixelTable( self.oldLocation.dropAxis( 2 ), location.dropAxis( 2 ), self.aroundPixelTable, None, self.aroundWidth )
+					euclidean.addValueSegmentToPixelTable( self.oldLocation.dropAxis(2), location.dropAxis(2), self.aroundPixelTable, None, self.aroundWidth )
 			self.oldLocation = location
 		elif firstWord == 'M101':
 			self.isExtruderActive = True
@@ -392,7 +391,7 @@ class MillSkein:
 def main():
 	"Display the mill dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

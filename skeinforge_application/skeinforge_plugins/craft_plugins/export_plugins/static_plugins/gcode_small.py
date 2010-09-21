@@ -15,9 +15,9 @@ import cStringIO
 import os
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 # This is true if the output is text and false if it is binary."
@@ -35,26 +35,26 @@ def getSplitLineBeforeBracketSemicolon(line):
 		return line.split()
 	return line[ : bracketSemicolonIndex ].split()
 
-def getStringFromCharacterSplitLine( character, splitLine ):
+def getStringFromCharacterSplitLine(character, splitLine):
 	"Get the string after the first occurence of the character in the split line."
-	indexOfCharacter = indexOfStartingWithSecond( character, splitLine )
+	indexOfCharacter = indexOfStartingWithSecond(character, splitLine)
 	if indexOfCharacter < 0:
 		return None
-	return splitLine[ indexOfCharacter ][ 1 : ]
+	return splitLine[indexOfCharacter][1 :]
 
-def getSummarizedFileName( fileName ):
+def getSummarizedFileName(fileName):
 	"Get the fileName basename if the file is in the current working directory, otherwise return the original full name."
-	if os.getcwd() == os.path.dirname( fileName ):
-		return os.path.basename( fileName )
+	if os.getcwd() == os.path.dirname(fileName):
+		return os.path.basename(fileName)
 	return fileName
 
-def getTextLines( text ):
+def getTextLines(text):
 	"Get the all the lines of text of a text."
 	return text.replace('\r', '\n').split('\n')
 
-def indexOfStartingWithSecond( letter, splitLine ):
+def indexOfStartingWithSecond(letter, splitLine):
 	"Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found"
-	for wordIndex in xrange( 1, len( splitLine ) ):
+	for wordIndex in xrange( 1, len(splitLine) ):
 		word = splitLine[ wordIndex ]
 		firstLetter = word[0]
 		if firstLetter == letter:
@@ -76,18 +76,18 @@ class GcodeSmallSkein:
 			self.parseLine(line)
 		return self.output.getvalue()
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line."
 		splitLine = getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
-		if len( firstWord ) < 1:
+		if len(firstWord) < 1:
 			return
 		if firstWord[0] == '(':
 			return
 		if firstWord != 'G1':
-			self.output.write( line + "\n" )
+			self.output.write(line + '\n')
 			return
 		eString = getStringFromCharacterSplitLine('E', splitLine )
 		xString = getStringFromCharacterSplitLine('X', splitLine )

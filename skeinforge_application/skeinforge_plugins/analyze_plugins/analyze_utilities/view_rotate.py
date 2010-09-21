@@ -18,9 +18,9 @@ from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import settings
 import math
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getBoundedLatitude( latitude ):
@@ -63,7 +63,7 @@ class ViewpointRotate( MouseToolBase ):
 		self.destroyEverything()
 		x = self.canvas.canvasx( event.x )
 		y = self.canvas.canvasy( event.y )
-		self.buttonOnePressedCanvasCoordinate = complex( x, y )
+		self.buttonOnePressedCanvasCoordinate = complex(x, y)
 
 	def buttonRelease1( self, event, shift = False ):
 		"The left button was released, <ButtonRelease-1> function."
@@ -71,7 +71,7 @@ class ViewpointRotate( MouseToolBase ):
 			return
 		x = self.canvas.canvasx( event.x )
 		y = self.canvas.canvasy( event.y )
-		buttonOneReleasedCanvasCoordinate = complex( x, y )
+		buttonOneReleasedCanvasCoordinate = complex(x, y)
 		self.moveViewpointGivenCoordinates( buttonOneReleasedCanvasCoordinate, shift, self.buttonOnePressedCanvasCoordinate )
 
 	def destroyEverything(self):
@@ -133,7 +133,7 @@ class ViewpointRotate( MouseToolBase ):
 			return
 		x = self.canvas.canvasx( event.x )
 		y = self.canvas.canvasy( event.y )
-		motionCoordinate = complex( x, y )
+		motionCoordinate = complex(x, y)
 		self.motionGivenCoordinates( motionCoordinate, shift, self.buttonOnePressedCanvasCoordinate )
 
 	def motionGivenCoordinates( self, motionCoordinate, shift, startCoordinate ):

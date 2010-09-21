@@ -172,10 +172,10 @@ import os
 import reprap	# Import the reprap module.
 import time
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'greenarrow <http://forums.reprap.org/profile.php?12,81>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def display( filename = ''):
@@ -189,7 +189,7 @@ def displayFile( filename ):
 	"Parse a gcode file and display the commands."
 	print('File ' + filename + ' is being displayed.')
 	fileText = gcodec.getFileText( filename )
-	gcodec.writeFileMessageSuffix( filename, displayText( fileText ), 'The gcode log file is saved as ', '_log')
+	gcodec.writeFileMessageSuffix( filename, displayText(fileText), 'The gcode log file is saved as ', '_log')
 
 def displayFiles( filenames ):
 	"Parse gcode files and display the commands."
@@ -215,7 +215,7 @@ def extrudeFile( filename ):
 	This function requires write access to the serial device, running as root is one way to get that access."""
 	print('File ' + filename + ' is being extruded.')
 	fileText = gcodec.getFileText( filename )
-	gcodec.writeFileMessageSuffix( filename, extrudeText( fileText ), 'The gcode log file is saved as ', '_log')
+	gcodec.writeFileMessageSuffix( filename, extrudeText(fileText), 'The gcode log file is saved as ', '_log')
 
 def extrudeFiles( filenames ):
 	"""Parse gcode files and send the commands to the extruder.
@@ -247,7 +247,7 @@ class displaySkein:
 		self.oldLocation = None
 		self.output = ''
 
-	def addToOutput( self, line ):
+	def addToOutput(self, line):
 		"Add line with a newline at the end to the output."
 		print(line)
 		self.output += line + '\n'
@@ -261,7 +261,7 @@ class displaySkein:
 		if self.oldLocation == None:
 			return
 		location = Vector3( self.oldLocation )
-		self.setFeedrate( splitLine )
+		self.setFeedrate(splitLine)
 		setPointToSplitLine( location, splitLine )
 		location = location + self.oldLocation
 		center = Vector3( self.oldLocation )
@@ -309,21 +309,21 @@ class displaySkein:
 		location = Vector3()
 		if self.oldLocation != None:
 			location = self.oldLocation
-		self.setFeedrate( splitLine )
+		self.setFeedrate(splitLine)
 		setPointToSplitLine( location, splitLine )
 		self.moveExtruder( location )
 		self.oldLocation = location
 
-	def moveExtruder( self, location ):
+	def moveExtruder(self, location):
 		"Seek to location. Wait until arrival."
 		moveSpeedString = getIntegerString( self.feedrateMinute )
-		xMoveString = getIntegerString( location.x )
-		yMoveString = getIntegerString( location.y )
-		zMoveString = getIntegerString( location.z )
+		xMoveString = getIntegerString(location.x)
+		yMoveString = getIntegerString(location.y)
+		zMoveString = getIntegerString(location.z)
 		moveCommandString = 'reprap.cartesian.seek( (' + xMoveString + ', ' + yMoveString + ', ' + zMoveString + '), ' + moveSpeedString + ', True )'
 		self.evaluateCommand( moveCommandString )
 
-	def parseGCode( self, lines ):
+	def parseGCode(self, lines):
 		"Parse gcode and send the commands to the extruder."
 		self.evaluateCommand('reprap.serial = serial.Serial(0, 19200, timeout = 60)')	# Initialise serial port, here the first port (0) is used.
 		self.evaluateCommand('reprap.cartesian.x.active = True')	# These devices are present in network, will automatically scan in the future.
@@ -341,15 +341,15 @@ class displaySkein:
 		self.homeReset()
 		self.evaluateCommand('reprap.cartesian.free()')	# Shut off power to all motors.
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and send the command to the extruder."
 		self.addToOutput(line)
 		splitLine = line.split(' ')
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return 0
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			self.linearMove( splitLine )
+			self.linearMove(splitLine)
 		if firstWord == 'G2':
 			self.helicalMove( False, splitLine )
 		if firstWord == 'G3':
@@ -364,14 +364,14 @@ class displaySkein:
 
 	def parseText( self, text ):
 		"Parse a gcode text and evaluate the commands."
-		textLines = getTextLines( text )
+		textLines = getTextLines(text)
 		self.parseGCode( textLines )
 
 	def setFeedrate( self, splitLine ):
 		"Set the feedrate to the gcode split line."
 		indexOfF = indexOfStartingWithSecond( "F", splitLine )
 		if indexOfF > 0:
-			self.feedrateMinute = getDoubleAfterFirstLetter( splitLine[ indexOfF ] )
+			self.feedrateMinute = getDoubleAfterFirstLetter( splitLine[indexOfF] )
 
 
 class extrudeSkein( displaySkein ):

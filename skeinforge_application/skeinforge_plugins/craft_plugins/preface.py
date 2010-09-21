@@ -105,9 +105,9 @@ import os
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/28/04 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text = '', prefaceRepository = None ):
@@ -119,8 +119,8 @@ def getCraftedTextFromText( text, prefaceRepository = None ):
 	if gcodec.isProcedureDoneOrFileIsEmpty( text, 'preface'):
 		return text
 	if prefaceRepository == None:
-		prefaceRepository = settings.getReadRepository( PrefaceRepository() )
-	return PrefaceSkein().getCraftedGcode( prefaceRepository, text )
+		prefaceRepository = settings.getReadRepository(PrefaceRepository())
+	return PrefaceSkein().getCraftedGcode(prefaceRepository, text)
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -128,7 +128,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Preface the carving of a gcode file.  If no fileName is specified, preface the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
 		return
 	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'preface')
@@ -160,7 +160,7 @@ class PrefaceRepository:
 		"Preface button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class PrefaceSkein:
@@ -175,7 +175,7 @@ class PrefaceSkein:
 	def addFromUpperLowerFile( self, fileName ):
 		"Add lines of text from the fileName or the lowercase fileName, if there is no file by the original fileName in the directory."
 		fileText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), fileName )
-		fileLines = gcodec.getTextLines( fileText )
+		fileLines = gcodec.getTextLines(fileText)
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode( fileLines )
 
 	def addInitializationToOutput(self):
@@ -242,7 +242,7 @@ class PrefaceSkein:
 def main():
 	"Display the preface dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

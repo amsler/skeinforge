@@ -18,10 +18,10 @@ from fabmetheus_utilities import xml_simple_reader
 from fabmetheus_utilities import xml_simple_writer
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def convertProcessXMLElementRenameByPaths(geometryOutput, xmlElement):
@@ -73,9 +73,9 @@ class Path(dictionary.Dictionary):
 
 	def getFabricationText(self):
 		"Get fabrication text."
-		carving = SVGFabricationCarving()
+		carving = SVGFabricationCarving(self.xmlElement)
 		carving.setCarveLayerThickness(evaluate.getSheetThickness(self.xmlElement))
-		carving.processSVGElement(self.xmlElement.getRoot().parser.fileName, self.xmlElement)
+		carving.processSVGElement(self.xmlElement.getRoot().parser.fileName)
 		return str(carving)
 
 	def getMatrixChainTetragrid(self):
@@ -102,10 +102,11 @@ class Path(dictionary.Dictionary):
 
 class SVGFabricationCarving:
 	"An slc carving."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		"Add empty lists."
 		self.layerThickness = 1.0
 		self.rotatedLoopLayers = []
+		self.xmlElement = xmlElement
 
 	def __repr__(self):
 		"Get the string representation of this carving."
@@ -135,14 +136,18 @@ class SVGFabricationCarving:
 		"Get the rotated boundary layers."
 		return self.rotatedLoopLayers
 
+	def getFabmetheusXML(self):
+		"Return the fabmetheus XML."
+		return self.xmlElement.getParser().getOriginalRoot()
+
 	def getInterpretationSuffix(self):
 		"Return the suffix for a carving."
 		return 'svg'
 
-	def processSVGElement(self, fileName, svgElement):
+	def processSVGElement(self, fileName):
 		"Parse SVG element and store the layers."
 		self.fileName = fileName
-		paths = svgElement.object.getPaths()
+		paths = self.xmlElement.object.getPaths()
 		if len(paths) < 1:
 			return
 		firstPath = paths[0]

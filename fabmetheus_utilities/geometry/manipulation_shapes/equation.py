@@ -15,10 +15,10 @@ from fabmetheus_utilities import euclidean
 import math
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 globalExecutionOrder = - 100
@@ -167,7 +167,7 @@ class EquationResult:
 		self.points = []
 		self.revolutions = revolutions
 
-	def getReturnValue( self, point ):
+	def getReturnValue(self, point):
 		"Get return value."
 		if self.function == None:
 			return point

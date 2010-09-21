@@ -13,10 +13,10 @@ from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 globalExecutionOrder = 380
@@ -48,7 +48,5 @@ def processXMLElement(xmlElement):
 def translatePoints(points, prefix, xmlElement):
 	"Translate the points."
 	translateVector3 = matrix.getCumulativeVector3Remove(prefix, Vector3(), xmlElement)
-	if abs(translateVector3) <= 0.0:
-		return
-	for point in points:
-		point.setToVector3(point + translateVector3)
+	if abs(translateVector3) > 0.0:
+		euclidean.translateVector3Path(points, translateVector3)

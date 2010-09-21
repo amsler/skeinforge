@@ -12,10 +12,10 @@ from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import gcodec
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def _getAccessibleAttribute(attributeName, xmlElement):

@@ -39,10 +39,10 @@ from fabmetheus_utilities import xml_simple_writer
 import cStringIO
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 class XMLElement:
@@ -226,6 +226,10 @@ class XMLElement:
 			return parent
 		return self
 
+	def getParser(self):
+		'Get the parser.'
+		return self.getRoot().parser
+
 	def getPaths(self):
 		"Get all paths."
 		if self.object == None:
@@ -363,16 +367,23 @@ class XMLSimpleReader:
 		self.lines = gcodec.getXMLLines(xmlText)
 		for self.lineIndex, line in enumerate(self.lines):
 			self.parseLine(line)
+		self.xmlText = xmlText
 	
 	def __repr__(self):
 		"Get the string representation of this parser."
 		return str( self.root )
 
+	def getOriginalRoot(self):
+		"Get the original reparsed root element."
+		if evaluate.getEvaluatedBooleanDefault(True, 'getOriginalRoot', self.root):
+			return XMLSimpleReader(self.fileName, self.parent, self.xmlText).root
+		return None
+
 	def getRoot(self):
 		"Get the root element."
 		return self.root
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse an xml line and add it to the xml tree."
 		lineStripped = line.strip()
 		if len( lineStripped ) < 1:

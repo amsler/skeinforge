@@ -14,10 +14,10 @@ from fabmetheus_utilities import euclidean
 import math
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 globalExecutionOrder = 40
@@ -65,7 +65,7 @@ def getRoundPath( begin, center, close, end, radius, sidesPerRadian ):
 	circleCenter = Vector3( circleCenterComplex.real, circleCenterComplex.imag, center.z )
 	endMinusCircleCenterComplex = endBevelComplex - circleCenterComplex
 	beginMinusCircleCenter = beginBevel - circleCenter
-	beginMinusCircleCenterComplex = beginMinusCircleCenter.dropAxis( 2 )
+	beginMinusCircleCenterComplex = beginMinusCircleCenter.dropAxis(2)
 	angleDifference = euclidean.getAngleDifferenceByComplex( endMinusCircleCenterComplex, beginMinusCircleCenterComplex )
 	steps = int( math.ceil( abs( angleDifference ) * sidesPerRadian ) )
 	stepPlaneAngle = euclidean.getWiddershinsUnitPolar( angleDifference / float( steps ) )

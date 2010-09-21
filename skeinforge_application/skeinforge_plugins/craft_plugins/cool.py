@@ -106,9 +106,9 @@ import os
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text, coolRepository = None ):
@@ -131,7 +131,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Cool a gcode linear move file.  Chain cool the gcode if it is not already cooled. If no fileName is specified, cool the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'cool')
 
@@ -158,7 +158,7 @@ class CoolRepository:
 		"Cool button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class CoolSkein:
@@ -222,9 +222,9 @@ class CoolSkein:
 		if flowRate != None:
 			self.addFlowRateLineIfNecessary( self.multiplier * flowRate )
 
-	def addGcodeFromFeedRateMovementZ( self, feedRateMinute, point, z ):
+	def addGcodeFromFeedRateMovementZ(self, feedRateMinute, point, z):
 		"Add a movement to the output."
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, point, z ) )
+		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate(feedRateMinute, point, z) )
 
 	def addOrbitsIfNecessary( self, remainingOrbitTime ):
 		"Parse a gcode line and add it to the cool skein."
@@ -271,9 +271,9 @@ class CoolSkein:
 		layerTime = 0.0
 		lastThreadLocation = self.oldLocation
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ lineIndex ]
+			line = self.lines[lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine( lastThreadLocation, splitLine )
 				feedRateMinute = gcodec.getFeedRateMinute( feedRateMinute, splitLine )
@@ -290,19 +290,19 @@ class CoolSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == 'M108':
-				self.setOperatingFlowString( splitLine )
+				self.setOperatingFlowString(splitLine)
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[1] )
+				self.perimeterWidth = float(splitLine[1])
 				if self.coolRepository.turnFanOnAtBeginning.value:
 					self.distanceFeedRate.addLine('M106')
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> cool </procedureDone>)')
 				return
 			elif firstWord == '(<orbitalFeedRatePerSecond>':
-				self.orbitalFeedRatePerSecond = float( splitLine[1] )
+				self.orbitalFeedRatePerSecond = float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine(self, line):
@@ -355,13 +355,13 @@ class CoolSkein:
 
 	def setOperatingFlowString( self, splitLine ):
 		"Set the operating flow string from the split line."
-		self.oldFlowRate = float( splitLine[1][ 1 : ] )
+		self.oldFlowRate = float( splitLine[1][1 :] )
 
 
 def main():
 	"Display the cool dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

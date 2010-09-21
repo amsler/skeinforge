@@ -68,9 +68,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text, hopRepository = None ):
@@ -93,7 +93,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Hop a gcode linear move file.  Chain hop the gcode if it is not already hopped. If no fileName is specified, hop the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'hop')
 
@@ -114,7 +114,7 @@ class HopRepository:
 		"Hop button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class HopSkein:
@@ -140,20 +140,20 @@ class HopSkein:
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
-	def getHopLine( self, line ):
+	def getHopLine(self, line):
 		"Get hopped gcode line."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		if self.extruderActive:
 			return line
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		highestZ = location.z
 		if self.oldLocation != None:
 			highestZ = max( highestZ, self.oldLocation.z )
 		highestZHop = highestZ + self.hopHeight
-		locationComplex = location.dropAxis( 2 )
+		locationComplex = location.dropAxis(2)
 		if self.justDeactivated:
-			oldLocationComplex = self.oldLocation.dropAxis( 2 )
+			oldLocationComplex = self.oldLocation.dropAxis(2)
 			distance = abs( locationComplex - oldLocationComplex )
 			if distance < self.minimumDistance:
 				if self.isNextTravel():
@@ -177,7 +177,7 @@ class HopSkein:
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = "";
-			if len( splitLine ) > 0:
+			if len(splitLine) > 0:
 				firstWord = splitLine[0]
 			if firstWord == 'G1':
 				return True
@@ -190,10 +190,10 @@ class HopSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(<layerThickness>':
-				layerThickness = float( splitLine[1] )
+				layerThickness = float(splitLine[1])
 				self.hopHeight = hopRepository.hopOverLayerThickness.value * layerThickness
 				self.hopDistance = self.hopHeight / self.minimumSlope
 				self.minimumDistance = 0.5 * layerThickness
@@ -202,15 +202,15 @@ class HopSkein:
 				return
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the bevel gcode."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			line = self.getHopLine(line)
-			self.oldLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			self.oldLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			self.justDeactivated = False
 		elif firstWord == 'M101':
 			self.extruderActive = True
@@ -223,7 +223,7 @@ class HopSkein:
 def main():
 	"Display the hop dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

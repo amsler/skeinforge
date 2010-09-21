@@ -17,9 +17,9 @@ from fabmetheus_utilities import euclidean
 import math
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 globalDecreasingRadiusMultipliers = [1.0, 0.55, 0.35, 0.2]
@@ -300,15 +300,15 @@ def getInsetLoopsFromVector3Loop(loop, radius, thresholdRatio=0.9):
 	loopComplexes = getInsetLoopsFromLoop(radius, loopComplex)
 	return euclidean.getVector3Paths(loopComplexes, loop[0].z)
 
-def getInsetSeparateLoopsFromLoops( inset, loops, thresholdRatio=0.9 ):
+def getInsetSeparateLoopsFromLoops(inset, loops, thresholdRatio=0.9):
 	"Get the separate inset loops."
 	isInset = inset > 0
 	insetSeparateLoops = []
 	radius = abs(inset)
-	arounds = getAroundsFromLoops( loops, radius, thresholdRatio )
+	arounds = getAroundsFromLoops(loops, radius, thresholdRatio)
 	for around in arounds:
 		leftPoint = euclidean.getLeftPoint(around)
-		if isInset == euclidean.isInFilledRegion( loops, leftPoint ):
+		if isInset == euclidean.getIsInFilledRegion(loops, leftPoint):
 			if isInset:
 				around.reverse()
 			insetSeparateLoops.append(around)
@@ -350,7 +350,7 @@ def getLargestCenterOutsetLoopFromLoopRegardless( loop, radius ):
 def getLargestInsetLoopFromLoop( loop, radius ):
 	"Get the largest inset loop from the loop."
 	loops = getInsetLoopsFromLoop( radius, loop )
-	return euclidean.getLargestLoop( loops )
+	return euclidean.getLargestLoop(loops)
 
 def getLargestInsetLoopFromLoopRegardless( loop, radius ):
 	"Get the largest inset loop from the loop, even if the radius has to be shrunk and even if there is still no inset loop."

@@ -10,15 +10,16 @@ import __init__
 from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import zoom_in
 from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import zoom_out
 from fabmetheus_utilities.hidden_scrollbar import HiddenScrollbar
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 import math
 import os
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getGeometricDifference( first, second ):
@@ -120,7 +121,7 @@ class TableauRepository:
 	def setToDisplaySave(self, event=None):
 		"Set the setting values to the display, save the new values."
 		for menuEntity in self.menuEntities:
-			if menuEntity in self.archive:
+			if menuEntity in self.preferences:
 				menuEntity.setToDisplay()
 		settings.writeSettings(self)
 
@@ -135,7 +136,7 @@ class TableauWindow:
 
 	def addCanvasMenuRootScrollSkein( self, repository, skein, suffix, title ):
 		"Add the canvas, menu bar, scroll bar, skein panes, tableau repository, root and skein."
-		self.imagesDirectoryPath = settings.getPathInFabmetheusUtilities('images')
+		self.imagesDirectoryPath = archive.getFabmetheusUtilitiesPath('images')
 		self.movementTextID = None
 		self.mouseInstantButtons = []
 		self.photoImages = {}
@@ -278,7 +279,7 @@ class TableauWindow:
 			photoImage = settings.Tkinter.PhotoImage( file = os.path.join( self.imagesDirectoryPath, fileName ), master = gridPosition.master )
 		except:
 			print('Image %s was not found in the images directory, so a text button will be substituted.' % fileName )
-		untilDotFileName = gcodec.getUntilDot( fileName )
+		untilDotFileName = gcodec.getUntilDot(fileName)
 		self.photoImages[ untilDotFileName ] = photoImage
 		return untilDotFileName
 
@@ -618,7 +619,7 @@ class TableauWindow:
 	def save(self):
 		"Set the setting values to the display, save the new values."
 		for menuEntity in self.repository.menuEntities:
-			if menuEntity in self.repository.archive:
+			if menuEntity in self.repository.preferences:
 				menuEntity.setToDisplay()
 		self.setInsetToDisplay()
 		settings.writeSettings(self.repository)
@@ -650,7 +651,7 @@ class TableauWindow:
 		self.setInsetToDisplay()
 
 	def setInsetToDisplay(self):
-		"Set the archive to the display."
+		"Set the repository to the display."
 		if self.root.state() != 'normal':
 			return
 		excessExtent = int( self.xScrollbar['width'] ) * 21 / 15

@@ -27,9 +27,9 @@ from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getNewRepository():
@@ -40,13 +40,13 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Write file interpretation, if activate interpret is selected."
 	repository = settings.getReadRepository( getNewRepository() )
 	if repository.activateInterpret.value:
-		fabmetheus_interpret.getWindowAnalyzeFile( fileName )
+		fabmetheus_interpret.getWindowAnalyzeFile(fileName)
 
 
 def main():
 	"Display the interpret dialog."
 	if len( sys.argv ) > 1:
-		fabmetheus_interpret.getWindowAnalyzeFile(' '.join( sys.argv[ 1 : ] ) )
+		fabmetheus_interpret.getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -15,10 +15,10 @@ from fabmetheus_utilities import euclidean
 import math
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getAverageRadius(radiusComplex):
@@ -180,9 +180,9 @@ def getStrokeRadiusByPrefix(prefix, xmlElement):
 	strokeRadius = getFloatByPrefixBeginEnd(prefix + 'strokeRadius', prefix + 'strokeWidth', 1.0, xmlElement )
 	return getFloatByPrefixBeginEnd(prefix + 'radius', prefix + 'diameter', strokeRadius, xmlElement )
 
-def getUnpackedLoops( loops ):
+def getUnpackedLoops(loops):
 	"Get unpacked loops."
-	if len( loops ) == 1:
+	if len(loops) == 1:
 		firstLoop = loops[0]
 		if firstLoop.__class__ == list:
 			return firstLoop
@@ -238,7 +238,7 @@ def setClosedAttribute(revolutions, xmlElement):
 
 class SideLoop:
 	"Class to handle loop, side angle and side length."
-	def __init__( self, loop, sideAngle = None, sideLength = None ):
+	def __init__(self, loop, sideAngle=None, sideLength=None):
 		"Initialize."
 		if sideAngle == None:
 			if len(loop) > 0:
@@ -253,7 +253,7 @@ class SideLoop:
 				sideLength = 1.0
 				print('Warning, loop has no length in SideLoop in lineation.')
 		self.loop = loop
-		self.sideAngle = abs( sideAngle )
+		self.sideAngle = abs(sideAngle)
 		self.sideLength = sideLength
 		self.close = 0.001 * sideLength
 

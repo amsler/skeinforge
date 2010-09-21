@@ -13,10 +13,10 @@ from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import svg_reader
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getCubicPath(xmlElement):

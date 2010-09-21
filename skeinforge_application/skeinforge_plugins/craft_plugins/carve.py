@@ -129,23 +129,23 @@ import sys
 import time
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get carved text."
 	if fileName.endswith('.svg'):
-		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
+		gcodeText = gcodec.getTextIfEmpty(fileName, gcodeText)
 		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'carve'):
 			return gcodeText
-	carving = svg_writer.getCarving( fileName )
+	carving = svg_writer.getCarving(fileName)
 	if carving == None:
 		return ''
 	if repository == None:
 		repository = CarveRepository()
-		settings.getReadRepository( repository )
+		settings.getReadRepository(repository)
 	return CarveSkein().getCarvedSVG( carving, fileName, repository )
 
 def getNewRepository():
@@ -155,15 +155,15 @@ def getNewRepository():
 def writeOutput( fileName = ''):
 	"Carve a GNU Triangulated Surface file."
 	startTime = time.time()
-	print('File ' + gcodec.getSummarizedFileName( fileName ) + ' is being carved.')
+	print('File ' + gcodec.getSummarizedFileName(fileName) + ' is being carved.')
 	repository = CarveRepository()
-	settings.getReadRepository( repository )
+	settings.getReadRepository(repository)
 	carveGcode = getCraftedText( fileName, '', repository )
 	if carveGcode == '':
 		return
 	suffixFileName = gcodec.getFilePathWithUnderscoredBasename( fileName, '_carve.svg')
 	gcodec.writeFileText( suffixFileName, carveGcode )
-	print('The carved file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('The carved file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
 	print('It took %s to carve the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
@@ -200,7 +200,7 @@ class CarveRepository:
 		"Carve button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class CarveSkein:
@@ -225,13 +225,13 @@ class CarveSkein:
 		perimeterWidth = repository.perimeterWidthOverThickness.value * layerThickness
 		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
 		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedBoundaryLayers)
-		return svgWriter.getReplacedSVGTemplate(fileName, 'carve', truncatedRotatedBoundaryLayers)
+		return svgWriter.getReplacedSVGTemplate(fileName, 'carve', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())
 
 
 def main():
 	"Display the carve dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

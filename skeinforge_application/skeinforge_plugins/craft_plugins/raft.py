@@ -236,9 +236,9 @@ import os
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 #maybe later wide support
@@ -259,7 +259,7 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 
 def getCrossHatchPointLine( crossHatchPointLineTable, y ):
 	"Get the cross hatch point line."
-	if not crossHatchPointLineTable.has_key( y ):
+	if not crossHatchPointLineTable.has_key(y):
 		crossHatchPointLineTable[ y ] = {}
 	return crossHatchPointLineTable[ y ]
 
@@ -308,7 +308,7 @@ def setExtendedPoint( lineSegmentEnd, pointOriginal, x ):
 
 def writeOutput( fileName = ''):
 	"Raft a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
 		return
 	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'raft')
@@ -371,7 +371,7 @@ class RaftRepository:
 		"Raft button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class RaftSkein:
@@ -580,7 +580,7 @@ class RaftSkein:
 		interfaceExtrusionWidth = self.perimeterWidth * self.interfaceLayerThicknessOverLayerThickness
 		self.interfaceStep = interfaceExtrusionWidth / self.repository.interfaceInfillDensity.value
 		self.setCornersZ()
-		self.cornerLowComplex = self.cornerLow.dropAxis( 2 )
+		self.cornerLowComplex = self.cornerLow.dropAxis(2)
 		originalExtent = self.cornerHighComplex - self.cornerLowComplex
 		self.raftOutsetRadius = self.repository.raftMargin.value + self.repository.raftAdditionalMarginOverLengthPercent.value * 0.01 * max( originalExtent.real, originalExtent.imag )
 		self.setBoundaryLayers()
@@ -697,8 +697,8 @@ class RaftSkein:
 		temperatureTimeChange = self.getTemperatureChangeTime( temperature )
 		self.addTemperatureLineIfDifferent( temperature )
 		if len( boundaryLoops ) < 1:
-			layerCornerHigh = complex( - 999999999.0, - 999999999.0 )
-			layerCornerLow = complex( 999999999.0, 999999999.0 )
+			layerCornerHigh = complex(-999999999.0, -999999999.0)
+			layerCornerLow = complex(999999999.0, 999999999.0)
 			for endpoint in endpoints:
 				layerCornerHigh = euclidean.getMaximum( layerCornerHigh, endpoint.point )
 				layerCornerLow = euclidean.getMinimum( layerCornerLow, endpoint.point )
@@ -762,7 +762,7 @@ class RaftSkein:
 
 	def getElevatedBoundaryLine( self, splitLine ):
 		"Get elevated boundary gcode line."
-		location = gcodec.getLocationFromSplitLine( None, splitLine )
+		location = gcodec.getLocationFromSplitLine(None, splitLine)
 		if self.operatingJump != None:
 			location.z += self.operatingJump
 		return self.distanceFeedRate.getBoundaryLine( location )
@@ -789,7 +789,7 @@ class RaftSkein:
 
 	def getRaftedLine( self, splitLine ):
 		"Get elevated gcode line with operating feed rate."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		feedRateMinuteMultiplied = self.feedRateMinute
 		self.oldLocation = location
@@ -807,7 +807,7 @@ class RaftSkein:
 		else:
 			self.addFlowRateValueIfDifferent( self.oldFlowRateInput )
 			self.addTemperatureLineIfDifferent( self.objectNextLayersTemperature )
-		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinuteMultiplied, location.dropAxis( 2 ), z )
+		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinuteMultiplied, location.dropAxis(2), z )
 
 	def getStepsUntilEnd( self, begin, end, stepSize ):
 		"Get steps from the beginning until the end."
@@ -871,57 +871,57 @@ class RaftSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(<coolingRate>':
-				self.coolingRate = float( splitLine[1] )
+				self.coolingRate = float(splitLine[1])
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> raft </procedureDone>)')
 			elif firstWord == '(<heatingRate>':
-				self.heatingRate = float( splitLine[1] )
+				self.heatingRate = float(splitLine[1])
 			elif firstWord == '(<layer>':
 				return
 			elif firstWord == '(<layerThickness>':
-				self.layerThickness = float( splitLine[1] )
+				self.layerThickness = float(splitLine[1])
 			elif firstWord == '(<orbitalFeedRatePerSecond>':
-				self.orbitalFeedRatePerSecond = float( splitLine[1] )
+				self.orbitalFeedRatePerSecond = float(splitLine[1])
 			elif firstWord == '(<operatingFeedRatePerSecond>':
-				self.feedRateMinute = 60.0 * float( splitLine[1] )
+				self.feedRateMinute = 60.0 * float(splitLine[1])
 			elif firstWord == '(<operatingFlowRate>':
-				self.oldFlowRateInput = float( splitLine[1] )
+				self.oldFlowRateInput = float(splitLine[1])
 				self.operatingFlowRate = self.oldFlowRateInput
 				self.supportFlowRate = self.operatingFlowRate * self.repository.supportFlowRateOverOperatingFlowRate.value
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[1] )
+				self.perimeterWidth = float(splitLine[1])
 				self.quarterPerimeterWidth = 0.25 * self.perimeterWidth
 				self.supportOutset = self.perimeterWidth + self.perimeterWidth * self.repository.supportGapOverPerimeterExtrusionWidth.value
 			elif firstWord == '(<baseTemperature>':
-				self.baseTemperature = float( splitLine[1] )
+				self.baseTemperature = float(splitLine[1])
 			elif firstWord == '(<interfaceTemperature>':
-				self.interfaceTemperature = float( splitLine[1] )
+				self.interfaceTemperature = float(splitLine[1])
 			elif firstWord == '(<objectFirstLayerInfillTemperature>':
-				self.objectFirstLayerInfillTemperature = float( splitLine[1] )
+				self.objectFirstLayerInfillTemperature = float(splitLine[1])
 			elif firstWord == '(<objectFirstLayerPerimeterTemperature>':
-				self.objectFirstLayerPerimeterTemperature = float( splitLine[1] )
+				self.objectFirstLayerPerimeterTemperature = float(splitLine[1])
 			elif firstWord == '(<objectNextLayersTemperature>':
-				self.objectNextLayersTemperature = float( splitLine[1] )
+				self.objectNextLayersTemperature = float(splitLine[1])
 			elif firstWord == '(<supportLayersTemperature>':
-				self.supportLayersTemperature = float( splitLine[1] )
+				self.supportLayersTemperature = float(splitLine[1])
 			elif firstWord == '(<supportedLayersTemperature>':
-				self.supportedLayersTemperature = float( splitLine[1] )
+				self.supportedLayersTemperature = float(splitLine[1])
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float( splitLine[1] )
+				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the raft skein."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			if self.extrusionStart:
-				line = self.getRaftedLine( splitLine )
+				line = self.getRaftedLine(splitLine)
 		elif firstWord == 'M101':
 			if self.isStartupEarly:
 				self.isStartupEarly = False
@@ -929,18 +929,18 @@ class RaftSkein:
 		elif firstWord == 'M103':
 			self.isPerimeter = False
 		elif firstWord == 'M108':
-			flowRateOutputString = splitLine[1][ 1 : ]
+			flowRateOutputString = splitLine[1][1 :]
 			self.addFlowRateLineIfDifferent( flowRateOutputString )
 			self.oldFlowRateInput = float( flowRateOutputString )
 		elif firstWord == '(<boundaryPoint>':
-			line = self.getElevatedBoundaryLine( splitLine )
+			line = self.getElevatedBoundaryLine(splitLine)
 		elif firstWord == '(</extrusion>)':
 			self.extrusionStart = False
 			self.distanceFeedRate.addLine( self.operatingLayerEndLine )
 		elif firstWord == '(<layer>':
 			self.layerIndex += 1
 			boundaryLayer = None
-			layerZ = self.extrusionTop + float( splitLine[1] )
+			layerZ = self.extrusionTop + float(splitLine[1])
 			if len( self.boundaryLayers ) > 0:
 				boundaryLayer = self.boundaryLayers[ self.layerIndex ]
 				layerZ = boundaryLayer.z
@@ -1015,24 +1015,24 @@ class RaftSkein:
 		boundaryLoop = None
 		boundaryLayer = None
 		layerIndex = - 1
-		self.cornerHighComplex = complex( - 999999999.0, - 999999999.0 )
+		self.cornerHighComplex = complex(-999999999.0, -999999999.0)
 		self.cornerLow = Vector3(999999999.0, 999999999.0, 999999999.0)
 		self.firstLayerLoops = []
 		for line in self.lines[self.lineIndex :]:
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == '(</boundaryPerimeter>)':
 				boundaryLoop = None
 			elif firstWord == '(<boundaryPoint>':
-				location = gcodec.getLocationFromSplitLine( None, splitLine )
+				location = gcodec.getLocationFromSplitLine(None, splitLine)
 				if boundaryLoop == None:
 					boundaryLoop = []
 					boundaryLayer.loops.append( boundaryLoop )
-				boundaryLoop.append( location.dropAxis( 2 ) )
-				self.cornerHighComplex = euclidean.getMaximum( self.cornerHighComplex, location.dropAxis( 2 ) )
+				boundaryLoop.append( location.dropAxis(2) )
+				self.cornerHighComplex = euclidean.getMaximum( self.cornerHighComplex, location.dropAxis(2) )
 				self.cornerLow = euclidean.getPointMinimum( self.cornerLow, location )
 			elif firstWord == '(<layer>':
-				z = float( splitLine[1] )
+				z = float(splitLine[1])
 				boundaryLayer = euclidean.LoopLayer(z)
 				self.boundaryLayers.append( boundaryLayer )
 			elif firstWord == '(<layer>':
@@ -1073,7 +1073,7 @@ class SupportLayer:
 def main():
 	"Display the raft dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -40,16 +40,16 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCarving( fileName = ''):
 	"Get the triangle mesh for the slc file."
 	carving = SLCCarving()
-	carving.readFile( fileName )
+	carving.readFile(fileName)
 	return carving
 
 def getLittleEndianFloatGivenFile( file ):
@@ -66,7 +66,7 @@ def getPointsFromFile( numPoints, file ):
 	for pointIndex in xrange( numPoints ):
 		x = getLittleEndianFloatGivenFile( file )
 		y = getLittleEndianFloatGivenFile( file )
-		points.append( complex( x, y ) )
+		points.append( complex(x, y) )
 	return points
 
 def readHeader( file ):
@@ -120,7 +120,7 @@ class SLCCarving:
 			return ''
 		decimalPlaces = max(0, 2 - int(math.floor(math.log10(self.layerThickness))))
 		self.svgWriter = svg_writer.SVGWriter(True, self, decimalPlaces)
-		return self.svgWriter.getReplacedSVGTemplate(self.fileName, 'basic', self.rotatedBoundaryLayers)
+		return self.svgWriter.getReplacedSVGTemplate(self.fileName, 'basic', self.rotatedBoundaryLayers, None)
 
 	def getCarveLayerThickness(self):
 		"Get the layer thickness."
@@ -129,6 +129,10 @@ class SLCCarving:
 	def getCarveRotatedBoundaryLayers(self):
 		"Get the rotated boundary layers."
 		return self.rotatedBoundaryLayers
+
+	def getFabmetheusXML(self):
+		"Return the fabmetheus XML."
+		return None
 
 	def getInterpretationSuffix(self):
 		"Return the suffix for a carving."
@@ -200,7 +204,7 @@ class SLCCarving:
 def main():
 	"Display the inset dialog."
 	if len( sys.argv ) > 1:
-		getCarving(' '.join( sys.argv[ 1 : ] ) )
+		getCarving(' '.join( sys.argv[1 :] ) )
 
 if __name__ == "__main__":
 	main()

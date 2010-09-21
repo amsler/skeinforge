@@ -5,7 +5,7 @@ from vector3 import Vector3
 # Get the entire text of a file.
 # @param  fileName name of the file
 # @return  entire text of a file.
-def getFileText( fileName ):
+def getFileText(fileName):
     file = open( fileName, 'r')
     fileText = file.read()
     file.close()
@@ -14,22 +14,22 @@ def getFileText( fileName ):
 # Get the all the lines of text of a text.
 # @param  text text
 # @return  the lines of text of a text
-def getTextLines( text ):
+def getTextLines(text):
     return text.replace('\r', '\n').split('\n')
 
 # Get the double value of the word after the first letter.
 # @param  word string with value starting after the first letter
 # @return  double value of the word after the first letter
 def getDoubleAfterFirstLetter(word):
-    return float( word[ 1 : ] )
+    return float( word[1 :] )
 
 # Get the double value of the word after the first occurence of the letter in the split line.
-def getDoubleForLetter( letter, splitLine ):
-    return getDoubleAfterFirstLetter( splitLine[ indexOfStartingWithSecond( letter, splitLine ) ] )
+def getDoubleForLetter(letter, splitLine):
+    return getDoubleAfterFirstLetter( splitLine[ indexOfStartingWithSecond(letter, splitLine) ] )
 
 # Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found
-def indexOfStartingWithSecond( letter, splitLine ):
-    for wordIndex in xrange( 1, len( splitLine ) ):
+def indexOfStartingWithSecond(letter, splitLine):
+    for wordIndex in xrange( 1, len(splitLine) ):
         word = splitLine[ wordIndex ]
         firstLetter = word[0]
         if firstLetter == letter:
@@ -64,8 +64,8 @@ class g2gif:
         self.last_pos = Vector3()
         self.last_pos.z = 999
         self.do_move = 1
-        fileText = getFileText( fileName )
-        textLines = getTextLines( fileText )
+        fileText = getFileText(fileName)
+        textLines = getTextLines(fileText)
         self.images = []
         self.image = None
         for line in textLines:
@@ -79,11 +79,11 @@ class g2gif:
 
     def parseLine(self, line):
         splitLine = line.split(' ')
-        if len( splitLine ) < 1:
+        if len(splitLine) < 1:
             return 0
         firstWord = splitLine[0]
         if firstWord == 'G1':
-            self.linearMove( splitLine )
+            self.linearMove(splitLine)
         if firstWord == 'M101':
             self.do_move = 1
 
@@ -91,7 +91,7 @@ class g2gif:
     def setFeedRate( self, splitLine ):
         indexOfF = indexOfStartingWithSecond( "F", splitLine )
         if indexOfF > 0:
-            self.feedRateMinute = getDoubleAfterFirstLetter( splitLine[ indexOfF ] )
+            self.feedRateMinute = getDoubleAfterFirstLetter( splitLine[indexOfF] )
 
     # Set a point to the gcode split line.
     def setPointComponent( self, point, splitLine ):
@@ -99,14 +99,14 @@ class g2gif:
         point.y = getDoubleForLetter( "Y", splitLine )
         indexOfZ = indexOfStartingWithSecond( "Z", splitLine )
         if indexOfZ > 0:
-            point.z = getDoubleAfterFirstLetter( splitLine[ indexOfZ ] )
+            point.z = getDoubleAfterFirstLetter( splitLine[indexOfZ] )
 
     def scale( self, x, y ):
         return x * 5 + 150, - y * 5 + 100
 
     def linearMove( self, splitLine ):
         location = Vector3()
-        self.setFeedRate( splitLine )
+        self.setFeedRate(splitLine)
         self.setPointComponent( location, splitLine )
         if location.z != self.last_pos.z:
             if self.image:

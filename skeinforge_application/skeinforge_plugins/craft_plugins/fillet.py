@@ -94,9 +94,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text, filletRepository = None ):
@@ -127,7 +127,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Fillet a gcode linear move file. Depending on the settings, either arcPoint, arcRadius, arcSegment, bevel or do nothing."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'fillet')
 
@@ -147,7 +147,7 @@ class BevelSkein:
 
 	def addLinearMovePoint( self, feedRateMinute, point ):
 		"Add a gcode linear move, feedRate and newline to the output."
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, point.dropAxis( 2 ), point.z ) )
+		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, point.dropAxis(2), point.z ) )
 
 	def getCornerFeedRate(self):
 		"Get the corner feed rate, which may be based on the intermediate feed rate."
@@ -199,14 +199,14 @@ class BevelSkein:
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			if gcodec.getFirstWord( splitLine ) == 'G1':
-				nextLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			if gcodec.getFirstWord(splitLine) == 'G1':
+				nextLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 				return nextLocation
 		return None
 
 	def linearMove( self, splitLine ):
 		"Bevel a linear move."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		if self.oldLocation != None:
 			nextLocation = self.getNextLocation()
@@ -220,28 +220,28 @@ class BevelSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> fillet </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				perimeterWidth = abs( float( splitLine[1] ) )
+				perimeterWidth = abs( float(splitLine[1]) )
 				self.curveSection = 0.7 * perimeterWidth
 				self.filletRadius = perimeterWidth * filletRepository.filletRadiusOverPerimeterWidth.value
 				self.minimumRadius = 0.1 * perimeterWidth
 				self.reversalSlowdownDistance = perimeterWidth * filletRepository.reversalSlowdownDistanceOverPerimeterWidth.value
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the bevel gcode."
 		self.shouldAddLine = True
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			self.linearMove( splitLine )
+			self.linearMove(splitLine)
 		elif firstWord == 'M101':
 			self.extruderActive = True
 		elif firstWord == 'M103':
@@ -254,13 +254,13 @@ class BevelSkein:
 		if self.filletRadius < 2.0 * self.minimumRadius:
 			return location
 		afterSegment = nextLocation - location
-		afterSegmentComplex = afterSegment.dropAxis( 2 )
+		afterSegmentComplex = afterSegment.dropAxis(2)
 		afterSegmentComplexLength = abs( afterSegmentComplex )
 		thirdAfterSegmentLength = 0.333 * afterSegmentComplexLength
 		if thirdAfterSegmentLength < self.minimumRadius:
 			return location
 		beforeSegment = self.oldLocation - location
-		beforeSegmentComplex = beforeSegment.dropAxis( 2 )
+		beforeSegmentComplex = beforeSegment.dropAxis(2)
 		beforeSegmentComplexLength = abs( beforeSegmentComplex )
 		thirdBeforeSegmentLength = 0.333 * beforeSegmentComplexLength
 		if thirdBeforeSegmentLength < self.minimumRadius:
@@ -297,12 +297,12 @@ class ArcSegmentSkein( BevelSkein ):
 		if self.filletRadius < 2.0 * self.minimumRadius:
 			return location
 		afterSegment = nextLocation - location
-		afterSegmentComplex = afterSegment.dropAxis( 2 )
+		afterSegmentComplex = afterSegment.dropAxis(2)
 		thirdAfterSegmentLength = 0.333 * abs( afterSegmentComplex )
 		if thirdAfterSegmentLength < self.minimumRadius:
 			return location
 		beforeSegment = self.oldLocation - location
-		beforeSegmentComplex = beforeSegment.dropAxis( 2 )
+		beforeSegmentComplex = beforeSegment.dropAxis(2)
 		thirdBeforeSegmentLength = 0.333 * abs( beforeSegmentComplex )
 		if thirdBeforeSegmentLength < self.minimumRadius:
 			return location
@@ -315,11 +315,11 @@ class ArcSegmentSkein( BevelSkein ):
 		beforePoint = euclidean.getPointPlusSegmentWithLength( bevelRadius * abs( beforeSegment ) / abs( beforeSegmentComplex ), location, beforeSegment )
 		self.addLinearMovePoint( self.feedRateMinute, beforePoint )
 		afterPoint = euclidean.getPointPlusSegmentWithLength( bevelRadius * abs( afterSegment ) / abs( afterSegmentComplex ), location, afterSegment )
-		afterPointComplex = afterPoint.dropAxis( 2 )
-		beforePointComplex = beforePoint.dropAxis( 2 )
-		locationComplex = location.dropAxis( 2 )
+		afterPointComplex = afterPoint.dropAxis(2)
+		beforePointComplex = beforePoint.dropAxis(2)
+		locationComplex = location.dropAxis(2)
 		midpoint = 0.5 * ( afterPoint + beforePoint )
-		midpointComplex = midpoint.dropAxis( 2 )
+		midpointComplex = midpoint.dropAxis(2)
 		midpointMinusLocationComplex = midpointComplex - locationComplex
 		midpointLocationLength = abs( midpointMinusLocationComplex )
 		if midpointLocationLength < 0.01 * self.filletRadius:
@@ -348,7 +348,7 @@ class ArcPointSkein( ArcSegmentSkein ):
 		firstWord = 'G3'
 		if afterCenterDifferenceAngle < 0.0:
 			firstWord = 'G2'
-		centerMinusBeforeComplex = centerMinusBefore.dropAxis( 2 )
+		centerMinusBeforeComplex = centerMinusBefore.dropAxis(2)
 		if abs( centerMinusBeforeComplex ) <= 0.0:
 			return
 		deltaZ = abs( afterPointMinusBefore.z )
@@ -400,13 +400,13 @@ class FilletRepository:
 		"Fillet button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 def main():
 	"Display the fillet dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

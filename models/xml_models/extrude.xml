@@ -2,6 +2,7 @@
 <fabmetheus version="2010-04-04" overhang.supportangle='35' overhang.span='45' twistprecision="10" step='.2' >
 	<path id="vertex_holder">
 		<vertex x="8.8" y="7.7" z="2.9" />
+		<vertex x="0" y="0" z="2.9" />
 	</path>
 	<path id="curve">
 		<vertex />
@@ -11,14 +12,16 @@
 		<polygon radius="20" sides="5" revolutions='2' />
 		<polygon radius="10" sides="4" />
 	</difference>
-	<square id='spiral' copy='true' inradius='25' revolutions='2' spiral='[8,8]' />
-	<outline id='curve_outline' closed='false' copy='true' name='write_test' target='=document.getElementByID(spiral)' radius='1' />
-	<extrude id='inset_extrude' name='write_test' target='=document.getElementByID(curve_outline)' end="=document.getElementByID($vertex_holder).getPaths()[0][0]" />
+	<gear id='gear' creationType='b' name='write_test' helixAngle='80' helixType='b' moveType='m' rackWidth='20' shaftDepthBottomOverRadius='0.2' pitchRadius='20.0' pressureAngle='30' rackLength='200' shaftRadius='6' shaftSides='10' teeth='7' teethSecond='11' thickness='2.0' />
+
 	<!--
-	<outset id='inset_outline' copy='true' name='write_test' target='=document.getElementByID(curve_outline)' radius='3' />
+	<extrude id='inset_extrude' name='write_test' target='=document.getElementByID(gear)' end="[0,0,1]" />
+	<write target='=document.getElementsByName(write_test)' file="file_write_test" folder='malpighi' />
+	<outline id='curve_outline' copy='true' name='write_test' target='=document.getElementByID(spiral)' radius='1' />
 	<grid id='grid' outline.strokeWidth='2.0' radius='2' seed='0' target='=creation.getPolygon(5, 20)' type='random' />
-		<extrude id='inset_extrude' name='write_test' target='=document.getElementByID(grid)' end="=document.getElementByID($vertex_holder).getPaths()[0][0]" />
-	<write target='=document.getElementsByName(write_test)' qqqfile="file_write_test" folder='malpighi' />
+	<extrude id='inset_extrude' name='write_test' target='=document.getElementByID(grid)' end="=document.getElementByID($vertex_holder).getPaths()[0][0]" />
+	
+	<outset id='inset_outline' copy='true' name='write_test' target='=document.getElementByID(curve_outline)' radius='3' />
 	<extrude id='inset_extrude' name='write_test' radius='8' end="=document.getElementByID($vertex_holder).getPaths()[0][0]" />
 	<outline target='=document.getElementByID($grid)' strokeWidth='2.0' />
 	<extrude target='=document.getElementByID($grid)' end="=document.getElementByID($vertex_holder).getPaths()[0][0]" />

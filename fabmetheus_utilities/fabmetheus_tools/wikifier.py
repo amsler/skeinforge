@@ -13,9 +13,9 @@ import cStringIO
 import os
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 class Heading:
@@ -107,31 +107,31 @@ def getWrappedHypertext( fileText, hypertextFileIndex, hypertextFiles ):
 def readWriteDeleteHypertextHelp( documentDirectoryPath, hypertextFileIndex, hypertextFiles, transferredFileNames ):
 	"Read the pydoc hypertext help documents, write them in the documentation folder then delete the originals."
 	fileName = hypertextFiles[ hypertextFileIndex ]
-	print( fileName )
+	print(fileName)
 	filePath = os.path.join( documentDirectoryPath, fileName )
-	fileText = gcodec.getFileText( fileName )
+	fileText = gcodec.getFileText(fileName)
 	fileText = getWrappedHypertext( fileText, hypertextFileIndex, hypertextFiles )
 	if fileText.find('This page is in the table of contents.') > - 1:
 		fileText = fileText.replace('This page is in the table of contents.', '')
-		transferredFileNames.append( fileName )
+		transferredFileNames.append(fileName)
 	gcodec.writeFileText( filePath, fileText )
-	os.remove( fileName )
+	os.remove(fileName)
 
 def readWriteNavigationHelp( documentDirectoryPath, transferredFileNameIndex, transferredFileNames ):
 	"Read the hypertext help documents, and add the navigation lines to them."
 	fileName = transferredFileNames[ transferredFileNameIndex ]
-	print( fileName )
+	print(fileName)
 	filePath = os.path.join( documentDirectoryPath, fileName )
-	fileText = gcodec.getFileText( filePath )
+	fileText = gcodec.getFileText(filePath)
 	fileText = getNavigationHypertext( fileText, transferredFileNameIndex, transferredFileNames )
 	gcodec.writeFileText( filePath, fileText )
 
-def removeFilesInDirectory( directoryPath ):
+def removeFilesInDirectory(directoryPath):
 	"Remove all the files in a directory."
-	fileNames = os.listdir( directoryPath )
+	fileNames = os.listdir(directoryPath)
 	for fileName in fileNames:
-		filePath = os.path.join( directoryPath, fileName )
-		os.remove( filePath )
+		filePath = os.path.join(directoryPath, fileName)
+		os.remove(filePath)
 
 def writeContentsFile( documentDirectoryPath, hypertextFiles ):
 	"Write the contents file."

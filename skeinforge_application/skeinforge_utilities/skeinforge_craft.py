@@ -20,14 +20,16 @@ import os
 import time
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getChainText( fileName, procedure ):
 	"Get a crafted shape file."
-	text = gcodec.getFileText( fileName )
+	text = ''
+	if fileName.endswith('.gcode') or fileName.endswith('.svg'):
+		text = gcodec.getFileText(fileName)
 	procedures = getProcedures( procedure, text )
 	return getChainTextFromProcedures( fileName, procedures, text )
 
@@ -35,15 +37,15 @@ def getChainTextFromProcedures( fileName, procedures, text ):
 	"Get a crafted shape file from a list of procedures."
 	lastProcedureTime = time.time()
 	for procedure in procedures:
-		craftModule = getCraftModule( procedure )
+		craftModule = getCraftModule(procedure)
 		if craftModule != None:
 			text = craftModule.getCraftedText( fileName, text )
 			if gcodec.isProcedureDone( text, procedure ):
-				print('%s procedure took %s.' % ( procedure.capitalize(), euclidean.getDurationString( time.time() - lastProcedureTime ) ) )
+				print('%s procedure took %s.' % (procedure.capitalize(), euclidean.getDurationString(time.time() - lastProcedureTime)))
 				lastProcedureTime = time.time()
 	return text
 
-def getCraftModule( fileName ):
+def getCraftModule(fileName):
 	"Get craft module."
 	return gcodec.getModuleWithDirectoryPath( getPluginsDirectoryPath(), fileName )
 
@@ -71,22 +73,22 @@ def getPluginFileNames():
 def getProcedures( procedure, text ):
 	"Get the procedures up to and including the given procedure."
 	craftSequence = getReadCraftSequence()
-	sequenceIndexPlusOneFromText = getSequenceIndexPlusOneFromText( text )
-	sequenceIndexFromProcedure = getSequenceIndexFromProcedure( procedure )
+	sequenceIndexPlusOneFromText = getSequenceIndexPlusOneFromText(text)
+	sequenceIndexFromProcedure = getSequenceIndexFromProcedure(procedure)
 	return craftSequence[ sequenceIndexPlusOneFromText : sequenceIndexFromProcedure + 1 ]
 
 def getReadCraftSequence():
 	"Get profile sequence."
 	return skeinforge_profile.getCraftTypePluginModule().getCraftSequence()
 
-def getSequenceIndexFromProcedure( procedure ):
+def getSequenceIndexFromProcedure(procedure):
 	"Get the profile sequence index of the procedure.  Return None if the procedure is not in the sequence"
 	craftSequence = getReadCraftSequence()
 	if procedure not in craftSequence:
 		return 0
-	return craftSequence.index( procedure )
+	return craftSequence.index(procedure)
 
-def getSequenceIndexPlusOneFromText( fileText ):
+def getSequenceIndexPlusOneFromText(fileText):
 	"Get the profile sequence index of the file plus one.  Return zero if the procedure is not in the file"
 	craftSequence = getReadCraftSequence()
 	for craftSequenceIndex in xrange( len( craftSequence ) - 1, - 1, - 1 ):
@@ -99,7 +101,7 @@ def writeChainTextWithNounMessage( fileName, procedure ):
 	"Get and write a crafted shape file."
 	print('')
 	print('The %s tool is parsing the file:' % procedure )
-	print( os.path.basename( fileName ) )
+	print( os.path.basename(fileName) )
 	print('')
 	startTime = time.time()
 	fileNameSuffix = fileName[ : fileName.rfind('.') ] + '_' + procedure + '.gcode'
@@ -114,11 +116,11 @@ def writeChainTextWithNounMessage( fileName, procedure ):
 	print('It took %s to craft the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	skeinforge_analyze.writeOutput( fileName, fileNameSuffix, craftText )
 
-def writeOutput( fileName ):
+def writeOutput(fileName):
 	"Craft a gcode file with the last module."
 	pluginModule = getLastModule()
 	if pluginModule != None:
-		pluginModule.writeOutput( fileName )
+		pluginModule.writeOutput(fileName)
 
 
 class CraftRadioButtonsSaveListener:
@@ -177,4 +179,4 @@ class CraftRepository:
 		"Craft button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)

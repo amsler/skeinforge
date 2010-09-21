@@ -10,10 +10,10 @@ import __init__
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getLocalDictionary( attributeDictionaryKey, xmlElement):
@@ -29,7 +29,7 @@ def printAttributeDictionaryKey( attributeDictionaryKey, xmlElement):
 		localDictionary = getLocalDictionary( attributeDictionaryKey, xmlElement)
 		if localDictionary != None:
 			localDictionaryKeys = localDictionary.keys()
-			attributeValue = xmlElement.attributeDictionary[ attributeDictionaryKey ]
+			attributeValue = xmlElement.attributeDictionary[attributeDictionaryKey]
 			if attributeValue != '':
 				attributeValue = ' - ' + attributeValue
 			print('Local Dictionary Variables' + attributeValue )
@@ -37,7 +37,7 @@ def printAttributeDictionaryKey( attributeDictionaryKey, xmlElement):
 			for localDictionaryKey in localDictionaryKeys:
 				print('%s: %s' % ( localDictionaryKey, localDictionary[ localDictionaryKey ] ) )
 			return
-	value = xmlElement.attributeDictionary[ attributeDictionaryKey ]
+	value = xmlElement.attributeDictionary[attributeDictionaryKey]
 	evaluatedValue = None
 	if value == '':
 		evaluatedValue = evaluate.getEvaluatedExpressionValue( attributeDictionaryKey, xmlElement )

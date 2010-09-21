@@ -15,10 +15,10 @@ import math
 import random
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def addGridRow(diameter, gridPath, loopsComplex, maximumComplex, rowIndex, x, y, zigzag):
@@ -26,7 +26,7 @@ def addGridRow(diameter, gridPath, loopsComplex, maximumComplex, rowIndex, x, y,
 	row = []
 	while x < maximumComplex.real:
 		point = complex(x, y)
-		if euclidean.isPointInsideLoopsZone(loopsComplex, point):
+		if euclidean.getIsInFilledRegion(loopsComplex, point):
 			row.append(point)
 		x += diameter.real
 	if zigzag and rowIndex % 2 == 1:
@@ -43,6 +43,8 @@ def getGeometryOutput(xmlElement):
 	radius = lineation.getComplexByPrefixBeginEnd('radius', 'diameter', radius, xmlElement)
 	diameter = radius + radius
 	typeString = evaluate.getEvaluatedStringDefault('rectangular', 'type', xmlElement)
+	typeStringTwoCharacters = typeString.lower()[: 2]
+	typeStringFirstCharacter = typeStringTwoCharacters[: 1]
 	zigzag = evaluate.getEvaluatedBooleanDefault(True, 'zigzag', xmlElement)
 	topRight = complex(demiwidth, demiheight)
 	bottomLeft = -topRight
@@ -53,11 +55,11 @@ def getGeometryOutput(xmlElement):
 	maximumComplex = euclidean.getMaximumByPathsComplex(loopsComplex)
 	minimumComplex = euclidean.getMinimumByPathsComplex(loopsComplex)
 	gridPath = None
-	if typeString == 'hexagonal':
+	if typeStringTwoCharacters == 'he':
 		gridPath = getHexagonalGrid(diameter, loopsComplex, maximumComplex, minimumComplex, zigzag)
-	elif typeString == 'random':
+	elif typeStringTwoCharacters == 'ra' or typeStringFirstCharacter == 'a':
 		gridPath = getRandomGrid(diameter, loopsComplex, maximumComplex, minimumComplex, xmlElement)
-	elif typeString == 'rectangular':
+	elif typeStringTwoCharacters == 're' or typeStringFirstCharacter == 'e':
 		gridPath = getRectangularGrid(diameter, loopsComplex, maximumComplex, minimumComplex, zigzag)
 	if gridPath == None:
 		print('Warning, the step type was not one of (hexagonal, random or rectangular) in getGeometryOutput in grid for:')
@@ -99,7 +101,7 @@ def getHexagonalGrid(diameter, loopsComplex, maximumComplex, minimumComplex, zig
 
 def getIsPointInsideZoneAwayOthers(diameterReciprocal, loopsComplex, point, pixelDictionary):
 	"Determine if the point is inside the loops zone and and away from the other points."
-	if not euclidean.isPointInsideLoopsZone(loopsComplex, point):
+	if not euclidean.getIsInFilledRegion(loopsComplex, point):
 		return False
 	pointOverDiameter = complex(point.real * diameterReciprocal.real, point.imag * diameterReciprocal.imag)
 	squareValues = euclidean.getSquareValuesFromPoint(pixelDictionary, pointOverDiameter)

@@ -90,9 +90,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text, splodgeRepository = None ):
@@ -115,7 +115,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Splodge a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'splodge')
 
@@ -145,7 +145,7 @@ class SplodgeRepository:
 		"Splodge button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class SplodgeSkein:
@@ -162,17 +162,17 @@ class SplodgeSkein:
 		self.oldLocation = None
 		self.operatingFeedRatePerSecond = 15.0
 
-	def addLineUnlessIdentical( self, line ):
+	def addLineUnlessIdentical(self, line):
 		"Add a line, unless it is identical to the last line."
 		if line == self.lastLineOutput:
 			return
 		self.lastLineOutput = line
 		self.distanceFeedRate.addLine(line)
 
-	def addLineUnlessIdenticalReactivate( self, line ):
+	def addLineUnlessIdenticalReactivate(self, line):
 		"Add a line, unless it is identical to the last line or another M101."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'M101':
@@ -213,13 +213,13 @@ class SplodgeSkein:
 		"Get the next active line."
 		isActive = False
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
-			line = self.lines[ lineIndex ]
+			line = self.lines[lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'M101':
 				isActive = True
 			if firstWord == 'G1' and isActive:
-				return gcodec.getLocationFromSplitLine( self.oldLocation, splitLine ).dropAxis( 2 )
+				return gcodec.getLocationFromSplitLine(self.oldLocation, splitLine).dropAxis(2)
 		return None
 
 	def getOperatingSplodgeLine( self, line, location ):
@@ -239,7 +239,7 @@ class SplodgeSkein:
 
 	def getSplodgeLineGivenDistance( self, feedRateMinute, line, liftOverExtraThickness, location, startupDistance ):
 		"Add the splodge line."
-		locationComplex = location.dropAxis( 2 )
+		locationComplex = location.dropAxis(2)
 		relativeStartComplex = None
 		nextLocationComplex = self.getNextActiveLocationComplex()
 		if nextLocationComplex != None:
@@ -248,7 +248,7 @@ class SplodgeSkein:
 		if relativeStartComplex == None:
 			relativeStartComplex = complex( 19.9, 9.9 )
 			if self.oldLocation != None:
-				oldLocationComplex = self.oldLocation.dropAxis( 2 )
+				oldLocationComplex = self.oldLocation.dropAxis(2)
 				if oldLocationComplex != locationComplex:
 					relativeStartComplex = oldLocationComplex - locationComplex
 		relativeStartComplex *= startupDistance / abs( relativeStartComplex )
@@ -261,7 +261,7 @@ class SplodgeSkein:
 		self.addLineUnlessIdenticalReactivate( startLine )
 		self.addLineUnlessIdenticalReactivate('M101')
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		lineLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		lineLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		self.distanceFeedRate.addGcodeMovementZWithFeedRate( feedRateMinute, locationComplex, lineLocation.z + lift )
 		return ''
 
@@ -280,9 +280,9 @@ class SplodgeSkein:
 	def isJustBeforeExtrusion(self):
 		"Determine if activate command is before linear move command."
 		for lineIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
-			line = self.lines[ lineIndex ]
+			line = self.lines[lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'G1' or firstWord == 'M103':
 				return False
 			if firstWord == 'M101':
@@ -295,28 +295,28 @@ class SplodgeSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.addLineUnlessIdenticalReactivate('(<procedureDone> splodge </procedureDone>)')
 				return
 			elif firstWord == '(<layerThickness>':
-				self.layerThickness = float( splitLine[1] )
+				self.layerThickness = float(splitLine[1])
 			elif firstWord == '(<operatingFeedRatePerSecond>':
-				self.operatingFeedRatePerSecond = float( splitLine[1] )
+				self.operatingFeedRatePerSecond = float(splitLine[1])
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[1] )
+				self.perimeterWidth = float(splitLine[1])
 				self.minimumQuantityLength = 0.1 * self.perimeterWidth
 			self.addLineUnlessIdenticalReactivate(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the bevel gcode."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			line = self.getSplodgeLine( line, location, splitLine )
 			self.oldLocation = location
 		elif firstWord == 'M101':
@@ -340,7 +340,7 @@ class SplodgeSkein:
 def main():
 	"Display the splodge dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

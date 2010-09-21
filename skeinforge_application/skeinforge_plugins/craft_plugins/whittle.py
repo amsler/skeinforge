@@ -65,9 +65,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/28/04 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text = '', whittleRepository = None ):
@@ -90,7 +90,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Whittle the carving of a gcode file.  If no fileName is specified, whittle the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
 		return
 	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'whittle')
@@ -110,7 +110,7 @@ class WhittleRepository:
 		"Whittle button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class WhittleSkein:
@@ -133,7 +133,7 @@ class WhittleSkein:
 
 	def getLinearMove( self, line, splitLine ):
 		"Get the linear move."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		self.movementLines.append(line)
 		z = location.z + self.layerDeltas[0]
 		self.oldLocation = location
@@ -144,20 +144,20 @@ class WhittleSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ].lstrip()
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'whittle')
 				return
 			elif firstWord == '(<layerThickness>':
-				self.setLayerThinknessVerticalDeltas( splitLine )
+				self.setLayerThinknessVerticalDeltas(splitLine)
 				self.distanceFeedRate.addTagBracketedLine('layerStep', self.layerStep )
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the whittle skein."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
@@ -168,17 +168,17 @@ class WhittleSkein:
 
 	def repeatLines(self):
 		"Repeat the lines at decreasing altitude."
-		for layerDelta in self.layerDeltas[ 1 : ]:
+		for layerDelta in self.layerDeltas[1 :]:
 			for movementLine in self.movementLines:
 				splitLine = movementLine.split()
-				location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+				location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 				z = location.z + layerDelta
 				self.distanceFeedRate.addLine( self.distanceFeedRate.getLineWithZ( movementLine, splitLine, z ) )
 		self.movementLines = []
 
 	def setLayerThinknessVerticalDeltas( self, splitLine ):
 		"Set the layer thickness and the vertical deltas."
-		self.layerThickness = float( splitLine[1] )
+		self.layerThickness = float(splitLine[1])
 		numberOfSteps = int( math.ceil( self.layerThickness / self.whittleRepository.maximumVerticalStep.value ) )
 		self.layerStep = self.layerThickness / float( numberOfSteps )
 		self.layerDeltas = []
@@ -191,7 +191,7 @@ class WhittleSkein:
 def main():
 	"Display the whittle dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

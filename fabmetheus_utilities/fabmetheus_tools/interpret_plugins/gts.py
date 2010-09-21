@@ -42,10 +42,10 @@ from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import gcodec
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh ):
@@ -61,13 +61,13 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 				linesWithoutComments.append(line)
 	splitLine = linesWithoutComments[0].split()
 	numberOfVertexes = int( splitLine[0] )
-	numberOfEdges = int( splitLine[1] )
+	numberOfEdges = int(splitLine[1])
 	numberOfFaces = int( splitLine[2] )
 	faceTriples = []
 	for vertexIndex in xrange( numberOfVertexes ):
 		line = linesWithoutComments[ vertexIndex + 1 ]
 		splitLine = line.split()
-		vertex = Vector3( float( splitLine[0] ), float( splitLine[1] ), float( splitLine[2] ) )
+		vertex = Vector3( float( splitLine[0] ), float(splitLine[1]), float( splitLine[2] ) )
 		triangleMesh.vertexes.append(vertex)
 	edgeStart = numberOfVertexes + 1
 	for edgeIndex in xrange( numberOfEdges ):
@@ -88,6 +88,6 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 		triangleMesh.faces.append( face.Face().getFromEdgeIndexes( edgeIndexes, triangleMesh.edges, faceIndex ) )
 	return triangleMesh
 
-def getCarving( fileName ):
+def getCarving(fileName):
 	"Get the carving for the gts file."
-	return getFromGNUTriangulatedSurfaceText( gcodec.getFileText( fileName ), trianglemesh.TriangleMesh() )
+	return getFromGNUTriangulatedSurfaceText( gcodec.getFileText(fileName), trianglemesh.TriangleMesh() )

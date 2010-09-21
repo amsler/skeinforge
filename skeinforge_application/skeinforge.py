@@ -214,10 +214,14 @@ import os
 import sys
 
 
-# circle documentation
-# get reducing bottom polygon, get reducing top polygon, check for intersection then go along, concave mesh
-# gear profile, gear extrude, holes, rack, annulus
+# get bevel profile, bevel rack, rack extended, annulus layer, annulus from teeth, annulus solid, annulus helix
+# negative radius for annulus inverted, thin annulus teeth, toothProfile input
+# rack, hole input
+# test grid types
 # get list of XMLElements for paths
+# <alteration>
+# bottom
+# speed into speed and limit
 # mirror axis center & origin, concatenate
 # matrixTetragrid to tetragrid, matrix.transform, target
 # maybe matrix array form a00 a01.. also
@@ -227,7 +231,10 @@ import sys
 # xml_creation
 # fill rename shortenedSegmentList gridSegmentList and delete comments
 # array paths, follow paths, later maybe targetequation radius xyz give index
+# writeTagged, tags, creationTags, writeMatrix='true'
+# bottom plugin
 # connectionfrom, to, connect, xaxis
+# if there are no problems with getDescendingAreaLoops(allPoints, corners, importRadius) replace getInclusiveLoops, also replace getOverlapRatio with getOverlap
 # add overview link to crnsdoo index and svg page
 # bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
 # look over copy module, make copy solid like copy lineation
@@ -296,12 +303,8 @@ import sys
 # remove comments from clip, bend
 # winding into coiling, coil into wind & weave
 # later, precision
-# add initial loops option
-# speed into speed and limit
 # documentation
-# carving addXML, getInterpretationSuffix
 # http://wiki.makerbot.com/configuring-skeinforge
-# getInterpretation, getInterpretationSuffix for importPlugins, importPlugins to interpretPlugins
 #
 #
 # add hook _extrusion
@@ -448,7 +451,7 @@ import sys
 # concept, demodiu xml articles
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = """
 Adrian Bowyer <http://forums.reprap.org/profile.php?12,13>
 Brendan Erwin <http://forums.reprap.org/profile.php?12,217>
@@ -469,7 +472,7 @@ Zach Hoeken <http://blog.zachhoeken.com/>
 Organizations:
 Art of Illusion <http://www.artofillusion.org/>"""
 __date__ = "$Date: 2008/21/11 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def addToProfileMenu( profileSelection, profileType, repository ):
@@ -507,9 +510,9 @@ def getRadioPluginsAddPluginGroupFrame( directoryPath, importantFileNames, names
 	repository.pluginGroupFrame.getFromPath( defaultRadioButton, directoryPath, repository )
 	return radioPlugins
 
-def writeOutput( fileName ):
+def writeOutput(fileName):
 	"Craft a gcode file."
-	skeinforge_craft.writeOutput( fileName )
+	skeinforge_craft.writeOutput(fileName)
 
 
 class SkeinforgeRepository:
@@ -538,7 +541,7 @@ class SkeinforgeRepository:
 		"Skeinforge button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 	def save(self):
 		"Profile has been saved and profile menu should be updated."
@@ -552,7 +555,7 @@ class SkeinforgeRepository:
 def main():
 	"Display the skeinforge dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

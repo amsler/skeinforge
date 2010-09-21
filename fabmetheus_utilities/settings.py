@@ -7,6 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 import cStringIO
@@ -21,9 +22,9 @@ except:
 	print('Information on how to download Tkinter is at:\nwww.tcl.tk/software/tcltk/')
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/23/04 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 globalRepositoryDialogListTable = {}
@@ -52,7 +53,6 @@ def addEmptyRow( gridPosition ):
 
 def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	"Add the value to the lists."
-	repository.archive = []
 	repository.displayEntities = []
 	repository.executeTitle = None
 	repository.fileNameHelp = fileNameHelp
@@ -62,6 +62,7 @@ def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	repository.capitalizedName = getEachWordCapitalized( repository.lowerName )
 	repository.openLocalHelpPage = HelpPage().getOpenFromDocumentationSubName( repository.fileNameHelp )
 	repository.openWikiManualHelpPage = None
+	repository.preferences = []
 	repository.profileDirectory = profileDirectory
 	repository.repositoryDialog = None
 	repository.saveListenerTable = {}
@@ -69,7 +70,7 @@ def addListsToRepository( fileNameHelp, profileDirectory, repository ):
 	repository.menuEntities = []
 	repository.saveCloseTitle = 'Save and Close'
 	repository.windowPosition = WindowPosition().getFromValue( repository, '0+0')
-	for setting in repository.archive:
+	for setting in repository.preferences:
 		setting.repository = repository
 
 def addMenuEntitiesToMenu( menu, menuEntities ):
@@ -93,17 +94,11 @@ def addPluginsToMenu( directoryPath, menu, pluginFileNames ):
 	for pluginFileName in pluginFileNames:
 		ToolDialog().addPluginToMenu( menu, os.path.join( directoryPath, pluginFileName ) )
 
-def addToNamePathDictionary(directoryPath, namePathDictionary):
-	"Add to the name path dictionary."
-	pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath(directoryPath)
-	for pluginFileName in pluginFileNames:
-		namePathDictionary[pluginFileName.lstrip('_')] = os.path.join(directoryPath, pluginFileName)
-
-def cancelRepository( repository ):
-	"Read the repository then set all the entities to the read archive values."
-	getReadRepository( repository )
+def cancelRepository(repository):
+	"Read the repository then set all the entities to the read repository values."
+	getReadRepository(repository)
 	for setting in repository.displayEntities:
-		if setting in repository.archive:
+		if setting in repository.preferences:
 			setting.setStateToValue()
 
 def deleteDirectory( directory, subfolderName ):
@@ -137,23 +132,14 @@ def getAlongWayHexadecimalPrimary( beginBrightness, beginRatio, colorWidth, endB
 	brightness = beginRatio * float( beginBrightness ) + endRatio * float( endBrightness )
 	return getWidthHex( int( round( brightness ) ), colorWidth )
 
-def getArchiveText( repository ):
-	"Get the text representation of the archive."
-	archiveWriter = cStringIO.StringIO()
-	archiveWriter.write('Format is tab separated %s.\n' % repository.title.lower() )
-	archiveWriter.write('Name                          %sValue\n' % globalSpreadsheetSeparator )
-	for setting in repository.archive:
-		setting.writeToArchiveWriter( archiveWriter )
-	return archiveWriter.getvalue()
-
-def getDisplayedDialogFromConstructor( repository ):
+def getDisplayedDialogFromConstructor(repository):
 	"Display the repository dialog."
 	try:
-		getReadRepository( repository )
+		getReadRepository(repository)
 		return RepositoryDialog( repository, Tkinter.Tk() )
 	except:
 		print('this should never happen, getDisplayedDialogFromConstructor in settings could not open')
-		print( repository )
+		print(repository)
 		return None
 
 def getDisplayedDialogFromPath(path):
@@ -171,10 +157,6 @@ def getDisplayToolButtonsRepository( directoryPath, importantFileNames, names, r
 		displayToolButtons.append( displayToolButton )
 	return displayToolButtons
 
-def getDocumentationPath( subName = ''):
-	"Get the documentation file path."
-	return os.path.join( getPathInFabmetheus('documentation'), subName )
-
 def getEachWordCapitalized( name ):
 	"Get the capitalized name."
 	withSpaces = name.lower().replace('_', ' ')
@@ -186,12 +168,12 @@ def getEachWordCapitalized( name ):
 
 def getFileInAlterationsOrGivenDirectory( directory, fileName ):
 	"Get the file from the fileName or the lowercase fileName in the alterations directories, if there is no file look in the given directory."
-	settingsAlterationsDirectory = getSettingsDirectoryPath('alterations')
+	settingsAlterationsDirectory = archive.getSettingsPath('alterations')
 	gcodec.makeDirectory( settingsAlterationsDirectory )
 	fileInSettingsAlterationsDirectory = getFileInGivenDirectory( settingsAlterationsDirectory, fileName )
 	if fileInSettingsAlterationsDirectory != '':
 		return fileInSettingsAlterationsDirectory
-	alterationsDirectory = getPathInSkeinforge('alterations')
+	alterationsDirectory = archive.getSkeinforgePath('alterations')
 	fileInAlterationsDirectory = getFileInGivenDirectory( alterationsDirectory, fileName )
 	if fileInAlterationsDirectory != '':
 		return fileInAlterationsDirectory
@@ -226,7 +208,7 @@ def getFolders(directory):
 	folders = []
 	for fileName in directoryListing:
 		if os.path.isdir( os.path.join( directory, fileName ) ):
-			folders.append( fileName )
+			folders.append(fileName)
 	return folders
 
 def getGlobalRepositoryDialogValues():
@@ -234,56 +216,24 @@ def getGlobalRepositoryDialogValues():
 	global globalRepositoryDialogListTable
 	return euclidean.getListTableElements(globalRepositoryDialogListTable)
 
-def getPathInFabmetheus( subName = ''):
-	"Get the path in the fabmetheus directory."
-	path = os.path.dirname( os.path.dirname( os.path.abspath( __file__ ) ) )
-	if subName == '':
-		return path
-	return os.path.join( path, subName )
-
-def getPathInFabmetheusUtilities(subName=''):
-	"Get the path in the fabmetheus utilities directory."
-	path = getPathInFabmetheus('fabmetheus_utilities')
-	if subName == '':
-		return path
-	return os.path.join(path, subName)
-
 def getPathInFabmetheusFromFileNameHelp( fileNameHelp ):
 	"Get the directory path from file name help."
-	fabmetheusPath = getPathInFabmetheus()
+	fabmetheusPath = archive.getFabmetheusPath()
 	splitFileNameHelps = fileNameHelp.split('.')
 	splitFileNameDirectoryNames = splitFileNameHelps[ : - 1 ]
 	for splitFileNameDirectoryName in splitFileNameDirectoryNames:
 		fabmetheusPath = os.path.join( fabmetheusPath, splitFileNameDirectoryName )
 	return fabmetheusPath
 
-def getPathInSkeinforge( subName = ''):
-	"Get the skeinforge directory path."
-	path = getPathInFabmetheus('skeinforge_application')
-	if subName == '':
-		return path
-	return os.path.join( path, subName )
-
-def getPathInSkeinforgePlugins( subName = ''):
-	"Get the skeinforge plugins directory path."
-	return getPathInSkeinforge('skeinforge_plugins')
-
-def getProfileBaseName( repository ):
+def getProfileBaseName(repository):
 	"Get the profile base file name."
 	if repository.profileDirectory == '':
 		return repository.baseName
 	return os.path.join( repository.profileDirectory(), repository.baseName )
 
-def getProfilesDirectoryPath( subfolder = ''):
-	"Get the profiles directory path, which is the settings directory joined with profiles."
-	profilesDirectory = getSettingsDirectoryPath('profiles')
-	if subfolder == '':
-		return profilesDirectory
-	return os.path.join( profilesDirectory, subfolder )
-
-def getProfilesDirectoryInAboveDirectory( subName = ''):
+def getProfilesDirectoryInAboveDirectory(subName=''):
 	"Get the profiles directory path in the above directory."
-	aboveProfilesDirectory = getPathInSkeinforge('profiles')
+	aboveProfilesDirectory = archive.getSkeinforgePath('profiles')
 	if subName == '':
 		return aboveProfilesDirectory
 	return os.path.join( aboveProfilesDirectory, subName )
@@ -300,18 +250,27 @@ def getRadioPluginsAddPluginFrame( directoryPath, importantFileNames, names, rep
 	repository.pluginFrame.getFromPath( defaultRadioButton, directoryPath, repository )
 	return radioPlugins
 
-def getReadRepository( repository ):
+def getReadRepository(repository):
 	"Read and return settings from a file."
-	text = gcodec.getFileText( getProfilesDirectoryPath( getProfileBaseName( repository ) ), 'r', False )
+	text = gcodec.getFileText( archive.getProfilesPath( getProfileBaseName(repository) ), 'r', False )
 	if text == '':
 		print('The default %s will be written in the .skeinforge folder in the home directory.' % repository.title.lower() )
-		text = gcodec.getFileText( getProfilesDirectoryInAboveDirectory( getProfileBaseName( repository ) ), 'r', False )
+		text = gcodec.getFileText( getProfilesDirectoryInAboveDirectory( getProfileBaseName(repository) ), 'r', False )
 		if text != '':
 			readSettingsFromText( repository, text )
-		writeSettings( repository )
+		writeSettings(repository)
 		return repository
 	readSettingsFromText( repository, text )
 	return repository
+
+def getRepositoryText(repository):
+	"Get the text representation of the repository."
+	repositoryWriter = cStringIO.StringIO()
+	repositoryWriter.write('Format is tab separated %s.\n' % repository.title.lower() )
+	repositoryWriter.write('Name                          %sValue\n' % globalSpreadsheetSeparator )
+	for setting in repository.preferences:
+		setting.writeToRepositoryWriter( repositoryWriter )
+	return repositoryWriter.getvalue()
 
 def getSelectedPluginModuleFromPath( filePath, plugins ):
 	"Get the selected plugin module."
@@ -341,20 +300,13 @@ def getSelectedRadioPlugin( names, radioPlugins ):
 	print( names )
 	return radioPlugin[0]
 
-def getSettingsDirectoryPath( subfolder = ''):
-	"Get the settings directory path, which is the home directory joined with .skeinforge."
-	settingsDirectory = os.path.join( os.path.expanduser('~'), '.skeinforge')
-	if subfolder == '':
-		return settingsDirectory
-	return os.path.join( settingsDirectory, subfolder )
-
 def getSubfolderWithBasename( basename, directory ):
 	"Get the subfolder in the directory with the basename."
 	gcodec.makeDirectory(directory)
 	directoryListing = os.listdir(directory)
 	for fileName in directoryListing:
 		joinedFileName = os.path.join( directory, fileName )
-		if os.path.isdir( joinedFileName ):
+		if os.path.isdir(joinedFileName):
 			if basename == fileName:
 				return joinedFileName
 	return None
@@ -386,9 +338,9 @@ def openSVGPage( fileName, svgViewer ):
 	if svgViewer == '':
 		return
 	if svgViewer == 'webbrowser':
-		openWebPage( fileName )
+		openWebPage(fileName)
 		return
-	filePath = '"' + os.path.normpath( fileName ) + '"' # " to send in file name with spaces
+	filePath = '"' + os.path.normpath(fileName) + '"' # " to send in file name with spaces
 	shellCommand = svgViewer + ' ' + filePath
 	commandResult = os.system( shellCommand )
 	if commandResult != 0:
@@ -402,7 +354,7 @@ def openWebPage( webPagePath ):
 	if webPagePath.find('#') != - 1: # to get around # encode bug
 		redirectionText = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">\n<html>\n<head>\n'
 		redirectionText += '<meta http-equiv="REFRESH" content="0;url=%s"></head>\n</HTML>\n' % webPagePath
-		webPagePath = getDocumentationPath('redirect.html')
+		webPagePath = archive.getDocumentationPath('redirect.html')
 		gcodec.writeFileText( webPagePath, redirectionText )
 	webPagePath = '"%s"' % webPagePath # " to get around space in url bug
 	try:
@@ -433,31 +385,31 @@ def quitWindows( event=None ):
 
 def readSettingsFromText( repository, text ):
 	"Read settings from a text."
-	lines = gcodec.getTextLines( text )
+	lines = gcodec.getTextLines(text)
 	settingTable = {}
-	for setting in repository.archive:
+	for setting in repository.preferences:
 		settingTable[ setting.name ] = setting
-	for lineIndex in xrange( len( lines ) ):
-		setArchiveToLine( lineIndex, lines, settingTable )
+	for lineIndex in xrange( len(lines) ):
+		setRepositoryToLine( lineIndex, lines, settingTable )
 
 def saveAll():
 	"Save all the dialogs."
 	for globalRepositoryDialogValue in getGlobalRepositoryDialogValues():
 		globalRepositoryDialogValue.save()
 
-def saveRepository( repository ):
+def saveRepository(repository):
 	"Set the entities to the dialog then write them."
-	for setting in repository.archive:
+	for setting in repository.preferences:
 		setting.setToDisplay()
-	writeSettingsPrintMessage( repository )
+	writeSettingsPrintMessage(repository)
 	for saveListener in repository.saveListenerTable.values():
 		saveListener()
 
-def setArchiveToLine( lineIndex, lines, settingTable ):
-	"Set an archive to a setting line."
-	line = lines[ lineIndex ]
+def setRepositoryToLine( lineIndex, lines, settingTable ):
+	"Set setting dictionary to a setting line."
+	line = lines[lineIndex]
 	splitLine = line.split( globalSpreadsheetSeparator )
-	if len( splitLine ) < 2:
+	if len(splitLine) < 2:
 		return
 	fileSettingName = splitLine[0]
 	if fileSettingName in settingTable:
@@ -518,32 +470,32 @@ def setSpinColor( setting ):
 	wayLength = setting.from_ - setting.defaultValue
 	setting.entry['background'] = getAlongWayHexadecimalColor( setting.grey, setting.colorWidth, difference, ( setting.white, setting.white, 0 ), wayLength )
 
-def startMainLoopFromConstructor( repository ):
+def startMainLoopFromConstructor(repository):
 	"Display the repository dialog and start the main loop."
-	displayedDialogFromConstructor = getDisplayedDialogFromConstructor( repository )
+	displayedDialogFromConstructor = getDisplayedDialogFromConstructor(repository)
 	if displayedDialogFromConstructor == None:
 		print('Warning, displayedDialogFromConstructor in settings is none, so the window will not be displayed.')
 	else:
 		displayedDialogFromConstructor.root.mainloop()
 
-def writeValueListToArchiveWriter( archiveWriter, setting ):
-	"Write tab separated name and list to the archive writer."
-	archiveWriter.write( setting.name )
+def writeValueListToRepositoryWriter( repositoryWriter, setting ):
+	"Write tab separated name and list to the repository writer."
+	repositoryWriter.write( setting.name )
 	for item in setting.value:
 		if item != '[]':
-			archiveWriter.write( globalSpreadsheetSeparator )
-			archiveWriter.write( item )
-	archiveWriter.write('\n')
+			repositoryWriter.write( globalSpreadsheetSeparator )
+			repositoryWriter.write( item )
+	repositoryWriter.write('\n')
 
-def writeSettings( repository ):
+def writeSettings(repository):
 	"Write the settings to a file."
-	profilesDirectoryPath = getProfilesDirectoryPath( getProfileBaseName( repository ) )
+	profilesDirectoryPath = archive.getProfilesPath( getProfileBaseName(repository) )
 	gcodec.makeDirectory( os.path.dirname( profilesDirectoryPath ) )
-	gcodec.writeFileText( profilesDirectoryPath, getArchiveText( repository ) )
+	gcodec.writeFileText( profilesDirectoryPath, getRepositoryText(repository) )
 
-def writeSettingsPrintMessage( repository ):
+def writeSettingsPrintMessage(repository):
 	"Set the settings to the dialog then write them."
-	writeSettings( repository )
+	writeSettings(repository)
 	print( repository.title.lower().capitalize() + ' have been saved.')
 
 
@@ -608,9 +560,9 @@ class StringSetting:
 
 	def getFromValueOnlyAddToRepository( self, name, repository, value ):
 		"Initialize."
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
 		repository.menuEntities.append(self)
+		repository.preferences.append(self)
 		return self.getFromValueOnly( name, repository, value )
 
 	def removeFromWindow(self):
@@ -635,15 +587,15 @@ class StringSetting:
 
 	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
 		"Set the value to the second word of a split line."
-		self.setValueToString( splitLine[1] )
+		self.setValueToString(splitLine[1])
 
 	def setValueToString( self, valueString ):
 		"Set the value to the value string."
 		self.value = valueString
 
-	def writeToArchiveWriter( self, archiveWriter ):
-		"Write tab separated name and value to the archive writer."
-		archiveWriter.write('%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, self.value ) )
+	def writeToRepositoryWriter( self, repositoryWriter ):
+		"Write tab separated name and value to the repository writer."
+		repositoryWriter.write('%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, self.value ) )
 
 
 class BooleanSetting( StringSetting ):
@@ -740,7 +692,7 @@ class DisplayToolButton:
 		"Add this to the dialog."
 		self.displayButton = Tkinter.Button( gridPosition.master, activebackground = 'black', activeforeground = 'white', text = getEachWordCapitalized( self.name ), command = self.displayDialog )
 		setButtonFontWeightString( self.displayButton, self.important )
-		gridPosition.incrementGivenNumberOfColumns( 2 )
+		gridPosition.incrementGivenNumberOfColumns(2)
 		self.displayButton.grid( row = gridPosition.row, column = gridPosition.column, columnspan = 2 )
 
 	def displayDialog(self):
@@ -790,19 +742,19 @@ class FileHelpMenuBar:
 		self.addMenuToMenuBar( labelText, repositoryMenu )
 		pluginModule.addToMenu( self.root, repositoryMenu, repository, window )
 
-	def completeMenu( self, closeFunction, repository, saveFunction, window ):
+	def completeMenu(self, closeFunction, repository, saveFunction, window):
 		"Complete the menu."
 		self.closeFunction = closeFunction
 		self.saveFunction = saveFunction
 		addAcceleratorCommand('<Control-KeyPress-s>', saveFunction, self.root, self.fileMenu, 'Save')
-		self.fileMenu.add_command( label = "Save and Close", command = self.saveClose )
+		self.fileMenu.add_command(label = "Save and Close", command = self.saveClose)
 		addAcceleratorCommand('<Control-KeyPress-w>', closeFunction, self.root, self.fileMenu, 'Close')
 		self.fileMenu.add_separator()
 		addAcceleratorCommand('<Control-KeyPress-q>', quitWindows, self.root, self.fileMenu, 'Quit')
-		skeinforgeToolsDirectoryPath = getPathInSkeinforgePlugins()
-		pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( skeinforgeToolsDirectoryPath )
+		skeinforgePluginsPath = archive.getSkeinforgePath('skeinforge_plugins')
+		pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath(skeinforgePluginsPath)
 		for pluginFileName in pluginFileNames:
-			self.addPluginToMenuBar( os.path.join( skeinforgeToolsDirectoryPath, pluginFileName ), repository, window )
+			self.addPluginToMenuBar(os.path.join(skeinforgePluginsPath, pluginFileName), repository, window)
 
 	def saveClose(self):
 		"Call the save function then the close function."
@@ -830,13 +782,13 @@ class FileNameInput( StringSetting ):
 			else:
 				initialDirectory = "."
 			fileName = tkFileDialog.askopenfilename( filetypes = self.getFileNameFirstTypes(), initialdir = initialDirectory, initialfile = os.path.basename( summarized ), parent = parent, title = self.name )
-			self.setCancelledValue( fileName )
+			self.setCancelledValue(fileName)
 			return
 		except:
 			print('Could not get the old directory in settings, so the file picker will be opened in the default directory.')
 		try:
 			fileName = tkFileDialog.askopenfilename( filetypes = self.getFileNameFirstTypes(), initialdir = '.', initialfile = '', parent = parent, title = self.name )
-			self.setCancelledValue( fileName )
+			self.setCancelledValue(fileName)
 		except:
 			print('Error in execute in FileName in settings, ' + self.name )
 
@@ -857,7 +809,7 @@ class FileNameInput( StringSetting ):
 			for fileType in self.fileTypes:
 				fileExtension = fileType[1].split('.')[-1]
 				if fileExtension == baseExtension:
-					fileNameFirstTypes = self.fileTypes[ : ]
+					fileNameFirstTypes = self.fileTypes[:]
 					fileNameFirstTypes.remove( fileType )
 					return [ fileType ] + allReadables + allFiles + fileNameFirstTypes
 			return allReadables + allFiles + self.fileTypes
@@ -868,13 +820,13 @@ class FileNameInput( StringSetting ):
 		"Initialize."
 		self.getFromValueOnly( name, repository, value )
 		self.fileTypes = fileTypes
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
+		repository.preferences.append(self)
 		return self
 
 	def setCancelledValue( self, fileName ):
 		"Set the value to the file name and wasCancelled true if a file was not picked."
-		if ( str( fileName ) == '()' or str( fileName ) == ''):
+		if ( str(fileName) == '()' or str(fileName) == ''):
 			self.wasCancelled = True
 		else:
 			self.value = fileName
@@ -972,8 +924,8 @@ class FloatSpinNotOnMenu( FloatSpin ):
 	"A class to display, read & write an float in a spin box, which is not to be added to a menu."
 	def getFromValueOnlyAddToRepository( self, name, repository, value ):
 		"Initialize."
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
+		repository.preferences.append(self)
 		return self.getFromValueOnly( name, repository, value )
 
 
@@ -994,7 +946,7 @@ class FrameList:
 
 	def getFromValue( self, name, repository, value ):
 		"Initialize."
-		repository.archive.append(self)
+		repository.preferences.append(self)
 		self.name = name
 		self.repository = repository
 		self.value = value
@@ -1012,11 +964,11 @@ class FrameList:
 
 	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
 		"Set the value to the second and later words of a split line."
-		self.value = splitLine[ 1 : ]
+		self.value = splitLine[1 :]
 
-	def writeToArchiveWriter( self, archiveWriter ):
-		"Write tab separated name and list to the archive writer."
-		writeValueListToArchiveWriter( archiveWriter, self )
+	def writeToRepositoryWriter( self, repositoryWriter ):
+		"Write tab separated name and list to the repository writer."
+		writeValueListToRepositoryWriter( repositoryWriter, self )
 
 
 class GridHorizontal:
@@ -1121,10 +1073,10 @@ class HelpPage:
 		self.hypertextAddress = 'http://www.' + afterWWW
 		return self
 
-	def getFromNameSubName( self, name, repository, subName = ''):
+	def getFromNameSubName( self, name, repository, subName=''):
 		"Initialize."
 		self.setToNameRepository( name, repository )
-		self.hypertextAddress = getDocumentationPath( subName )
+		self.hypertextAddress = archive.getDocumentationPath( subName )
 		return self
 
 	def getOpenFromAbsolute( self, hypertextAddress ):
@@ -1142,9 +1094,9 @@ class HelpPage:
 		self.hypertextAddress = 'http://www.' + afterWWW
 		return self.openPage
 
-	def getOpenFromDocumentationSubName( self, subName = ''):
+	def getOpenFromDocumentationSubName( self, subName=''):
 		"Get the open help page function from the afterWWW of the address after the www."
-		self.hypertextAddress = getDocumentationPath( subName )
+		self.hypertextAddress = archive.getDocumentationPath( subName )
 		return self.openPage
 
 	def openPage(self, event=None):
@@ -1216,8 +1168,8 @@ class IntSpinNotOnMenu( IntSpin ):
 	"A class to display, read & write an integer in a spin box, which is not to be added to a menu."
 	def getFromValueOnlyAddToRepository( self, name, repository, value ):
 		"Initialize."
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
+		repository.preferences.append(self)
 		return self.getFromValueOnly( name, repository, value )
 
 
@@ -1513,8 +1465,8 @@ class PluginFrame:
 		self.directoryPath = directoryPath
 		self.name = 'PluginFrame'
 		self.repository = repository
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
+		repository.preferences.append(self)
 		return self
 
 	def setStateToValue(self):
@@ -1531,11 +1483,11 @@ class PluginFrame:
 		if self.oldLatentString == self.latentStringVar.getString():
 			return
 		self.oldLatentString = self.latentStringVar.getString()
-		self.repository.archive.remove(self)
-		for setting in self.repository.archive:
+		self.repository.preferences.remove(self)
+		for setting in self.repository.preferences:
 			setting.setToDisplay()
 		writeSettingsPrintMessage(self.repository)
-		self.repository.archive.append(self)
+		self.repository.preferences.append(self)
 		if self.latentStringVar.getString() in self.gridTable:
 			gridPosition = self.gridTable[ self.latentStringVar.getString() ]
 			gridPosition.master.lift()
@@ -1543,8 +1495,8 @@ class PluginFrame:
 			return
 		self.createFrame( self.gridPosition )
 
-	def writeToArchiveWriter( self, archiveWriter ):
-		"Write tab separated name and value to the archive writer."
+	def writeToRepositoryWriter( self, repositoryWriter ):
+		"Write tab separated name and value to the repository writer."
 		gridTableKeys = self.gridTable.keys()
 		gridTableKeys.sort()
 		for gridTableKey in gridTableKeys:
@@ -1615,8 +1567,8 @@ class Radio( BooleanSetting ):
 		"Initialize."
 		self.getFromValueOnly( name, repository, value )
 		self.latentStringVar = latentStringVar
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
+		repository.preferences.append(self)
 #when addToMenu is added to this entity, the line below should be uncommented
 #		repository.menuEntities.append(self)
 		return self
@@ -1718,8 +1670,8 @@ class TextSetting( StringSetting ):
 	def getFromValue( self, name, repository, value ):
 		"Initialize."
 		self.getFromValueOnly( name, repository, value )
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
+		repository.preferences.append(self)
 		return self
 
 	def setToDisplay(self):
@@ -1742,12 +1694,12 @@ class TextSetting( StringSetting ):
 			replacedValue = tokenConversion.getTokenizedString( replacedValue )
 		self.setValueToString( replacedValue )
 
-	def writeToArchiveWriter( self, archiveWriter ):
-		"Write tab separated name and value to the archive writer."
+	def writeToRepositoryWriter( self, repositoryWriter ):
+		"Write tab separated name and value to the repository writer."
 		replacedValue = self.value
 		for tokenConversion in self.tokenConversions:
 			replacedValue = tokenConversion.getNamedString( replacedValue )
-		archiveWriter.write('%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, replacedValue ) )
+		repositoryWriter.write('%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, replacedValue ) )
 
 
 class TokenConversion:
@@ -1799,8 +1751,8 @@ class WindowPosition( StringSetting ):
 	def getFromValue( self, repository, value ):
 		"Initialize."
 		self.getFromValueOnly('WindowPosition', repository, value )
-		repository.archive.append(self)
 		repository.displayEntities.append(self)
+		repository.preferences.append(self)
 		return self
 
 	def setToDisplay(self):
@@ -1827,7 +1779,7 @@ class RepositoryDialog:
 		self.closeListener = CloseListener(self)
 		self.repository = repository
 		self.gridPosition = GridVertical( 0, - 1 )
-		self.gridPosition.setExecutablesRepository( repository )
+		self.gridPosition.setExecutablesRepository(repository)
 		self.gridPosition.master = root
 		self.root = root
 		self.openDialogListeners = []
@@ -1894,7 +1846,7 @@ class RepositoryDialog:
 
 	def setWindowPositionDeiconify(self):
 		"Set the window position if that setting exists."
-		for setting in self.repository.archive:
+		for setting in self.repository.preferences:
 			if setting.name == 'WindowPosition':
 				setting.setWindowPosition()
 				return

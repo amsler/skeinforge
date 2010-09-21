@@ -95,14 +95,14 @@ import os
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/28/04 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Dimension a gcode file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, gcodeText ), repository )
+	return getCraftedTextFromText( gcodec.getTextIfEmpty(fileName, gcodeText), repository )
 
 def getCraftedTextFromText( gcodeText, repository = None ):
 	"Dimension a gcode text."
@@ -120,7 +120,7 @@ def getNewRepository():
 
 def writeOutput( fileName = ''):
 	"Dimension a gcode file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'dimension')
 
@@ -146,7 +146,7 @@ class DimensionRepository:
 		"Dimension button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class DimensionSkein:
@@ -184,10 +184,10 @@ class DimensionSkein:
 		"Get a dimensioned arc movement."
 		if self.oldLocation == None:
 			return line
-		relativeLocation = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		relativeLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		location = self.oldLocation + relativeLocation
 		self.oldLocation = location
-		halfPlaneLineDistance = 0.5 * abs( relativeLocation.dropAxis( 2 ) )
+		halfPlaneLineDistance = 0.5 * abs( relativeLocation.dropAxis(2) )
 		radius = gcodec.getDoubleFromCharacterSplitLine('R', splitLine )
 		if radius == None:
 			relativeCenter = complex( gcodec.getDoubleFromCharacterSplitLine('I', splitLine ), gcodec.getDoubleFromCharacterSplitLine('J', splitLine ) )
@@ -208,7 +208,7 @@ class DimensionSkein:
 		"Get a dimensioned linear movement."
 		distance = 0.0
 		if self.distanceFeedRate.absoluteDistanceMode:
-			location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+			location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			if self.oldLocation != None:
 				distance = abs( location - self.oldLocation )
 			self.oldLocation = location
@@ -216,7 +216,7 @@ class DimensionSkein:
 			if self.oldLocation == None:
 				print('Warning: There was no absolute location when the G91 command was parsed, so the absolute location will be set to the origin.')
 				self.oldLocation = Vector3()
-			location = gcodec.getLocationFromSplitLine( None, splitLine )
+			location = gcodec.getLocationFromSplitLine(None, splitLine)
 			distance = abs( location )
 			self.oldLocation += location
 		return line + self.getExtrusionDistanceString( distance, splitLine )
@@ -242,23 +242,23 @@ class DimensionSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> dimension </procedureDone>)')
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
-				self.feedRateMinute = 60.0 * float( splitLine[1] )
+				self.feedRateMinute = 60.0 * float(splitLine[1])
 			elif firstWord == '(<operatingFlowRate>':
-				self.operatingFlowRate = float( splitLine[1] )
+				self.operatingFlowRate = float(splitLine[1])
 				self.flowRate = self.operatingFlowRate
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, lineIndex ):
 		"Parse a gcode line and add it to the dimension skein."
-		line = self.lines[ lineIndex ].lstrip()
+		line = self.lines[lineIndex].lstrip()
 		splitLine = line.split()
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G2' or firstWord == 'G3':
@@ -275,14 +275,14 @@ class DimensionSkein:
 			self.addLinearMoveExtrusionDistanceLine( - self.repository.retractionDistance.value )
 			self.isExtruderActive = False
 		elif firstWord == 'M108':
-			self.flowRate = float( splitLine[1][ 1 : ] )
+			self.flowRate = float( splitLine[1][1 :] )
 		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the dimension dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

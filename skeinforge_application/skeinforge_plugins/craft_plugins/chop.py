@@ -118,23 +118,23 @@ import sys
 import time
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, gcodeText = '', repository = None ):
 	"Get chopped text."
 	if fileName.endswith('.svg'):
-		gcodeText = gcodec.getTextIfEmpty( fileName, gcodeText )
+		gcodeText = gcodec.getTextIfEmpty(fileName, gcodeText)
 		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'chop'):
 			return gcodeText
-	carving = svg_writer.getCarving( fileName )
+	carving = svg_writer.getCarving(fileName)
 	if carving == None:
 		return ''
 	if repository == None:
 		repository = ChopRepository()
-		settings.getReadRepository( repository )
+		settings.getReadRepository(repository)
 	return ChopSkein().getCarvedSVG( carving, fileName, repository )
 
 def getNewRepository():
@@ -144,18 +144,18 @@ def getNewRepository():
 def writeOutput( fileName = ''):
 	"Chop a GNU Triangulated Surface file.  If no fileName is specified, chop the first GNU Triangulated Surface file in this folder."
 	startTime = time.time()
-	print('File ' + gcodec.getSummarizedFileName( fileName ) + ' is being chopped.')
+	print('File ' + gcodec.getSummarizedFileName(fileName) + ' is being chopped.')
 	repository = ChopRepository()
-	settings.getReadRepository( repository )
+	settings.getReadRepository(repository)
 	chopGcode = getCraftedText( fileName, '', repository )
 	if chopGcode == '':
 		return
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '_chop.svg'
-	suffixDirectoryName = os.path.dirname( suffixFileName )
-	suffixReplacedBaseName = os.path.basename( suffixFileName ).replace(' ', '_')
+	suffixDirectoryName = os.path.dirname(suffixFileName)
+	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
 	gcodec.writeFileText( suffixFileName, chopGcode )
-	print('The chopped file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+	print('The chopped file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
 	print('It took %s to chop the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
@@ -187,7 +187,7 @@ class ChopRepository:
 		"Chop button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class ChopSkein:
@@ -219,13 +219,14 @@ class ChopSkein:
 		layerThickness = carving.getCarveLayerThickness()
 		decimalPlacesCarried = max( 0, 1 + repository.extraDecimalPlaces.value - int( math.floor( math.log10( layerThickness ) ) ) )
 		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
-		return svgWriter.getReplacedSVGTemplate( fileName, 'chop', svg_writer.getTruncatedRotatedBoundaryLayers( repository, rotatedBoundaryLayers ) )
+		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedBoundaryLayers)
+		return svgWriter.getReplacedSVGTemplate( fileName, 'chop', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())
 
 
 def main():
 	"Display the chop dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

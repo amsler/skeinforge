@@ -91,9 +91,9 @@ import sys
 import time
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedTextFromText( gcodeText, exportRepository = None ):
@@ -113,10 +113,10 @@ def getDistanceGcode( exportText ):
 	for line in lines:
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		firstWord = None
-		if len( splitLine ) > 0:
+		if len(splitLine) > 0:
 			firstWord = splitLine[0]
 		if firstWord == 'G1':
-			location = gcodec.getLocationFromSplitLine( oldLocation, splitLine )
+			location = gcodec.getLocationFromSplitLine(oldLocation, splitLine)
 			if oldLocation != None:
 				distance = location.distance( oldLocation )
 				print( distance )
@@ -135,7 +135,7 @@ def getReplaced( exportText ):
 	lines = gcodec.getTextLines( replaceText )
 	for line in lines:
 		splitLine = line.split('\t')
-		if len( splitLine ) > 1:
+		if len(splitLine) > 1:
 			exportText = exportText.replace( splitLine[0], splitLine[1] )
 	return exportText
 
@@ -148,13 +148,13 @@ def getSelectedPluginModule( plugins ):
 
 def writeOutput( fileName = ''):
 	"Export a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
 		return
 	exportRepository = ExportRepository()
 	settings.getReadRepository( exportRepository )
 	startTime = time.time()
-	print('File ' + gcodec.getSummarizedFileName( fileName ) + ' is being chain exported.')
+	print('File ' + gcodec.getSummarizedFileName(fileName) + ' is being chain exported.')
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '_export.' + exportRepository.fileExtension.value
 	gcodeText = gcodec.getGcodeFileText( fileName, '')
 	procedures = skeinforge_craft.getProcedures('export', gcodeText )
@@ -179,7 +179,7 @@ def writeOutput( fileName = ''):
 	if replaceableExportChainGcode != None:
 		replaceableExportChainGcode = getReplaced( replaceableExportChainGcode )
 		gcodec.writeFileText( suffixFileName, replaceableExportChainGcode )
-		print('The exported file is saved as ' + gcodec.getSummarizedFileName( suffixFileName ) )
+		print('The exported file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
 	if exportRepository.alsoSendOutputTo.value != '':
 		if replaceableExportChainGcode == None:
 			replaceableExportChainGcode = selectedPluginModule.getOutput( exportChainGcode )
@@ -225,7 +225,7 @@ class ExportRepository:
 		"Export button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class ExportSkein:
@@ -234,7 +234,7 @@ class ExportSkein:
 		self.decimalPlacesExported = 2
 		self.output = cStringIO.StringIO()
 
-	def addLine( self, line ):
+	def addLine(self, line):
 		"Add a line of text and a newline to the output."
 		if line != '':
 			self.output.write( line + '\n')
@@ -264,11 +264,11 @@ class ExportSkein:
 	def parseLine( self, exportRepository, line ):
 		"Parse a gcode line."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == '(<decimalPlacesCarried>':
-			self.decimalPlacesExported = max( 1, int( splitLine[1] ) - 1 )
+			self.decimalPlacesExported = max( 1, int(splitLine[1]) - 1 )
 		if firstWord[0] == '(' and exportRepository.deleteComments.value:
 			return
 		if firstWord == '(</extruderInitialization>)':
@@ -288,7 +288,7 @@ class ExportSkein:
 def main():
 	"Display the export dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

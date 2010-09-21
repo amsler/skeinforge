@@ -14,10 +14,10 @@ from fabmetheus_utilities import euclidean
 import math
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 globalExecutionOrder = 100
@@ -79,7 +79,7 @@ def alterWiddershinsSupportedPath( alongAway, close ):
 	for point in alongAway.loop:
 		if point.y - alongAway.minimumY < close:
 			alongAway.addToBottomPoints(point)
-	ascendingYPoints = alongAway.loop[ : ]
+	ascendingYPoints = alongAway.loop[:]
 	ascendingYPoints.sort( compareYAscending )
 	overhangWiddershinsLeft = OverhangWiddershinsLeft( alongAway )
 	overhangWiddershinsRight = OverhangWiddershinsRight( alongAway )
@@ -147,12 +147,12 @@ class AlongAway:
 		"Get the string representation of AlongAway."
 		return '%s' % ( self.overhangPlaneAngle )
 
-	def addToBottomPoints( self, point ):
+	def addToBottomPoints(self, point):
 		"Add point to bottom points and set y to minimumY."
 		self.bottomPoints.append(point)
 		point.y = self.minimumY
 
-	def getIsClockwisePointSupported( self, point ):
+	def getIsClockwisePointSupported(self, point):
 		"Determine if the point on the clockwise loop is supported."
 		self.point = point
 		self.pointIndex = None
@@ -176,7 +176,7 @@ class AlongAway:
 			return True
 		return self.getIsPointSupportedBySegment( self.pointIndex + 1 )
 
-	def getIsWiddershinsPointSupported( self, point ):
+	def getIsWiddershinsPointSupported(self, point):
 		"Determine if the point on the widdershins loop is supported."
 		if point.y <= self.minimumY:
 			return True

@@ -36,12 +36,13 @@ This brings up the profile setting dialog.</tt></p>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
-<a href="fabmetheus_utilities.euclidean.html">fabmetheus_utilities.euclidean</a><br>
-</td><td width="25%" valign=top><a href="fabmetheus_utilities.gcodec.html">fabmetheus_utilities.gcodec</a><br>
-<a href="os.html">os</a><br>
-</td><td width="25%" valign=top><a href="fabmetheus_utilities.settings.html">fabmetheus_utilities.settings</a><br>
-<a href="shutil.html">shutil</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<a href="fabmetheus_utilities.archive.html">fabmetheus_utilities.archive</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.euclidean.html">fabmetheus_utilities.euclidean</a><br>
+<a href="fabmetheus_utilities.gcodec.html">fabmetheus_utilities.gcodec</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="fabmetheus_utilities.settings.html">fabmetheus_utilities.settings</a><br>
+</td><td width="25%" valign=top><a href="shutil.html">shutil</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -196,7 +197,7 @@ Methods inherited from <a href="fabmetheus_utilities.settings.html#StringSetting
 
 <dl><dt><a name="ProfileListboxSetting-setValueToSplitLine"><strong>setValueToSplitLine</strong></a>(self, lineIndex, lines, splitLine)</dt><dd><tt>Set&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;second&nbsp;word&nbsp;of&nbsp;a&nbsp;split&nbsp;line.</tt></dd></dl>
 
-<dl><dt><a name="ProfileListboxSetting-writeToArchiveWriter"><strong>writeToArchiveWriter</strong></a>(self, archiveWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;archive&nbsp;writer.</tt></dd></dl>
+<dl><dt><a name="ProfileListboxSetting-writeToRepositoryWriter"><strong>writeToRepositoryWriter</strong></a>(self, repositoryWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;repository&nbsp;writer.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -273,7 +274,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_utilities.skei
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-addListsSetCraftProfileArchive"><strong>addListsSetCraftProfileArchive</strong></a>(craftSequence, defaultProfile, repository, fileNameHelp)</dt><dd><tt>Set&nbsp;the&nbsp;craft&nbsp;profile&nbsp;archive.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-addListsSetCraftProfile"><strong>addListsSetCraftProfile</strong></a>(craftSequence, defaultProfile, repository, fileNameHelp)</dt><dd><tt>Set&nbsp;the&nbsp;craft&nbsp;profile&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-addListsToCraftTypeRepository"><strong>addListsToCraftTypeRepository</strong></a>(fileNameHelp, repository)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;lists.</tt></dd></dl>
  <dl><dt><a name="-cancelAll"><strong>cancelAll</strong></a>()</dt><dd><tt>Cancel&nbsp;all&nbsp;the&nbsp;dialogs.</tt></dd></dl>
  <dl><dt><a name="-getCraftTypeName"><strong>getCraftTypeName</strong></a>(subName<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;craft&nbsp;type&nbsp;from&nbsp;the&nbsp;profile.</tt></dd></dl>

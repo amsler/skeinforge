@@ -64,9 +64,9 @@ from skeinforge_application.skeinforge_utilities import skeinforge_profile
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, repository = None ):
 	"Drill a gcode linear move file or text."
@@ -100,7 +100,7 @@ def getPolygonCenter( polygon ):
 
 def writeOutput( fileName = ''):
 	"Drill a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'drill')
 
@@ -132,7 +132,7 @@ class DrillRepository:
 		"Drill button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class DrillSkein:
@@ -166,9 +166,9 @@ class DrillSkein:
 	def addGcodeFromVerticalThread( self, point, zBegin, zEnd ):
 		"Add a thread to the output."
 		self.distanceFeedRate.addGcodeMovementZ( point, zBegin )
-		self.distanceFeedRate.addLine( "M101" ) # Turn extruder on.
+		self.distanceFeedRate.addLine('M101') # Turn extruder on.
 		self.distanceFeedRate.addGcodeMovementZ( point, zEnd )
-		self.distanceFeedRate.addLine( "M103" ) # Turn extruder off.
+		self.distanceFeedRate.addLine('M103') # Turn extruder off.
 
 	def addThreadLayerIfNone(self):
 		"Add a thread layer if it is none."
@@ -190,7 +190,7 @@ class DrillSkein:
 
 	def getDrillingCenterDepth( self, drillingCenterDepth, drillPoint ):
 		"Get the drilling center depth."
-		for threadLayer in self.threadLayers[ 1 : ]:
+		for threadLayer in self.threadLayers[1 :]:
 			if self.isPointClose( drillPoint, threadLayer.points ):
 				drillingCenterDepth = threadLayer.z
 			else:
@@ -207,7 +207,7 @@ class DrillSkein:
 	def linearMove( self, splitLine ):
 		"Add a linear move to the loop."
 		self.addThreadLayerIfNone()
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		if self.extruderActive:
 			self.boundary = None
 		self.oldLocation = location
@@ -217,21 +217,21 @@ class DrillSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> drill </procedureDone>)')
 				return
 			elif firstWord == '(<layerThickness>':
-				self.halfLayerThickness = 0.5 * float( splitLine[1] )
+				self.halfLayerThickness = 0.5 * float(splitLine[1])
 			elif firstWord == '(<perimeterWidth>':
-				self.maximumDistance = 0.1 * float( splitLine[1] )
+				self.maximumDistance = 0.1 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		self.distanceFeedRate.addLine(line)
@@ -239,25 +239,25 @@ class DrillSkein:
 			if not self.isDrilled:
 				self.addDrillHoles()
 
-	def parseSurroundingLoop( self, line ):
+	def parseSurroundingLoop(self, line):
 		"Parse a surrounding loop."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			self.linearMove( splitLine )
+			self.linearMove(splitLine)
 		if firstWord == 'M101':
 			self.extruderActive = True
 		elif firstWord == 'M103':
 			self.extruderActive = False
 		elif firstWord == '(<boundaryPoint>':
-			location = gcodec.getLocationFromSplitLine( None, splitLine )
+			location = gcodec.getLocationFromSplitLine(None, splitLine)
 			if self.boundary == None:
 				self.boundary = []
-			self.boundary.append( location.dropAxis( 2 ) )
+			self.boundary.append( location.dropAxis(2) )
 		elif firstWord == '(<layer>':
-			self.layerZ = float( splitLine[1] )
+			self.layerZ = float(splitLine[1])
 			self.threadLayer = None
 		elif firstWord == '(<boundaryPerimeter>)':
 			self.addThreadLayerIfNone()
@@ -270,7 +270,7 @@ class DrillSkein:
 def main():
 	"Display the drill dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

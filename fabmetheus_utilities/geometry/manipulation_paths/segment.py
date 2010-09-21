@@ -12,10 +12,10 @@ from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 globalExecutionOrder = 60
@@ -31,7 +31,7 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	path = getXNormalizedVector3Path(path)
 	segmentCenter = evaluate.getVector3ByPrefix( prefix + 'center', None, xmlElement )
 	if euclidean.getIsWiddershinsByVector3(loop):
-		path = path[ : : - 1 ]
+		path = path[: : -1]
 		for point in path:
 			point.x = 1.0 - point.x
 			if segmentCenter == None:
@@ -91,12 +91,12 @@ def getXNormalizedVector3Path(path):
 	if len(path) < 1:
 		return path
 	minimumX = path[0].x
-	for point in path[ 1 : ]:
+	for point in path[1 :]:
 		minimumX = min( minimumX, point.x )
 	for point in path:
 		point.x -= minimumX
 	maximumX = path[0].x
-	for point in path[ 1 : ]:
+	for point in path[1 :]:
 		maximumX = max( maximumX, point.x )
 	for point in path:
 		point.x /= maximumX

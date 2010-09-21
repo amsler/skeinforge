@@ -3,7 +3,7 @@ from vector3 import Vector3
 # Get the entire text of a file.
 # @param  fileName name of the file
 # @return  entire text of a file.
-def getFileText( fileName ):
+def getFileText(fileName):
     file = open( fileName, 'r')
     fileText = file.read()
     file.close()
@@ -12,18 +12,18 @@ def getFileText( fileName ):
 # Get the all the lines of text of a text.
 # @param  text text
 # @return  the lines of text of a text
-def getTextLines( text ):
+def getTextLines(text):
     return text.replace('\r', '\n').split('\n')
 
 # Get the double value of the word after the first letter.
 # @param  word string with value starting after the first letter
 # @return  double value of the word after the first letter
 def getDoubleAfterFirstLetter(word):
-    return float( word[ 1 : ] )
+    return float( word[1 :] )
 
 # Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found
-def indexOfStartingWithSecond( letter, splitLine ):
-    for wordIndex in xrange( 1, len( splitLine ) ):
+def indexOfStartingWithSecond(letter, splitLine):
+    for wordIndex in xrange( 1, len(splitLine) ):
         word = splitLine[ wordIndex ]
         firstLetter = word[0]
         if firstLetter == letter:
@@ -34,7 +34,7 @@ def indexOfStartingWithSecond( letter, splitLine ):
 class gRead:
     def __init__(self,fileName, layers,gcodeText = ''):
         if gcodeText == '':
-            gcodeText = getFileText( fileName )
+            gcodeText = getFileText(fileName)
         textLines = getTextLines(gcodeText)
         self.last_pos = Vector3()
         self.layers = layers
@@ -52,11 +52,11 @@ class gRead:
                 self.newLayer()
             return
         splitLine = line.split()
-        if len( splitLine ) < 1:
+        if len(splitLine) < 1:
             return 0
         firstWord = splitLine[0]
         if firstWord == 'G1':
-            self.linearMove( splitLine )
+            self.linearMove(splitLine)
         if firstWord == 'M110':             #filament height only sent by skeinforge at the moment
             self.skeinforge = 1
             self.newThread()
@@ -70,13 +70,13 @@ class gRead:
     def setPointComponent( self, point, splitLine ):
         indexOfX = indexOfStartingWithSecond( "X", splitLine )
         if indexOfX > 0:
-            point.x = getDoubleAfterFirstLetter( splitLine[ indexOfX ] )
+            point.x = getDoubleAfterFirstLetter( splitLine[indexOfX] )
         indexOfY = indexOfStartingWithSecond( "Y", splitLine )
         if indexOfY > 0:
-            point.y = getDoubleAfterFirstLetter( splitLine[ indexOfY ] )
+            point.y = getDoubleAfterFirstLetter( splitLine[indexOfY] )
         indexOfZ = indexOfStartingWithSecond( "Z", splitLine )
         if indexOfZ > 0:
-            point.z = getDoubleAfterFirstLetter( splitLine[ indexOfZ ] )
+            point.z = getDoubleAfterFirstLetter( splitLine[indexOfZ] )
 
     def newLayer(self):
         self.newThread()

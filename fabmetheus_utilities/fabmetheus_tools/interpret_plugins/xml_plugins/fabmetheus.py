@@ -32,6 +32,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_geometry
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from fabmetheus_utilities import xml_simple_reader
@@ -40,10 +41,10 @@ import sys
 import traceback
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCarvingFromParser( xmlParser ):
@@ -55,32 +56,25 @@ def getCarvingFromParser( xmlParser ):
 	root.xmlProcessor.processChildren( booleanGeometryElement )
 	return booleanGeometryElement.object
 
-def getGeometryToolsDirectoryPath(subName=''):
-	"Get the geometry tools directory path."
-	path = evaluate.getGeometryDirectoryPath('geometry_tools')
-	if subName == '':
-		return path
-	return os.path.join(path, subName)
-
 
 class XMLBooleanGeometryProcessor():
 	"A class to process xml boolean geometry elements."
 	def __init__(self):
 		"Initialize processor."
 		self.functions = []
-		self.manipulationEvaluatorDictionary = evaluate.getGeometryDictionary('manipulation_evaluator')
-		self.manipulationPathDictionary = evaluate.getGeometryDictionary('manipulation_paths')
-		self.manipulationShapeDictionary = evaluate.getGeometryDictionary('manipulation_shapes')
+		self.manipulationEvaluatorDictionary = archive.getGeometryDictionary('manipulation_evaluator')
+		self.manipulationPathDictionary = archive.getGeometryDictionary('manipulation_paths')
+		self.manipulationShapeDictionary = archive.getGeometryDictionary('manipulation_shapes')
 		self.namePathDictionary = {}
 		self.namePathDictionary.update(evaluate.globalCreationDictionary)
-		self.namePathDictionary.update(evaluate.getGeometryDictionary('manipulation'))
+		self.namePathDictionary.update(archive.getGeometryDictionary('manipulation'))
 		self.namePathDictionary.update(self.manipulationEvaluatorDictionary)
 		self.namePathDictionary.update(self.manipulationPathDictionary)
 		self.namePathDictionary.update(self.manipulationShapeDictionary)
-		settings.addToNamePathDictionary(getGeometryToolsDirectoryPath(), self.namePathDictionary)
-		settings.addToNamePathDictionary(getGeometryToolsDirectoryPath('path_elements'), self.namePathDictionary)
-		settings.addToNamePathDictionary(evaluate.getGeometryDirectoryPath('solids'), self.namePathDictionary)
-		settings.addToNamePathDictionary(evaluate.getGeometryDirectoryPath('statements'), self.namePathDictionary)
+		archive.addToNamePathDictionary(archive.getGeometryToolsPath(), self.namePathDictionary)
+		archive.addToNamePathDictionary(archive.getGeometryToolsPath('path_elements'), self.namePathDictionary)
+		archive.addToNamePathDictionary(archive.getGeometryPath('solids'), self.namePathDictionary)
+		archive.addToNamePathDictionary(archive.getGeometryPath('statements'), self.namePathDictionary)
 
 	def convertXMLElement( self, geometryOutput, xmlElement ):
 		"Convert the xml element."
@@ -123,5 +117,5 @@ class XMLBooleanGeometryProcessor():
 			print('Warning, could not processXMLElement in fabmetheus for:')
 			print( pluginModule )
 			print(xmlElement)
-			traceback.print_exc( file = sys.stdout )
+			traceback.print_exc(file=sys.stdout)
 		return None

@@ -39,10 +39,10 @@ from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import gcodec
 from struct import unpack
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def addFacesGivenBinary( stlData, triangleMesh, vertexIndexTable ):
@@ -94,7 +94,7 @@ def getFaceGivenLines( triangleMesh, vertexStartIndex, vertexIndexTable, vertexe
 	faceGivenLines = face.Face()
 	faceGivenLines.index = len( triangleMesh.faces )
 	for vertexIndex in xrange( vertexStartIndex, vertexStartIndex + 3 ):
-		vertex = vertexes[ vertexIndex ]
+		vertex = vertexes[vertexIndex]
 		vertexUniqueIndex = len( vertexIndexTable )
 		if str(vertex) in vertexIndexTable:
 			vertexUniqueIndex = vertexIndexTable[ str(vertex) ]
@@ -104,10 +104,10 @@ def getFaceGivenLines( triangleMesh, vertexStartIndex, vertexIndexTable, vertexe
 		faceGivenLines.vertexIndexes.append( vertexUniqueIndex )
 	return faceGivenLines
 
-def getFloat( floatString ):
+def getFloat(floatString):
 	"Get the float, replacing commas if necessary because an inferior program is using a comma instead of a point for the decimal point."
 	try:
-		return float( floatString )
+		return float(floatString)
 	except:
 		return float( floatString.replace(',', '.') )
 
@@ -122,4 +122,4 @@ def getVertexGivenBinary( byteIndex, stlData ):
 def getVertexGivenLine(line):
 	"Get vertex given stl vertex line."
 	splitLine = line.split()
-	return Vector3( getFloat( splitLine[1] ), getFloat( splitLine[2] ), getFloat( splitLine[3] ) )
+	return Vector3( getFloat(splitLine[1]), getFloat( splitLine[2] ), getFloat( splitLine[3] ) )

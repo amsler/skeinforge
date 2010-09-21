@@ -17,15 +17,15 @@ import cStringIO
 import os
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
-def getXMLFromCarvingFileName( fileName ):
+def getXMLFromCarvingFileName(fileName):
 	"Get xml text from xml text."
-	carving = fabmetheus_interpret.getCarving( fileName )
+	carving = fabmetheus_interpret.getCarving(fileName)
 	if carving == None:
 		return ''
 	output = cStringIO.StringIO()
@@ -50,15 +50,15 @@ def processXMLElement(xmlElement):
 	if '_importname' in xmlElement.attributeDictionary:
 		xmlElement.importName = xmlElement.attributeDictionary['_importname']
 	else:
-		xmlElement.importName = gcodec.getUntilDot( fileName )
+		xmlElement.importName = gcodec.getUntilDot(fileName)
 		xmlElement.attributeDictionary['_importname'] = xmlElement.importName
 	XMLSimpleReader( parserFileName, xmlElement, xmlText )
-	originalChildren = xmlElement.children[ : ]
+	originalChildren = xmlElement.children[:]
 	xmlElement.children = []
 	for child in originalChildren:
 		for subchild in child.children:
 			subchild.setParentAddToChildren(xmlElement)
 		for attributeDictionaryKey in child.attributeDictionary.keys():
 			if attributeDictionaryKey != 'version':
-				xmlElement.attributeDictionary[ attributeDictionaryKey ] = child.attributeDictionary[ attributeDictionaryKey ]
+				xmlElement.attributeDictionary[attributeDictionaryKey] = child.attributeDictionary[attributeDictionaryKey]
 	group.processShape( group.Group, xmlElement)

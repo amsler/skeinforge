@@ -70,9 +70,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getCraftedText( fileName, text, combRepository = None ):
@@ -128,14 +128,14 @@ def getPathsByIntersectedLoop( begin, end, loop ):
 	widdershinsPath = [ nearestBegin ]
 	if nearestBeginDistanceIndex.index != nearestEndDistanceIndex.index:
 		widdershinsPath += euclidean.getAroundLoop( beginIndex, endIndex, loop )
-		clockwisePath += euclidean.getAroundLoop( endIndex, beginIndex, loop )[ : : - 1 ]
+		clockwisePath += euclidean.getAroundLoop( endIndex, beginIndex, loop )[: : -1]
 	clockwisePath.append( nearestEnd )
 	widdershinsPath.append( nearestEnd )
 	return [ clockwisePath, widdershinsPath ]
 
 def writeOutput( fileName = ''):
 	"Comb a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'comb')
 
@@ -154,7 +154,7 @@ class CombRepository:
 		"Comb button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class CombSkein:
@@ -178,18 +178,18 @@ class CombSkein:
 	def addGcodePathZ( self, feedRateMinute, path, z ):
 		"Add a gcode path, without modifying the extruder, to the output."
 		for point in path:
-			self.distanceFeedRate.addGcodeMovementZWithFeedRate( feedRateMinute, point, z )
+			self.distanceFeedRate.addGcodeMovementZWithFeedRate(feedRateMinute, point, z)
 
 	def addIfTravel( self, splitLine ):
 		"Add travel move around loops if the extruder is off."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		if not self.extruderActive and self.oldLocation != None:
 			if len( self.getBoundaries() ) > 0:
 				highestZ = max( location.z, self.oldLocation.z )
-				self.addGcodePathZ( self.travelFeedRatePerMinute, self.getPathsBetween( self.oldLocation.dropAxis( 2 ), location.dropAxis( 2 ) ), highestZ )
+				self.addGcodePathZ( self.travelFeedRatePerMinute, self.getPathsBetween( self.oldLocation.dropAxis(2), location.dropAxis(2) ), highestZ )
 		self.oldLocation = location
 
-	def addToLoop( self, location ):
+	def addToLoop(self, location):
 		"Add a location to loop."
 		if self.layer == None:
 			if not self.oldZ in self.layerTable:
@@ -199,7 +199,7 @@ class CombSkein:
 			self.boundaryLoop = [] #starting with an empty array because a closed loop does not have to restate its beginning
 			self.layer.append( self.boundaryLoop )
 		if self.boundaryLoop != None:
-			self.boundaryLoop.append( location.dropAxis( 2 ) )
+			self.boundaryLoop.append( location.dropAxis(2) )
 
 	def getBetweens(self):
 		"Set betweens for the layer."
@@ -224,10 +224,10 @@ class CombSkein:
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization( combRepository )
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ lineIndex ]
+			line = self.lines[lineIndex]
 			self.parseBoundariesLayers( combRepository, line )
 		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ lineIndex ]
+			line = self.lines[lineIndex]
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
@@ -235,7 +235,7 @@ class CombSkein:
 		"Determine if the point on the line is at least as far from the loop as the center point."
 		if begin == end:
 			print('this should never happen but it does not really matter, begin == end in getIsAsFarAndNotIntersecting in comb.')
-			print( begin )
+			print(begin)
 			return True
 		return not euclidean.isLineIntersectingLoops( self.getBetweens(), begin, end )
 
@@ -370,53 +370,53 @@ class CombSkein:
 	def parseBoundariesLayers( self, combRepository, line ):
 		"Parse a gcode line."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'M103':
 			self.boundaryLoop = None
 		elif firstWord == '(<boundaryPoint>':
-			location = gcodec.getLocationFromSplitLine( None, splitLine )
+			location = gcodec.getLocationFromSplitLine(None, splitLine)
 			self.addToLoop( location )
 		elif firstWord == '(<layer>':
 			self.boundaryLoop = None
 			self.layer = None
-			self.oldZ = float( splitLine[1] )
+			self.oldZ = float(splitLine[1])
 
 	def parseInitialization( self, combRepository ):
 		"Parse gcode initialization and store the parameters."
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> comb </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				perimeterWidth = float( splitLine[1] )
+				perimeterWidth = float(splitLine[1])
 				self.combInset = 0.7 * perimeterWidth
 				self.betweenInset = 0.4 * perimeterWidth
 				self.uTurnWidth = 0.5 * self.betweenInset
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float( splitLine[1] )
+				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
-	def parseLine( self, line ):
+	def parseLine(self, line):
 		"Parse a gcode line and add it to the comb skein."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
-			self.addIfTravel( splitLine )
+			self.addIfTravel(splitLine)
 			self.layerZ = self.nextLayerZ
 		elif firstWord == 'M101':
 			self.extruderActive = True
 		elif firstWord == 'M103':
 			self.extruderActive = False
 		elif firstWord == '(<layer>':
-			self.nextLayerZ = float( splitLine[1] )
+			self.nextLayerZ = float(splitLine[1])
 			if self.layerZ == None:
 				self.layerZ = self.nextLayerZ
 		self.distanceFeedRate.addLine(line)
@@ -425,7 +425,7 @@ class CombSkein:
 def main():
 	"Display the comb dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

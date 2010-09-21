@@ -17,7 +17,7 @@ Below are examples of Vector3 use.
 >>> triplePythagoras = pythagoras * 3.0
 >>> triplePythagoras
 9.0, 12.0, 0.0
->>> plane = pythagoras.dropAxis( 2 )
+>>> plane = pythagoras.dropAxis(2)
 >>> plane
 (3+4j)
 """
@@ -36,10 +36,10 @@ import math
 import operator
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://forums.reprap.org/profile.php?12,28>\nArt of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 class Vector3:

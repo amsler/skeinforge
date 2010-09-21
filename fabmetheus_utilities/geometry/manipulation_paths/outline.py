@@ -14,10 +14,10 @@ from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import intercircle
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = "$Date: 2008/02/05 $"
-__license__ = "GPL 3.0"
+__license__ = 'GPL 3.0'
 
 
 globalExecutionOrder = 80
@@ -34,8 +34,6 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 		loopComplexes = intercircle.getAroundsFromLoop(loopComplex, radius)
 	else:
 		loopComplexes = intercircle.getAroundsFromPath(loopComplex, radius)
-	if len(loopComplexes) < 1:
-		return []
 	return euclidean.getVector3Paths(loopComplexes, loop[0].z)
 
 def processXMLElement(xmlElement):

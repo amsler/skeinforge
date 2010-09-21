@@ -64,9 +64,9 @@ import math
 import sys
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, jitterRepository = None ):
 	"Jitter a gcode linear move text."
@@ -120,7 +120,7 @@ def isLoopNumberEqual( betweenX, betweenXIndex, loopNumber ):
 
 def writeOutput( fileName = ''):
 	"Jitter a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified( fileName )
+	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'jitter')
 
@@ -140,7 +140,7 @@ class JitterRepository:
 		"Jitter button has been clicked."
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
-			writeOutput( fileName )
+			writeOutput(fileName)
 
 
 class JitterSkein:
@@ -161,25 +161,25 @@ class JitterSkein:
 
 	def addGcodeFromThreadZ( self, thread, z ):
 		"Add a gcode thread to the output."
-		if len( thread ) > 0:
+		if len(thread) > 0:
 			self.addGcodeMovementZ( self.travelFeedRatePerMinute, thread[0], z )
 		else:
 			print( "zero length vertex positions array which was skipped over, this should never happen" )
-		if len( thread ) < 2:
+		if len(thread) < 2:
 			return
 		self.distanceFeedRate.addLine('M101')
-		self.addGcodePathZ( self.feedRateMinute, thread[ 1 : ], z )
+		self.addGcodePathZ( self.feedRateMinute, thread[1 :], z )
 
-	def addGcodeMovementZ( self, feedRateMinute, point, z ):
+	def addGcodeMovementZ(self, feedRateMinute, point, z):
 		"Add a movement to the output."
 		if feedRateMinute == None:
 			feedRateMinute = self.operatingFeedRatePerMinute
-		self.distanceFeedRate.addGcodeMovementZWithFeedRate( feedRateMinute, point, z )
+		self.distanceFeedRate.addGcodeMovementZWithFeedRate(feedRateMinute, point, z)
 
 	def addGcodePathZ( self, feedRateMinute, path, z ):
 		"Add a gcode path, without modifying the extruder, to the output."
 		for point in path:
-			self.addGcodeMovementZ( feedRateMinute, point, z )
+			self.addGcodeMovementZ(feedRateMinute, point, z)
 
 	def addTailoredLoopPath(self):
 		"Add a clipped and jittered loop path."
@@ -192,7 +192,7 @@ class JitterSkein:
 		if self.layerJitter != 0.0 and self.oldLoopLocationComplex == None:
 			loop = getJitteredLoop( self.layerJitter, loop )
 			loop = euclidean.getAwayPoints( loop, 0.2 * self.perimeterWidth )
-		self.loopPath.path = loop + [ loop[0] ]
+		self.loopPath.path = loop + [loop[0]]
 		self.addGcodeFromThreadZ( self.loopPath.path, self.loopPath.z )
 		self.oldLoopLocationComplex = loop[0]
 		self.loopPath = None
@@ -208,18 +208,18 @@ class JitterSkein:
 
 	def getLinearMove( self, line, splitLine ):
 		"Add to loop path if this is a loop or path."
-		location = gcodec.getLocationFromSplitLine( self.oldLocation, splitLine )
+		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
 		if self.isLoopPerimeter:
 			if self.isNextExtruderOn():
-				self.loopPath = euclidean.PathZ( location.z )
+				self.loopPath = euclidean.PathZ(location.z)
 				if self.oldLocation != None:
-					self.beforeLoopLocation = self.oldLocation.dropAxis( 2 )
+					self.beforeLoopLocation = self.oldLocation.dropAxis(2)
 		self.oldLocation = location
 		if self.loopPath == None:
 			self.oldLoopLocationComplex = None
 			return line
-		self.loopPath.path.append( location.dropAxis( 2 ) )
+		self.loopPath.path.append( location.dropAxis(2) )
 		return ''
 
 	def isNextExtruderOn(self):
@@ -229,17 +229,17 @@ class JitterSkein:
 		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'G1' or firstWord == 'M103':
 				return False
 			elif firstWord == 'M101':
 				return True
 		return False
 
-	def parseAddJitter( self, line ):
+	def parseAddJitter(self, line):
 		"Parse a gcode line, jitter it and add it to the jitter skein."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		if len( splitLine ) < 1:
+		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
@@ -263,25 +263,25 @@ class JitterSkein:
 		for self.lineIndex in xrange( len( self.lines ) ):
 			line = self.lines[ self.lineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord( splitLine )
+			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> jitter </procedureDone>)')
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
-				self.operatingFeedRatePerMinute = 60.0 * float( splitLine[1] )
+				self.operatingFeedRatePerMinute = 60.0 * float(splitLine[1])
 			elif firstWord == '(<perimeterWidth>':
-				self.perimeterWidth = float( splitLine[1] )
+				self.perimeterWidth = float(splitLine[1])
 				self.jitter = jitterRepository.jitterOverPerimeterWidth.value * self.perimeterWidth
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float( splitLine[1] )
+				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the jitter dialog."
 	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[ 1 : ] ) )
+		writeOutput(' '.join( sys.argv[1 :] ) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

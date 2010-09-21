@@ -11,9 +11,9 @@ from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 
 
-__author__ = "Enrique Perez (perez_enrique@yahoo.com)"
-__date__ = "$Date: 2008/21/04 $"
-__license__ = "GPL 3.0"
+__author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
+__date__ = '$Date: 2008/21/04 $'
+__license__ = 'GPL 3.0'
 
 
 def getFileOrGcodeDirectory( fileName, wasCancelled, words = [] ):
@@ -42,7 +42,7 @@ def getFileOrDirectoryTypesUnmodifiedGcode( fileName, fileTypes, wasCancelled ):
 	if isEmptyOrCancelled( fileName, wasCancelled ):
 		return []
 	if isDirectorySetting():
-		return gcodec.getFilesWithFileTypesWithoutWords( fileTypes, [], fileName ) + gcodec.getUnmodifiedGCodeFiles( fileName )
+		return gcodec.getFilesWithFileTypesWithoutWords( fileTypes, [], fileName ) + gcodec.getUnmodifiedGCodeFiles(fileName)
 	return [ fileName ]
 
 def getNewRepository():
@@ -55,7 +55,7 @@ def isDirectorySetting():
 
 def isEmptyOrCancelled( fileName, wasCancelled ):
 	"Determine if the fileName is empty or the dialog was cancelled."
-	return str( fileName ) == '' or str( fileName ) == '()' or wasCancelled
+	return str(fileName) == '' or str(fileName) == '()' or wasCancelled
 
 
 class PolyfileRepository:
