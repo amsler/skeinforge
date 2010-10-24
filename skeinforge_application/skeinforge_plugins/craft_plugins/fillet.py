@@ -99,33 +99,33 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, text, filletRepository = None ):
+def getCraftedText( fileName, gcodeText, repository = None ):
 	"Fillet a gcode linear move file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), filletRepository )
+	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, gcodeText ), repository )
 
-def getCraftedTextFromText( gcodeText, filletRepository = None ):
+def getCraftedTextFromText( gcodeText, repository = None ):
 	"Fillet a gcode linear move text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'fillet'):
 		return gcodeText
-	if filletRepository == None:
-		filletRepository = settings.getReadRepository( FilletRepository() )
-	if not filletRepository.activateFillet.value:
+	if repository == None:
+		repository = settings.getReadRepository( FilletRepository() )
+	if not repository.activateFillet.value:
 		return gcodeText
-	if filletRepository.arcPoint.value:
-		return ArcPointSkein().getCraftedGcode( filletRepository, gcodeText )
-	elif filletRepository.arcRadius.value:
-		return ArcRadiusSkein().getCraftedGcode( filletRepository, gcodeText )
-	elif filletRepository.arcSegment.value:
-		return ArcSegmentSkein().getCraftedGcode( filletRepository, gcodeText )
-	elif filletRepository.bevel.value:
-		return BevelSkein().getCraftedGcode( filletRepository, gcodeText )
+	if repository.arcPoint.value:
+		return ArcPointSkein().getCraftedGcode( repository, gcodeText )
+	elif repository.arcRadius.value:
+		return ArcRadiusSkein().getCraftedGcode( repository, gcodeText )
+	elif repository.arcSegment.value:
+		return ArcSegmentSkein().getCraftedGcode( repository, gcodeText )
+	elif repository.bevel.value:
+		return BevelSkein().getCraftedGcode( repository, gcodeText )
 	return gcodeText
 
 def getNewRepository():
 	"Get the repository constructor."
 	return FilletRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Fillet a gcode linear move file. Depending on the settings, either arcPoint, arcRadius, arcSegment, bevel or do nothing."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -152,25 +152,25 @@ class BevelSkein:
 	def getCornerFeedRate(self):
 		"Get the corner feed rate, which may be based on the intermediate feed rate."
 		feedRateMinute = self.feedRateMinute
-		if self.filletRepository.useIntermediateFeedRateInCorners.value:
+		if self.repository.useIntermediateFeedRateInCorners.value:
 			if self.oldFeedRateMinute != None:
 				feedRateMinute = 0.5 * ( self.oldFeedRateMinute + self.feedRateMinute )
 		return feedRateMinute * self.cornerFeedRateOverOperatingFeedRate
 
-	def getCraftedGcode( self, filletRepository, gcodeText ):
+	def getCraftedGcode( self, repository, gcodeText ):
 		"Parse gcode text and store the bevel gcode."
-		self.cornerFeedRateOverOperatingFeedRate = filletRepository.cornerFeedRateOverOperatingFeedRate.value
+		self.cornerFeedRateOverOperatingFeedRate = repository.cornerFeedRateOverOperatingFeedRate.value
 		self.lines = gcodec.getTextLines(gcodeText)
-		self.filletRepository = filletRepository
-		self.parseInitialization( filletRepository )
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		self.repository = repository
+		self.parseInitialization( repository )
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getExtruderOffReversalPoint( self, afterSegment, afterSegmentComplex, beforeSegment, beforeSegmentComplex, location ):
 		"If the extruder is off and the path is reversing, add intermediate slow points."
-		if self.filletRepository.reversalSlowdownDistanceOverPerimeterWidth.value < 0.1:
+		if self.repository.reversalSlowdownDistanceOverPerimeterWidth.value < 0.1:
 			return None
 		if self.extruderActive:
 			return None
@@ -196,7 +196,7 @@ class BevelSkein:
 
 	def getNextLocation(self):
 		"Get the next linear move.  Return none is none is found."
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			if gcodec.getFirstWord(splitLine) == 'G1':
@@ -215,22 +215,22 @@ class BevelSkein:
 		self.oldLocation = location
 		self.oldFeedRateMinute = self.feedRateMinute
 
-	def parseInitialization( self, filletRepository ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+	def parseInitialization( self, repository ):
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> fillet </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				perimeterWidth = abs( float(splitLine[1]) )
+				perimeterWidth = abs(float(splitLine[1]))
 				self.curveSection = 0.7 * perimeterWidth
-				self.filletRadius = perimeterWidth * filletRepository.filletRadiusOverPerimeterWidth.value
+				self.filletRadius = perimeterWidth * repository.filletRadiusOverPerimeterWidth.value
 				self.minimumRadius = 0.1 * perimeterWidth
-				self.reversalSlowdownDistance = perimeterWidth * filletRepository.reversalSlowdownDistanceOverPerimeterWidth.value
+				self.reversalSlowdownDistance = perimeterWidth * repository.reversalSlowdownDistanceOverPerimeterWidth.value
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine(self, line):
@@ -351,7 +351,6 @@ class ArcPointSkein( ArcSegmentSkein ):
 		centerMinusBeforeComplex = centerMinusBefore.dropAxis(2)
 		if abs( centerMinusBeforeComplex ) <= 0.0:
 			return
-		deltaZ = abs( afterPointMinusBefore.z )
 		radius = abs( centerMinusBefore )
 		arcDistanceZ = complex( abs( afterCenterDifferenceAngle ) * radius, afterPointMinusBefore.z )
 		distance = abs( arcDistanceZ )
@@ -360,7 +359,7 @@ class ArcPointSkein( ArcSegmentSkein ):
 		line = self.distanceFeedRate.getFirstWordMovement( firstWord, afterPointMinusBefore ) + self.getRelativeCenter( centerMinusBeforeComplex )
 		cornerFeedRate = self.getCornerFeedRate()
 		if cornerFeedRate != None:
-			line += ' F' + self.distanceFeedRate.getRounded( self.distanceFeedRate.getZLimitedFeedRate( deltaZ, distance, cornerFeedRate ) )
+			line += ' F' + self.distanceFeedRate.getRounded(cornerFeedRate)
 		self.distanceFeedRate.addLine(line)
 
 	def getRelativeCenter( self, centerMinusBeforeComplex ):
@@ -398,15 +397,15 @@ class FilletRepository:
 
 	def execute(self):
 		"Fillet button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
 
 def main():
 	"Display the fillet dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

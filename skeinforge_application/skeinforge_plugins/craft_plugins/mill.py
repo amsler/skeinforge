@@ -98,11 +98,11 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, gcodeText = '', repository = None ):
+def getCraftedText( fileName, gcodeText = '', repository=None):
 	"Mill the file or gcodeText."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty(fileName, gcodeText), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Mill a gcode linear move gcodeText."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'mill'):
 		return gcodeText
@@ -110,7 +110,7 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 		repository = settings.getReadRepository( MillRepository() )
 	if not repository.activateMill.value:
 		return gcodeText
-	return MillSkein().getCraftedGcode( gcodeText, repository )
+	return MillSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -131,7 +131,7 @@ def isPointOfTableInLoop( loop, pointTable ):
 			return True
 	return False
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Mill a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
@@ -181,7 +181,7 @@ class MillRepository:
 
 	def execute(self):
 		"Mill button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -195,6 +195,7 @@ class MillSkein:
 		self.boundaryLayers = []
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.isExtruderActive = False
+		self.layerCount = settings.LayerCount()
 		self.layerIndex = 0
 		self.lineIndex = 0
 		self.lines = None
@@ -261,7 +262,7 @@ class MillSkein:
 		else:
 			boundaryLayer.segmentTable = boundaryLayer.horizontalSegmentTable
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the mill gcode."
 		self.repository = repository
 		self.lines = gcodec.getTextLines(gcodeText)
@@ -318,7 +319,7 @@ class MillSkein:
 					boundaryLayer.loops.append( boundaryLoop )
 				boundaryLoop.append( location.dropAxis(2) )
 			elif firstWord == '(<layer>':
-				boundaryLayer = euclidean.LoopLayer( float(splitLine[1]) )
+				boundaryLayer = euclidean.LoopLayer(float(splitLine[1]))
 				self.boundaryLayers.append( boundaryLayer )
 		if len( self.boundaryLayers ) < 2:
 			return
@@ -343,12 +344,12 @@ class MillSkein:
 			self.addSegmentTableLoops( boundaryLayerIndex )
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> mill </procedureDone>)')
 				return
@@ -379,6 +380,7 @@ class MillSkein:
 		elif firstWord == 'M103':
 			self.isExtruderActive = False
 		elif firstWord == '(<layer>':
+			self.layerCount.printProgressIncrement('mill')
 			self.aroundPixelTable = {}
 			self.average.reset()
 		elif firstWord == '(</layer>)':
@@ -390,8 +392,8 @@ class MillSkein:
 
 def main():
 	"Display the mill dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

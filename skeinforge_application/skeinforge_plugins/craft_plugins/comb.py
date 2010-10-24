@@ -133,7 +133,7 @@ def getPathsByIntersectedLoop( begin, end, loop ):
 	widdershinsPath.append( nearestEnd )
 	return [ clockwisePath, widdershinsPath ]
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Comb a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -152,7 +152,7 @@ class CombRepository:
 
 	def execute(self):
 		"Comb button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -165,6 +165,7 @@ class CombSkein:
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.layer = None
+		self.layerCount = settings.LayerCount()
 		self.layerTable = {}
 		self.layerZ = None
 		self.lineIndex = 0
@@ -223,10 +224,10 @@ class CombSkein:
 		self.combRepository = combRepository
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization( combRepository )
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
+		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			line = self.lines[lineIndex]
 			self.parseBoundariesLayers( combRepository, line )
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
+		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			line = self.lines[lineIndex]
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
@@ -384,12 +385,12 @@ class CombSkein:
 			self.oldZ = float(splitLine[1])
 
 	def parseInitialization( self, combRepository ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> comb </procedureDone>)')
 				return
@@ -416,6 +417,7 @@ class CombSkein:
 		elif firstWord == 'M103':
 			self.extruderActive = False
 		elif firstWord == '(<layer>':
+			self.layerCount.printProgressIncrement('comb')
 			self.nextLayerZ = float(splitLine[1])
 			if self.layerZ == None:
 				self.layerZ = self.nextLayerZ
@@ -424,8 +426,8 @@ class CombSkein:
 
 def main():
 	"Display the comb dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

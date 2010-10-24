@@ -110,7 +110,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return MultiplyRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Multiply a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -139,7 +139,7 @@ class MultiplyRepository:
 
 	def execute(self):
 		"Multiply button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -148,6 +148,7 @@ class MultiplySkein:
 	"A class to multiply a skein of extrusions."
 	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
+		self.layerCount = settings.LayerCount()
 		self.layerIndex = 0
 		self.layerLines = []
 		self.lineIndex = 0
@@ -171,6 +172,7 @@ class MultiplySkein:
 
 	def addLayer(self):
 		"Add multiplied layer to the output."
+		self.layerCount.printProgressIncrement('multiply')
 		self.addRemoveThroughLayer()
 		offset = self.centerOffset - self.arrayCenter - self.shapeCenter
 		for rowIndex in xrange( self.multiplyRepository.numberOfRows.value ):
@@ -189,7 +191,7 @@ class MultiplySkein:
 		self.layerLines = []
 
 	def addRemoveThroughLayer(self):
-		"Parse gcode initialization and store the parameters."
+		'Parse gcode initialization and store the parameters.'
 		for layerLineIndex in xrange( len( self.layerLines ) ):
 			line = self.layerLines[ layerLineIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
@@ -219,19 +221,19 @@ class MultiplySkein:
 		return Vector3( location.x + offset.real, location.y + offset.imag, location.z )
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> multiply </procedureDone>)')
 				self.distanceFeedRate.addLine(line)
 				self.lineIndex += 1
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.absolutePerimeterWidth = abs( float(splitLine[1]) )
+				self.absolutePerimeterWidth = abs(float(splitLine[1]))
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine(self, line):
@@ -275,8 +277,8 @@ class MultiplySkein:
 
 def main():
 	"Display the multiply dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

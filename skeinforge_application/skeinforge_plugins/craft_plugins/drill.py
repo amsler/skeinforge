@@ -68,11 +68,11 @@ __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
-def getCraftedText( fileName, text, repository = None ):
+def getCraftedText( fileName, text, repository=None):
 	"Drill a gcode linear move file or text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Drill a gcode linear move text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'drill'):
 		return gcodeText
@@ -80,7 +80,7 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 		repository = settings.getReadRepository( DrillRepository() )
 	if not repository.activateDrill.value:
 		return gcodeText
-	return DrillSkein().getCraftedGcode( gcodeText, repository )
+	return DrillSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -98,7 +98,7 @@ def getPolygonCenter( polygon ):
 		pointSum += complex( pointBegin.real + pointEnd.real, pointBegin.imag + pointEnd.imag ) * area
 	return pointSum / 3.0 / areaSum
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Drill a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -130,7 +130,7 @@ class DrillRepository:
 
 	def execute(self):
 		"Drill button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -177,7 +177,7 @@ class DrillSkein:
 		self.threadLayer = ThreadLayer( self.layerZ )
 		self.threadLayers.append( self.threadLayer )
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the drill gcode."
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.repository = repository
@@ -213,12 +213,12 @@ class DrillSkein:
 		self.oldLocation = location
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> drill </procedureDone>)')
 				return
@@ -269,8 +269,8 @@ class DrillSkein:
 
 def main():
 	"Display the drill dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -399,11 +399,11 @@ def getAdditionalLength( path, point, pointIndex ):
 		return abs( point - path[-1] )
 	return abs( point - path[ pointIndex - 1 ] ) + abs( point - path[ pointIndex ] ) - abs( path[ pointIndex ] - path[ pointIndex - 1 ] )
 
-def getCraftedText( fileName, gcodeText = '', repository = None ):
+def getCraftedText( fileName, gcodeText = '', repository=None):
 	"Fill the inset file or gcode text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty(fileName, gcodeText), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Fill the inset gcode text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'fill'):
 		return gcodeText
@@ -763,7 +763,7 @@ def setIsOutside( yCloseToCenterPath, yIntersectionPaths ):
 				return
 	yCloseToCenterPath.isOutside = True
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Fill an inset gcode file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -822,7 +822,7 @@ class FillRepository:
 
 	def execute(self):
 		"Fill button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -845,8 +845,11 @@ class FillSkein:
 		self.surroundingLoop = None
 		self.thread = None
 
-	def addFill( self, layerIndex ):
+	def addFill(self, layerIndex):
 		"Add fill to the carve layer."
+#		if layerIndex > 2:
+#			return
+		settings.printProgressByNumber(layerIndex, len(self.rotatedLayers), 'fill')
 		alreadyFilledArounds = []
 		pixelTable = {}
 		arounds = []
@@ -854,9 +857,6 @@ class FillSkein:
 		self.layerExtrusionWidth = self.infillWidth
 		layerFillInset = self.fillInset
 		rotatedLayer = self.rotatedLayers[ layerIndex ]
-#		if layerIndex > 2:
-#			return
-#		print('layer index: %s  z: %s' % ( layerIndex, rotatedLayer.z ) )
 		self.distanceFeedRate.addLine('(<layer> %s )' % rotatedLayer.z )
 		layerRotation = self.getLayerRotation(layerIndex)
 		reverseRotation = complex( layerRotation.real, - layerRotation.imag )
@@ -1160,9 +1160,9 @@ class FillSkein:
 		self.infillOddLayerExtraRotation = math.radians( repository.infillOddLayerExtraRotation.value )
 		self.solidSurfaceThickness = int( round( self.repository.solidSurfaceThickness.value ) )
 		self.doubleSolidSurfaceThickness = self.solidSurfaceThickness + self.solidSurfaceThickness
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
+		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			self.parseLine( lineIndex )
-		for layerIndex in xrange( len( self.rotatedLayers ) ):
+		for layerIndex in xrange(len(self.rotatedLayers)):
 			self.addFill(layerIndex)
 		self.distanceFeedRate.addLines( self.lines[ self.shutdownLineIndex : ] )
 		return self.distanceFeedRate.output.getvalue()
@@ -1265,12 +1265,12 @@ class FillSkein:
 		self.oldLocation = location
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float(splitLine[1])
 				threadSequenceString = ' '.join( self.threadSequence )
@@ -1317,7 +1317,7 @@ class FillSkein:
 		elif firstWord == '(</extrusion>)':
 			self.shutdownLineIndex = lineIndex
 		elif firstWord == '(<layer>':
-			self.rotatedLayer = RotatedLayer( float(splitLine[1]) )
+			self.rotatedLayer = RotatedLayer(float(splitLine[1]))
 			self.rotatedLayers.append( self.rotatedLayer )
 			self.thread = None
 		elif firstWord == '(<perimeter>':
@@ -1390,8 +1390,8 @@ class YIntersectionPath:
 
 def main():
 	"Display the fill dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

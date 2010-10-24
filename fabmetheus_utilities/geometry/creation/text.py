@@ -20,19 +20,17 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = 'GPL 3.0'
 
 
-def getGeometryOutput(xmlElement):
+def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
-	fontFamily = evaluate.getEvaluatedStringDefault('Gentium Basic Regular', 'font-family', xmlElement)
-	fontFamily = evaluate.getEvaluatedStringDefault(fontFamily, 'fontFamily', xmlElement)
-	fontSize = evaluate.getEvaluatedFloatDefault(12.0, 'font-size', xmlElement)
-	fontSize = evaluate.getEvaluatedFloatDefault(fontSize, 'fontSize', xmlElement)
-	textString = evaluate.getEvaluatedStringDefault(xmlElement.text, 'text', xmlElement)
-	if textString == '':
+	if derivation == None:
+		derivation = TextDerivation()
+		derivation.setToXMLElement(xmlElement)
+	if derivation.textString == '':
 		print('Warning, textString is empty in getGeometryOutput in text for:')
 		print(xmlElement)
 		return []
 	geometryOutput = []
-	for textComplexLoop in svg_reader.getTextComplexLoops(fontFamily, fontSize, textString):
+	for textComplexLoop in svg_reader.getTextComplexLoops(derivation.fontFamily, derivation.fontSize, derivation.textString):
 		textComplexLoop.reverse()
 		vector3Path = euclidean.getVector3Path(textComplexLoop)
 		sideLoop = lineation.SideLoop(vector3Path, None, None)
@@ -43,8 +41,31 @@ def getGeometryOutput(xmlElement):
 def getGeometryOutputByArguments(arguments, xmlElement):
 	"Get vector3 vertexes from attribute dictionary by arguments."
 	evaluate.setAttributeDictionaryByArguments(['text', 'fontSize', 'fontFamily'], arguments, xmlElement)
-	return getGeometryOutput(xmlElement)
+	return getGeometryOutput(None, xmlElement)
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	path.convertProcessXMLElementRenameByPaths(getGeometryOutput(xmlElement), xmlElement)
+	path.convertProcessXMLElementRenameByPaths(getGeometryOutput(None, xmlElement), xmlElement)
+
+
+class TextDerivation:
+	"Class to hold text variables."
+	def __init__(self):
+		'Set defaults.'
+		self.fontFamily = 'Gentium Basic Regular'
+		self.fontSize = 12.0
+		self.textString = ''
+
+	def __repr__(self):
+		"Get the string representation of this TextDerivation."
+		return str(self.__dict__)
+
+	def setToXMLElement(self, xmlElement):
+		"Set to the xmlElement."
+		self.fontFamily = evaluate.getEvaluatedStringDefault(self.fontFamily, 'font-family', xmlElement)
+		self.fontFamily = evaluate.getEvaluatedStringDefault(self.fontFamily, 'fontFamily', xmlElement)
+		self.fontSize = evaluate.getEvaluatedFloatDefault(self.fontSize, 'font-size', xmlElement)
+		self.fontSize = evaluate.getEvaluatedFloatDefault(self.fontSize, 'fontSize', xmlElement)
+		if self.textString == '':
+			self.textString = xmlElement.text
+		self.textString = evaluate.getEvaluatedStringDefault(self.textString, 'text', xmlElement)

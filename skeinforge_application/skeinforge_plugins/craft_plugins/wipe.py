@@ -137,7 +137,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return WipeRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Wipe a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -173,7 +173,7 @@ class WipeRepository:
 
 	def execute(self):
 		"Wipe button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -230,8 +230,8 @@ class WipeSkein:
 		self.locationArrival = Vector3( wipeRepository.locationArrivalX.value, wipeRepository.locationArrivalY.value, wipeRepository.locationArrivalZ.value )
 		self.locationDeparture = Vector3( wipeRepository.locationDepartureX.value, wipeRepository.locationDepartureY.value, wipeRepository.locationDepartureZ.value )
 		self.locationWipe = Vector3( wipeRepository.locationWipeX.value, wipeRepository.locationWipeY.value, wipeRepository.locationWipeZ.value )
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
@@ -240,17 +240,17 @@ class WipeSkein:
 		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRate, location.dropAxis(2), location.z )
 
 	def parseInitialization( self, wipeRepository ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> wipe </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.absolutePerimeterWidth = abs( float(splitLine[1]) )
+				self.absolutePerimeterWidth = abs(float(splitLine[1]))
 			elif firstWord == '(<travelFeedRatePerSecond>':
 				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
@@ -265,6 +265,7 @@ class WipeSkein:
 			self.addWipeTravel(splitLine)
 			self.oldLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		elif firstWord == '(<layer>':
+			settings.printProgress(self.layerIndex, 'wipe')
 			self.layerIndex += 1
 			if self.layerIndex % self.wipePeriod == 0:
 				self.shouldWipe = True
@@ -277,8 +278,8 @@ class WipeSkein:
 
 def main():
 	"Display the wipe dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

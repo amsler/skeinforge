@@ -52,11 +52,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.vector3 import Vector3
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 import math
@@ -87,7 +87,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return HomeRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Home a gcode linear move file.  Chain home the gcode if it is not already homed. If no fileName is specified, home the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -98,7 +98,7 @@ class HomeRepository:
 	"A class to handle the home settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.home.html', '', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.home.html', None, self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Home', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_home')
 		self.activateHome = settings.BooleanSetting().getFromValue('Activate Home', self, True )
@@ -107,7 +107,7 @@ class HomeRepository:
 
 	def execute(self):
 		"Home button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -119,6 +119,7 @@ class HomeSkein:
 		self.extruderActive = False
 		self.highestZ = None
 		self.homingText = ''
+		self.layerCount = settings.LayerCount()
 		self.lineIndex = 0
 		self.lines = None
 		self.oldLocation = None
@@ -165,23 +166,23 @@ class HomeSkein:
 		self.homeRepository = homeRepository
 		self.parseInitialization( homeRepository )
 		self.homingLines = gcodec.getTextLines( self.homingText )
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization( self, homeRepository ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> home </procedureDone>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
-				self.absolutePerimeterWidth = abs( float(splitLine[1]) )
+				self.absolutePerimeterWidth = abs(float(splitLine[1]))
 			elif firstWord == '(<travelFeedRatePerSecond>':
 				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
@@ -196,6 +197,7 @@ class HomeSkein:
 			self.addHomeTravel(splitLine)
 			self.oldLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		elif firstWord == '(<layer>':
+			self.layerCount.printProgressIncrement('home')
 			if self.homingText != '':
 				self.shouldHome = True
 		elif firstWord == 'M101':
@@ -207,8 +209,8 @@ class HomeSkein:
 
 def main():
 	"Display the home dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

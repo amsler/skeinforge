@@ -122,7 +122,7 @@ def writeOutput( fileName, gcodeText = ''):
 	gcodeText = gcodec.getGcodeFileText(fileName, gcodeText)
 	repository = GcodeStepRepository()
 	settings.getReadRepository(repository)
-	output = getOutput( gcodeText, repository )
+	output = getOutput(gcodeText, repository)
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '_gcode_step.gcode'
 	gcodec.writeFileText( suffixFileName, output )
 	print('The converted file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
@@ -133,7 +133,7 @@ class GcodeStepRepository:
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		#Set the default settings.
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.gcode_step.html', '', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.gcode_step.html', None, self )
 		self.addFeedRateEvenWhenUnchanging = settings.BooleanSetting().getFromValue('Add Feed Rate Even When Unchanging', self, True )
 		self.addSpaceBetweenWords = settings.BooleanSetting().getFromValue('Add Space Between Words', self, True )
 		self.addZEvenWhenUnchanging = settings.BooleanSetting().getFromValue('Add Z Even When Unchanging', self, True )
@@ -223,8 +223,8 @@ class GcodeStepSkein:
 
 def main():
 	"Display the export dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -87,7 +87,7 @@ def getWindowAnalyzeFile(fileName):
 	gcodeText = gcodec.getFileText(fileName)
 	return getWindowAnalyzeFileGivenText(fileName, gcodeText)
 
-def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
+def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
 	"Write scalable vector graphics for a gcode file given the settings."
 	if gcodeText == '':
 		return None
@@ -184,8 +184,13 @@ class VectorwriteRepository:
 
 class VectorwriteSkein:
 	"A class to vectorwrite a carving."
+	def __init__(self):
+		'Initialize.'
+		self.layerCount = settings.LayerCount()
+
 	def addRotatedLoopLayer( self, z ):
 		"Add rotated loop layer."
+		self.layerCount.printProgressIncrement('vectorwrite')
 		self.rotatedBoundaryLayer = ThreadLayer(z)
 		self.rotatedBoundaryLayers.append( self.rotatedBoundaryLayer )
 
@@ -238,7 +243,7 @@ class VectorwriteSkein:
 		for line in self.lines[self.lineIndex :]:
 			self.parseLine(line)
 		svgWriter = SVGWriterVectorwrite(True, self, self.decimalPlacesCarried, self.perimeterWidth)
-		return svgWriter.getReplacedSVGTemplate(fileName, 'vectorwrite', self.rotatedBoundaryLayers, None)
+		return svgWriter.getReplacedSVGTemplate(fileName, 'vectorwrite', self.rotatedBoundaryLayers)
 
 	def linearMove( self, splitLine ):
 		"Get statistics for a linear move."
@@ -252,9 +257,9 @@ class VectorwriteSkein:
 		self.oldLocation = location
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == '(<decimalPlacesCarried>':
@@ -295,7 +300,7 @@ class VectorwriteSkein:
 				self.rotatedBoundaryLayer.boundaryLoops.append( self.boundaryLoop )
 			self.boundaryLoop.append( location.dropAxis(2) )
 		elif firstWord == '(<layer>':
-			self.addRotatedLoopLayer( float(splitLine[1]) )
+			self.addRotatedLoopLayer(float(splitLine[1]))
 		elif firstWord == '(</loop>)':
 			self.addToLoops()
 		elif firstWord == '(<loop>':
@@ -309,8 +314,8 @@ class VectorwriteSkein:
 
 def main():
 	"Display the vectorwrite dialog."
-	if len( sys.argv ) > 1:
-		getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		getWindowAnalyzeFile(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

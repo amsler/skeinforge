@@ -243,11 +243,11 @@ __license__ = 'GPL 3.0'
 
 #maybe later wide support
 #raft outline temperature http://hydraraptor.blogspot.com/2008/09/screw-top-pot.html
-def getCraftedText( fileName, text = '', repository = None ):
+def getCraftedText( fileName, text = '', repository=None):
 	"Raft the file or text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Raft a gcode linear move text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'raft'):
 		return gcodeText
@@ -255,7 +255,7 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 		repository = settings.getReadRepository( RaftRepository() )
 	if not repository.activateRaft.value:
 		return gcodeText
-	return RaftSkein().getCraftedGcode( gcodeText, repository )
+	return RaftSkein().getCraftedGcode(gcodeText, repository)
 
 def getCrossHatchPointLine( crossHatchPointLineTable, y ):
 	"Get the cross hatch point line."
@@ -306,7 +306,7 @@ def setExtendedPoint( lineSegmentEnd, pointOriginal, x ):
 	if x > min( lineSegmentEnd.point.real, pointOriginal.real ) and x < max( lineSegmentEnd.point.real, pointOriginal.real ):
 		lineSegmentEnd.point = complex( x, pointOriginal.imag )
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Raft a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
@@ -332,7 +332,6 @@ class RaftRepository:
 		self.baseLayers = settings.IntSpin().getFromValue( 0, 'Base Layers (integer):', self, 3, 1 )
 		self.baseNozzleLiftOverBaseLayerThickness = settings.FloatSpin().getFromValue( 0.2, 'Base Nozzle Lift over Base Layer Thickness (ratio):', self, 0.8, 0.4 )
 		settings.LabelSeparator().getFromRepository(self)
-		self.bottomAltitude = settings.FloatSpin().getFromValue( 0.0, 'Bottom Altitude:', self, 10.0, 0.0 )
 		self.initialCircling = settings.BooleanSetting().getFromValue('Initial Circling:', self, False )
 		self.infillOverhangOverExtrusionWidth = settings.FloatSpin().getFromValue( 0.0, 'Infill Overhang over Extrusion Width (ratio):', self, 0.5, 0.05 )
 		settings.LabelSeparator().getFromRepository(self)
@@ -369,7 +368,7 @@ class RaftRepository:
 
 	def execute(self):
 		"Raft button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -569,7 +568,6 @@ class RaftSkein:
 
 	def addRaft(self):
 		"Add the raft."
-		self.extrusionTop = self.repository.bottomAltitude.value
 		if len( self.boundaryLayers ) < 0:
 			print('this should never happen, there are no boundary layers in addRaft')
 			return
@@ -607,7 +605,7 @@ class RaftSkein:
 			self.addTemperatureLineIfDifferent( self.interfaceTemperature )
 		for interfaceLayerIndex in xrange( self.repository.interfaceLayers.value ):
 			self.addInterfaceLayer()
-		self.operatingJump = self.extrusionTop - self.cornerLow.z + 0.5 * self.layerThickness + self.layerThickness * self.repository.operatingNozzleLiftOverLayerThickness.value
+		self.operatingJump = self.extrusionTop + self.layerThickness * self.repository.operatingNozzleLiftOverLayerThickness.value
 		for boundaryLayer in self.boundaryLayers:
 			if self.operatingJump != None:
 				boundaryLayer.z += self.operatingJump
@@ -739,7 +737,7 @@ class RaftSkein:
 			else:
 				del xIntersectionsTable[ xIntersectionsTableKey ]
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the raft gcode."
 		self.repository = repository
 		self.minimumSupportRatio = math.tan( math.radians( repository.supportMinimumAngle.value ) )
@@ -867,12 +865,12 @@ class RaftSkein:
 		return ( oldTemperature - temperature ) / abs( self.coolingRate )
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(<coolingRate>':
 				self.coolingRate = float(splitLine[1])
 			elif firstWord == '(</extruderInitialization>)':
@@ -938,6 +936,7 @@ class RaftSkein:
 			self.extrusionStart = False
 			self.distanceFeedRate.addLine( self.operatingLayerEndLine )
 		elif firstWord == '(<layer>':
+			settings.printProgress(self.layerIndex, 'raft')
 			self.layerIndex += 1
 			boundaryLayer = None
 			layerZ = self.extrusionTop + float(splitLine[1])
@@ -1072,8 +1071,8 @@ class SupportLayer:
 
 def main():
 	"Display the raft dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

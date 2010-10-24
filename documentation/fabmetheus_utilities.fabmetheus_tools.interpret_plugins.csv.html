@@ -120,7 +120,11 @@ Methods inherited from <a href="fabmetheus_utilities.xml_simple_reader.html#XMLE
 
 <dl><dt><a name="CSVElement-getChildrenWithClassName"><strong>getChildrenWithClassName</strong></a>(self, className)</dt><dd><tt>Get&nbsp;the&nbsp;children&nbsp;which&nbsp;have&nbsp;the&nbsp;given&nbsp;class&nbsp;name.</tt></dd></dl>
 
-<dl><dt><a name="CSVElement-getCopy"><strong>getCopy</strong></a>(self, idSuffix, parent)</dt><dd><tt>Copy&nbsp;the&nbsp;xml&nbsp;element&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;parent.</tt></dd></dl>
+<dl><dt><a name="CSVElement-getChildrenWithClassNameRecursively"><strong>getChildrenWithClassNameRecursively</strong></a>(self, className)</dt><dd><tt>Get&nbsp;the&nbsp;children&nbsp;which&nbsp;have&nbsp;the&nbsp;given&nbsp;class&nbsp;name&nbsp;recursively.</tt></dd></dl>
+
+<dl><dt><a name="CSVElement-getCopy"><strong>getCopy</strong></a>(self, idSuffix, parent)</dt><dd><tt>Copy&nbsp;the&nbsp;xml&nbsp;element,&nbsp;set&nbsp;its&nbsp;dictionary&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;parent.</tt></dd></dl>
+
+<dl><dt><a name="CSVElement-getCopyShallow"><strong>getCopyShallow</strong></a>(self, attributeDictionary<font color="#909090">={}</font>)</dt><dd><tt>Copy&nbsp;the&nbsp;xml&nbsp;element&nbsp;and&nbsp;set&nbsp;its&nbsp;dictionary&nbsp;and&nbsp;parent.</tt></dd></dl>
 
 <dl><dt><a name="CSVElement-getFirstChildWithClassName"><strong>getFirstChildWithClassName</strong></a>(self, className)</dt><dd><tt>Get&nbsp;the&nbsp;first&nbsp;child&nbsp;which&nbsp;has&nbsp;the&nbsp;given&nbsp;class&nbsp;name.</tt></dd></dl>
 
@@ -139,8 +143,6 @@ Methods inherited from <a href="fabmetheus_utilities.xml_simple_reader.html#XMLE
 <dl><dt><a name="CSVElement-getPreviousXMLElement"><strong>getPreviousXMLElement</strong></a>(self)</dt><dd><tt>Get&nbsp;previous&nbsp;<a href="fabmetheus_utilities.xml_simple_reader.html#XMLElement">XMLElement</a>&nbsp;if&nbsp;it&nbsp;exists.</tt></dd></dl>
 
 <dl><dt><a name="CSVElement-getRoot"><strong>getRoot</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;root&nbsp;element.</tt></dd></dl>
-
-<dl><dt><a name="CSVElement-getShallowCopy"><strong>getShallowCopy</strong></a>(self, attributeDictionary)</dt><dd><tt>Copy&nbsp;the&nbsp;xml&nbsp;element&nbsp;and&nbsp;set&nbsp;its&nbsp;dictionary.</tt></dd></dl>
 
 <dl><dt><a name="CSVElement-getSubChildWithID"><strong>getSubChildWithID</strong></a>(self, idReference)</dt><dd><tt>Get&nbsp;the&nbsp;child&nbsp;which&nbsp;has&nbsp;the&nbsp;idReference.</tt></dd></dl>
 

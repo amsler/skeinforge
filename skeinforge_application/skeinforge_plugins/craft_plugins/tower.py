@@ -97,7 +97,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return TowerRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Tower a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -152,7 +152,7 @@ class TowerRepository:
 
 	def execute(self):
 		"Tower button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -247,7 +247,7 @@ class TowerSkein:
 		self.parseInitialization()
 		if gcodec.isThereAFirstWord('(<operatingLayerEnd>', self.lines, self.lineIndex ):
 			self.parseUntilOperatingLayer()
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
+		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			self.parseLine( lineIndex )
 		concatenateEndIndex = min( len( self.threadLayers ), towerRepository.towerStartLayer.value )
 		for threadLayer in self.threadLayers[ : concatenateEndIndex ]:
@@ -312,12 +312,12 @@ class TowerSkein:
 		return True
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> tower </procedureDone>)')
 			elif firstWord == '(<layer>':
@@ -378,8 +378,8 @@ class TowerSkein:
 
 	def parseUntilOperatingLayer(self):
 		"Parse gcode until the operating layer if there is one."
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.addLine(line)
@@ -393,8 +393,8 @@ class TowerSkein:
 
 def main():
 	"Display the tower dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

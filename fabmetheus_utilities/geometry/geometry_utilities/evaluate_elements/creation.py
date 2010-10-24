@@ -54,6 +54,6 @@ class Creation:
 			firstArgument = arguments[0]
 		if firstArgument.__class__ == dict:
 			dictionary.update(firstArgument)
-			return self.pluginModule.getGeometryOutput(self.xmlElement.getShallowCopy(dictionary))
-		shallowCopy = self.xmlElement.getShallowCopy(dictionary)
-		return self.pluginModule.getGeometryOutputByArguments(arguments, shallowCopy)
+			return self.pluginModule.getGeometryOutput(self.xmlElement.getCopyShallow(dictionary))
+		copyShallow = self.xmlElement.getCopyShallow(dictionary)
+		return self.pluginModule.getGeometryOutputByArguments(arguments, copyShallow)

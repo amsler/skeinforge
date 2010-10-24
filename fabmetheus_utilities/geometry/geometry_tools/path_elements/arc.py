@@ -28,7 +28,7 @@ def getArcPath(xmlElement):
 	largeArcFlag = evaluate.getEvaluatedBooleanDefault(True, 'largeArcFlag', xmlElement)
 	radius = lineation.getComplexByPrefix('radius', complex(1.0, 1.0), xmlElement )
 	sweepFlag = evaluate.getEvaluatedBooleanDefault(True, 'sweepFlag', xmlElement)
-	xAxisRotation = math.radians(evaluate.getEvaluatedFloatZero('xAxisRotation', xmlElement ))
+	xAxisRotation = math.radians(evaluate.getEvaluatedFloatDefault(0.0, 'xAxisRotation', xmlElement ))
 	arcComplexes = svg_reader.getArcComplexes(begin.dropAxis(), end.dropAxis(), largeArcFlag, radius, sweepFlag, xAxisRotation)
 	path = []
 	incrementZ = (end.z - begin.z) / float(len(arcComplexes))

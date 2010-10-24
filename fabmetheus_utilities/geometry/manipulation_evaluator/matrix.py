@@ -24,28 +24,44 @@ __license__ = 'GPL 3.0'
 globalExecutionOrder = 300
 
 
-def addConnectionVertexes( connectionVertexes, geometryOutput ):
+def addConnectionVertexes(connectionVertexes, geometryOutput):
 	"Add the connections and vertexes."
 	if geometryOutput.__class__ == list:
 		for element in geometryOutput:
-			addConnectionVertexes( connectionVertexes, element )
+			addConnectionVertexes(connectionVertexes, element)
 		return
 	if geometryOutput.__class__ != dict:
 		return
 	for geometryOutputKey in geometryOutput.keys():
-		geometryOutputValue = geometryOutput[ geometryOutputKey ]
-		if geometryOutputKey == 'connectionFrom' or geometryOutputKey == 'connectionTo':
-			connectionVertexes.append( geometryOutputValue )
+		geometryOutputValue = geometryOutput[geometryOutputKey]
+		if geometryOutputKey == 'connectionStart' or geometryOutputKey == 'connectionEnd':
+			connectionVertexes.append(geometryOutputValue)
 		elif geometryOutputKey == 'vertex':
 			for vertex in geometryOutputValue:
 				connectionVertexes.append(vertex)
 		else:
-			addConnectionVertexes( connectionVertexes, geometryOutputValue )
+			addConnectionVertexes(connectionVertexes, geometryOutputValue)
+
+def addVertexes(geometryOutput, vertexes):
+	"Add the vertexes."
+	if geometryOutput.__class__ == list:
+		for element in geometryOutput:
+			addVertexes(element, vertexes)
+		return
+	if geometryOutput.__class__ != dict:
+		return
+	for geometryOutputKey in geometryOutput.keys():
+		geometryOutputValue = geometryOutput[geometryOutputKey]
+		if geometryOutputKey == 'vertex':
+			for vertex in geometryOutputValue:
+				vertexes.append(vertex)
+		else:
+			addVertexes(geometryOutputValue, vertexes)
 
 def getConnectionVertexes(geometryOutput):
 	"Get the connections and vertexes."
 	connectionVertexes = []
-	addConnectionVertexes( connectionVertexes, geometryOutput )
+	addConnectionVertexes(connectionVertexes, geometryOutput)
 	return connectionVertexes
 
 def getCumulativeVector3Remove(prefix, vector3, xmlElement):
@@ -296,6 +312,12 @@ def getVector3TransformedByMatrix(matrixTetragrid, vector3):
 		getTransformedByList( matrixTetragrid[0], vector3),
 		getTransformedByList( matrixTetragrid[1], vector3),
 		getTransformedByList( matrixTetragrid[2], vector3))
+
+def getVertexes(geometryOutput):
+	"Get the vertexes."
+	vertexes = []
+	addVertexes(geometryOutput, vertexes)
+	return vertexes
 
 def matrixPoints(points, prefix, xmlElement):
 	"Rotate the points."

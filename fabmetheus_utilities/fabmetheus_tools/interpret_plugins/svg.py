@@ -43,7 +43,7 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCarving( fileName = ''):
+def getCarving(fileName=''):
 	"Get the triangle mesh for the gts file."
 	carving = SVGCarving()
 	carving.parseSVG( fileName, gcodec.getFileText(fileName) )
@@ -96,7 +96,7 @@ class SVGCarving:
 		return 'svg'
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
+		'Parse gcode initialization and store the parameters.'
 		if self.svgReader.sliceDictionary == None:
 			return
 		self.layerThickness = euclidean.getFloatDefaultByDictionary( self.layerThickness, self.svgReader.sliceDictionary, 'layerThickness')

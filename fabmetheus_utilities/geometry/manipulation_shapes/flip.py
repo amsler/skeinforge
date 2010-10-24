@@ -88,7 +88,7 @@ def manipulateXMLElement(target, xmlElement):
 				face.vertexIndexes.reverse()
 			triangleMesh.edges = []
 			triangleMesh.setEdgesForAllFaces()
-#	for connectionAxisKey in ['connectionFrom', 'connectionTo', 'xAxis']:
+#	for connectionAxisKey in ['connectionStart', 'connectionEnd', 'xAxis']:
 #		connectionAxisValue = evaluate.getVector3ByPrefix(connectionAxisKey, Vector3(), target)
 #		if not connectionAxisValue.getIsDefault():
 #			flipPoints([connectionAxisValue], '', xmlElement)

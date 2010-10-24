@@ -41,7 +41,7 @@ __license__ = 'GPL 3.0'
 
 def addListsSetCraftProfile( craftSequence, defaultProfile, repository, fileNameHelp ):
 	"Set the craft profile repository."
-	settings.addListsToRepository( fileNameHelp, '', repository )
+	settings.addListsToRepository( fileNameHelp, None, repository )
 	repository.craftSequenceLabel = settings.LabelDisplay().getFromName('Craft Sequence: ', repository )
 	craftToolStrings = []
 	for craftTool in craftSequence[ : - 1 ]:
@@ -346,7 +346,7 @@ class ProfileRepository:
 	"A class to handle the profile entities."
 	def __init__(self):
 		"Set the default entities, execute title & repository fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_profile.html', '', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_profile.html', None, self )
 		importantFileNames = ['extrusion']
 		self.craftRadios = settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		ProfilePluginRadioButtonsSaveListener().getFromRadioPlugins( self.craftRadios, self )

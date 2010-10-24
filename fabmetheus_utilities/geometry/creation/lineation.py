@@ -21,12 +21,6 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = 'GPL 3.0'
 
 
-def getAverageRadius(radiusComplex):
-	"Get average radius from radiusComplex."
-	if radiusComplex.real == radiusComplex.imag:
-		return radiusComplex.real
-	return math.sqrt(radiusComplex.real * radiusComplex.imag)
-
 def getComplexByDictionary(dictionary, valueComplex):
 	"Get complex by dictionary."
 	if 'x' in dictionary:
@@ -105,49 +99,46 @@ def getComplexIfNone( valueComplex ):
 		return complex()
 	return valueComplex
 
-def getRadiusComplex(radius, xmlElement):
-	"Get radius complex for xmlElement."
-	radius = getComplexByPrefixes(['demisize', 'radius'], radius, xmlElement)
-	return getComplexByMultiplierPrefixes(2.0, ['diameter', 'size'], radius, xmlElement)
-
-def getFloatByPrefixBeginEnd( prefixBegin, prefixEnd, valueFloat, xmlElement ):
+def getFloatByPrefixBeginEnd(prefixBegin, prefixEnd, valueFloat, xmlElement):
 	"Get float from prefixBegin, prefixEnd and xml element."
-	valueFloat = evaluate.getEvaluatedFloatDefault( valueFloat, prefixBegin, xmlElement )
+	valueFloat = evaluate.getEvaluatedFloatDefault(valueFloat, prefixBegin, xmlElement)
 	if prefixEnd in xmlElement.attributeDictionary:
-		return 0.5 * evaluate.getEvaluatedFloatDefault( valueFloat + valueFloat, prefixEnd, xmlElement )
+		return 0.5 * evaluate.getEvaluatedFloatDefault(valueFloat + valueFloat, prefixEnd, xmlElement)
 	else:
 		return valueFloat
 
 def getFloatByPrefixSide( prefix, side, xmlElement ):
 	"Get float by prefix and side."
-	floatByDenominatorPrefix = evaluate.getEvaluatedFloatZero(prefix, xmlElement)
-	return floatByDenominatorPrefix + evaluate.getEvaluatedFloatZero( prefix + 'OverSide', xmlElement ) * side
+	floatByDenominatorPrefix = evaluate.getEvaluatedFloatDefault(0.0, prefix, xmlElement)
+	return floatByDenominatorPrefix + evaluate.getEvaluatedFloatDefault(0.0,  prefix + 'OverSide', xmlElement ) * side
 
-def getGeometryOutput(xmlElement):
+def getGeometryOutput(derivation, xmlElement):
 	"Get geometry output from paths."
+	if derivation == None:
+		derivation = LineationDerivation()
+		derivation.setToXMLElement(xmlElement)
 	geometryOutput = []
-	paths = evaluate.getPathsByKeys( ['path', 'paths', 'target'], xmlElement )
-	for path in paths:
+	for path in derivation.target:
 		sideLoop = SideLoop(path)
-		geometryOutput += getGeometryOutputByLoop( sideLoop, xmlElement )
+		geometryOutput += getGeometryOutputByLoop(sideLoop, xmlElement)
 	return getUnpackedLoops(geometryOutput)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
 	"Get vector3 vertexes from attribute dictionary by arguments."
-	return getGeometryOutput(xmlElement)
+	return getGeometryOutput(None, xmlElement)
 
 def getGeometryOutputByFunction( manipulationFunction, xmlElement ):
 	"Get geometry output by manipulationFunction."
 	geometryOutput = []
-	paths = evaluate.getPathsByKey('target', xmlElement )
-	for path in paths:
-		geometryOutput += getGeometryOutputByLoopFunction( manipulationFunction, SideLoop(path), xmlElement )
+	target = evaluate.getPathsByKey('target', xmlElement )
+	for path in target:
+		geometryOutput += getGeometryOutputByLoopFunction(manipulationFunction, SideLoop(path), xmlElement)
 	return getUnpackedLoops(geometryOutput)
 
 def getGeometryOutputByLoop( sideLoop, xmlElement ):
 	"Get geometry output by side loop."
 	sideLoop.rotate(xmlElement)
-	return getUnpackedLoops( getGeometryOutputByManipulation( sideLoop, xmlElement ) )
+	return getGeometryOutputByManipulation( sideLoop, xmlElement )
 
 def getGeometryOutputByLoopFunction( manipulationFunction, sideLoop, xmlElement ):
 	"Get geometry output by side loop."
@@ -168,6 +159,22 @@ def getNumberOfBezierPoints(begin, end, xmlElement):
 	"Get the numberOfBezierPoints."
 	numberOfBezierPoints = int(math.ceil(0.5 * evaluate.getSidesMinimumThreeBasedOnPrecision(abs(end - begin), xmlElement)))
 	return evaluate.getEvaluatedIntDefault(numberOfBezierPoints, 'sides', xmlElement)
+
+def getRadiusAverage(radiusComplex):
+	"Get average radius from radiusComplex."
+	if radiusComplex.real == radiusComplex.imag:
+		return radiusComplex.real
+	return math.sqrt(radiusComplex.real * radiusComplex.imag)
+
+def getRadiusComplex(radius, xmlElement):
+	"Get radius complex for xmlElement."
+	radius = getComplexByPrefixes(['demisize', 'radius'], radius, xmlElement)
+	return getComplexByMultiplierPrefixes(2.0, ['diameter', 'size'], radius, xmlElement)
+
+def getPackedGeometryOutputByLoop(sideLoop, xmlElement):
+	"Get packed geometry output by side loop."
+	sideLoop.rotate(xmlElement)
+	return getGeometryOutputByManipulation(sideLoop, xmlElement)
 
 def getRadiusByPrefix(prefix, sideLength, xmlElement):
 	"Get radius by prefix."
@@ -198,7 +205,7 @@ def getWrappedInteger( integer, modulo ):
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement)
+	processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
 
 def processXMLElementByFunction(manipulationFunction, xmlElement):
 	"Process the xml element by manipulationFunction."
@@ -236,6 +243,22 @@ def setClosedAttribute(revolutions, xmlElement):
 	xmlElement.attributeDictionary['closed'] = str(evaluate.getEvaluatedBooleanDefault(revolutions <= 1, 'closed', xmlElement)).lower()
 
 
+class LineationDerivation:
+	"Class to hold lineation variables."
+	def __init__(self):
+		'Set defaults.'
+		self.target = []
+
+	def __repr__(self):
+		"Get the string representation of this LineationDerivation."
+		return str(self.__dict__)
+
+	def setToXMLElement(self, xmlElement):
+		"Set to the xmlElement."
+		if len(self.target) < 1:
+			self.target = evaluate.getTransformedPathsByKey('target', xmlElement)
+
+
 class SideLoop:
 	"Class to handle loop, side angle and side length."
 	def __init__(self, loop, sideAngle=None, sideLength=None):
@@ -259,8 +282,8 @@ class SideLoop:
 
 	def rotate(self, xmlElement):
 		"Rotate."
-		rotation = math.radians( evaluate.getEvaluatedFloatZero('rotation', xmlElement ) )
-		rotation += evaluate.getEvaluatedFloatZero('rotationOverSide', xmlElement ) * self.sideAngle
+		rotation = math.radians( evaluate.getEvaluatedFloatDefault(0.0, 'rotation', xmlElement ) )
+		rotation += evaluate.getEvaluatedFloatDefault(0.0, 'rotationOverSide', xmlElement ) * self.sideAngle
 		if rotation != 0.0:
 			planeRotation = euclidean.getWiddershinsUnitPolar( rotation )
 			for vertex in self.loop:
@@ -291,16 +314,16 @@ class SideLoop:
 
 class Spiral:
 	'Class to add a spiral.'
-	def __init__(self, stepRatio, xmlElement):
+	def __init__(self, spiral, stepRatio):
 		"Initialize."
-		self.spiral = evaluate.getVector3ByPrefix('spiral', None, xmlElement)
+		self.spiral = spiral
 		if self.spiral == None:
 			return
 		self.spiralIncrement = self.spiral * stepRatio
 		self.spiralTotal = Vector3()
 
 	def __repr__(self):
-		"Get the string representation of this StartEnd."
+		"Get the string representation of this Spiral."
 		return self.spiral
 
 	def getSpiralPoint(self, unitPolar, vector3):
@@ -316,12 +339,12 @@ class StartEnd:
 	'Class to get a start through end range.'
 	def __init__(self, modulo, prefix, xmlElement):
 		"Initialize."
-		self.start = evaluate.getEvaluatedIntZero(prefix + 'start', xmlElement)
+		self.start = evaluate.getEvaluatedIntDefault(0, prefix + 'start', xmlElement)
 		self.start = getWrappedInteger(self.start, modulo)
 		self.extent = evaluate.getEvaluatedIntDefault(modulo - self.start, prefix + 'extent', xmlElement)
 		self.end = evaluate.getEvaluatedIntDefault(self.start + self.extent, prefix + 'end', xmlElement)
 		self.end = getWrappedInteger(self.end, modulo)
-		self.revolutions = evaluate.getEvaluatedIntOne(prefix + 'revolutions', xmlElement)
+		self.revolutions = evaluate.getEvaluatedIntDefault(1, prefix + 'revolutions', xmlElement)
 		if self.revolutions > 1:
 			self.end += modulo * (self.revolutions - 1)
 

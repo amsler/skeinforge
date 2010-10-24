@@ -456,11 +456,19 @@ def getBooleanFromValue(value):
 	firstCharacter = str(value).lower().lstrip()[: 1]
 	return firstCharacter == 't' or firstCharacter == '1'
 
-def getBottom(points):
-	'Get the bottom of the points.'
+def getBottomPath(path):
+	'Get the bottom of the path.'
 	bottom = 999999999.9
-	for point in points:
-		bottom = min( bottom, point.z )
+	for point in path:
+		bottom = min(bottom, point.z)
+	return bottom
+
+def getBottomPaths(paths):
+	'Get the bottom of the paths.'
+	bottom = 999999999.9
+	for path in paths:
+		for point in path:
+			bottom = min(bottom, point.z)
 	return bottom
 
 def getClippedAtEndLoopPath( clip, loopPath ):
@@ -1261,7 +1269,7 @@ def getRotatedWiddershinsQuarterAroundZAxis(vector3):
 
 def getRoundedPoint(point):
 	'Get point with each component rounded.'
-	return Vector3( round( point.x ), round( point.y ), round( point.z ) )
+	return Vector3( round(point.x), round( point.y ), round(point.z) )
 
 def getRoundedToDecimalPlaces( decimalPlaces, number ):
 	'Get number rounded to a number of decimal places.'
@@ -1415,11 +1423,19 @@ def getThreeSignificantFigures(number):
 		return getRoundedToDecimalPlacesString( 12, number )
 	return getRoundedToDecimalPlacesString( 1 - math.floor( math.log10( absoluteNumber ) ), number )
 
-def getTop(points):
-	'Get the top of the points.'
+def getTopPath(path):
+	'Get the top of the path.'
 	top = -999999999.9
-	for point in points:
+	for point in path:
 		top = max(top, point.z)
+	return top
+
+def getTopPaths(paths):
+	'Get the top of the paths.'
+	top = -999999999.9
+	for path in paths:
+		for point in path:
+			top = max(top, point.z)
 	return top
 
 def getTransferClosestSurroundingLoop( oldOrderedLocation, remainingSurroundingLoops, skein ):

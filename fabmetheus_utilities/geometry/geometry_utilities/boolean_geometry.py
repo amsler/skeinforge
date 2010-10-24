@@ -35,6 +35,7 @@ from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
+from fabmetheus_utilities import settings
 from fabmetheus_utilities import xml_simple_writer
 
 
@@ -141,6 +142,7 @@ class BooleanGeometry:
 
 	def getZAddExtruderPaths( self, z ):
 		"Get next z and add extruder loops."
+		settings.printProgress(len(self.rotatedBoundaryLayers), 'slice')
 		rotatedBoundaryLayer = self.getEmptyZExtruderPaths(True, z)
 		self.rotatedBoundaryLayers.append( rotatedBoundaryLayer )
 		if self.bridgeLayerThickness == None:

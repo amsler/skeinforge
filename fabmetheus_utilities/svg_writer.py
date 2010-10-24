@@ -101,7 +101,7 @@ class SVGWriter:
 		for rotatedBoundaryLayerIndex, rotatedBoundaryLayer in enumerate( rotatedBoundaryLayers ):
 			self.addRotatedLoopLayerToOutput( rotatedBoundaryLayerIndex, rotatedBoundaryLayer )
 
-	def getReplacedSVGTemplate(self, fileName, procedureName, rotatedBoundaryLayers, xmlElement):
+	def getReplacedSVGTemplate(self, fileName, procedureName, rotatedBoundaryLayers, xmlElement=None):
 		"Get the lines of text from the layer_template.svg file."
 #		( layers.length + 1 ) * (margin + sliceDimY * unitScale + txtHeight) + margin + txtHeight + margin + 110
 		cornerMaximum = self.carving.getCarveCornerMaximum()
@@ -150,11 +150,11 @@ class SVGWriter:
 			self.svgElement.getXMLElementByID('beginningOfControlSection').removeFromIDNameParent()
 			self.svgElement.getXMLElementByID('noJavascriptControls').removeFromIDNameParent()
 		self.graphicsXMLElement.removeFromIDNameParent()
-		if xmlElement != None:
-			xmlElement.setParentAddToChildren(self.svgElement)
+#		if xmlElement != None: #this adds the original file text to the svg file, which can cause trouble if the file text has path elements
+#			xmlElement.setParentAddToChildren(self.svgElement)
 		output = cStringIO.StringIO()
-		output.write( self.xmlParser.beforeRoot )
-		self.svgElement.addXML( 0, output )
+		output.write(self.xmlParser.beforeRoot)
+		self.svgElement.addXML(0, output)
 		return output.getvalue()
 
 	def getRounded(self, number):
@@ -192,12 +192,12 @@ class SVGWriter:
 
 	def getTransformString(self):
 		"Get the svg transform string."
-		cornerMinimumXString = self.getRounded( - self.carving.getCarveCornerMinimum().x )
-		cornerMinimumYString = self.getRounded( - self.carving.getCarveCornerMinimum().y )
-		return 'scale(%s, %s) translate(%s, %s)' % ( self.unitScale, - self.unitScale, cornerMinimumXString, cornerMinimumYString )
+		cornerMinimumXString = self.getRounded(-self.carving.getCarveCornerMinimum().x)
+		cornerMinimumYString = self.getRounded(-self.carving.getCarveCornerMinimum().y)
+		return 'scale(%s, %s) translate(%s, %s)' % (self.unitScale, - self.unitScale, cornerMinimumXString, cornerMinimumYString)
 
-	def setMetadataNoscriptElement( self, prefix, value ):
+	def setMetadataNoscriptElement(self, prefix, value):
 		"Set the metadata value and the NoJavascript text."
 		valueString = self.getRounded(value)
-		self.sliceDictionary[ prefix ] = valueString
-		self.svgElement.getXMLElementByID( prefix + 'NoJavascript').text = valueString
+		self.sliceDictionary[prefix] = valueString
+		self.svgElement.getXMLElementByID(prefix + 'NoJavascript').text = valueString

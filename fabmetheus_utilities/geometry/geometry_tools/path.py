@@ -85,7 +85,9 @@ class Path(dictionary.Dictionary):
 	def getPaths(self):
 		"Get all paths."
 		self.transformedPath = None
-		return dictionary.getAllPaths([self.vertexes], self)
+		if len(self.vertexes) > 0:
+			return dictionary.getAllPaths([self.vertexes], self)
+		return dictionary.getAllPaths([], self)
 
 	def getTransformedPaths(self):
 		"Get all transformed paths."
@@ -97,7 +99,9 @@ class Path(dictionary.Dictionary):
 			self.transformedPath = None
 		if self.transformedPath == None:
 			self.transformedPath = matrix.getTransformedVector3s(chainTetragrid, self.vertexes)
-		return dictionary.getAllTransformedPaths([self.transformedPath], self)
+		if len(self.transformedPath) > 0:
+			return dictionary.getAllTransformedPaths([self.transformedPath], self)
+		return dictionary.getAllTransformedPaths([], self)
 
 
 class SVGFabricationCarving:

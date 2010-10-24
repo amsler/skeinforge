@@ -91,7 +91,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return HopRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Hop a gcode linear move file.  Chain hop the gcode if it is not already hopped. If no fileName is specified, hop the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -112,7 +112,7 @@ class HopRepository:
 
 	def execute(self):
 		"Hop button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -135,8 +135,8 @@ class HopSkein:
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.minimumSlope = math.tan( math.radians( hopRepository.minimumHopAngle.value ) )
 		self.parseInitialization( hopRepository )
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
@@ -173,7 +173,7 @@ class HopSkein:
 
 	def isNextTravel(self):
 		"Determine if there is another linear travel before the thread ends."
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = "";
@@ -186,12 +186,12 @@ class HopSkein:
 		return False
 
 	def parseInitialization( self, hopRepository ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(<layerThickness>':
 				layerThickness = float(splitLine[1])
 				self.hopHeight = hopRepository.hopOverLayerThickness.value * layerThickness
@@ -222,8 +222,8 @@ class HopSkein:
 
 def main():
 	"Display the hop dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

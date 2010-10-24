@@ -157,7 +157,7 @@ class Binary16ByteRepository:
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		#Set the default settings.
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.binary_16_byte.html', '', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export_plugins.binary_16_byte.html', None, self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to be Converted to Binary 16 Byte', self, '')
 		self.feedRateStepLength = settings.FloatSpin().getFromValue( 0.0, 'Feed Rate Step Length (millimeters/second)', self, 1.0, 0.1 )
 		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, 'bin')
@@ -208,8 +208,6 @@ class Binary16ByteSkein:
 		yInteger = getIntegerFromCharacterLengthLineOffset('Y', binary16ByteRepository.yOffset.value, splitLine, binary16ByteRepository.yStepLength.value )
 		zInteger = getIntegerFromCharacterLengthLineOffset('Z', binary16ByteRepository.zOffset.value, splitLine, binary16ByteRepository.zStepLength.value )
 		sixteenByteStruct = Struct('cBhhhhhhBc')
-#		print('xInteger')
-#		print( xInteger )
 		flagInteger = getIntegerFlagFromCharacterSplitLine('X', splitLine )
 		flagInteger += 2 * getIntegerFlagFromCharacterSplitLine('Y', splitLine )
 		flagInteger += 4 * getIntegerFlagFromCharacterSplitLine('Z', splitLine )
@@ -222,8 +220,8 @@ class Binary16ByteSkein:
 
 def main():
 	"Display the export dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

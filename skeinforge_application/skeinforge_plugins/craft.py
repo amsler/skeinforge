@@ -57,7 +57,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return skeinforge_craft.CraftRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Craft a gcode file."
 	skeinforge_craft.writeOutput(fileName)
 
@@ -118,8 +118,8 @@ class CraftRadioButtonsSaveListener:
 
 def main():
 	"Display the craft dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

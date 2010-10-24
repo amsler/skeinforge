@@ -19,9 +19,7 @@ The feed script sets the maximum feed rate, operating feed rate &amp; travel fee
 <a href="#Operation">Operation</a><br />
 <a href="#Settings">Settings</a><br />
 &nbsp;&nbsp;<a href="#Feed Rate">Feed Rate</a><br />
-&nbsp;&nbsp;<a href="#Maximum Z Feed Rate">Maximum Z Feed Rate</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Maximum Z Drill Feed Rate">Maximum Z Drill Feed Rate</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Maximum Z Travel Feed Rate">Maximum Z Travel Feed Rate</a><br />
+&nbsp;&nbsp;<a href="#Maximum Z Drill Feed Rate">Maximum Z Drill Feed Rate</a><br />
 &nbsp;&nbsp;<a href="#Travel Feed Rate">Travel Feed Rate</a><br />
 <a href="#Examples">Examples</a><br />
 <br />
@@ -39,21 +37,13 @@ Default is 16 millimeters/second.<br>
  <br>
 Defines the feed rate for the shape.<br>
  <br>
-<a name="Maximum Z Feed Rate" id="Maximum Z Feed Rate"></a><h3>Maximum Z Feed Rate</h3>
-
-If your firmware limits the z feed rate, you do not need to set these settings.<br>
- <br>
-<a name="Maximum Z Drill Feed Rate" id="Maximum Z Drill Feed Rate"></a><h4>Maximum Z Drill Feed Rate</h4>
+<a name="Maximum Z Drill Feed Rate" id="Maximum Z Drill Feed Rate"></a><h3>Maximum Z Drill Feed Rate</h3>
 
 Default is 0.1 millimeters/second.<br>
  <br>
+If your firmware limits the z feed rate, you do not need to set this setting.<br>
+ <br>
 Defines the maximum feed that the tool head will move in the z direction while the tool is on.<br>
- <br>
-<a name="Maximum Z Travel Feed Rate" id="Maximum Z Travel Feed Rate"></a><h4>Maximum Z Travel Feed Rate</h4>
-
-Default is 8 millimeters/second.<br>
- <br>
-Defines the maximum feed that the tool head will move in the z direction while the tool is off.  The default of 8 millimeters per second is the maximum z feed of Nophead's direct drive z stage, the belt driven z stages have a lower maximum feed rate.<br>
  <br>
 <a name="Travel Feed Rate" id="Travel Feed Rate"></a><h3>Travel Feed Rate</h3>
 
@@ -156,9 +146,9 @@ The feed tool has created the file:<br>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="FeedSkein-__init__"><strong>__init__</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="FeedSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeText, feedRepository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;feed&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="FeedSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeText, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;feed&nbsp;gcode.</tt></dd></dl>
 
-<dl><dt><a name="FeedSkein-getFeededLine"><strong>getFeededLine</strong></a>(self, splitLine)</dt><dd><tt>Get&nbsp;gcode&nbsp;line&nbsp;with&nbsp;feed&nbsp;rate.</tt></dd></dl>
+<dl><dt><a name="FeedSkein-getFeededLine"><strong>getFeededLine</strong></a>(self, line, splitLine)</dt><dd><tt>Get&nbsp;gcode&nbsp;line&nbsp;with&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
 <dl><dt><a name="FeedSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
@@ -171,8 +161,8 @@ The feed tool has created the file:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, feedRepository<font color="#909090">=None</font>)</dt><dd><tt>Feed&nbsp;the&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, feedRepository<font color="#909090">=None</font>)</dt><dd><tt>Feed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText<font color="#909090">=''</font>, repository<font color="#909090">=None</font>)</dt><dd><tt>Feed&nbsp;the&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Feed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;feed&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Feed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>

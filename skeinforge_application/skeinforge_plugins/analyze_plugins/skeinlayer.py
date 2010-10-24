@@ -1,14 +1,14 @@
 """
 This page is in the table of contents.
-Skeinview is a script to display each layer of a gcode file.
+Skeinlayer is a script to display each layer of a gcode file.
 
-The skeinview manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview
+The skeinlayer manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinlayer
 
-Skeinview is derived from Nophead's preview script.  The extruded lines are in the resistor colors red, orange, yellow, green, blue, purple & brown.  When the extruder is off, the travel line is grey.  Skeinview is useful for a detailed view of the extrusion, behold is better to see the orientation of the shape.  To get an initial overview of the skein, when the skeinview display window appears, click the Soar button (double right arrow button beside the layer field).
+Skeinlayer is derived from Nophead's preview script.  The extruded lines are in the resistor colors red, orange, yellow, green, blue, purple & brown.  When the extruder is off, the travel line is grey.  Skeinlayer is useful for a detailed view of the extrusion, skeiniso is better to see the orientation of the shape.  To get an initial overview of the skein, when the skeinlayer display window appears, click the Soar button (double right arrow button beside the layer field).
 
 ==Operation==
-The default 'Activate Skeinview' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeinview' checkbox is on, when skeinview is run directly.  Skeinview has trouble separating the layers when it reads gcode without comments.
+The default 'Activate Skeinlayer' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeinlayer' checkbox is on, when skeinlayer is run directly.  Skeinlayer has trouble separating the layers when it reads gcode without comments.
 
 ==Settings==
 ===Animation===
@@ -118,28 +118,28 @@ A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
 
 ==Examples==
-Below are examples of skeinview being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeinview.py.
+Below are examples of skeinlayer being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeinlayer.py.
 
 
-> python skeinview.py
-This brings up the skeinview dialog.
+> python skeinlayer.py
+This brings up the skeinlayer dialog.
 
 
-> python skeinview.py Screw Holder_penultimate.gcode
-This brings up the skeinview viewer to view each layer of a gcode file.
+> python skeinlayer.py Screw Holder_penultimate.gcode
+This brings up the skeinlayer viewer to view each layer of a gcode file.
 
 
 > python
 Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
 [GCC 4.2.1 (SUSE Linux)] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
->>> import skeinview
->>> skeinview.main()
-This brings up the skeinview dialog.
+>>> import skeinlayer
+>>> skeinlayer.main()
+This brings up the skeinlayer dialog.
 
 
->>> skeinview.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
-This brings up the skeinview viewer to view each layer of a gcode file.
+>>> skeinlayer.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
+This brings up the skeinlayer viewer to view each layer of a gcode file.
 
 """
 
@@ -165,49 +165,50 @@ __license__ = 'GPL 3.0'
 
 def getNewRepository():
 	"Get the repository constructor."
-	return SkeinviewRepository()
+	return SkeinlayerRepository()
 
 def getRankIndex( rulingSeparationWidthMillimeters, screenOrdinate ):
 	"Get rank index."
 	return int( round( screenOrdinate / rulingSeparationWidthMillimeters ) )
 
 def getWindowAnalyzeFile(fileName):
-	"Display a gcode file in a skeinview window."
+	"Display a gcode file in a skeinlayer window."
 	gcodeText = gcodec.getFileText(fileName)
 	return getWindowAnalyzeFileGivenText(fileName, gcodeText)
 
-def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
-	"Display a gcode file in a skeinview window given the text."
+def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
+	"Display a gcode file in a skeinlayer window given the text."
 	if gcodeText == '':
 		return None
 	if repository == None:
-		repository = settings.getReadRepository( SkeinviewRepository() )
+		repository = settings.getReadRepository( SkeinlayerRepository() )
 	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, repository )
 	skeinWindow.updateDeiconify()
 	return skeinWindow
 
 def getWindowGivenTextRepository( fileName, gcodeText, repository ):
-	"Display a gcode file in a skeinview window given the text and settings."
-	skein = SkeinviewSkein()
+	"Display a gcode file in a skeinlayer window given the text and settings."
+	skein = SkeinlayerSkein()
 	skein.parseGcode( fileName, gcodeText, repository )
 	return SkeinWindow( repository, skein )
 
 def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
-	"Display a skeinviewed gcode file for a skeinforge gcode file, if 'Activate Skeinview' is selected."
-	repository = settings.getReadRepository( SkeinviewRepository() )
-	if repository.activateSkeinview.value:
+	"Display a skeinlayered gcode file for a skeinforge gcode file, if 'Activate Skeinlayer' is selected."
+	repository = settings.getReadRepository( SkeinlayerRepository() )
+	if repository.activateSkeinlayer.value:
 		gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
 		getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
-class SkeinviewRepository( tableau.TableauRepository ):
-	"A class to handle the skeinview settings."
+class SkeinlayerRepository( tableau.TableauRepository ):
+	"A class to handle the skeinlayer settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.skeinview.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Skeinview', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview')
-		self.activateSkeinview = settings.BooleanSetting().getFromValue('Activate Skeinview', self, True )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.skeinlayer.html', None, self )
+		self.baseNameSynonym = 'skeinview.csv'
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Skeinlayer', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinlayer')
+		self.activateSkeinlayer = settings.BooleanSetting().getFromValue('Activate Skeinlayer', self, True )
 		self.addAnimation()
 		self.drawArrows = settings.BooleanSetting().getFromValue('Draw Arrows', self, True )
 		self.goAroundExtruderOffTravel = settings.BooleanSetting().getFromValue('Go Around Extruder Off Travel', self, False )
@@ -227,7 +228,7 @@ class SkeinviewRepository( tableau.TableauRepository ):
 		self.widthOfExtrusionThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Extrusion Thread (pixels):', self, 5, 3 )
 		self.widthOfSelectionThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Selection Thread (pixels):', self, 10, 6 )
 		self.widthOfTravelThread = settings.IntSpinUpdate().getSingleIncrementFromValue( 0, 'Width of Travel Thread (pixels):', self, 5, 1 )
-		self.executeTitle = 'Skeinview'
+		self.executeTitle = 'Skeinlayer'
 
 	def execute(self):
 		"Write button has been clicked."
@@ -236,12 +237,14 @@ class SkeinviewRepository( tableau.TableauRepository ):
 			getWindowAnalyzeFile(fileName)
 
 
-class SkeinviewSkein:
+class SkeinlayerSkein:
 	"A class to write a get a scalable vector graphics text for a gcode skein."
 	def __init__(self):
+		'Initialize.'
 		self.extrusionNumber = 0
 		self.feedRateMinute = 960.1
 		self.isThereALayerStartWord = False
+		self.layerCount = settings.LayerCount()
 		self.oldZ = - 999999999999.0
 		self.skeinPane = None
 		self.skeinPanes = []
@@ -341,14 +344,14 @@ class SkeinviewSkein:
 		self.screenSize = self.marginCornerHigh - self.marginCornerLow
 		self.initializeActiveLocation()
 		self.colorNames = ['brown', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == '(</extruderInitialization>)':
@@ -363,8 +366,9 @@ class SkeinviewSkein:
 		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
-		if self.isLayerStart( firstWord, splitLine ):
+		if self.isLayerStart(firstWord, splitLine):
 			self.extrusionNumber = 0
+			self.layerCount.printProgressIncrement('skeinlayer')
 			self.skeinPane = []
 			self.skeinPanes.append( self.skeinPane )
 		if firstWord == 'G1':
@@ -387,7 +391,7 @@ class SkeinviewSkein:
 class SkeinWindow( tableau.TableauWindow ):
 	def __init__( self, repository, skein ):
 		"Initialize the skein window.setWindowNewMouseTool"
-		self.addCanvasMenuRootScrollSkein( repository, skein, '_skeinview', 'Skeinview')
+		self.addCanvasMenuRootScrollSkein( repository, skein, '_skeinlayer', 'Skeinlayer')
 		horizontalRulerBoundingBox = ( 0, 0, int( skein.screenSize.real ), self.rulingExtent )
 		self.horizontalRulerCanvas = settings.Tkinter.Canvas( self.root, width = self.canvasWidth, height = self.rulingExtent, scrollregion = horizontalRulerBoundingBox )
 		self.horizontalRulerCanvas.grid( row = 0, column = 2, columnspan = 96, sticky = settings.Tkinter.E + settings.Tkinter.W )
@@ -552,9 +556,9 @@ class SkeinWindow( tableau.TableauWindow ):
 
 
 def main():
-	"Display the skeinview dialog."
-	if len( sys.argv ) > 1:
-		tableau.startMainLoopFromWindow( getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) ) )
+	"Display the skeinlayer dialog."
+	if len(sys.argv) > 1:
+		tableau.startMainLoopFromWindow( getWindowAnalyzeFile(' '.join(sys.argv[1 :])) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

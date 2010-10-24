@@ -70,7 +70,7 @@ def addFacesGivenVertexes( triangleMesh, vertexIndexTable, vertexes ):
 	for vertexIndex in xrange( 0, len(vertexes), 3 ):
 		triangleMesh.faces.append( getFaceGivenLines( triangleMesh, vertexIndex, vertexIndexTable, vertexes ) )
 
-def getCarving( fileName = ''):
+def getCarving(fileName=''):
 	"Get the triangle mesh for the stl file."
 	if fileName == '':
 		return None

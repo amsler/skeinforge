@@ -1,12 +1,12 @@
 """
 This page is in the table of contents.
-Behold is an analysis script to display a gcode file in an isometric view.
+Skeiniso is an analysis script to display a gcode file in an isometric view.
 
-The behold manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold
+The skeiniso manual page is at:
+http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeiniso
 
 ==Operation==
-The default 'Activate Behold' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Behold' checkbox is on, when behold is run directly.  Behold can not separate the layers when it reads gcode without comments.
+The default 'Activate Skeiniso' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeiniso' checkbox is on, when skeiniso is run directly.  Skeiniso can not separate the layers when it reads gcode without comments.
 
 The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.
 
@@ -210,28 +210,28 @@ A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
 
 ==Examples==
-Below are examples of behold being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and behold.py.
+Below are examples of skeiniso being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeiniso.py.
 
 
-> python behold.py
-This brings up the behold dialog.
+> python skeiniso.py
+This brings up the skeiniso dialog.
 
 
-> python behold.py Screw Holder_penultimate.gcode
-This brings up the behold viewer to view the gcode file.
+> python skeiniso.py Screw Holder_penultimate.gcode
+This brings up the skeiniso viewer to view the gcode file.
 
 
 > python
 Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
 [GCC 4.2.1 (SUSE Linux)] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
->>> import behold
->>> behold.main()
-This brings up the behold dialog.
+>>> import skeiniso
+>>> skeiniso.main()
+This brings up the skeiniso dialog.
 
 
->>> behold.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
-This brings up the behold viewer to view the gcode file.
+>>> skeiniso.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
+This brings up the skeiniso viewer to view the gcode file.
 
 """
 
@@ -269,45 +269,46 @@ def compareLayerSequence( first, second ):
 
 def getNewRepository():
 	"Get the repository constructor."
-	return BeholdRepository()
+	return SkeinisoRepository()
 
 def getWindowAnalyzeFile(fileName):
-	"Behold a gcode file."
+	"Skeiniso a gcode file."
 	gcodeText = gcodec.getFileText(fileName)
 	return getWindowAnalyzeFileGivenText(fileName, gcodeText)
 
-def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
-	"Display a beholded gcode file for a gcode file."
+def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
+	"Display a skeiniso gcode file for a gcode file."
 	if gcodeText == '':
 		return None
 	if repository == None:
-		repository = settings.getReadRepository( BeholdRepository() )
+		repository = settings.getReadRepository( SkeinisoRepository() )
 	skeinWindow = getWindowGivenTextRepository( fileName, gcodeText, repository )
 	skeinWindow.updateDeiconify()
 	return skeinWindow
 
 def getWindowGivenTextRepository( fileName, gcodeText, repository ):
-	"Display the gcode text in a behold viewer."
-	skein = BeholdSkein()
+	"Display the gcode text in a skeiniso viewer."
+	skein = SkeinisoSkein()
 	skein.parseGcode( fileName, gcodeText, repository )
 	return SkeinWindow( repository, skein )
 
 def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
-	"Write a beholded gcode file for a skeinforge gcode file, if 'Activate Behold' is selected."
-	repository = settings.getReadRepository( BeholdRepository() )
-	if repository.activateBehold.value:
+	"Write a skeinisoed gcode file for a skeinforge gcode file, if 'Activate Skeiniso' is selected."
+	repository = settings.getReadRepository( SkeinisoRepository() )
+	if repository.activateSkeiniso.value:
 		gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
 		getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
-class BeholdRepository( tableau.TableauRepository ):
-	"A class to handle the behold settings."
+class SkeinisoRepository( tableau.TableauRepository ):
+	"A class to handle the skeiniso settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.behold.html', '', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Behold', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Behold')
-		self.activateBehold = settings.BooleanSetting().getFromValue('Activate Behold', self, True )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.skeiniso.html', None, self )
+		self.baseNameSynonym = 'behold.csv'
+		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Skeiniso', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeiniso')
+		self.activateSkeiniso = settings.BooleanSetting().getFromValue('Activate Skeiniso', self, True )
 		self.addAnimation()
 		self.axisRulings = settings.BooleanSetting().getFromValue('Axis Rulings', self, True )
 		settings.LabelSeparator().getFromRepository(self)
@@ -354,7 +355,7 @@ class BeholdRepository( tableau.TableauRepository ):
 		self.widthOfRaftThread = settings.IntSpinUpdate().getFromValue( 0, 'Width of Raft Thread (pixels):', self, 10, 1 )
 		self.widthOfSelectionThread = settings.IntSpinUpdate().getFromValue( 0, 'Width of Selection Thread (pixels):', self, 10, 6 )
 		self.widthOfTravelThread = settings.IntSpinUpdate().getFromValue( 0, 'Width of Travel Thread (pixels):', self, 10, 0 )
-		self.executeTitle = 'Behold'
+		self.executeTitle = 'Skeiniso'
 
 	def execute(self):
 		"Write button has been clicked."
@@ -363,7 +364,7 @@ class BeholdRepository( tableau.TableauRepository ):
 			getWindowAnalyzeFile(fileName)
 
 
-class BeholdSkein:
+class SkeinisoSkein:
 	"A class to write a get a scalable vector graphics text for a gcode skein."
 	def __init__(self):
 		self.coloredThread = []
@@ -373,6 +374,7 @@ class BeholdSkein:
 		self.isPerimeter = False
 		self.isOuter = False
 		self.isThereALayerStartWord = False
+		self.layerCount = settings.LayerCount()
 		self.layerTops = []
 		self.oldLayerZoneIndex = 0
 		self.oldZ = - 999999999999.0
@@ -519,21 +521,21 @@ class BeholdSkein:
 		self.scaleCenterBottom = self.scale * self.centerBottom
 		self.scaleCornerHigh = self.scale * self.cornerHigh.dropAxis(2)
 		self.scaleCornerLow = self.scale * self.cornerLow.dropAxis(2)
-		print( "The lower left corner of the behold window is at %s, %s" % ( self.cornerLow.x, self.cornerLow.y ) )
-		print( "The upper right corner of the behold window is at %s, %s" % ( self.cornerHigh.x, self.cornerHigh.y ) )
+		print( "The lower left corner of the skeiniso window is at %s, %s" % ( self.cornerLow.x, self.cornerLow.y ) )
+		print( "The upper right corner of the skeiniso window is at %s, %s" % ( self.cornerHigh.x, self.cornerHigh.y ) )
 		self.cornerImaginaryTotal = self.cornerHigh.y + self.cornerLow.y
 		margin = complex( 5.0, 5.0 )
 		self.marginCornerLow = self.scaleCornerLow - margin
 		self.screenSize = margin + 2.0 * ( self.scaleCornerHigh - self.marginCornerLow )
 		self.initializeActiveLocation()
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == '(</extruderInitialization>)':
@@ -547,7 +549,8 @@ class BeholdSkein:
 		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
-		if self.isLayerStart( firstWord, splitLine ):
+		if self.isLayerStart(firstWord, splitLine):
+			self.layerCount.printProgressIncrement('skeiniso')
 			self.skeinPane = SkeinPane( len( self.skeinPanes ) )
 			self.skeinPanes.append( self.skeinPane )
 		if firstWord == 'G1':
@@ -636,7 +639,7 @@ class SkeinWindow( tableau.TableauWindow ):
 	def __init__( self, repository, skein ):
 		"Initialize the skein window."
 		self.arrowshape = ( 24, 30, 9 )
-		self.addCanvasMenuRootScrollSkein( repository, skein, '_behold', 'Behold')
+		self.addCanvasMenuRootScrollSkein( repository, skein, '_skeiniso', 'Skeiniso')
 		self.center = 0.5 * self.screenSize
 		self.motionStippleName = 'gray75'
 		halfCenter = 0.5 * self.center.real
@@ -872,9 +875,9 @@ class SkeinWindow( tableau.TableauWindow ):
 
 
 def main():
-	"Display the behold dialog."
-	if len( sys.argv ) > 1:
-		tableau.startMainLoopFromWindow( getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) ) )
+	"Display the skeiniso dialog."
+	if len(sys.argv) > 1:
+		tableau.startMainLoopFromWindow( getWindowAnalyzeFile(' '.join(sys.argv[1 :])) )
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

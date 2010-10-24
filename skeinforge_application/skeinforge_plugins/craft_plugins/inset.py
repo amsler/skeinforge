@@ -166,17 +166,17 @@ def addSegmentOutline( isThick, outlines, pointBegin, pointEnd, width ):
 		outline.append( outsideBeginCenterDown )
 	outlines.append( euclidean.getPointsRoundZAxis( normalizedSegment, outline ) )
 
-def getCraftedText( fileName, text = '', repository = None ):
+def getCraftedText( fileName, text = '', repository=None):
 	"Inset the preface file or text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Inset the preface gcode text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'inset'):
 		return gcodeText
 	if repository == None:
 		repository = settings.getReadRepository( InsetRepository() )
-	return InsetSkein().getCraftedGcode( gcodeText, repository )
+	return InsetSkein().getCraftedGcode(gcodeText, repository)
 
 def getIsIntersectingWithinList( loop, loopList ):
 	"Determine if the loop is intersecting or is within the loop list."
@@ -242,7 +242,7 @@ def isIntersectingWithinLists( loop, loopLists ):
 			return True
 	return False
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Inset the carving of a gcode file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -267,7 +267,7 @@ class InsetRepository:
 
 	def execute(self):
 		"Inset button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -277,6 +277,7 @@ class InsetSkein:
 	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
+		self.layerCount = settings.LayerCount()
 		self.lineIndex = 0
 		self.rotatedBoundaryLayer = None
 
@@ -370,7 +371,7 @@ class InsetSkein:
 		for extrudateLoop in extrudateLoops:
 			self.addGcodeFromRemainingLoop( extrudateLoop, alreadyFilledArounds, halfWidth, rotatedBoundaryLayer.z )
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the bevel gcode."
 		self.repository = repository
 		self.lines = gcodec.getTextLines(gcodeText)
@@ -380,12 +381,12 @@ class InsetSkein:
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(<decimalPlacesCarried>':
 				self.addInitializationToOutput()
 				self.distanceFeedRate.addTagBracketedLine('bridgeWidthMultiplier', self.distanceFeedRate.getRounded( self.repository.bridgeWidthMultiplier.value ) )
@@ -418,7 +419,8 @@ class InsetSkein:
 					self.distanceFeedRate.addLine('M104 S0') # Turn extruder heater off.
 				return
 		elif firstWord == '(<layer>':
-			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float(splitLine[1]) )
+			self.layerCount.printProgressIncrement('inset')
+			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer(float(splitLine[1]))
 			self.distanceFeedRate.addLine(line)
 		elif firstWord == '(</layer>)':
 			self.addInset( self.rotatedBoundaryLayer )
@@ -432,8 +434,8 @@ class InsetSkein:
 
 def main():
 	"Display the inset dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

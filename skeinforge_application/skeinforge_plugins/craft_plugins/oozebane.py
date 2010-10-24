@@ -123,7 +123,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return OozebaneRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Oozebane a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -150,7 +150,7 @@ class OozebaneRepository:
 
 	def execute(self):
 		"Oozebane button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -196,7 +196,7 @@ class OozebaneSkein:
 	def getActiveFeedRateRatio(self):
 		"Get the feed rate of the first active move over the operating feed rate."
 		isSearchExtruderActive = self.isExtruderActive
-		for afterIndex in xrange( self.lineIndex, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -291,14 +291,14 @@ class OozebaneSkein:
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.oozebaneRepository = oozebaneRepository
 		self.parseInitialization( oozebaneRepository )
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
 	def getDistanceAfterThreadBeginning(self):
 		"Get the distance after the beginning of the thread."
-		line = self.lines[ self.lineIndex ]
+		line = self.lines[self.lineIndex]
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		lastThreadLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		totalDistance = 0.0
@@ -319,11 +319,11 @@ class OozebaneSkein:
 
 	def getDistanceToExtruderOffCommand( self, remainingDistance ):
 		"Get the distance to the word."
-		line = self.lines[ self.lineIndex ]
+		line = self.lines[self.lineIndex]
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		lastThreadLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		totalDistance = 0.0
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -341,11 +341,11 @@ class OozebaneSkein:
 		"Get the distance to the beginning of the thread."
 		if self.earlyStartupDistance == None:
 			return None
-		line = self.lines[ self.lineIndex ]
+		line = self.lines[self.lineIndex]
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		lastThreadLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		totalDistance = 0.0
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -362,12 +362,12 @@ class OozebaneSkein:
 	def getDistanceToThreadBeginningAfterThreadEnd( self, remainingDistance ):
 		"Get the distance to the thread beginning after the end of this thread."
 		extruderOnReached = False
-		line = self.lines[ self.lineIndex ]
+		line = self.lines[self.lineIndex]
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		lastThreadLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		threadEndReached = False
 		totalDistance = 0.0
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -446,12 +446,12 @@ class OozebaneSkein:
 		return self.getDistanceAfterThreadBeginning() > self.afterStartupDistances[ self.startupStepIndex ]
 
 	def parseInitialization( self, oozebaneRepository ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> oozebane </procedureDone>)')
 				return
@@ -534,7 +534,7 @@ class OozebaneSkein:
 		lastThreadLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		if self.oldLocation != None:
 			self.distanceFromThreadEndToThreadBeginning = lastThreadLocation.distance( self.oldLocation )
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -592,8 +592,8 @@ class OozebaneSkein:
 
 def main():
 	"Display the oozebane dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -214,27 +214,25 @@ import os
 import sys
 
 
-# get bevel profile, bevel rack, rack extended, annulus layer, annulus from teeth, annulus solid, annulus helix
-# negative radius for annulus inverted, thin annulus teeth, toothProfile input
-# rack, hole input
 # test grid types
+# ,, into None,None,
 # get list of XMLElements for paths
-# <alteration>
-# bottom
-# speed into speed and limit
 # mirror axis center & origin, concatenate
 # matrixTetragrid to tetragrid, matrix.transform, target
 # maybe matrix array form a00 a01.. also
+# move stuff to archive
 # matrix rotate around axis http://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
 # linear bearing
 # grate separate
+# float decimal places
+# drill from teardrop
 # xml_creation
+# bring back original xml in svgWriter
+# move StartEnd to segment
 # fill rename shortenedSegmentList gridSegmentList and delete comments
 # array paths, follow paths, later maybe targetequation radius xyz give index
 # writeTagged, tags, creationTags, writeMatrix='true'
-# bottom plugin
 # connectionfrom, to, connect, xaxis
-# if there are no problems with getDescendingAreaLoops(allPoints, corners, importRadius) replace getInclusiveLoops, also replace getOverlapRatio with getOverlap
 # add overview link to crnsdoo index and svg page
 # bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
 # look over copy module, make copy solid like copy lineation
@@ -265,6 +263,7 @@ import sys
 # getConnection of some kind like getConnectionVertexes, getConnection
 # import module, overwriteRoot
 # pixel, voxel, surfaxel/boxel, lattice, mesh
+# maybe replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
 # equation for vertexes if not already
 # mesh. for cube, then cyliner, then sphere after lathe
 # extrude take radius
@@ -292,6 +291,7 @@ import sys
 # creationID, addObject, getTarget, copyXMLElement?
 # drill
 # dovetail
+# maybe meta overhang
 # maybe not getNewObject, getNew, addToBoolean
 # convert global repository settings to local settings
 # table to dictionary
@@ -346,7 +346,7 @@ import sys
 # maybe interpret svg_convex_mesh
 #laminate tool head
 #maybe use 5x5 radius search in circle node
-#maybe add layer updates in behold, skeinview and maybe others
+#maybe add layer updates in behold, skeinlayer and maybe others
 #lathe winding, extrusion and cutting; synonym for rotation or turning, loop angle
 # maybe split into source code and documentation sections
 # transform plugins, start with sarrus http://www.thingiverse.com/thing:1425
@@ -400,7 +400,8 @@ import sys
 #6 16855,3226
 #7 20081, 2189
 #8 22270, 2625
-#9 24895
+#9 24895, 2967
+#10 27862
 #85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?
@@ -519,7 +520,7 @@ class SkeinforgeRepository:
 	"A class to handle the skeinforge settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge.html', '', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge.html', None, self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '')
 		self.profileType = settings.MenuButtonDisplay().getFromName('Profile Type: ', self )
 		self.profileSelection = settings.MenuButtonDisplay().getFromName('Profile Selection: ', self )
@@ -539,7 +540,7 @@ class SkeinforgeRepository:
 
 	def execute(self):
 		"Skeinforge button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -554,8 +555,8 @@ class SkeinforgeRepository:
 
 def main():
 	"Display the skeinforge dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

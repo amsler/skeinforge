@@ -66,4 +66,4 @@ def viewGif( fileName, gcodeText = ''):
 
 
 if __name__ == "__main__":
-    viewGif(' '.join( sys.argv[1 :] ) )
+    viewGif(' '.join(sys.argv[1 :]))

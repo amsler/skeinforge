@@ -138,19 +138,38 @@ class XMLElement:
 				childrenWithClassName.append(child)
 		return childrenWithClassName
 
-	def getCopy( self, idSuffix, parent ):
-		"Copy the xml element and add it to the parent."
-		copy = XMLElement()
-		copy.setParentAddToChildren( parent )
-		copy.attributeDictionary = self.attributeDictionary.copy()
+	def getChildrenWithClassNameRecursively(self, className):
+		"Get the children which have the given class name recursively."
+		childrenWithClassName = self.getChildrenWithClassName(className)
+		for child in self.children:
+			childrenWithClassName += child.getChildrenWithClassNameRecursively(className)
+		return childrenWithClassName
+
+	def getCopy(self, idSuffix, parent):
+		"Copy the xml element, set its dictionary and add it to the parent."
+		copy = self.getCopyShallow(self.attributeDictionary.copy())
+		copy.setParentAddToChildren(parent)
 		if idSuffix != '':
 			if 'id' in copy.attributeDictionary:
 				copy.attributeDictionary['id'] = copy.attributeDictionary['id'] + idSuffix
 		copy.className = self.className
 		copy.text = self.text
 		copy.addToIDDictionaryIFIDExists()
-		self.copyXMLChildren( idSuffix, copy )
+		self.copyXMLChildren(idSuffix, copy)
 		return copy
+
+	def getCopyShallow(self, attributeDictionary={}):
+		"Copy the xml element and set its dictionary and parent."
+		copyShallow = XMLElement()
+		copyShallow.attributeDictionary = attributeDictionary
+		copyShallow.className = self.className
+		copyShallow.idDictionary = self.idDictionary
+		copyShallow.importName = self.importName
+		copyShallow.object = self.object
+		copyShallow.nameDictionary = self.nameDictionary
+		copyShallow.parent = self.parent
+		copyShallow.text = self.text
+		return copyShallow
 
 	def getFirstChildWithClassName(self, className):
 		"Get the first child which has the given class name."
@@ -261,20 +280,6 @@ class XMLElement:
 			return self
 		return self.parent.getRoot()
 
-	def getShallowCopy(self, attributeDictionary):
-		"Copy the xml element and set its dictionary."
-		shallowCopy = XMLElement()
-		shallowCopy.attributeDictionary = attributeDictionary
-		shallowCopy.children = self.children
-		shallowCopy.className = self.className
-		shallowCopy.idDictionary = self.idDictionary
-		shallowCopy.importName = self.importName
-		shallowCopy.object = self.object
-		shallowCopy.nameDictionary = self.nameDictionary
-		shallowCopy.parent = self.parent
-		shallowCopy.text = self.text
-		return shallowCopy
-
 	def getSubChildWithID( self, idReference ):
 		"Get the child which has the idReference."
 		for child in self.children:
@@ -347,7 +352,7 @@ class XMLElement:
 		if self.parent != None:
 			self.parent.children.remove(self)
 
-	def setParentAddToChildren( self, parent ):
+	def setParentAddToChildren(self, parent):
 		"Set the parent and add this to its children."
 		self.parent = parent
 		if self.parent != None:

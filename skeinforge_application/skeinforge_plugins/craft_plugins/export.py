@@ -146,7 +146,7 @@ def getSelectedPluginModule( plugins ):
 			return gcodec.getModuleWithDirectoryPath( plugin.directoryPath, plugin.name )
 	return None
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Export a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
@@ -223,7 +223,7 @@ class ExportRepository:
 
 	def execute(self):
 		"Export button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -287,8 +287,8 @@ class ExportSkein:
 
 def main():
 	"Display the export dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -142,7 +142,7 @@ class InterpretRepository:
 	"A class to handle the interpret settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.interpret.html', '', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.interpret.html', None, self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Interpret', self, '')
 		self.activateInterpret = settings.BooleanSetting().getFromValue('Activate Interpret', self, False )
 		self.printInterpretion = settings.BooleanSetting().getFromValue('Print Interpretion', self, False )

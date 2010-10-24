@@ -23,6 +23,7 @@ import __init__
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import cStringIO
+import math
 import os
 import sys
 import traceback
@@ -67,6 +68,23 @@ def getAbsoluteFolderPath(filePath, folderName=''):
 	if folderName == '':
 		return absoluteFolderPath
 	return os.path.join(absoluteFolderPath, folderName)
+
+def getArcDistance(relativeLocation, splitLine):
+	'Get arc distance.'
+	halfPlaneLineDistance = 0.5 * abs(relativeLocation.dropAxis(2))
+	radius = getDoubleFromCharacterSplitLine('R', splitLine)
+	if radius == None:
+		iFloat = getDoubleFromCharacterSplitLine('I', splitLine)
+		jFloat = getDoubleFromCharacterSplitLine('J', splitLine)
+		radius = abs(complex(iFloat, jFloat))
+	angle = 0.0
+	if radius > 0.0:
+		halfPlaneLineDistanceOverRadius = halfPlaneLineDistance / radius
+		if halfPlaneLineDistance < radius:
+			angle = 2.0 * math.asin(halfPlaneLineDistanceOverRadius)
+		else:
+			angle = math.pi * halfPlaneLineDistanceOverRadius
+	return abs(complex(angle * radius, relativeLocation.z))
 
 def getDoubleAfterFirstLetter(word):
 	'Get the double value of the word after the first letter.'
@@ -425,7 +443,8 @@ def isProcedureDone(gcodeText, procedure):
 			if 'procedureDone' in splitLine:
 				nextIndex = splitLine.index('procedureDone') + 1
 				if nextIndex < len(splitLine):
-					if splitLine[nextIndex] == procedure:
+					nextWordSplit = splitLine[nextIndex].split(',')
+					if procedure in nextWordSplit:
 						return True
 	return False
 
@@ -504,13 +523,8 @@ class BoundingRectangle:
 class DistanceFeedRate:
 	'A class to limit the z feed rate and round values.'
 	def __init__(self):
-		self.absoluteDistanceMode = True
+		'Initialize.'
 		self.decimalPlacesCarried = 3
-		self.extrusionDistanceFormat = ''
-		self.maximumZDrillFeedRatePerSecond = None
-		self.maximumZFeedRatePerSecond = None
-		self.maximumZTravelFeedRatePerSecond = None
-		self.oldAddedLocation = None
 		self.output = cStringIO.StringIO()
 
 	def addGcodeFromFeedRateThreadZ(self, feedRateMinute, thread, z):
@@ -560,29 +574,6 @@ class DistanceFeedRate:
 
 	def addLine(self, line):
 		'Add a line of text and a newline to the output.'
-		splitLine = getSplitLineBeforeBracketSemicolon(line)
-		firstWord = getFirstWord(splitLine)
-		if firstWord == 'G90':
-			self.absoluteDistanceMode = True
-		elif firstWord == 'G91':
-			self.absoluteDistanceMode = False
-		elif firstWord == 'G1':
-			feedRateMinute = getFeedRateMinute(None, splitLine)
-			if self.absoluteDistanceMode:
-				location = getLocationFromSplitLine(self.oldAddedLocation, splitLine)
-				line = self.getLineWithZLimitedFeedRate(feedRateMinute, line, location, splitLine)
-				self.oldAddedLocation = location
-			else:
-				if self.oldAddedLocation == None:
-					print('Warning: There was no absolute location when the G91 command was parsed, so the absolute location will be set to the origin.')
-					self.oldAddedLocation = Vector3()
-				self.oldAddedLocation += getLocationFromSplitLine(None, splitLine)
-		elif firstWord == 'G92':
-			self.oldAddedLocation = getLocationFromSplitLine(self.oldAddedLocation, splitLine)
-		elif firstWord == 'M101':
-			self.maximumZFeedRatePerSecond = self.maximumZDrillFeedRatePerSecond
-		elif firstWord == 'M103':
-			self.maximumZFeedRatePerSecond = self.maximumZTravelFeedRatePerSecond
 		if len(line) > 0:
 			self.output.write(line + '\n')
 
@@ -592,9 +583,24 @@ class DistanceFeedRate:
 			self.addLine(line)
 
 	def addLinesSetAbsoluteDistanceMode(self, lines):
-		'Add lines of text to the output.'
-		self.addLines(lines)
-		self.absoluteDistanceMode = True
+		'Add lines of text to the output and ensure the absolute mode is set.'
+		if len(lines) < 1:
+			return
+		if len(lines[0]) < 1:
+			return
+		absoluteDistanceMode = True
+		self.addLine('(<alteration>)')
+		for line in lines:
+			splitLine = line.split()
+			firstWord = getFirstWord(splitLine)
+			if firstWord == 'G90':
+				absoluteDistanceMode = True
+			elif firstWord == 'G91':
+				absoluteDistanceMode = False
+			self.addLine(line)
+		if not absoluteDistanceMode:
+			self.addLine('G90')
+		self.addLine('(</alteration>)')
 
 	def addParameter(self, firstWord, parameter):
 		'Add the parameter.'
@@ -613,7 +619,7 @@ class DistanceFeedRate:
 
 	def addTagBracketedLine(self, tagName, value):
 		'Add a begin tag, balue and end tag.'
-		self.addLine(self.getTagBracketedLine(tagName, value))
+		self.addLine('(<%s> %s </%s>)' % (tagName, value, tagName))
 
 	def getBoundaryLine(self, location):
 		'Get boundary gcode line.'
@@ -629,28 +635,9 @@ class DistanceFeedRate:
 
 	def getLinearGcodeMovementWithFeedRate(self, feedRateMinute, point, z):
 		'Get a z limited gcode movement.'
-		addedLocation = Vector3(point.real, point.imag, z)
-		if addedLocation == self.oldAddedLocation:
-			return ''
 		linearGcodeMovement = self.getLinearGcodeMovement(point, z)
 		if feedRateMinute == None:
 			return linearGcodeMovement
-		return linearGcodeMovement + ' F' + self.getRounded(feedRateMinute)
-
-	def getLinearGcodeMovementWithZLimitedFeedRate(self, feedRateMinute, location):
-		'Get a z limited gcode movement.'
-		if location == self.oldAddedLocation:
-			return ''
-		distance = 0.0
-		extrusionDistanceString = ''
-		if self.oldAddedLocation != None:
-			distance = abs(location - self.oldAddedLocation)
-		linearGcodeMovement = self.getLinearGcodeMovement(location.dropAxis(2), location.z)
-		if feedRateMinute == None:
-			return linearGcodeMovement
-		if self.oldAddedLocation != None:
-			deltaZ = abs(location.z - self.oldAddedLocation.z)
-			feedRateMinute = self.getZLimitedFeedRate(deltaZ, distance, feedRateMinute)
 		return linearGcodeMovement + ' F' + self.getRounded(feedRateMinute)
 
 	def getLineWithFeedRate(self, feedRateMinute, line, splitLine):
@@ -689,42 +676,12 @@ class DistanceFeedRate:
 		word = splitLine[indexOfZ]
 		return line.replace(word, roundedZString)
 
-	def getLineWithZLimitedFeedRate(self, feedRateMinute, line, location, splitLine):
-		'Get a replaced limited gcode movement line.'
-		if location == self.oldAddedLocation:
-			return ''
-		if feedRateMinute == None:
-			return line
-		if self.oldAddedLocation != None:
-			deltaZ = abs(location.z - self.oldAddedLocation.z)
-			distance = abs(location - self.oldAddedLocation)
-			feedRateMinute = self.getZLimitedFeedRate(deltaZ, distance, feedRateMinute)
-		return self.getLineWithFeedRate(feedRateMinute, line, splitLine)
-
 	def getRounded(self, number):
 		'Get number rounded to the number of carried decimal places as a string.'
 		return euclidean.getRoundedToDecimalPlacesString(self.decimalPlacesCarried, number)
-
-	def getTagBracketedLine(self, tagName, value):
-		'Add a begin tag, balue and end tag.'
-		return '(<%s> %s </%s>)' % (tagName, value, tagName)
-
-	def getZLimitedFeedRate(self, deltaZ, distance, feedRateMinute):
-		'Get the z limited feed rate.'
-		if self.maximumZFeedRatePerSecond == None:
-			return feedRateMinute
-		zFeedRateSecond = feedRateMinute * deltaZ / distance / 60.0
-		if zFeedRateSecond > self.maximumZFeedRatePerSecond:
-			feedRateMinute *= self.maximumZFeedRatePerSecond / zFeedRateSecond
-		return feedRateMinute
 
 	def parseSplitLine(self, firstWord, splitLine):
 		'Parse gcode split line and store the parameters.'
 		firstWord = getWithoutBracketsEqualTab(firstWord)
 		if firstWord == 'decimalPlacesCarried':
 			self.decimalPlacesCarried = int(splitLine[1])
-		elif firstWord == 'maximumZDrillFeedRatePerSecond':
-			self.maximumZDrillFeedRatePerSecond = float(splitLine[1])
-			self.maximumZFeedRatePerSecond = self.maximumZDrillFeedRatePerSecond
-		elif firstWord == 'maximumZTravelFeedRatePerSecond':
-			self.maximumZTravelFeedRatePerSecond = float(splitLine[1])

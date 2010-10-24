@@ -92,7 +92,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return ClipRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Clip a gcode linear move file.  Chain clip the gcode if it is not already clipped.  If no fileName is specified, clip the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -113,7 +113,7 @@ class ClipRepository:
 
 	def execute(self):
 		"Clip button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -125,6 +125,7 @@ class ClipSkein:
 		self.extruderActive = False
 		self.feedRateMinute = None
 		self.isLoopPerimeter = False
+		self.layerCount = settings.LayerCount()
 		self.loopPath = None
 		self.lineIndex = 0
 		self.oldLocation = None
@@ -220,8 +221,8 @@ class ClipSkein:
 		"Parse gcode text and store the clip gcode."
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization( clipRepository )
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 		return self.distanceFeedRate.output.getvalue()
 
@@ -231,7 +232,7 @@ class ClipSkein:
 			return False
 		isLoop = False
 		location = self.oldLocation
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -249,7 +250,7 @@ class ClipSkein:
 
 	def isNextExtruderOn(self):
 		"Determine if there is an extruder on command before a move command."
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -274,12 +275,12 @@ class ClipSkein:
 		self.oldLocation = location
 
 	def parseInitialization( self, clipRepository ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> clip </procedureDone>)')
 				return
@@ -319,6 +320,7 @@ class ClipSkein:
 
 	def setLayerPixelTable(self):
 		"Set the layer pixel table."
+		self.layerCount.printProgressIncrement('clip')
 		boundaryLoop = None
 		extruderActive = False
 		maskPixelTable = {}
@@ -327,7 +329,7 @@ class ClipSkein:
 		self.lastInactiveLocation = None
 		self.layerPixelTable = {}
 		oldLocation = self.oldLocation
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -358,8 +360,8 @@ class ClipSkein:
 
 def main():
 	"Display the clip dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

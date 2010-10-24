@@ -1,24 +1,24 @@
 
 <!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: module skeinforge_application.skeinforge_plugins.analyze_plugins.skeinview</title>
+<html><head><title>Python: module skeinforge_application.skeinforge_plugins.analyze_plugins.skeinlayer</title>
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_application.html"><font color="#ffffff">skeinforge_application</font></a>.<a href="skeinforge_application.skeinforge_plugins.html"><font color="#ffffff">skeinforge_plugins</font></a>.<a href="skeinforge_application.skeinforge_plugins.analyze_plugins.html"><font color="#ffffff">analyze_plugins</font></a>.skeinview</strong></big></big> ($Date: 2008/21/04 $)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_application.html"><font color="#ffffff">skeinforge_application</font></a>.<a href="skeinforge_application.skeinforge_plugins.html"><font color="#ffffff">skeinforge_plugins</font></a>.<a href="skeinforge_application.skeinforge_plugins.analyze_plugins.html"><font color="#ffffff">analyze_plugins</font></a>.skeinlayer</strong></big></big> ($Date: 2008/21/04 $)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/analyze_plugins/skeinview.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/analyze_plugins/skeinview.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/analyze_plugins/skeinlayer.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/analyze_plugins/skeinlayer.py</a></font></td></tr></table>
     <p>
-<a href="skeinforge_application.skeinforge_plugins.analyze_plugins.interpret.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_application.skeinforge_plugins.analyze_plugins.skeiniso.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Skeinview is a script to display each layer of a gcode file.<br>
+Skeinlayer is a script to display each layer of a gcode file.<br>
  <br>
-The skeinview manual page is at:<br>
-<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinview</a><br>
+The skeinlayer manual page is at:<br>
+<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinlayer">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeinlayer</a><br>
  <br>
-Skeinview is derived from Nophead's preview script.  The extruded lines are in the resistor colors red, orange, yellow, green, blue, purple &amp; brown.  When the extruder is off, the travel line is grey.  Skeinview is useful for a detailed view of the extrusion, behold is better to see the orientation of the shape.  To get an initial overview of the skein, when the skeinview display window appears, click the Soar button (double right arrow button beside the layer field).<br>
+Skeinlayer is derived from Nophead's preview script.  The extruded lines are in the resistor colors red, orange, yellow, green, blue, purple &amp; brown.  When the extruder is off, the travel line is grey.  Skeinlayer is useful for a detailed view of the extrusion, skeiniso is better to see the orientation of the shape.  To get an initial overview of the skein, when the skeinlayer display window appears, click the Soar button (double right arrow button beside the layer field).<br>
  <br>
 <br />
 <a href="#Operation">Operation</a><br />
@@ -52,7 +52,7 @@ Skeinview is derived from Nophead's preview script.  The extruded lines are in t
 <a name="Operation" id="Operation"></a><h2>Operation</h2>
 <hr>
 
-The default 'Activate Skeinview' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeinview' checkbox is on, when skeinview is run directly.  Skeinview has trouble separating the layers when it reads gcode without comments.<br>
+The default 'Activate Skeinlayer' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeinlayer' checkbox is on, when skeinlayer is run directly.  Skeinlayer has trouble separating the layers when it reads gcode without comments.<br>
  <br>
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
@@ -192,32 +192,32 @@ A gode example is at:<br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
-Below are examples of skeinview being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeinview.py.<br>
+Below are examples of skeinlayer being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeinlayer.py.<br>
  <br>
  <br>
-&gt; python skeinview.py<br>
-This brings up the skeinview dialog.<br>
+&gt; python skeinlayer.py<br>
+This brings up the skeinlayer dialog.<br>
  <br>
  <br>
-&gt; python skeinview.py Screw Holder_penultimate.gcode<br>
-This brings up the skeinview viewer to view each layer of a gcode file.<br>
+&gt; python skeinlayer.py Screw Holder_penultimate.gcode<br>
+This brings up the skeinlayer viewer to view each layer of a gcode file.<br>
  <br>
  <br>
 &gt; python<br>
 Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
 [GCC 4.2.1 (SUSE Linux)] on linux2<br>
 Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import skeinview<br>
-&gt;&gt;&gt; skeinview.<a href="#-main">main</a>()<br>
-This brings up the skeinview dialog.<br>
+&gt;&gt;&gt; import skeinlayer<br>
+&gt;&gt;&gt; skeinlayer.<a href="#-main">main</a>()<br>
+This brings up the skeinlayer dialog.<br>
  <br>
  <br>
-&gt;&gt;&gt; skeinview.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>('Screw Holder_penultimate.gcode')<br>
-This brings up the skeinview viewer to view each layer of a gcode file.</tt>
+&gt;&gt;&gt; skeinlayer.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>('Screw Holder_penultimate.gcode')<br>
+This brings up the skeinlayer viewer to view each layer of a gcode file.</tt>
 <br />
 <br />
 <p>
-<a href="skeinforge_application.skeinforge_plugins.analyze_plugins.interpret.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_application.skeinforge_plugins.analyze_plugins.skeiniso.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>
@@ -249,16 +249,16 @@ This brings up the skeinview viewer to view each layer of a gcode file.</tt>
 <dt><font face="helvetica, arial"><a href="skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.html#TableauRepository">skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.TableauRepository</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="skeinforge_application.skeinforge_plugins.analyze_plugins.skeinview.html#SkeinviewRepository">SkeinviewRepository</a>
+<dt><font face="helvetica, arial"><a href="skeinforge_application.skeinforge_plugins.analyze_plugins.skeinlayer.html#SkeinlayerRepository">SkeinlayerRepository</a>
 </font></dt></dl>
 </dd>
 <dt><font face="helvetica, arial"><a href="skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.html#TableauWindow">skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.TableauWindow</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="skeinforge_application.skeinforge_plugins.analyze_plugins.skeinview.html#SkeinWindow">SkeinWindow</a>
+<dt><font face="helvetica, arial"><a href="skeinforge_application.skeinforge_plugins.analyze_plugins.skeinlayer.html#SkeinWindow">SkeinWindow</a>
 </font></dt></dl>
 </dd>
-<dt><font face="helvetica, arial"><a href="skeinforge_application.skeinforge_plugins.analyze_plugins.skeinview.html#SkeinviewSkein">SkeinviewSkein</a>
+<dt><font face="helvetica, arial"><a href="skeinforge_application.skeinforge_plugins.analyze_plugins.skeinlayer.html#SkeinlayerSkein">SkeinlayerSkein</a>
 </font></dt></dl>
  <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -436,57 +436,57 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyz
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SkeinviewRepository">class <strong>SkeinviewRepository</strong></a>(<a href="skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.html#TableauRepository">skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.TableauRepository</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SkeinlayerRepository">class <strong>SkeinlayerRepository</strong></a>(<a href="skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.html#TableauRepository">skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.TableauRepository</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;skeinview&nbsp;settings.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;handle&nbsp;the&nbsp;skeinlayer&nbsp;settings.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="SkeinviewRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;settings,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;settings&nbsp;fileName.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerRepository-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;default&nbsp;settings,&nbsp;execute&nbsp;title&nbsp;&amp;&nbsp;settings&nbsp;fileName.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewRepository-execute"><strong>execute</strong></a>(self)</dt><dd><tt>Write&nbsp;button&nbsp;has&nbsp;been&nbsp;clicked.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerRepository-execute"><strong>execute</strong></a>(self)</dt><dd><tt>Write&nbsp;button&nbsp;has&nbsp;been&nbsp;clicked.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.html#TableauRepository">skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities.tableau.TableauRepository</a>:<br>
-<dl><dt><a name="SkeinviewRepository-addAnimation"><strong>addAnimation</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;animation&nbsp;settings.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerRepository-addAnimation"><strong>addAnimation</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;animation&nbsp;settings.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewRepository-addScaleScreenSlide"><strong>addScaleScreenSlide</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;scale,&nbsp;screen&nbsp;and&nbsp;slide&nbsp;show&nbsp;settings.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerRepository-addScaleScreenSlide"><strong>addScaleScreenSlide</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;scale,&nbsp;screen&nbsp;and&nbsp;slide&nbsp;show&nbsp;settings.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewRepository-setToDisplaySave"><strong>setToDisplaySave</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;setting&nbsp;values&nbsp;to&nbsp;the&nbsp;display,&nbsp;save&nbsp;the&nbsp;new&nbsp;values.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerRepository-setToDisplaySave"><strong>setToDisplaySave</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;setting&nbsp;values&nbsp;to&nbsp;the&nbsp;display,&nbsp;save&nbsp;the&nbsp;new&nbsp;values.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SkeinviewSkein">class <strong>SkeinviewSkein</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SkeinlayerSkein">class <strong>SkeinlayerSkein</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt>A&nbsp;class&nbsp;to&nbsp;write&nbsp;a&nbsp;get&nbsp;a&nbsp;scalable&nbsp;vector&nbsp;graphics&nbsp;text&nbsp;for&nbsp;a&nbsp;gcode&nbsp;skein.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="SkeinviewSkein-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+<dl><dt><a name="SkeinlayerSkein-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-addToPath"><strong>addToPath</strong></a>(self, line, location)</dt><dd><tt>Add&nbsp;a&nbsp;point&nbsp;to&nbsp;travel&nbsp;and&nbsp;maybe&nbsp;extrusion.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-addToPath"><strong>addToPath</strong></a>(self, line, location)</dt><dd><tt>Add&nbsp;a&nbsp;point&nbsp;to&nbsp;travel&nbsp;and&nbsp;maybe&nbsp;extrusion.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-getModelCoordinates"><strong>getModelCoordinates</strong></a>(self, screenCoordinates)</dt><dd><tt>Get&nbsp;the&nbsp;model&nbsp;coordinates.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-getModelCoordinates"><strong>getModelCoordinates</strong></a>(self, screenCoordinates)</dt><dd><tt>Get&nbsp;the&nbsp;model&nbsp;coordinates.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-getScreenCoordinates"><strong>getScreenCoordinates</strong></a>(self, pointComplex)</dt><dd><tt>Get&nbsp;the&nbsp;screen&nbsp;coordinates.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-getScreenCoordinates"><strong>getScreenCoordinates</strong></a>(self, pointComplex)</dt><dd><tt>Get&nbsp;the&nbsp;screen&nbsp;coordinates.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-initializeActiveLocation"><strong>initializeActiveLocation</strong></a>(self)</dt><dd><tt>Set&nbsp;variables&nbsp;to&nbsp;default.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-initializeActiveLocation"><strong>initializeActiveLocation</strong></a>(self)</dt><dd><tt>Set&nbsp;variables&nbsp;to&nbsp;default.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-isLayerStart"><strong>isLayerStart</strong></a>(self, firstWord, splitLine)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;vector&nbsp;output.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-isLayerStart"><strong>isLayerStart</strong></a>(self, firstWord, splitLine)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;vector&nbsp;output.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-linearCorner"><strong>linearCorner</strong></a>(self, splitLine)</dt><dd><tt>Update&nbsp;the&nbsp;bounding&nbsp;corners.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-linearCorner"><strong>linearCorner</strong></a>(self, splitLine)</dt><dd><tt>Update&nbsp;the&nbsp;bounding&nbsp;corners.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-linearMove"><strong>linearMove</strong></a>(self, line, location)</dt><dd><tt>Get&nbsp;statistics&nbsp;for&nbsp;a&nbsp;linear&nbsp;move.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-linearMove"><strong>linearMove</strong></a>(self, line, location)</dt><dd><tt>Get&nbsp;statistics&nbsp;for&nbsp;a&nbsp;linear&nbsp;move.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-parseCorner"><strong>parseCorner</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;use&nbsp;the&nbsp;location&nbsp;to&nbsp;update&nbsp;the&nbsp;bounding&nbsp;corners.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-parseCorner"><strong>parseCorner</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;use&nbsp;the&nbsp;location&nbsp;to&nbsp;update&nbsp;the&nbsp;bounding&nbsp;corners.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-parseGcode"><strong>parseGcode</strong></a>(self, fileName, gcodeText, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;vector&nbsp;output.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-parseGcode"><strong>parseGcode</strong></a>(self, fileName, gcodeText, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;vector&nbsp;output.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
-<dl><dt><a name="SkeinviewSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;vector&nbsp;output.</tt></dd></dl>
+<dl><dt><a name="SkeinlayerSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;vector&nbsp;output.</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -497,11 +497,11 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyz
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getRankIndex"><strong>getRankIndex</strong></a>(rulingSeparationWidthMillimeters, screenOrdinate)</dt><dd><tt>Get&nbsp;rank&nbsp;index.</tt></dd></dl>
- <dl><dt><a name="-getWindowAnalyzeFile"><strong>getWindowAnalyzeFile</strong></a>(fileName)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinview&nbsp;window.</tt></dd></dl>
- <dl><dt><a name="-getWindowAnalyzeFileGivenText"><strong>getWindowAnalyzeFileGivenText</strong></a>(fileName, gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinview&nbsp;window&nbsp;given&nbsp;the&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getWindowGivenTextRepository"><strong>getWindowGivenTextRepository</strong></a>(fileName, gcodeText, repository)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinview&nbsp;window&nbsp;given&nbsp;the&nbsp;text&nbsp;and&nbsp;settings.</tt></dd></dl>
- <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;skeinview&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, fileNameSuffix, gcodeText<font color="#909090">=''</font>)</dt><dd><tt>Display&nbsp;a&nbsp;skeinviewed&nbsp;gcode&nbsp;file&nbsp;for&nbsp;a&nbsp;skeinforge&nbsp;gcode&nbsp;file,&nbsp;if&nbsp;'Activate&nbsp;Skeinview'&nbsp;is&nbsp;selected.</tt></dd></dl>
+ <dl><dt><a name="-getWindowAnalyzeFile"><strong>getWindowAnalyzeFile</strong></a>(fileName)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinlayer&nbsp;window.</tt></dd></dl>
+ <dl><dt><a name="-getWindowAnalyzeFileGivenText"><strong>getWindowAnalyzeFileGivenText</strong></a>(fileName, gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinlayer&nbsp;window&nbsp;given&nbsp;the&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-getWindowGivenTextRepository"><strong>getWindowGivenTextRepository</strong></a>(fileName, gcodeText, repository)</dt><dd><tt>Display&nbsp;a&nbsp;gcode&nbsp;file&nbsp;in&nbsp;a&nbsp;skeinlayer&nbsp;window&nbsp;given&nbsp;the&nbsp;text&nbsp;and&nbsp;settings.</tt></dd></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;skeinlayer&nbsp;dialog.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, fileNameSuffix, gcodeText<font color="#909090">=''</font>)</dt><dd><tt>Display&nbsp;a&nbsp;skeinlayered&nbsp;gcode&nbsp;file&nbsp;for&nbsp;a&nbsp;skeinforge&nbsp;gcode&nbsp;file,&nbsp;if&nbsp;'Activate&nbsp;Skeinlayer'&nbsp;is&nbsp;selected.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

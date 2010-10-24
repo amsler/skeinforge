@@ -20,6 +20,19 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
+def getGeometryOutput(derivation, xmlElement):
+	"Get vector3 vertexes from attribute dictionary."
+	if derivation == None:
+		derivation = SVGDerivation()
+		derivation.setToXMLElement(xmlElement)
+	return getGeometryOutputBySVGReader(derivation.svgReader, xmlElement)
+
+def getGeometryOutputByArguments(arguments, xmlElement):
+	"Get vector3 vertexes from attribute dictionary by arguments."
+	derivation = SVGDerivation()
+	derivation.svgReader.parseSVG('', arguments[0])
+	return getGeometryOutput(derivation, xmlElement)
+
 def getGeometryOutputBySVGReader(svgReader, xmlElement):
 	"Get vector3 vertexes from svgReader."
 	geometryOutput = []
@@ -31,14 +44,23 @@ def getGeometryOutputBySVGReader(svgReader, xmlElement):
 			geometryOutput += lineation.getGeometryOutputByManipulation(sideLoop, xmlElement)
 	return geometryOutput
 
-def getGeometryOutputByArguments(arguments, xmlElement):
-	"Get vector3 vertexes from attribute dictionary by arguments."
-	svgReader = svg_reader.SVGReader()
-	svgReader.parseSVG('', arguments[0])
-	return getGeometryOutputBySVGReader(svgReader, xmlElement)
-
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	svgReader = svg_reader.SVGReader()
-	svgReader.parseSVGByXMLElement(xmlElement)
-	path.convertProcessXMLElementRenameByPaths(getGeometryOutputBySVGReader(svgReader, xmlElement), xmlElement)
+	derivation = SVGDerivation()
+	derivation.setToXMLElement(xmlElement)
+	path.convertProcessXMLElementRenameByPaths(getGeometryOutput(derivation, xmlElement), xmlElement)
+
+
+class SVGDerivation:
+	"Class to hold svg variables."
+	def __init__(self):
+		'Set defaults.'
+		self.svgReader = svg_reader.SVGReader()
+
+	def __repr__(self):
+		"Get the string representation of this SVGDerivation."
+		return str(self.__dict__)
+
+	def setToXMLElement(self, xmlElement):
+		"Set to the xmlElement."
+		self.svgReader.parseSVGByXMLElement(xmlElement)

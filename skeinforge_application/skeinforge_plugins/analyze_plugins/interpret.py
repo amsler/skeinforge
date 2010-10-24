@@ -45,8 +45,8 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 
 def main():
 	"Display the interpret dialog."
-	if len( sys.argv ) > 1:
-		fabmetheus_interpret.getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		fabmetheus_interpret.getWindowAnalyzeFile(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

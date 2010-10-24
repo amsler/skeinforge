@@ -90,7 +90,7 @@ def getWindowAnalyzeFile(fileName):
 	"Write statistics for a gcode file."
 	return getWindowAnalyzeFileGivenText( fileName, gcodec.getFileText(fileName) )
 
-def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
+def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
 	"Write statistics for a gcode file."
 	print('')
 	print('')
@@ -98,7 +98,7 @@ def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository = None ):
 	if repository == None:
 		repository = settings.getReadRepository( StatisticRepository() )
 	skein = StatisticSkein()
-	statisticGcode = skein.getCraftedGcode( gcodeText, repository )
+	statisticGcode = skein.getCraftedGcode(gcodeText, repository)
 	if repository.printStatistics.value:
 		print( statisticGcode )
 	if repository.saveStatistics.value:
@@ -117,7 +117,7 @@ class StatisticRepository:
 	"A class to handle the statistics settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html', '', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html', None, self )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic')
 		self.activateStatistic = settings.BooleanSetting().getFromValue('Activate Statistic', self, True )
 		settings.LabelSeparator().getFromRepository(self)
@@ -171,7 +171,7 @@ class StatisticSkein:
 			self.extruderToggled += 1
 		self.extruderActive = active
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the statistics."
 		self.absolutePerimeterWidth = 0.4
 		self.characters = 0
@@ -341,7 +341,7 @@ class StatisticSkein:
 		elif firstWord == '(<operatingFeedRatePerSecond>':
 			self.operatingFeedRatePerSecond = float(splitLine[1])
 		elif firstWord == '(<perimeterWidth>':
-			self.absolutePerimeterWidth = abs( float(splitLine[1]) )
+			self.absolutePerimeterWidth = abs(float(splitLine[1]))
 		elif firstWord == '(<procedureDone>':
 			self.procedures.append(splitLine[1])
 		elif firstWord == '(<version>':
@@ -350,8 +350,8 @@ class StatisticSkein:
 
 def main():
 	"Display the statistics dialog."
-	if len( sys.argv ) > 1:
-		getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		getWindowAnalyzeFile(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -14,6 +14,8 @@ import cStringIO
 import math
 import os
 import shutil
+import sys
+import traceback
 import webbrowser
 try:
 	import Tkinter
@@ -51,19 +53,20 @@ def addEmptyRow( gridPosition ):
 	gridPosition.increment()
 	Tkinter.Label( gridPosition.master ).grid( row = gridPosition.row, column = gridPosition.column )
 
-def addListsToRepository( fileNameHelp, profileDirectory, repository ):
-	"Add the value to the lists."
+def addListsToRepository(fileNameHelp, getProfileDirectory, repository):
+	'Add the value to the lists.'
 	repository.displayEntities = []
 	repository.executeTitle = None
 	repository.fileNameHelp = fileNameHelp
 	repository.fileNameInput = None
 	repository.lowerName = fileNameHelp.split('.')[ - 2 ]
 	repository.baseName = repository.lowerName + '.csv'
+	repository.baseNameSynonym = None
 	repository.capitalizedName = getEachWordCapitalized( repository.lowerName )
+	repository.getProfileDirectory = getProfileDirectory
 	repository.openLocalHelpPage = HelpPage().getOpenFromDocumentationSubName( repository.fileNameHelp )
 	repository.openWikiManualHelpPage = None
 	repository.preferences = []
-	repository.profileDirectory = profileDirectory
 	repository.repositoryDialog = None
 	repository.saveListenerTable = {}
 	repository.title = repository.capitalizedName + ' Settings'
@@ -140,6 +143,7 @@ def getDisplayedDialogFromConstructor(repository):
 	except:
 		print('this should never happen, getDisplayedDialogFromConstructor in settings could not open')
 		print(repository)
+		traceback.print_exc(file=sys.stdout)
 		return None
 
 def getDisplayedDialogFromPath(path):
@@ -227,9 +231,15 @@ def getPathInFabmetheusFromFileNameHelp( fileNameHelp ):
 
 def getProfileBaseName(repository):
 	"Get the profile base file name."
-	if repository.profileDirectory == '':
+	if repository.getProfileDirectory == None:
 		return repository.baseName
-	return os.path.join( repository.profileDirectory(), repository.baseName )
+	return os.path.join(repository.getProfileDirectory(), repository.baseName)
+
+def getProfileBaseNameSynonym(repository):
+	"Get the profile base file name synonym."
+	if repository.getProfileDirectory == None:
+		return repository.baseNameSynonym
+	return os.path.join(repository.getProfileDirectory(), repository.baseNameSynonym)
 
 def getProfilesDirectoryInAboveDirectory(subName=''):
 	"Get the profiles directory path in the above directory."
@@ -252,7 +262,10 @@ def getRadioPluginsAddPluginFrame( directoryPath, importantFileNames, names, rep
 
 def getReadRepository(repository):
 	"Read and return settings from a file."
-	text = gcodec.getFileText( archive.getProfilesPath( getProfileBaseName(repository) ), 'r', False )
+	text = gcodec.getFileText(archive.getProfilesPath(getProfileBaseName(repository)), 'r', False)
+	if text == '':
+		if repository.baseNameSynonym != None:
+			text = gcodec.getFileText(archive.getProfilesPath(getProfileBaseNameSynonym(repository)), 'r', False)
 	if text == '':
 		print('The default %s will be written in the .skeinforge folder in the home directory.' % repository.title.lower() )
 		text = gcodec.getFileText( getProfilesDirectoryInAboveDirectory( getProfileBaseName(repository) ), 'r', False )
@@ -320,6 +333,13 @@ def getTitleFromName( title ):
 		return title[ : spaceBracketIndex ]
 	return title
 
+def getUntilFirstBracket(text):
+	'Get the text until the first bracket, if any.'
+	dotIndex = text.find('(')
+	if dotIndex < 0:
+		return text
+	return text[: dotIndex]
+
 def getWidthHex( number, width ):
 	"Get the first width hexadecimal digits."
 	return ('0000%s' % hex(number)[ 2 : ] )[ - width : ]
@@ -369,6 +389,20 @@ def openWebPage( webPagePath ):
 		return
 	os.system( webbrowserName + ' ' + webPagePath )#used this instead of webbrowser.open() to workaround webbrowser open() bug
 
+def printProgress(layerIndex, procedureName):
+	"Print layerIndex followed by a carriage return."
+	printProgressByString('%s layer count %s...' % (procedureName.capitalize(), layerIndex + 1))
+
+def printProgressByString(progressString):
+	"Print progress string."
+	sys.stdout.write(progressString)
+	sys.stdout.write(chr(27) + '\r')
+	sys.stdout.flush()
+
+def printProgressByNumber(layerIndex, numberOfLayers, procedureName):
+	"Print layerIndex and numberOfLayers followed by a carriage return."
+	printProgressByString('%s layer count %s of %s...' % (procedureName.capitalize(), layerIndex + 1, numberOfLayers))
+
 def quitWindow(root):
 	"Quit a window."
 	try:
@@ -386,11 +420,11 @@ def quitWindows( event=None ):
 def readSettingsFromText( repository, text ):
 	"Read settings from a text."
 	lines = gcodec.getTextLines(text)
-	settingTable = {}
+	settingDictionary = {}
 	for setting in repository.preferences:
-		settingTable[ setting.name ] = setting
-	for lineIndex in xrange( len(lines) ):
-		setRepositoryToLine( lineIndex, lines, settingTable )
+		settingDictionary[getUntilFirstBracket(setting.name)] = setting
+	for lineIndex in xrange(len(lines)):
+		setRepositoryToLine(lineIndex, lines, settingDictionary)
 
 def saveAll():
 	"Save all the dialogs."
@@ -405,15 +439,15 @@ def saveRepository(repository):
 	for saveListener in repository.saveListenerTable.values():
 		saveListener()
 
-def setRepositoryToLine( lineIndex, lines, settingTable ):
+def setRepositoryToLine(lineIndex, lines, settingDictionary):
 	"Set setting dictionary to a setting line."
 	line = lines[lineIndex]
-	splitLine = line.split( globalSpreadsheetSeparator )
+	splitLine = line.split(globalSpreadsheetSeparator)
 	if len(splitLine) < 2:
 		return
-	fileSettingName = splitLine[0]
-	if fileSettingName in settingTable:
-		settingTable[ fileSettingName ].setValueToSplitLine( lineIndex, lines, splitLine )
+	fileSettingName = getUntilFirstBracket(splitLine[0])
+	if fileSettingName in settingDictionary:
+		settingDictionary[fileSettingName].setValueToSplitLine(lineIndex, lines, splitLine)
 
 def setButtonFontWeightString( button, isBold ):
 	"Set button font weight given isBold."
@@ -483,7 +517,7 @@ def writeValueListToRepositoryWriter( repositoryWriter, setting ):
 	repositoryWriter.write( setting.name )
 	for item in setting.value:
 		if item != '[]':
-			repositoryWriter.write( globalSpreadsheetSeparator )
+			repositoryWriter.write(globalSpreadsheetSeparator)
 			repositoryWriter.write( item )
 	repositoryWriter.write('\n')
 
@@ -1266,6 +1300,18 @@ class LatentStringVar:
 	def setString(self, word):
 		"Set the string."
 		self.getVar().set(word)
+
+
+class LayerCount:
+	'A class to handle the layerIndex.'
+	def __init__(self):
+		'Initialize.'
+		self.layerIndex = 0
+
+	def printProgressIncrement(self, procedureName):
+		'Print progress then increment layerIndex.'
+		printProgress(self.layerIndex, procedureName)
+		self.layerIndex += 1
 
 
 class MenuButtonDisplay:

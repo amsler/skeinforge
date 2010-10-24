@@ -89,7 +89,7 @@ class CommentRepository:
 	"A class to handle the comment settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.comment.html', '', self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.comment.html', None, self )
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comment')
 		self.activateComment = settings.BooleanSetting().getFromValue('Activate Comment', self, False )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to Write Comments for', self, '')
@@ -174,8 +174,8 @@ class CommentSkein:
 
 def main():
 	"Display the comment dialog."
-	if len( sys.argv ) > 1:
-		getWindowAnalyzeFile(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		getWindowAnalyzeFile(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -65,11 +65,11 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, text = '', repository = None ):
+def getCraftedText( fileName, text = '', repository=None):
 	"Outset the preface file or text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Outset the preface gcode text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'outset'):
 		return gcodeText
@@ -77,13 +77,13 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 		repository = settings.getReadRepository( OutsetRepository() )
 	if not repository.activateOutset.value:
 		return gcodeText
-	return OutsetSkein().getCraftedGcode( gcodeText, repository )
+	return OutsetSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
 	"Get the repository constructor."
 	return OutsetRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Outset the carving of a gcode file.  If no fileName is specified, outset the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -101,7 +101,7 @@ class OutsetRepository:
 
 	def execute(self):
 		"Outset button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -111,6 +111,7 @@ class OutsetSkein:
 	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
+		self.layerCount = settings.LayerCount()
 		self.lineIndex = 0
 		self.rotatedBoundaryLayer = None
 
@@ -129,26 +130,26 @@ class OutsetSkein:
 		for sortedLoop in sortedLoops:
 			self.addGcodeFromRemainingLoop( sortedLoop, self.absoluteHalfPerimeterWidth, rotatedBoundaryLayer.z )
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the bevel gcode."
 		self.repository = repository
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
+		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			self.parseLine( lineIndex )
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ].lstrip()
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex].lstrip()
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'outset')
 			elif firstWord == '(<perimeterWidth>':
-				self.absoluteHalfPerimeterWidth = 0.5 * abs( float(splitLine[1]) )
+				self.absoluteHalfPerimeterWidth = 0.5 * abs(float(splitLine[1]))
 			elif firstWord == '(<layer>':
 				self.lineIndex -= 1
 				return
@@ -165,7 +166,8 @@ class OutsetSkein:
 			location = gcodec.getLocationFromSplitLine(None, splitLine)
 			self.boundary.append( location.dropAxis(2) )
 		elif firstWord == '(<layer>':
-			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float(splitLine[1]) )
+			self.layerCount.printProgressIncrement('outset')
+			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer(float(splitLine[1]))
 			self.distanceFeedRate.addLine(line)
 		elif firstWord == '(</layer>)':
 			self.addOutset( self.rotatedBoundaryLayer )
@@ -179,8 +181,8 @@ class OutsetSkein:
 
 def main():
 	"Display the outset dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

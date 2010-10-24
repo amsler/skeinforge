@@ -126,7 +126,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return PrefaceRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Preface the carving of a gcode file.  If no fileName is specified, preface the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
@@ -158,7 +158,7 @@ class PrefaceRepository:
 
 	def execute(self):
 		"Preface button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -233,7 +233,8 @@ class PrefaceSkein:
 		self.svgReader.parseSVG('', gcodeText )
 		self.distanceFeedRate.decimalPlacesCarried = int( self.svgReader.sliceDictionary['decimalPlacesCarried'] )
 		self.addInitializationToOutput()
-		for rotatedBoundaryLayer in self.svgReader.rotatedLoopLayers:
+		for rotatedBoundaryLayerIndex, rotatedBoundaryLayer in enumerate(self.svgReader.rotatedLoopLayers):
+			settings.printProgressByNumber(rotatedBoundaryLayerIndex, len(self.svgReader.rotatedLoopLayers), 'preface')
 			self.addPreface( rotatedBoundaryLayer )
 		self.addShutdownToOutput()
 		return self.distanceFeedRate.output.getvalue()
@@ -241,8 +242,8 @@ class PrefaceSkein:
 
 def main():
 	"Display the preface dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

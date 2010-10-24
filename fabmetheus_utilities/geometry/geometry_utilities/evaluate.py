@@ -102,7 +102,10 @@ def convertToPaths(dictionary):
 	'Recursively convert any XMLElements to paths.'
 	if dictionary.__class__ == Vector3 or dictionary.__class__.__name__ == 'Vector3Index':
 		return
-	for key in getKeys(dictionary):
+	keys = getKeys(dictionary)
+	if keys == None:
+		return
+	for key in keys:
 		value = dictionary[key]
 		if value.__class__.__name__ == 'XMLElement':
 			if value.object != None:
@@ -219,8 +222,10 @@ def getEndIndexConvertEquationValue( bracketEndIndex, evaluatorIndex, evaluators
 		equationValueString += valueEvaluator.word
 	return bracketEndIndex
 
-def getEvaluatedBooleanDefault( defaultBoolean, key, xmlElement ):
+def getEvaluatedBooleanDefault(defaultBoolean, key, xmlElement=None):
 	"Get the evaluated boolean as a float."
+	if xmlElement == None:
+		return None
 	if key in xmlElement.attributeDictionary:
 		return euclidean.getBooleanFromValue(getEvaluatedValueObliviously(key, xmlElement))
 	return defaultBoolean
@@ -287,8 +292,10 @@ def getEvaluatedExpressionValueEvaluators(evaluators):
 	executePairOperations( evaluators, 0 )
 	return evaluators
 
-def getEvaluatedFloat(key, xmlElement):
+def getEvaluatedFloat(key, xmlElement=None):
 	"Get the evaluated value as a float."
+	if xmlElement == None:
+		return None
 	if key in xmlElement.attributeDictionary:
 		return euclidean.getFloatFromValue(getEvaluatedValueObliviously(key, xmlElement))
 	return None
@@ -299,23 +306,17 @@ def getEvaluatedFloatByKeys(defaultFloat, keys, xmlElement):
 		defaultFloat = getEvaluatedFloatDefault(defaultFloat, key, xmlElement)
 	return defaultFloat
 
-def getEvaluatedFloatDefault( defaultFloat, key, xmlElement ):
+def getEvaluatedFloatDefault(defaultFloat, key, xmlElement=None):
 	"Get the evaluated value as a float."
 	evaluatedFloat = getEvaluatedFloat(key, xmlElement)
 	if evaluatedFloat == None:
 		return defaultFloat
 	return evaluatedFloat
 
-def getEvaluatedFloatOne(key, xmlElement):
-	"Get the evaluated value as a float with a default of one."
-	return getEvaluatedFloatDefault( 1.0, key, xmlElement )
-
-def getEvaluatedFloatZero(key, xmlElement):
-	"Get the evaluated value as a float with a default of zero."
-	return getEvaluatedFloatDefault( 0.0, key, xmlElement )
-
-def getEvaluatedInt(key, xmlElement):
+def getEvaluatedInt(key, xmlElement=None):
 	"Get the evaluated value as an int."
+	if xmlElement == None:
+		return None
 	if key in xmlElement.attributeDictionary:
 		try:
 			return getIntFromFloatString(getEvaluatedValueObliviously(key, xmlElement))
@@ -331,20 +332,12 @@ def getEvaluatedIntByKeys(defaultInt, keys, xmlElement):
 		defaultInt = getEvaluatedIntDefault(defaultInt, key, xmlElement)
 	return defaultInt
 
-def getEvaluatedIntDefault(defaultInt, key, xmlElement):
+def getEvaluatedIntDefault(defaultInt, key, xmlElement=None):
 	"Get the evaluated value as an int."
 	evaluatedInt = getEvaluatedInt(key, xmlElement)
 	if evaluatedInt == None:
 		return defaultInt
 	return evaluatedInt
-
-def getEvaluatedIntOne(key, xmlElement):
-	"Get the evaluated value as an int with a default of one."
-	return getEvaluatedIntDefault( 1, key, xmlElement )
-
-def getEvaluatedIntZero(key, xmlElement):
-	"Get the evaluated value as an int with a default of zero."
-	return getEvaluatedIntDefault( 0, key, xmlElement )
 
 def getEvaluatedLinkValue(word, xmlElement):
 	"Get the evaluated link value."
@@ -354,21 +347,25 @@ def getEvaluatedLinkValue(word, xmlElement):
 		return getEvaluatedExpressionValue(word, xmlElement)
 	return word
 
-def getEvaluatedString(key, xmlElement):
+def getEvaluatedString(key, xmlElement=None):
 	"Get the evaluated value as a string."
+	if xmlElement == None:
+		return None
 	if key in xmlElement.attributeDictionary:
 		return str(getEvaluatedValueObliviously(key, xmlElement))
 	return None
 
-def getEvaluatedStringDefault(defaultString, key, xmlElement):
+def getEvaluatedStringDefault(defaultString, key, xmlElement=None):
 	"Get the evaluated value as a string."
 	evaluatedString = getEvaluatedString(key, xmlElement)
 	if evaluatedString == None:
 		return defaultString
 	return evaluatedString
 
-def getEvaluatedValue(key, xmlElement):
+def getEvaluatedValue(key, xmlElement=None):
 	"Get the evaluated value."
+	if xmlElement == None:
+		return None
 	if key in xmlElement.attributeDictionary:
 		return getEvaluatedValueObliviously(key, xmlElement)
 	return None
@@ -530,6 +527,8 @@ def getIsQuoted(word):
 
 def getLayerThickness(xmlElement):
 	"Get the layer thickness."
+	if xmlElement == None:
+		return 0.4
 	return xmlElement.getCascadeFloat(0.4, 'layerThickness')
 
 def getMatchingPlugins( namePathDictionary, xmlElement ):
@@ -553,6 +552,14 @@ def getNextChildIndex(xmlElement):
 		if child == xmlElement:
 			return childIndex + 1
 	return len( xmlElement.parent.children )
+
+def getOverhangSpan(xmlElement):
+	"Get the overhang span."
+	return xmlElement.getCascadeFloat(0.0, 'overhangSpan')
+
+def getOverhangSupportAngle(xmlElement):
+	"Get the overhang support angle in radians."
+	return math.radians(xmlElement.getCascadeFloat(45.0, 'overhangSupportAngle'))
 
 def getPathByKey(key, xmlElement):
 	"Get path from prefix and xml element."
@@ -579,7 +586,7 @@ def getPathByList( vertexList ):
 		path.append(vector3)
 	return path
 
-def getPathByPrefix( path, prefix, xmlElement ):
+def getPathByPrefix(path, prefix, xmlElement):
 	"Get path from prefix and xml element."
 	if len(path) < 2:
 		print('Warning, bug, path is too small in evaluate in setPathByPrefix.')
@@ -632,11 +639,11 @@ def getSheetThickness(xmlElement):
 
 def getSidesBasedOnPrecision(radius, xmlElement):
 	"Get the number of poygon sides."
-	return math.ceil(math.sqrt(0.5 * radius * math.pi * math.pi / getPrecision(xmlElement)))
+	return int(math.ceil(math.sqrt(0.5 * radius * math.pi * math.pi / getPrecision(xmlElement))))
 
 def getSidesMinimumThreeBasedOnPrecision(radius, xmlElement):
 	"Get the number of poygon sides, with a minimum of three."
-	return max(getSidesBasedOnPrecision(radius, xmlElement), 3.0)
+	return max(getSidesBasedOnPrecision(radius, xmlElement), 3)
 
 def getSidesMinimumThreeBasedOnPrecisionSides(radius, xmlElement):
 	"Get the number of poygon sides, with a minimum of three."
@@ -681,7 +688,7 @@ def getTransformedPathByKey(key, xmlElement):
 		return []
 	return xmlElementObject.getTransformedPaths()[0]
 
-def getTransformedPathByPrefix( path, prefix, xmlElement ):
+def getTransformedPathByPrefix(path, prefix, xmlElement):
 	"Get path from prefix and xml element."
 	if len(path) < 2:
 		print('Warning, bug, path is too small in evaluate in setPathByPrefix.')
@@ -815,9 +822,9 @@ def getVector3ByPrefixes( prefixes, vector3, xmlElement ):
 def getVector3FromXMLElement(xmlElement):
 	"Get vector3 from xml element."
 	vector3 = Vector3(
-		getEvaluatedFloatZero('x', xmlElement),
-		getEvaluatedFloatZero('y', xmlElement),
-		getEvaluatedFloatZero('z', xmlElement))
+		getEvaluatedFloatDefault(0.0, 'x', xmlElement),
+		getEvaluatedFloatDefault(0.0, 'y', xmlElement),
+		getEvaluatedFloatDefault(0.0, 'z', xmlElement))
 	return getCumulativeVector3('', vector3, xmlElement)
 
 def getVector3IfNone(vector3):

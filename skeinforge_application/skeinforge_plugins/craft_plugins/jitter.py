@@ -118,7 +118,7 @@ def isLoopNumberEqual( betweenX, betweenXIndex, loopNumber ):
 		return False
 	return betweenX[ betweenXIndex ].index == loopNumber
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Jitter a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -138,7 +138,7 @@ class JitterRepository:
 
 	def execute(self):
 		"Jitter button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -150,6 +150,7 @@ class JitterSkein:
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRateMinute = None
 		self.isLoopPerimeter = False
+		self.layerCount = settings.LayerCount()
 		self.layerGolden = 0.0
 		self.lineIndex = 0
 		self.lines = None
@@ -201,8 +202,8 @@ class JitterSkein:
 		"Parse gcode text and store the jitter gcode."
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization( jitterRepository )
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseAddJitter(line)
 		return self.distanceFeedRate.output.getvalue()
 
@@ -224,9 +225,9 @@ class JitterSkein:
 
 	def isNextExtruderOn(self):
 		"Determine if there is an extruder on command before a move command."
-		line = self.lines[ self.lineIndex ]
+		line = self.lines[self.lineIndex]
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		for afterIndex in xrange( self.lineIndex + 1, len( self.lines ) ):
+		for afterIndex in xrange( self.lineIndex + 1, len(self.lines) ):
 			line = self.lines[ afterIndex ]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -252,6 +253,7 @@ class JitterSkein:
 			if self.loopPath != None:
 				self.addTailoredLoopPath()
 		elif firstWord == '(<layer>':
+			self.layerCount.printProgressIncrement('jitter')
 			self.layerGolden += 0.61803398874989479
 			self.layerJitter = self.jitter * ( math.fmod( self.layerGolden, 1.0 ) - 0.5 )
 		elif firstWord == '(<loop>' or firstWord == '(<perimeter>':
@@ -259,12 +261,12 @@ class JitterSkein:
 		self.distanceFeedRate.addLine(line)
 
 	def parseInitialization( self, jitterRepository ):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> jitter </procedureDone>)')
 				return
@@ -280,8 +282,8 @@ class JitterSkein:
 
 def main():
 	"Display the jitter dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

@@ -78,7 +78,7 @@ def getFaceGivenLine( line, triangleMesh ):
 		faceGivenLine.vertexIndexes.append(vertexIndex)
 	return faceGivenLine
 
-def getCarving( fileName = ''):
+def getCarving(fileName=''):
 	"Get the triangle mesh for the obj file."
 	if fileName == '':
 		return None

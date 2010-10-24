@@ -199,7 +199,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 
 <dl><dt><a name="ArcPointSkein-getCornerFeedRate"><strong>getCornerFeedRate</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;feed&nbsp;rate,&nbsp;which&nbsp;may&nbsp;be&nbsp;based&nbsp;on&nbsp;the&nbsp;intermediate&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
-<dl><dt><a name="ArcPointSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, filletRepository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="ArcPointSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="ArcPointSkein-getExtruderOffReversalPoint"><strong>getExtruderOffReversalPoint</strong></a>(self, afterSegment, afterSegmentComplex, beforeSegment, beforeSegmentComplex, location)</dt><dd><tt>If&nbsp;the&nbsp;extruder&nbsp;is&nbsp;off&nbsp;and&nbsp;the&nbsp;path&nbsp;is&nbsp;reversing,&nbsp;add&nbsp;intermediate&nbsp;slow&nbsp;points.</tt></dd></dl>
 
@@ -207,7 +207,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 
 <dl><dt><a name="ArcPointSkein-linearMove"><strong>linearMove</strong></a>(self, splitLine)</dt><dd><tt>Bevel&nbsp;a&nbsp;linear&nbsp;move.</tt></dd></dl>
 
-<dl><dt><a name="ArcPointSkein-parseInitialization"><strong>parseInitialization</strong></a>(self, filletRepository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
+<dl><dt><a name="ArcPointSkein-parseInitialization"><strong>parseInitialization</strong></a>(self, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
 <dl><dt><a name="ArcPointSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
@@ -246,7 +246,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 
 <dl><dt><a name="ArcRadiusSkein-getCornerFeedRate"><strong>getCornerFeedRate</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;feed&nbsp;rate,&nbsp;which&nbsp;may&nbsp;be&nbsp;based&nbsp;on&nbsp;the&nbsp;intermediate&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
-<dl><dt><a name="ArcRadiusSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, filletRepository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="ArcRadiusSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="ArcRadiusSkein-getExtruderOffReversalPoint"><strong>getExtruderOffReversalPoint</strong></a>(self, afterSegment, afterSegmentComplex, beforeSegment, beforeSegmentComplex, location)</dt><dd><tt>If&nbsp;the&nbsp;extruder&nbsp;is&nbsp;off&nbsp;and&nbsp;the&nbsp;path&nbsp;is&nbsp;reversing,&nbsp;add&nbsp;intermediate&nbsp;slow&nbsp;points.</tt></dd></dl>
 
@@ -254,7 +254,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 
 <dl><dt><a name="ArcRadiusSkein-linearMove"><strong>linearMove</strong></a>(self, splitLine)</dt><dd><tt>Bevel&nbsp;a&nbsp;linear&nbsp;move.</tt></dd></dl>
 
-<dl><dt><a name="ArcRadiusSkein-parseInitialization"><strong>parseInitialization</strong></a>(self, filletRepository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
+<dl><dt><a name="ArcRadiusSkein-parseInitialization"><strong>parseInitialization</strong></a>(self, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
 <dl><dt><a name="ArcRadiusSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
@@ -280,7 +280,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 
 <dl><dt><a name="ArcSegmentSkein-getCornerFeedRate"><strong>getCornerFeedRate</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;feed&nbsp;rate,&nbsp;which&nbsp;may&nbsp;be&nbsp;based&nbsp;on&nbsp;the&nbsp;intermediate&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
-<dl><dt><a name="ArcSegmentSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, filletRepository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="ArcSegmentSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="ArcSegmentSkein-getExtruderOffReversalPoint"><strong>getExtruderOffReversalPoint</strong></a>(self, afterSegment, afterSegmentComplex, beforeSegment, beforeSegmentComplex, location)</dt><dd><tt>If&nbsp;the&nbsp;extruder&nbsp;is&nbsp;off&nbsp;and&nbsp;the&nbsp;path&nbsp;is&nbsp;reversing,&nbsp;add&nbsp;intermediate&nbsp;slow&nbsp;points.</tt></dd></dl>
 
@@ -288,7 +288,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 
 <dl><dt><a name="ArcSegmentSkein-linearMove"><strong>linearMove</strong></a>(self, splitLine)</dt><dd><tt>Bevel&nbsp;a&nbsp;linear&nbsp;move.</tt></dd></dl>
 
-<dl><dt><a name="ArcSegmentSkein-parseInitialization"><strong>parseInitialization</strong></a>(self, filletRepository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
+<dl><dt><a name="ArcSegmentSkein-parseInitialization"><strong>parseInitialization</strong></a>(self, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
 <dl><dt><a name="ArcSegmentSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
@@ -308,7 +308,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 
 <dl><dt><a name="BevelSkein-getCornerFeedRate"><strong>getCornerFeedRate</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;feed&nbsp;rate,&nbsp;which&nbsp;may&nbsp;be&nbsp;based&nbsp;on&nbsp;the&nbsp;intermediate&nbsp;feed&nbsp;rate.</tt></dd></dl>
 
-<dl><dt><a name="BevelSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, filletRepository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="BevelSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="BevelSkein-getExtruderOffReversalPoint"><strong>getExtruderOffReversalPoint</strong></a>(self, afterSegment, afterSegmentComplex, beforeSegment, beforeSegmentComplex, location)</dt><dd><tt>If&nbsp;the&nbsp;extruder&nbsp;is&nbsp;off&nbsp;and&nbsp;the&nbsp;path&nbsp;is&nbsp;reversing,&nbsp;add&nbsp;intermediate&nbsp;slow&nbsp;points.</tt></dd></dl>
 
@@ -316,7 +316,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 
 <dl><dt><a name="BevelSkein-linearMove"><strong>linearMove</strong></a>(self, splitLine)</dt><dd><tt>Bevel&nbsp;a&nbsp;linear&nbsp;move.</tt></dd></dl>
 
-<dl><dt><a name="BevelSkein-parseInitialization"><strong>parseInitialization</strong></a>(self, filletRepository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
+<dl><dt><a name="BevelSkein-parseInitialization"><strong>parseInitialization</strong></a>(self, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
 <dl><dt><a name="BevelSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
@@ -343,8 +343,8 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.craft_
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, filletRepository<font color="#909090">=None</font>)</dt><dd><tt>Fillet&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, filletRepository<font color="#909090">=None</font>)</dt><dd><tt>Fillet&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Fillet&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Fillet&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;fillet&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Fillet&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.&nbsp;Depending&nbsp;on&nbsp;the&nbsp;settings,&nbsp;either&nbsp;arcPoint,&nbsp;arcRadius,&nbsp;arcSegment,&nbsp;bevel&nbsp;or&nbsp;do&nbsp;nothing.</tt></dd></dl>

@@ -123,7 +123,7 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, gcodeText = '', repository = None ):
+def getCraftedText( fileName, gcodeText = '', repository=None):
 	"Get chopped text."
 	if fileName.endswith('.svg'):
 		gcodeText = gcodec.getTextIfEmpty(fileName, gcodeText)
@@ -141,7 +141,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return ChopRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Chop a GNU Triangulated Surface file.  If no fileName is specified, chop the first GNU Triangulated Surface file in this folder."
 	startTime = time.time()
 	print('File ' + gcodec.getSummarizedFileName(fileName) + ' is being chopped.')
@@ -185,7 +185,7 @@ class ChopRepository:
 
 	def execute(self):
 		"Chop button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypes(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -225,8 +225,8 @@ class ChopSkein:
 
 def main():
 	"Display the chop dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

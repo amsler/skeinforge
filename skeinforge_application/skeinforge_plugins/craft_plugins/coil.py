@@ -70,11 +70,11 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, gcodeText = '', repository = None ):
+def getCraftedText( fileName, gcodeText = '', repository=None):
 	"Coil the file or gcodeText."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty(fileName, gcodeText), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Coil a gcode linear move gcodeText."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'coil'):
 		return gcodeText
@@ -82,13 +82,13 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 		repository = settings.getReadRepository( CoilRepository() )
 	if not repository.activateCoil.value:
 		return gcodeText
-	return CoilSkein().getCraftedGcode( gcodeText, repository )
+	return CoilSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
 	"Get the repository constructor."
 	return CoilRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Coil a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
@@ -108,7 +108,7 @@ class CoilRepository:
 
 	def execute(self):
 		"Coil button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -130,13 +130,13 @@ class CoilSkein:
 		self.distanceFeedRate.addLine('(<layer> %s )' % z ) # Indicate that a new layer is starting.
 		self.distanceFeedRate.addLine('(<surroundingLoop>)')
 		thread = []
-		for boundaryLayerIndex in xrange( 1, len( boundaryLayers ) - 1 ):
-			boundaryLayer = boundaryLayers[ boundaryLayerIndex ]
-			boundaryLayerBegin = boundaryLayers[ boundaryLayerIndex - 1 ]
-			boundaryLayerEnd = boundaryLayers[ boundaryLayerIndex + 1 ]
-			beginLocation = Vector3( 0.0, 0.0, 0.5 * ( boundaryLayerBegin.z + boundaryLayer.z ) )
-			outsetLoop = intercircle.getLargestInsetLoopFromLoop( boundaryLayer.loops[0], - radius )
-			self.addCoilToThread( beginLocation, 0.5 * ( boundaryLayer.z + boundaryLayerEnd.z ), outsetLoop, thread )
+		for boundaryLayerIndex in xrange(1, len(boundaryLayers) - 1):
+			boundaryLayer = boundaryLayers[boundaryLayerIndex]
+			boundaryLayerBegin = boundaryLayers[boundaryLayerIndex - 1]
+			boundaryLayerEnd = boundaryLayers[boundaryLayerIndex + 1]
+			beginLocation = Vector3(0.0, 0.0, 0.5 * (boundaryLayerBegin.z + boundaryLayer.z))
+			outsetLoop = intercircle.getLargestInsetLoopFromLoop(boundaryLayer.loops[0], - radius)
+			self.addCoilToThread(beginLocation, 0.5 * (boundaryLayer.z + boundaryLayerEnd.z), outsetLoop, thread)
 		self.addGcodeFromThread(thread)
 		self.distanceFeedRate.addLine('(</surroundingLoop>)')
 		self.distanceFeedRate.addLine('(</layer>)')
@@ -153,6 +153,7 @@ class CoilSkein:
 		if zRange >= 0.0:
 			zIncrement = zRange / numberOfLayersFloat
 		for layerIndex in xrange( numberOfLayers ):
+			settings.printProgressByNumber(layerIndex, numberOfLayers, 'coil')
 			boundaryLayers = self.boundaryLayers
 			if layerIndex % 2 == 1:
 				boundaryLayers = self.boundaryReverseLayers
@@ -195,7 +196,7 @@ class CoilSkein:
 			self.distanceFeedRate.addGcodeMovementZ( location.dropAxis(2), location.z )
 		self.distanceFeedRate.addLine('M103') # Turn extruder off.
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the coil gcode."
 		self.repository = repository
 		self.lines = gcodec.getTextLines(gcodeText)
@@ -224,7 +225,7 @@ class CoilSkein:
 					boundaryLayer.loops.append( boundaryLoop )
 				boundaryLoop.append( location.dropAxis(2) )
 			elif firstWord == '(<layer>':
-				boundaryLayer = euclidean.LoopLayer( float(splitLine[1]) )
+				boundaryLayer = euclidean.LoopLayer(float(splitLine[1]))
 				self.boundaryLayers.append( boundaryLayer )
 			elif firstWord == '(</extrusion>)':
 				self.shutdownLines = [ line ]
@@ -235,12 +236,12 @@ class CoilSkein:
 		self.boundaryReverseLayers.reverse()
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> coil </procedureDone>)')
 				return
@@ -253,11 +254,11 @@ class CoilSkein:
 
 	def parseUntilLayer(self):
 		"Parse until the layer line and add it to the coil skein."
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(<layer>':
 				return
 			self.distanceFeedRate.addLine(line)
@@ -265,8 +266,8 @@ class CoilSkein:
 
 def main():
 	"Display the coil dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

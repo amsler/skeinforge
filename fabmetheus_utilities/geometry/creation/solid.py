@@ -21,18 +21,20 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = 'GPL 3.0'
 
 
-def getGeometryOutput(xmlElement):
-	"Get triangle mesh from attribute dictionary."
+def getGeometryOutput(derivation, xmlElement):
+	"Get geometry output from paths."
+	if derivation == None:
+		derivation = SolidDerivation()
+		derivation.setToXMLElement(xmlElement)
 	geometryOutput = []
-	paths = evaluate.getPathsByKeys( ['path', 'paths', 'target'], xmlElement )
-	for path in paths:
+	for path in derivation.target:
 		sideLoop = SideLoop(path)
 		geometryOutput += getGeometryOutputByLoop( sideLoop, xmlElement )
 	return getUnpackedLoops(geometryOutput)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
 	"Get triangle mesh from attribute dictionary by arguments."
-	return getGeometryOutput(xmlElement)
+	return getGeometryOutput(None, xmlElement)
 #
 #def getGeometryOutputByLoop( sideLoop, xmlElement ):
 #	"Get geometry output by side loop."
@@ -41,7 +43,7 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 #
 #def processXMLElement(xmlElement):
 #	"Process the xml element."
-#	processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement)
+#	processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
 
 #def processXMLElementByGeometry(geometryOutput, xmlElement):
 #	"Process the xml element by geometryOutput."
@@ -79,3 +81,19 @@ def processXMLElementByFunction(manipulationFunction, xmlElement):
 		return
 	lineation.processXMLElementByGeometry(target, xmlElement)
 	manipulationFunction(xmlElement, xmlElement)
+
+
+class SolidDerivation:
+	"Class to hold solid variables."
+	def __init__(self):
+		'Set defaults.'
+		self.target = []
+
+	def __repr__(self):
+		"Get the string representation of this SolidDerivation."
+		return str(self.__dict__)
+
+	def setToXMLElement(self, xmlElement):
+		"Set to the xmlElement."
+		if len(self.target) < 1:
+			self.target = evaluate.getTransformedPathsByKey('target', xmlElement)

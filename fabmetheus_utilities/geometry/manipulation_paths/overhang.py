@@ -39,7 +39,7 @@ def addUnsupportedPointIndexes( alongAway ):
 def alterClockwiseSupportedPath( alongAway, xmlElement ):
 	"Get clockwise path with overhangs carved out."
 	alongAway.bottomPoints = []
-	alongAway.overhangSpan = xmlElement.getCascadeFloat( 0.0, 'overhang.span')
+	alongAway.overhangSpan = evaluate.getOverhangSpan(xmlElement)
 	maximumY = - 987654321.0
 	minimumYPointIndex = 0
 	for pointIndex in xrange( len( alongAway.loop ) ):
@@ -107,9 +107,9 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 		return [loop]
 	if not evaluate.getEvaluatedBooleanDefault( True, prefix + 'activate', xmlElement ):
 		return [loop]
-	overhangAngle = math.radians( xmlElement.getCascadeFloat( 45.0, 'overhang.supportangle') )
+	overhangAngle = evaluate.getOverhangSupportAngle(xmlElement)
 	overhangPlaneAngle = euclidean.getWiddershinsUnitPolar( 0.5 * math.pi - overhangAngle )
-	overhangVerticalAngle = math.radians( evaluate.getEvaluatedFloatZero( prefix + 'inclination', xmlElement ) )
+	overhangVerticalAngle = math.radians( evaluate.getEvaluatedFloatDefault(0.0,  prefix + 'inclination', xmlElement ) )
 	if overhangVerticalAngle != 0.0:
 		overhangVerticalCosine = abs( math.cos( overhangVerticalAngle ) )
 		if overhangVerticalCosine == 0.0:
@@ -339,7 +339,7 @@ class OverhangWiddershinsLeft:
 		closestDistanceX = 987654321.0
 		for point in self.alongAway.bottomPoints:
 			distanceX = abs( point.x - self.bottomX )
-			if self.getIsOnside( point.x ):
+			if self.getIsOnside(point.x):
 				if distanceX < closestDistanceX:
 					closestDistanceX = distanceX
 					self.closestBottomPoint = point

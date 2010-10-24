@@ -2,13 +2,13 @@
 This page is in the table of contents.
 Postscript is an export canvas plugin to export the canvas to a postscript file.
 
-When the export menu item in the file menu in an analyze viewer tool, like skeinview or behold is clicked, the postscript dialog will be displayed.  When the 'Export to Postscript' button on that dialog is clicked, the canvas will be exported as a postscript file.  If the 'Postscript Program' is set to a program name, the postscript file will be sent to that program to be opened.  The default is gimp, the Gnu Image Manipulation Program (Gimp), which is open source, can open postscript and save in a variety of formats.  It is available at:
+When the export menu item in the file menu in an analyze viewer tool, like skeinlayer or skeiniso is clicked, the postscript dialog will be displayed.  When the 'Export to Postscript' button on that dialog is clicked, the canvas will be exported as a postscript file.  If the 'Postscript Program' is set to a program name, the postscript file will be sent to that program to be opened.  The default is gimp, the Gnu Image Manipulation Program (Gimp), which is open source, can open postscript and save in a variety of formats.  It is available at:
 http://www.gimp.org/
 
 If furthermore the 'File Extension' is set to a file extension, the postscript file will be sent to the program, along with the file extension for the converted output.  The default is blank because some systems do not have an image conversion program; if you have or will install an image conversion program, a common 'File Extension' is png.  A good open source conversion program is Image Magick, which is available at:
 http://www.imagemagick.org/script/index.php
 
-An export canvas plugin is a script in the export_canvas_plugins folder which has the function getNewRepository, and which has a repository class with the functions setCanvasFileNameSuffix to set variables and execute to save the file.  It is meant to be run from an analyze viewer tool, like skeinview or behold.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
+An export canvas plugin is a script in the export_canvas_plugins folder which has the function getNewRepository, and which has a repository class with the functions setCanvasFileNameSuffix to set variables and execute to save the file.  It is meant to be run from an analyze viewer tool, like skeinlayer or skeiniso.  To ensure that the plugin works on platforms which do not handle file capitalization properly, give the plugin a lower case name.
 
 """
 
@@ -36,7 +36,8 @@ class PostscriptRepository:
 	"A class to handle the export settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.postscript.html', '', self )
+		settings.addListsToRepository(
+			'skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.postscript.html', None, self )
 		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, '')
 		self.postscriptProgram = settings.StringSetting().getFromValue('Postscript Program:', self, 'gimp')
 

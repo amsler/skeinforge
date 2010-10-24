@@ -38,27 +38,27 @@ __license__ = 'GPL 3.0'
 
 
 def getCraftSequence():
-	"Get the extrusion craft sequence."
-	return 'carve,preface,widen,inset,fill,multiply,speed,temperature,raft,chamber,tower,jitter,clip,stretch,comb,cool,hop,wipe,oozebane,splodge,home,lash,fillet,limit,dimension,unpause,export'.split(',')
+	'Get the extrusion craft sequence.'
+	return 'carve,bottom,preface,widen,inset,fill,multiply,speed,temperature,raft,chamber,tower,jitter,clip,stretch,comb,cool,hop,wipe,oozebane,splodge,home,lash,fillet,limit,dimension,unpause,export'.split(',')
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get the repository constructor.'
 	return ExtrusionRepository()
 
 
 class ExtrusionRepository:
-	"A class to handle the export settings."
+	'A class to handle the export settings.'
 	def __init__(self):
-		"Set the default settings, execute title & settings fileName."
+		'Set the default settings, execute title & settings fileName.'
 		skeinforge_profile.addListsSetCraftProfile( getCraftSequence(), 'ABS', self, 'skeinforge_plugins.profile_plugins.extrusion.html')
 
 
 def main():
-	"Display the export dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	'Display the export dialog.'
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main()

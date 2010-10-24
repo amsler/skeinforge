@@ -111,11 +111,11 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, text = '', repository = None ):
+def getCraftedText( fileName, text = '', repository=None):
 	"Temperature the file or text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Temperature a gcode linear move text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'temperature'):
 		return gcodeText
@@ -123,13 +123,13 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 		repository = settings.getReadRepository( TemperatureRepository() )
 	if not repository.activateTemperature.value:
 		return gcodeText
-	return TemperatureSkein().getCraftedGcode( gcodeText, repository )
+	return TemperatureSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
 	"Get the repository constructor."
 	return TemperatureRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Temperature a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -160,7 +160,7 @@ class TemperatureRepository:
 
 	def execute(self):
 		"Temperature button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -172,7 +172,7 @@ class TemperatureSkein:
 		self.lineIndex = 0
 		self.lines = None
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the temperature gcode."
 		self.repository = repository
 		self.lines = gcodec.getTextLines(gcodeText)
@@ -187,12 +187,12 @@ class TemperatureSkein:
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> temperature </procedureDone>)')
 				return
@@ -211,8 +211,8 @@ class TemperatureSkein:
 
 def main():
 	"Display the temperature dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

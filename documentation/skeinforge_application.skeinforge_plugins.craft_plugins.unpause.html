@@ -144,9 +144,9 @@ The unpause tool has created the file:<br>
 
 <dl><dt><a name="UnpauseSkein-getUnpausedArcMovement"><strong>getUnpausedArcMovement</strong></a>(self, line, splitLine)</dt><dd><tt>Get&nbsp;an&nbsp;unpaused&nbsp;arc&nbsp;movement.</tt></dd></dl>
 
-<dl><dt><a name="UnpauseSkein-getUnpausedFeedRateMinute"><strong>getUnpausedFeedRateMinute</strong></a>(self, location, splitLine)</dt><dd><tt>Get&nbsp;the&nbsp;feed&nbsp;rate&nbsp;which&nbsp;will&nbsp;compensate&nbsp;for&nbsp;the&nbsp;pause.</tt></dd></dl>
-
 <dl><dt><a name="UnpauseSkein-getUnpausedLinearMovement"><strong>getUnpausedLinearMovement</strong></a>(self, line, splitLine)</dt><dd><tt>Get&nbsp;an&nbsp;unpaused&nbsp;linear&nbsp;movement.</tt></dd></dl>
+
+<dl><dt><a name="UnpauseSkein-getUnpausedMovement"><strong>getUnpausedMovement</strong></a>(self, distance, line, splitLine)</dt><dd><tt>Get&nbsp;an&nbsp;unpaused&nbsp;movement.</tt></dd></dl>
 
 <dl><dt><a name="UnpauseSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
@@ -159,7 +159,7 @@ The unpause tool has created the file:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, repository<font color="#909090">=None</font>)</dt><dd><tt>Unpause&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Unpause&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Unpause&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getSelectedPlugin"><strong>getSelectedPlugin</strong></a>(repository)</dt><dd><tt>Get&nbsp;the&nbsp;selected&nbsp;plugin.</tt></dd></dl>

@@ -74,11 +74,11 @@ __date__ = "$Date: 2008/28/04 $"
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, text = '', repository = None ):
+def getCraftedText( fileName, text = '', repository=None):
 	"Widen the preface file or text."
 	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
 
-def getCraftedTextFromText( gcodeText, repository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Widen the preface gcode text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'widen'):
 		return gcodeText
@@ -86,7 +86,7 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 		repository = settings.getReadRepository( WidenRepository() )
 	if not repository.activateWiden.value:
 		return gcodeText
-	return WidenSkein().getCraftedGcode( gcodeText, repository )
+	return WidenSkein().getCraftedGcode(gcodeText, repository)
 
 def getIntersectingWithinLoops( loop, loopList, outsetLoop ):
 	"Get the loops which are intersecting or which it is within."
@@ -123,7 +123,7 @@ def getWidenedLoop( loop, loopList, outsetLoop, radius ):
 		return loop
 	return euclidean.getLargestLoop( loopsUnified )
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Widen the carving of a gcode file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -142,7 +142,7 @@ class WidenRepository:
 
 	def execute(self):
 		"Widen button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -152,6 +152,7 @@ class WidenSkein:
 	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
+		self.layerCount = settings.LayerCount()
 		self.lineIndex = 0
 		self.rotatedBoundaryLayer = None
 
@@ -177,7 +178,7 @@ class WidenSkein:
 			widenedLoop = getWidenedLoop( widdershinsLoop, clockwiseInsetLoops, outsetLoop, self.perimeterWidth )
 			self.distanceFeedRate.addGcodeFromLoop( widenedLoop, rotatedBoundaryLayer.z )
 
-	def getCraftedGcode( self, gcodeText, repository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the widen gcode."
 		self.repository = repository
 		self.lines = gcodec.getTextLines(gcodeText)
@@ -187,12 +188,12 @@ class WidenSkein:
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'widen')
 			elif firstWord == '(<extrusion>)':
@@ -213,7 +214,8 @@ class WidenSkein:
 			location = gcodec.getLocationFromSplitLine(None, splitLine)
 			self.boundary.append( location.dropAxis(2) )
 		elif firstWord == '(<layer>':
-			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer( float(splitLine[1]) )
+			self.layerCount.printProgressIncrement('widen')
+			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer(float(splitLine[1]))
 			self.distanceFeedRate.addLine(line)
 		elif firstWord == '(</layer>)':
 			self.addWiden( self.rotatedBoundaryLayer )
@@ -227,8 +229,8 @@ class WidenSkein:
 
 def main():
 	"Display the widen dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

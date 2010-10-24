@@ -129,7 +129,7 @@ def getNewRepository():
 	"Get the repository constructor."
 	return CoolRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Cool a gcode linear move file.  Chain cool the gcode if it is not already cooled. If no fileName is specified, cool the first unmodified gcode file in this folder."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
@@ -156,7 +156,7 @@ class CoolRepository:
 
 	def execute(self):
 		"Cool button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -169,6 +169,7 @@ class CoolSkein:
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRateMinute = 960.0
 		self.highestZ = 1.0
+		self.layerCount = settings.LayerCount()
 		self.lineIndex = 0
 		self.lines = None
 		self.multiplier = 1.0
@@ -235,12 +236,12 @@ class CoolSkein:
 		"Add a line of temperature."
 		self.distanceFeedRate.addLine('M104 S' + euclidean.getRoundedToThreePlaces( temperature ) ) 
 
-	def getCoolMove( self, line, location, splitLine ):
+	def getCoolMove(self, line, location, splitLine):
 		"Add line to time spent on layer."
-		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
-		self.highestZ = max( location.z, self.highestZ )
-		self.addFlowRateMultipliedLineIfNecessary( self.oldFlowRate )
-		return self.distanceFeedRate.getLineWithZLimitedFeedRate( self.multiplier * self.feedRateMinute, line, location, splitLine )
+		self.feedRateMinute = gcodec.getFeedRateMinute(self.feedRateMinute, splitLine)
+		self.highestZ = max(location.z, self.highestZ)
+		self.addFlowRateMultipliedLineIfNecessary(self.oldFlowRate)
+		return self.distanceFeedRate.getLineWithFeedRate(self.multiplier * self.feedRateMinute, line, splitLine)
 
 	def getCraftedGcode( self, gcodeText, coolRepository ):
 		"Parse gcode text and store the cool gcode."
@@ -258,8 +259,8 @@ class CoolSkein:
 		halfCornerMargin = self.halfCorner + complex( margin, margin )
 		self.boundingRectangle.cornerMaximum -= halfCornerMargin
 		self.boundingRectangle.cornerMinimum += halfCornerMargin
-		for self.lineIndex in xrange( self.lineIndex, len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+			line = self.lines[self.lineIndex]
 			self.parseLine(line)
 		if coolRepository.turnFanOffAtEnding.value:
 			self.distanceFeedRate.addLine('M107')
@@ -270,7 +271,7 @@ class CoolSkein:
 		feedRateMinute = self.feedRateMinute
 		layerTime = 0.0
 		lastThreadLocation = self.oldLocation
-		for lineIndex in xrange( self.lineIndex, len( self.lines ) ):
+		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			line = self.lines[lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -286,12 +287,12 @@ class CoolSkein:
 		return layerTime
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == 'M108':
 				self.setOperatingFlowString(splitLine)
 			elif firstWord == '(<perimeterWidth>':
@@ -318,6 +319,7 @@ class CoolSkein:
 		elif firstWord == '(<boundaryPoint>':
 			self.boundaryLoop.append(gcodec.getLocationFromSplitLine(None, splitLine).dropAxis(2))
 		elif firstWord == '(<layer>':
+			self.layerCount.printProgressIncrement('cool')
 			self.distanceFeedRate.addLine(line)
 			self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(self.coolStartLines)
 			layerTime = self.getLayerTime()
@@ -360,8 +362,8 @@ class CoolSkein:
 
 def main():
 	"Display the cool dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

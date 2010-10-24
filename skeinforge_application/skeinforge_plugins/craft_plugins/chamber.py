@@ -155,25 +155,25 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, text = '', chamberRepository = None ):
+def getCraftedText(fileName, text='', repository=None):
 	"Chamber the file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), chamberRepository )
+	return getCraftedTextFromText(gcodec.getTextIfEmpty(fileName, text), repository)
 
-def getCraftedTextFromText( gcodeText, chamberRepository = None ):
+def getCraftedTextFromText(gcodeText, repository=None):
 	"Chamber a gcode linear move text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'chamber'):
 		return gcodeText
-	if chamberRepository == None:
-		chamberRepository = settings.getReadRepository( ChamberRepository() )
-	if not chamberRepository.activateChamber.value:
+	if repository == None:
+		repository = settings.getReadRepository(ChamberRepository())
+	if not repository.activateChamber.value:
 		return gcodeText
-	return ChamberSkein().getCraftedGcode( gcodeText, chamberRepository )
+	return ChamberSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
 	"Get the repository constructor."
 	return ChamberRepository()
 
-def writeOutput( fileName = ''):
+def writeOutput(fileName=''):
 	"Chamber a gcode linear move file."
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
@@ -196,7 +196,7 @@ class ChamberRepository:
 
 	def execute(self):
 		"Chamber button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled )
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
@@ -209,9 +209,9 @@ class ChamberSkein:
 		self.lineIndex = 0
 		self.lines = None
 
-	def getCraftedGcode( self, gcodeText, chamberRepository ):
+	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the chamber gcode."
-		self.chamberRepository = chamberRepository
+		self.repository = repository
 		self.lines = gcodec.getTextLines(gcodeText)
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:
@@ -219,12 +219,12 @@ class ChamberSkein:
 		return self.distanceFeedRate.output.getvalue()
 
 	def parseInitialization(self):
-		"Parse gcode initialization and store the parameters."
-		for self.lineIndex in xrange( len( self.lines ) ):
-			line = self.lines[ self.lineIndex ]
+		'Parse gcode initialization and store the parameters.'
+		for self.lineIndex in xrange(len(self.lines)):
+			line = self.lines[self.lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.parseSplitLine( firstWord, splitLine )
+			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureDone> chamber </procedureDone>)')
 				return
@@ -238,17 +238,17 @@ class ChamberSkein:
 		firstWord = splitLine[0]
 		if firstWord == '(<extrusion>)':
 			self.distanceFeedRate.addLine(line)
-			self.distanceFeedRate.addParameter('M140', self.chamberRepository.bedTemperature.value ) # Set bed temperature.
-			self.distanceFeedRate.addParameter('M141', self.chamberRepository.chamberTemperature.value ) # Set chamber temperature.
-			self.distanceFeedRate.addParameter('M142', self.chamberRepository.holdingForce.value ) # Set holding pressure.
+			self.distanceFeedRate.addParameter('M140', self.repository.bedTemperature.value ) # Set bed temperature.
+			self.distanceFeedRate.addParameter('M141', self.repository.chamberTemperature.value ) # Set chamber temperature.
+			self.distanceFeedRate.addParameter('M142', self.repository.holdingForce.value ) # Set holding pressure.
 			return
 		self.distanceFeedRate.addLine(line)
 
 
 def main():
 	"Display the chamber dialog."
-	if len( sys.argv ) > 1:
-		writeOutput(' '.join( sys.argv[1 :] ) )
+	if len(sys.argv) > 1:
+		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 
