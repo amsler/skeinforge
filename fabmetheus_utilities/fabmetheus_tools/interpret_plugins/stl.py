@@ -36,6 +36,7 @@ import __init__
 from fabmetheus_utilities.geometry.geometry_tools import face
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from struct import unpack
 
@@ -58,7 +59,7 @@ def addFacesGivenBinary( stlData, triangleMesh, vertexIndexTable ):
 
 def addFacesGivenText( stlText, triangleMesh, vertexIndexTable ):
 	"Add faces given stl text."
-	lines = gcodec.getTextLines( stlText )
+	lines = archive.getTextLines( stlText )
 	vertexes = []
 	for line in lines:
 		if line.find('vertex') != - 1:
@@ -74,7 +75,7 @@ def getCarving(fileName=''):
 	"Get the triangle mesh for the stl file."
 	if fileName == '':
 		return None
-	stlData = gcodec.getFileText( fileName, 'rb')
+	stlData = archive.getFileText( fileName, 'rb')
 	if stlData == '':
 		return None
 	triangleMesh = trianglemesh.TriangleMesh()

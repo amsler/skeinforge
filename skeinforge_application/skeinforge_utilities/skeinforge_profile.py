@@ -56,7 +56,7 @@ def addListsSetCraftProfile( craftSequence, defaultProfile, repository, fileName
 	repository.addListboxSelection = AddProfile().getFromProfileListboxSettingRepository( repository.profileListbox, repository )
 	repository.deleteListboxSelection = DeleteProfile().getFromProfileListboxSettingRepository( repository.profileListbox, repository )
 	directoryName = archive.getProfilesPath()
-	gcodec.makeDirectory(directoryName)
+	archive.makeDirectory(directoryName)
 	repository.windowPosition.value = '0+400'
 
 def addListsToCraftTypeRepository( fileNameHelp, repository ):
@@ -88,7 +88,7 @@ def getCraftTypePluginModule( craftTypeName = ''):
 	if craftTypeName == '':
 		craftTypeName = getCraftTypeName()
 	profilePluginsDirectoryPath = getPluginsDirectoryPath()
-	return gcodec.getModuleWithDirectoryPath( profilePluginsDirectoryPath, craftTypeName )
+	return archive.getModuleWithDirectoryPath( profilePluginsDirectoryPath, craftTypeName )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -96,11 +96,11 @@ def getNewRepository():
 
 def getPluginFileNames():
 	"Get analyze plugin fileNames."
-	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
+	return archive.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'profile_plugins') )
+	return archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'profile_plugins') )
 
 def getProfileDirectory():
 	"Get the profile directory."
@@ -215,7 +215,7 @@ class DeleteProfileDialog:
 		self.profileListboxSetting.listSetting.setValueToFolders()
 		if len( self.profileListboxSetting.listSetting.value ) < 1:
 			defaultSettingsDirectory = archive.getProfilesPath( os.path.join( self.profileListboxSetting.listSetting.craftTypeName, self.profileListboxSetting.defaultValue ) )
-			gcodec.makeDirectory( defaultSettingsDirectory )
+			archive.makeDirectory( defaultSettingsDirectory )
 			self.profileListboxSetting.listSetting.setValueToFolders()
 		lastSelectionIndex = min( lastSelectionIndex, len( self.profileListboxSetting.listSetting.value ) - 1 )
 		self.profileListboxSetting.value = self.profileListboxSetting.listSetting.value[ lastSelectionIndex ]
@@ -353,7 +353,7 @@ class ProfileRepository:
 		for craftRadio in self.craftRadios:
 			craftRadio.updateFunction = self.updateRelay
 		directoryName = archive.getProfilesPath()
-		gcodec.makeDirectory(directoryName)
+		archive.makeDirectory(directoryName)
 		self.windowPosition.value = '0+200'
 
 	def updateRelay(self):

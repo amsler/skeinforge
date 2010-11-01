@@ -1,19 +1,21 @@
 <?xml version='1.0' ?>
-<fabmetheus version="2010-04-04" overhangSupportAngle='35' overhangSpan='1' twistprecision="10" step='.2' >
+<fabmetheus twistprecision="10" step='.2' >
+	<circle id='circle' name='pillar' radius='9' />
+	<square name='pillar' size='[5,5]' translate.rectangular.y='=20' />
+	<extrude target='=document.getElementsByName(pillar)' />
+
+	<!--
 	<path id="vertex_holder">
 		<vertex x="8.8" y="7.7" z="2.9" />
 		<vertex x="0" y="0" z="2.9" />
 	</path>
-	<extrude target='=creation.getCircle(9)' end="=document.getElementByID($vertex_holder).getPaths()[0][0]" />
-
-	<!--
 	<path id="curve">
 		<vertex />
 		<arc x='40' y='40' radius='60' xAxisRotation='20' largeArcFlag='f' sweepFlag='f' />
 	</path>
 	<outline id='curve_outline' copy='true' name='write_test' target='=document.getElementByID(spiral)' radius='1' />
 	<outset id='inset_outline' copy='true' name='write_test' target='=document.getElementByID(curve_outline)' radius='3' />
-	<extrude id='inset_extrude' name='write_test' radius='8' end="=document.getElementByID($vertex_holder).getPaths()[0][0]" />
+	<extrude id='inset_extrude' name='write_test' radius='8' />
 	<outline id='curve_outline' copy='true' target='=document.getElementByID($curve)' radius='5' />
 	<outset id='inset_outline' copy='true' target='=document.getElementByID(curve_outline)' radius='2' />
 		
@@ -21,13 +23,9 @@
 			<ellipse cx="74.285713" cy="200" rx="30" ry="10">
 			</ellipse>
 		
-		<extrude target="=document.getElementByID(inset_outline)" end="=document.getElementByID($vertex_holder).getPaths()[0][0]" />
-		<cubic x='80' y='0' controlPoint1='[60,5]' />
-		<cubic x='120' y='20' controlPoint1='[100,15]' />
-		<extrude id="bracket test" scalepath='[0,0,0],[1,1,1],[0,0,2]' segments="5" target="[[],(0,-30),[20]],[ [5,-3],(5,-25),[12,-3]],[[30],(30,-10),[40]]" end.z="3.0" twist="30" y='-40' />
+		<extrude target="=document.getElementByID(inset_outline)" />
 		<polygon id="polygon test" threesidedpolygon="test" radius="20.0" sides="3" />
-		<extrude id="extrude crooked" id="extrude crooked" path='[0,0,0],[0,45,1],[33,0,2]' target="[0,0,0],[20,0,0],[0,10,0]" segments="5" y="50" end.z="3.0" />
-		<polygon id="heptagon" roundOverSide='-0.2' segmentcenter='[]' wedge.center='[]' id="star" radius="20" sides="7" start='1' />
+		<extrude id="extrude crooked" id="extrude crooked" path='[0,0,0],[0,45,1],[33,0,2]' target="[0,0,0],[20,0,0],[0,10,0]" segments="5" y="50" />
 		<dictionary id="double y" return='=[x*2,y,z]' />
 		-->
 		<!--
@@ -44,13 +42,13 @@
 		</function>
 		<wedge id="wedgeSeven" target='=document.getElementByID($ring)' center='[]' />
 		<function id="minus80" parameters='u=-80' return='=u*2' />
-		<qqqextrude id="mesa" scalepath='[1,1],[1,1,1],[0.5,0.5,1],[0.5,0.5,2]' equation.rectangular='{"x":x+20}' target="=creation.getPolygon({rotate.z:20,rotationOverSide:0.5,radius:10,diameter.y:40,scale.rectangular.x:2})" end.z="3.0" qqqtranslate.rectangular.y='=document.getElementByID($triple)(-20)' matrix.matrix='[[1.0,0.0,0.0,22.2],[0.0, 1.0, 0.0, 77.0]]' />
+		<qqqextrude id="mesa" scalepath='[1,1],[1,1,1],[0.5,0.5,1],[0.5,0.5,2]' equation.rectangular='{"x":x+20}' target="=creation.getPolygon({rotate.z:20,rotationOverSide:0.5,radius:10,diameter.y:40,scale.rectangular.x:2})" qqqtranslate.rectangular.y='=document.getElementByID($triple)(-20)' matrix.matrix='[[1.0,0.0,0.0,22.2],[0.0, 1.0, 0.0, 77.0]]' />
 		<qqqtranslate target='=document.getElementByID($mesa)' rectangular.x='50' />
 		<scale id="septagon" target='=creation.getCircle(10, 60.0)' rectangular.x='1.00001' />
 		<translate target='=document.getElementByID($septagon)' rectangular.x='40' />
-		<qqqextrude id="exseptagon" target="=document.getElementByID($septagon)" end.z="3.0"  />
+		<qqqextrude id="exseptagon" target="=document.getElementByID($septagon)"  />
 		<qqqflip axis='[-1, 1]' origin='[]' reverse='f' target='=document.getElementByID($exseptagon)' />
-			<extrude id="extrude pentagon" segments="5" target="=document.getElementByID($ring)" end="=document.getElementByID($vertex_holder).getPaths()[0][0]" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
+			<extrude id="extrude pentagon" segments="5" target="=document.getElementByID($ring)" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
 			<outline closed='f' target='=document.getElementByID($septagon)' strokeWidth='3.0' />
 				<extrude id="extrude hook" maximumunbuckling='3.0' path='[0],[20],[0,-10],[-5,-5]' segments="5" target="[0,0],[2,3],[0,3]" tilttopz="1" x="80" />
 				-->

@@ -40,6 +40,7 @@ import __init__
 from fabmetheus_utilities.geometry.geometry_tools import face
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
@@ -52,7 +53,7 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 	"Initialize from a GNU Triangulated Surface Text."
 	if gnuTriangulatedSurfaceText == '':
 		return None
-	lines = gcodec.getTextLines( gnuTriangulatedSurfaceText )
+	lines = archive.getTextLines( gnuTriangulatedSurfaceText )
 	linesWithoutComments = []
 	for line in lines:
 		if len(line) > 0:
@@ -90,4 +91,4 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 
 def getCarving(fileName):
 	"Get the carving for the gts file."
-	return getFromGNUTriangulatedSurfaceText( gcodec.getFileText(fileName), trianglemesh.TriangleMesh() )
+	return getFromGNUTriangulatedSurfaceText( archive.getFileText(fileName), trianglemesh.TriangleMesh() )

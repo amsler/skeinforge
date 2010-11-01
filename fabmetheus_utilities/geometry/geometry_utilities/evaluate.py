@@ -109,9 +109,24 @@ def convertToPaths(dictionary):
 		value = dictionary[key]
 		if value.__class__.__name__ == 'XMLElement':
 			if value.object != None:
-				dictionary[key] = getFloatListListsByPaths( value.object.getPaths() )
+				dictionary[key] = getFloatListListsByPaths(value.object.getPaths())
 		else:
 			convertToPaths(dictionary[key])
+
+def convertToTransformedPaths(dictionary):
+	'Recursively convert any XMLElements to paths.'
+	if dictionary.__class__ == Vector3 or dictionary.__class__.__name__ == 'Vector3Index':
+		return
+	keys = getKeys(dictionary)
+	if keys == None:
+		return
+	for key in keys:
+		value = dictionary[key]
+		if value.__class__.__name__ == 'XMLElement':
+			if value.object != None:
+				dictionary[key] = value.object.getTransformedPaths()
+		else:
+			convertToTransformedPaths(dictionary[key])
 
 def executeLeftOperations( evaluators, operationLevel ):
 	"Evaluate the expression value from the numeric and operation evaluators."
@@ -119,11 +134,11 @@ def executeLeftOperations( evaluators, operationLevel ):
 		evaluatorIndex = negativeIndex + len(evaluators)
 		evaluators[evaluatorIndex].executeLeftOperation( evaluators, evaluatorIndex, operationLevel )
 
-def executePairOperations( evaluators, operationLevel ):
+def executePairOperations(evaluators, operationLevel):
 	"Evaluate the expression value from the numeric and operation evaluators."
-	for negativeIndex in xrange( 1 - len(evaluators), - 1 ):
+	for negativeIndex in xrange(1 - len(evaluators), - 1):
 		evaluatorIndex = negativeIndex + len(evaluators)
-		evaluators[evaluatorIndex].executePairOperation( evaluators, evaluatorIndex, operationLevel )
+		evaluators[evaluatorIndex].executePairOperation(evaluators, evaluatorIndex, operationLevel)
 
 def getArchivableObjectAddToParent( archivableClass, xmlElement ):
 	"Get the archivable object and add it to the parent object."
@@ -136,7 +151,7 @@ def getArchivableObjectAddToParent( archivableClass, xmlElement ):
 
 def getBracketEvaluators(bracketBeginIndex, bracketEndIndex, evaluators):
 	'Get the bracket evaluators.'
-	return getEvaluatedExpressionValueEvaluators( evaluators[ bracketBeginIndex + 1 : bracketEndIndex ] )
+	return getEvaluatedExpressionValueEvaluators(evaluators[bracketBeginIndex + 1 : bracketEndIndex])
 
 def getBracketsExist(evaluators):
 	"Evaluate the expression value."
@@ -289,7 +304,8 @@ def getEvaluatedExpressionValueEvaluators(evaluators):
 	for negativeIndex in xrange( - len(evaluators), 0 ):
 		evaluatorIndex = negativeIndex + len(evaluators)
 		evaluators[evaluatorIndex].executePairOperation( evaluators, evaluatorIndex, 10 )
-	executePairOperations( evaluators, 0 )
+	for evaluatorIndex in xrange(len(evaluators) - 1, -1, -1):
+		evaluators[evaluatorIndex].executePairOperation(evaluators, evaluatorIndex, 0)
 	return evaluators
 
 def getEvaluatedFloat(key, xmlElement=None):
@@ -540,7 +556,7 @@ def getMatchingPlugins( namePathDictionary, xmlElement ):
 		if dotIndex > - 1:
 			keyUntilDot = key[: dotIndex]
 			if keyUntilDot in namePathDictionaryCopy:
-				pluginModule = gcodec.getModuleWithPath( namePathDictionaryCopy[ keyUntilDot ] )
+				pluginModule = archive.getModuleWithPath( namePathDictionaryCopy[ keyUntilDot ] )
 				del namePathDictionaryCopy[ keyUntilDot ]
 				if pluginModule != None:
 					matchingPlugins.append( pluginModule )
@@ -597,8 +613,8 @@ def getPathByPrefix(path, prefix, xmlElement):
 			path[ pointIndex ] = pathByKey[ pointIndex ]
 	else:
 		path = pathByKey
-	path[0] = getVector3ByPrefix( prefix + 'start', path[0], xmlElement )
-	path[-1] = getVector3ByPrefix( prefix + 'end', path[-1], xmlElement )
+	path[0] = getVector3ByPrefix( prefix + 'pathStart', path[0], xmlElement )
+	path[-1] = getVector3ByPrefix( prefix + 'pathEnd', path[-1], xmlElement )
 	return path
 
 def getPathsByKey(key, xmlElement):
@@ -626,7 +642,7 @@ def getPathsByLists(vertexLists):
 	"Get paths by lists."
 	vector3Lists = getVector3ListsRecursively(vertexLists)
 	paths = []
-	addToPathsRecursively( paths, vector3Lists )
+	addToPathsRecursively(paths, vector3Lists)
 	return paths
 
 def getPrecision(xmlElement):
@@ -699,8 +715,8 @@ def getTransformedPathByPrefix(path, prefix, xmlElement):
 			path[ pointIndex ] = pathByKey[ pointIndex ]
 	else:
 		path = pathByKey
-	path[0] = getVector3ByPrefix( prefix + 'start', path[0], xmlElement )
-	path[-1] = getVector3ByPrefix( prefix + 'end', path[-1], xmlElement )
+	path[0] = getVector3ByPrefix( prefix + 'pathStart', path[0], xmlElement )
+	path[-1] = getVector3ByPrefix( prefix + 'pathEnd', path[-1], xmlElement )
 	return path
 
 def getTransformedPathsByKey(key, xmlElement):
@@ -710,7 +726,7 @@ def getTransformedPathsByKey(key, xmlElement):
 	word = str(xmlElement.attributeDictionary[key]).strip()
 	evaluatedLinkValue = getEvaluatedLinkValue(word, xmlElement)
 	if evaluatedLinkValue.__class__ == dict or evaluatedLinkValue.__class__ == list:
-		convertToPaths(evaluatedLinkValue)
+		convertToTransformedPaths(evaluatedLinkValue)
 		return getPathsByLists(evaluatedLinkValue)
 	xmlElementObject = getXMLElementObject(evaluatedLinkValue)
 	if xmlElementObject == None:
@@ -1325,8 +1341,16 @@ class EvaluatorComma(Evaluator):
 	'Class to join two evaluators.'
 	def executePairOperation(self, evaluators, evaluatorIndex, operationLevel):
 		'Operate on two evaluators.'
-		if operationLevel == 0:
-			del evaluators[evaluatorIndex]
+		if operationLevel != 0:
+			return
+		previousIndex = evaluatorIndex - 1
+		if previousIndex < 0:
+			evaluators[evaluatorIndex].value = None
+			return
+		if evaluators[previousIndex].word == ',':
+			evaluators[evaluatorIndex].value = None
+			return
+		del evaluators[evaluatorIndex]
 
 
 class EvaluatorConcatenate(Evaluator):
@@ -1423,7 +1447,7 @@ class EvaluatorElement(Evaluator):
 			return
 		pluginModule = None
 		if moduleName in globalElementNameSet:
-			pluginModule = gcodec.getModuleWithPath(archive.getElementsPath(moduleName))
+			pluginModule = archive.getModuleWithPath(archive.getElementsPath(moduleName))
 		if pluginModule == None:
 			print('Warning, EvaluatorElement in evaluate can not get a pluginModule for:')
 			print(moduleName)
@@ -1528,11 +1552,11 @@ class EvaluatorFundamental(EvaluatorAttribute):
 			return
 		pluginModule = None
 		if moduleName in globalFundamentalNameSet:
-			pluginModule = gcodec.getModuleWithPath(archive.getFundamentalsPath(moduleName))
+			pluginModule = archive.getModuleWithPath(archive.getFundamentalsPath(moduleName))
 		else:
 			underscoredName = '_' + moduleName
 			if underscoredName in globalFundamentalNameSet:
-				pluginModule = gcodec.getModuleWithPath(archive.getFundamentalsPath(underscoredName))
+				pluginModule = archive.getModuleWithPath(archive.getFundamentalsPath(underscoredName))
 		if pluginModule == None:
 			print('Warning, EvaluatorFundamental in evaluate can not get a pluginModule for:')
 			print(moduleName)
@@ -1777,7 +1801,7 @@ class ModuleXMLElement:
 		xmlProcessor = xmlElement.getXMLProcessor()
 		if lowerClassName not in xmlProcessor.namePathDictionary:
 			return
-		self.pluginModule = gcodec.getModuleWithPath( xmlProcessor.namePathDictionary[ lowerClassName ] )
+		self.pluginModule = archive.getModuleWithPath( xmlProcessor.namePathDictionary[ lowerClassName ] )
 		if self.pluginModule == None:
 			return
 		self.elseElement = nextXMLElement
@@ -1797,9 +1821,9 @@ globalDictionaryOperatorBegin = {
 	'!=' : EvaluatorNotEqual,
 	'**' : EvaluatorPower }
 globalModuleEvaluatorDictionary = {}
-globalFundamentalNameSet = set(gcodec.getPluginFileNamesFromDirectoryPath(archive.getFundamentalsPath()))
+globalFundamentalNameSet = set(archive.getPluginFileNamesFromDirectoryPath(archive.getFundamentalsPath()))
 addPrefixDictionary(globalModuleEvaluatorDictionary, globalFundamentalNameSet, EvaluatorFundamental)
-globalElementNameSet = set(gcodec.getPluginFileNamesFromDirectoryPath(archive.getElementsPath()))
+globalElementNameSet = set(archive.getPluginFileNamesFromDirectoryPath(archive.getElementsPath()))
 addPrefixDictionary(globalModuleEvaluatorDictionary, globalElementNameSet, EvaluatorElement)
 globalSplitDictionaryOperator = {
 	'+' : EvaluatorAddition,

@@ -23,6 +23,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -63,11 +64,11 @@ def getGNUTranslatorGcodeFileTypeTuples():
 
 def getGNUTranslatorFilesUnmodified():
 	"Get the file types from the translators in the import plugins folder."
-	return gcodec.getFilesWithFileTypesWithoutWords( getImportPluginFileNames() ) + [ gcodec.getUnmodifiedGCodeFiles() ]
+	return archive.getFilesWithFileTypesWithoutWords(getImportPluginFileNames())
 
 def getImportPluginFileNames():
 	"Get interpret plugin fileNames."
-	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
+	return archive.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 
 def getInterpretPlugin(fileName):
 	"Get the interpret plugin for the file."
@@ -76,7 +77,7 @@ def getInterpretPlugin(fileName):
 		fileTypeDot = '.' + importPluginFileName
 		if fileName[ - len(fileTypeDot) : ].lower() == fileTypeDot:
 			importPluginsDirectoryPath = getPluginsDirectoryPath()
-			pluginModule = gcodec.getModuleWithDirectoryPath( importPluginsDirectoryPath, importPluginFileName )
+			pluginModule = archive.getModuleWithDirectoryPath( importPluginsDirectoryPath, importPluginFileName )
 			if pluginModule != None:
 				return pluginModule
 	print('Could not find plugin to handle ' + fileName )
@@ -88,7 +89,7 @@ def getNewRepository():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'interpret_plugins')
+	return archive.getAbsoluteFrozenFolderPath( __file__, 'interpret_plugins')
 
 def getTranslatorFileTypeTuples():
 	"Get the file types from the translators in the import plugins folder."
@@ -117,8 +118,8 @@ def getWindowAnalyzeFile(fileName):
 	suffixDirectoryName = os.path.dirname(suffixFileName)
 	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
-	gcodec.writeFileText( suffixFileName, interpretGcode )
-	print('The interpret file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
+	archive.writeFileText( suffixFileName, interpretGcode )
+	print('The interpret file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
 	print('It took %s to interpret the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	textProgram = repository.textProgram.value
 	if textProgram == '':

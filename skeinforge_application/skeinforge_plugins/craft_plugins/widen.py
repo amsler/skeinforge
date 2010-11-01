@@ -58,6 +58,7 @@ import __init__
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.geometry.geometry_utilities import booleansolid
 from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
@@ -76,7 +77,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text = '', repository=None):
 	"Widen the preface file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Widen the preface gcode text."
@@ -181,7 +182,7 @@ class WidenSkein:
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the widen gcode."
 		self.repository = repository
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:
 			self.parseLine(line)

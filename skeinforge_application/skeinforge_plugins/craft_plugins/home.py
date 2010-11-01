@@ -54,6 +54,7 @@ import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -71,7 +72,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, homeRepository = None ):
 	"Home a gcode linear move file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), homeRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), homeRepository )
 
 def getCraftedTextFromText( gcodeText, homeRepository = None ):
 	"Home a gcode linear move text."
@@ -162,10 +163,10 @@ class HomeSkein:
 		self.homingText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), homeRepository.nameOfHomingFile.value )
 		if len( self.homingText ) < 1:
 			return gcodeText
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.homeRepository = homeRepository
 		self.parseInitialization( homeRepository )
-		self.homingLines = gcodec.getTextLines( self.homingText )
+		self.homingLines = archive.getTextLines( self.homingText )
 		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			line = self.lines[self.lineIndex]
 			self.parseLine(line)

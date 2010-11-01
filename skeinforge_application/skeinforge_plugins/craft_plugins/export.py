@@ -76,10 +76,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_analyze
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
@@ -108,7 +109,7 @@ def getCraftedTextFromText( gcodeText, exportRepository = None ):
 
 def getDistanceGcode( exportText ):
 	"Get gcode lines with distance variable added."
-	lines = gcodec.getTextLines( exportText )
+	lines = archive.getTextLines( exportText )
 	oldLocation = None
 	for line in lines:
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
@@ -132,7 +133,7 @@ def getReplaced( exportText ):
 	replaceText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Replace.csv')
 	if replaceText == '':
 		return exportText
-	lines = gcodec.getTextLines( replaceText )
+	lines = archive.getTextLines( replaceText )
 	for line in lines:
 		splitLine = line.split('\t')
 		if len(splitLine) > 1:
@@ -143,7 +144,7 @@ def getSelectedPluginModule( plugins ):
 	"Get the selected plugin module."
 	for plugin in plugins:
 		if plugin.value:
-			return gcodec.getModuleWithDirectoryPath( plugin.directoryPath, plugin.name )
+			return archive.getModuleWithDirectoryPath( plugin.directoryPath, plugin.name )
 	return None
 
 def writeOutput(fileName=''):
@@ -154,7 +155,7 @@ def writeOutput(fileName=''):
 	exportRepository = ExportRepository()
 	settings.getReadRepository( exportRepository )
 	startTime = time.time()
-	print('File ' + gcodec.getSummarizedFileName(fileName) + ' is being chain exported.')
+	print('File ' + archive.getSummarizedFileName(fileName) + ' is being chain exported.')
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '_export.' + exportRepository.fileExtension.value
 	gcodeText = gcodec.getGcodeFileText( fileName, '')
 	procedures = skeinforge_craft.getProcedures('export', gcodeText )
@@ -164,8 +165,8 @@ def writeOutput(fileName=''):
 	skeinforge_analyze.writeOutput( fileName, suffixFileName, gcodeText )
 	if exportRepository.savePenultimateGcode.value:
 		penultimateFileName = fileName[ : fileName.rfind('.') ] + '_penultimate.gcode'
-		gcodec.writeFileText( penultimateFileName, gcodeText )
-		print('The penultimate file is saved as ' + gcodec.getSummarizedFileName( penultimateFileName ) )
+		archive.writeFileText( penultimateFileName, gcodeText )
+		print('The penultimate file is saved as ' + archive.getSummarizedFileName( penultimateFileName ) )
 	exportChainGcode = getCraftedTextFromText( gcodeText, exportRepository )
 	replaceableExportChainGcode = None
 	selectedPluginModule = getSelectedPluginModule( exportRepository.exportPlugins )
@@ -178,8 +179,8 @@ def writeOutput(fileName=''):
 			selectedPluginModule.writeOutput( suffixFileName, exportChainGcode )
 	if replaceableExportChainGcode != None:
 		replaceableExportChainGcode = getReplaced( replaceableExportChainGcode )
-		gcodec.writeFileText( suffixFileName, replaceableExportChainGcode )
-		print('The exported file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
+		archive.writeFileText( suffixFileName, replaceableExportChainGcode )
+		print('The exported file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
 	if exportRepository.alsoSendOutputTo.value != '':
 		if replaceableExportChainGcode == None:
 			replaceableExportChainGcode = selectedPluginModule.getOutput( exportChainGcode )
@@ -197,10 +198,10 @@ class ExportRepository:
 		self.activateExport = settings.BooleanSetting().getFromValue('Activate Export', self, True )
 		self.alsoSendOutputTo = settings.StringSetting().getFromValue('Also Send Output To:', self, '')
 		self.deleteComments = settings.BooleanSetting().getFromValue('Delete Comments', self, True )
-		exportPluginsFolderPath = gcodec.getAbsoluteFolderPath( __file__, 'export_plugins')
+		exportPluginsFolderPath = archive.getAbsoluteFrozenFolderPath( __file__, 'export_plugins')
 		exportStaticDirectoryPath = os.path.join( exportPluginsFolderPath, 'static_plugins')
-		exportPluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( exportPluginsFolderPath )
-		exportStaticPluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( exportStaticDirectoryPath )
+		exportPluginFileNames = archive.getPluginFileNamesFromDirectoryPath( exportPluginsFolderPath )
+		exportStaticPluginFileNames = archive.getPluginFileNamesFromDirectoryPath( exportStaticDirectoryPath )
 		self.exportLabel = settings.LabelDisplay().getFromName('Export Operations: ', self )
 		self.exportPlugins = []
 		exportLatentStringVar = settings.LatentStringVar()
@@ -241,7 +242,7 @@ class ExportSkein:
 
 	def getCraftedGcode( self, exportRepository, gcodeText ):
 		"Parse gcode text and store the export gcode."
-		lines = gcodec.getTextLines(gcodeText)
+		lines = archive.getTextLines(gcodeText)
 		for line in lines:
 			self.parseLine( exportRepository, line )
 		return self.output.getvalue()

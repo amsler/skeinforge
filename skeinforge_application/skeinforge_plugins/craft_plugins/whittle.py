@@ -47,16 +47,12 @@ The whittle tool has created the file:
 """
 
 from __future__ import absolute_import
-try:
-	import psyco
-	psyco.full()
-except:
-	pass
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities import gcodec
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
+from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -72,7 +68,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text = '', whittleRepository = None ):
 	"Whittle the preface file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), whittleRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), whittleRepository )
 
 def getCraftedTextFromText( gcodeText, whittleRepository = None ):
 	"Whittle the preface gcode text."
@@ -125,7 +121,7 @@ class WhittleSkein:
 	def getCraftedGcode( self, whittleRepository, gcodeText ):
 		"Parse gcode text and store the whittle gcode."
 		self.whittleRepository = whittleRepository
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:
 			self.parseLine(line)

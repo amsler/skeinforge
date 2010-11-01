@@ -1,6 +1,9 @@
 """
 Quadratic vertexes.
 
+From:
+http://www.w3.org/TR/SVG/paths.html#PathDataQuadraticBezierCommands
+
 """
 
 from __future__ import absolute_import
@@ -32,9 +35,7 @@ def getQuadraticPath(xmlElement):
 	if controlPoint == None:
 		oldControlPoint = evaluate.getVector3ByPrefixes(['controlPoint','controlPoint1'], None, previousXMLElement)
 		if oldControlPoint == None:
-			print('Warning, can not get oldControlPoint in getQuadraticPath in quadratic for:')
-			print(xmlElement)
-			return [end]
+			oldControlPoint = end
 		controlPoint = begin + begin - oldControlPoint
 		evaluate.addVector3ToXMLElement('controlPoint', controlPoint, xmlElement)
 	return svg_reader.getQuadraticPoints(begin, controlPoint, end, lineation.getNumberOfBezierPoints(begin, end, xmlElement))

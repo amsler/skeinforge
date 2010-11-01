@@ -163,6 +163,7 @@ class EquationResult:
 	"Class to get equation results."
 	def __init__( self, key, revolutions, xmlElement ):
 		"Initialize."
+		self.distance = 0.0
 		self.function = evaluate.Function( evaluate.getEvaluatorSplitWords(xmlElement.attributeDictionary[key]), xmlElement )
 		self.points = []
 		self.revolutions = revolutions
@@ -171,15 +172,18 @@ class EquationResult:
 		"Get return value."
 		if self.function == None:
 			return point
-		self.function.localDictionary['azimuth'] = math.degrees( math.atan2( point.y, point.x ) )
-		self.function.localDictionary['radius'] = abs( point.dropAxis() )
+		self.function.localDictionary['azimuth'] = math.degrees(math.atan2(point.y, point.x))
+		if len(self.points) > 0:
+			self.distance += abs(point - self.points[-1])
+		self.function.localDictionary['distance'] = self.distance
+		self.function.localDictionary['radius'] = abs(point.dropAxis())
 		if self.revolutions != None:
 			if len( self.points ) > 0:
-				self.revolutions += 0.5 / math.pi * euclidean.getAngleAroundZAxisDifference( point, self.points[-1] )
+				self.revolutions += 0.5 / math.pi * euclidean.getAngleAroundZAxisDifference(point, self.points[-1])
 			self.function.localDictionary['revolutions'] = self.revolutions
 		self.function.localDictionary['vertex'] = point
 		self.function.localDictionary['vertexes'] = self.points
-		self.function.localDictionary['vertexindex'] = len( self.points )
+		self.function.localDictionary['vertexindex'] = len(self.points)
 		self.function.localDictionary['x'] = point.x
 		self.function.localDictionary['y'] = point.y
 		self.function.localDictionary['z'] = point.z

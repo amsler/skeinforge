@@ -44,7 +44,7 @@ class PostscriptRepository:
 	def execute(self):
 		"Convert to postscript button has been clicked."
 		"Export the canvas as a postscript file."
-		postscriptFileName = gcodec.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )
+		postscriptFileName = archive.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )
 		boundingBox = self.canvas.bbox( settings.Tkinter.ALL ) # tuple (w, n, e, s)
 		boxW = boundingBox[0]
 		boxN = boundingBox[1]
@@ -68,7 +68,7 @@ class PostscriptRepository:
 				print('If so, try installing the %s program or look for another one, like the Gnu Image Manipulation Program (Gimp) which can be found at:' % postscriptProgram )
 				print('http://www.gimp.org/')
 			return
-		convertedFileName = gcodec.getFilePathWithUnderscoredBasename( postscriptFilePath, '.' + fileExtension + '"')
+		convertedFileName = archive.getFilePathWithUnderscoredBasename( postscriptFilePath, '.' + fileExtension + '"')
 		shellCommand += ' ' + convertedFileName
 		print('Sending the shell command:')
 		print( shellCommand )

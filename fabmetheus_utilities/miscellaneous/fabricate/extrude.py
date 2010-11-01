@@ -165,6 +165,7 @@ except:
 	print('Information on pySerial is at:\nhttp://pyserial.wiki.sourceforge.net/pySerial')
 
 from skeinforge_tools.skeinforge_utilities.vector3 import Vector3
+from skeinforge_tools.skeinforge_utilities import archive
 from skeinforge_tools.skeinforge_utilities import euclidean
 from skeinforge_tools.skeinforge_utilities import gcodec
 import math
@@ -188,7 +189,7 @@ def display( filename = ''):
 def displayFile( filename ):
 	"Parse a gcode file and display the commands."
 	print('File ' + filename + ' is being displayed.')
-	fileText = gcodec.getFileText( filename )
+	fileText = archive.getFileText( filename )
 	gcodec.writeFileMessageSuffix( filename, displayText(fileText), 'The gcode log file is saved as ', '_log')
 
 def displayFiles( filenames ):
@@ -214,7 +215,7 @@ def extrudeFile( filename ):
 	"""Parse a gcode file and send the commands to the extruder.
 	This function requires write access to the serial device, running as root is one way to get that access."""
 	print('File ' + filename + ' is being extruded.')
-	fileText = gcodec.getFileText( filename )
+	fileText = archive.getFileText( filename )
 	gcodec.writeFileMessageSuffix( filename, extrudeText(fileText), 'The gcode log file is saved as ', '_log')
 
 def extrudeFiles( filenames ):
@@ -232,7 +233,7 @@ def extrudeText(gcodeText):
 
 def getGCodeFilesWhichAreNotLogFiles():
 	"Get gcode files which are not log files."
-	return gcodec.getFilesWithFileTypeWithoutWords('gcode', ['_log'] )
+	return archive.getFilesWithFileTypeWithoutWords('gcode', ['_log'] )
 
 def getIntegerString(number):
 	"Get integer as string."

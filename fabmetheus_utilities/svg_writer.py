@@ -11,7 +11,9 @@ import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities.xml_simple_reader import XMLElement
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 import cStringIO
@@ -85,6 +87,29 @@ class SVGWriter:
 		self.pathXMLElement = self.graphicsCopy.getFirstChildWithClassName('path')
 		self.pathDictionary = self.pathXMLElement.attributeDictionary
 
+	def addOriginalAsComment(self, xmlElement):
+		"Add original xmlElement as a comment."
+		if xmlElement == None:
+			return
+		commentElement = XMLElement()
+		commentElement.className = 'comment'
+		xmlElementOutput = cStringIO.StringIO()
+		xmlElement.addXML(0, xmlElementOutput)
+		textLines = archive.getTextLines(xmlElementOutput.getvalue())
+		commentElementOutput = cStringIO.StringIO()
+		isComment = False
+		for textLine in textLines:
+			lineStripped = textLine.strip()
+			if lineStripped[: len('<!--')] == '<!--':
+				isComment = True
+			if not isComment:
+				if len(textLine) > 0:
+					commentElementOutput.write(textLine + '\n')
+			if '-->' in lineStripped:
+				isComment = False
+		commentElement.text = '<!-- Original XML Text:\n%s-->\n' % commentElementOutput.getvalue()
+		commentElement.setParentAddToChildren(self.svgElement)
+
 	def addRotatedLoopLayerToOutput( self, layerIndex, rotatedBoundaryLayer ):
 		"Add rotated boundary layer to the output."
 		self.addLayerBegin( layerIndex, rotatedBoundaryLayer )
@@ -107,7 +132,7 @@ class SVGWriter:
 		cornerMaximum = self.carving.getCarveCornerMaximum()
 		cornerMinimum = self.carving.getCarveCornerMinimum()
 		self.extent = cornerMaximum - cornerMinimum
-		svgTemplateText = gcodec.getFileTextInFileDirectory( __file__, os.path.join('templates', 'layer_template.svg') )
+		svgTemplateText = archive.getFileTextInFileDirectory( __file__, os.path.join('templates', 'layer_template.svg') )
 		self.xmlParser = XMLSimpleReader( fileName, None, svgTemplateText )
 		self.svgElement = self.xmlParser.getRoot()
 		if not self.addLayerTemplateToSVG:
@@ -150,8 +175,7 @@ class SVGWriter:
 			self.svgElement.getXMLElementByID('beginningOfControlSection').removeFromIDNameParent()
 			self.svgElement.getXMLElementByID('noJavascriptControls').removeFromIDNameParent()
 		self.graphicsXMLElement.removeFromIDNameParent()
-#		if xmlElement != None: #this adds the original file text to the svg file, which can cause trouble if the file text has path elements
-#			xmlElement.setParentAddToChildren(self.svgElement)
+		self.addOriginalAsComment(xmlElement)
 		output = cStringIO.StringIO()
 		output.write(self.xmlParser.beforeRoot)
 		self.svgElement.addXML(0, output)

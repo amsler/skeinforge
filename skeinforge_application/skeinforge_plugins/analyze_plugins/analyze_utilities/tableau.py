@@ -7,13 +7,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import zoom_in
-from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import zoom_out
 from fabmetheus_utilities.hidden_scrollbar import HiddenScrollbar
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import zoom_in
+from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import zoom_out
 import math
 import os
 
@@ -89,8 +89,8 @@ class ExportCanvasDialog:
 				repositoryDialog.setCanvasFileNameSuffix( self.canvas, self.skein.fileName, self.suffix )
 				settings.liftRepositoryDialogs( settings.globalRepositoryDialogListTable[ repositoryDialog ] )
 				return
-		exportCanvasPluginsFolderPath = gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'export_canvas_plugins')
-		pluginModule = gcodec.getModuleWithDirectoryPath( exportCanvasPluginsFolderPath, self.name )
+		exportCanvasPluginsFolderPath = archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'export_canvas_plugins')
+		pluginModule = archive.getModuleWithDirectoryPath( exportCanvasPluginsFolderPath, self.name )
 		if pluginModule == None:
 			return None
 		pluginRepository = pluginModule.getNewRepository()
@@ -178,8 +178,8 @@ class TableauWindow:
 		self.fileHelpMenuBar = settings.FileHelpMenuBar( self.root )
 		self.exportMenu = settings.Tkinter.Menu( self.fileHelpMenuBar.fileMenu, tearoff = 0 )
 		self.fileHelpMenuBar.fileMenu.add_cascade( label = "Export", menu = self.exportMenu, underline = 0 )
-		exportCanvasPluginsFolderPath = gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'export_canvas_plugins')
-		exportCanvasPluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath( exportCanvasPluginsFolderPath )
+		exportCanvasPluginsFolderPath = archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), 'export_canvas_plugins')
+		exportCanvasPluginFileNames = archive.getPluginFileNamesFromDirectoryPath( exportCanvasPluginsFolderPath )
 		for exportCanvasPluginFileName in exportCanvasPluginFileNames:
 			ExportCanvasDialog().addPluginToMenu( self.canvas, skein.fileName, self.exportMenu, exportCanvasPluginFileName, suffix )
 		self.fileHelpMenuBar.fileMenu.add_separator()
@@ -279,7 +279,7 @@ class TableauWindow:
 			photoImage = settings.Tkinter.PhotoImage( file = os.path.join( self.imagesDirectoryPath, fileName ), master = gridPosition.master )
 		except:
 			print('Image %s was not found in the images directory, so a text button will be substituted.' % fileName )
-		untilDotFileName = gcodec.getUntilDot(fileName)
+		untilDotFileName = archive.getUntilDot(fileName)
 		self.photoImages[ untilDotFileName ] = photoImage
 		return untilDotFileName
 

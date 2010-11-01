@@ -89,9 +89,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -107,7 +108,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, oozebaneRepository = None ):
 	"Oozebane a gcode linear move file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), oozebaneRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), oozebaneRepository )
 
 def getCraftedTextFromText( gcodeText, oozebaneRepository = None ):
 	"Oozebane a gcode linear move text."
@@ -288,7 +289,7 @@ class OozebaneSkein:
 
 	def getCraftedGcode( self, gcodeText, oozebaneRepository ):
 		"Parse gcode text and store the oozebane gcode."
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.oozebaneRepository = oozebaneRepository
 		self.parseInitialization( oozebaneRepository )
 		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):

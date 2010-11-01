@@ -63,8 +63,9 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities import gcodec
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
+from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -78,7 +79,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, lashRepository = None ):
 	"Get a lashed gcode linear move text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), lashRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), lashRepository )
 
 def getCraftedTextFromText( gcodeText, lashRepository = None ):
 	"Get a lashed gcode linear move text from text."
@@ -131,7 +132,7 @@ class LashSkein:
 
 	def getCraftedGcode( self, gcodeText, lashRepository ):
 		"Parse gcode text and store the lash gcode."
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.lashRepository = lashRepository
 		self.xBacklash = lashRepository.xBacklash.value
 		self.yBacklash = lashRepository.yBacklash.value

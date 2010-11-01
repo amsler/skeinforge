@@ -21,6 +21,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 import cStringIO
 import math
@@ -41,33 +42,6 @@ def addLineAndNewlineIfNecessary(line, output):
 		return
 	if not line.endswith('\n'):
 		output.write('\n')
-
-def addXMLLine(line, xmlLines):
-	'Get the all the xml lines of a text.'
-	strippedLine = line.strip()
-	if strippedLine[ : len('<!--') ] == '<!--':
-		endIndex = line.find('-->')
-		if endIndex != - 1:
-			endIndex += len('-->')
-			commentLine = line[: endIndex]
-			remainderLine = line[endIndex :].strip()
-			if len(remainderLine) > 0:
-				xmlLines.append(commentLine)
-				xmlLines.append(remainderLine)
-				return
-	xmlLines.append(line)
-
-def createInitFile():
-	'Create the __init__.py file.'
-	fileText = '__all__ = ' + str(getPythonFileNamesExceptInit())
-	writeFileText('__init__.py', fileText)
-
-def getAbsoluteFolderPath(filePath, folderName=''):
-	'Get the absolute folder path.'
-	absoluteFolderPath = os.path.dirname(os.path.abspath(filePath))
-	if folderName == '':
-		return absoluteFolderPath
-	return os.path.join(absoluteFolderPath, folderName)
 
 def getArcDistance(relativeLocation, splitLine):
 	'Get arc distance.'
@@ -119,54 +93,6 @@ def getFeedRateMinute(feedRateMinute, splitLine):
 		return getDoubleAfterFirstLetter( splitLine[indexOfF] )
 	return feedRateMinute
 
-def getFilePathWithUnderscoredBasename(fileName, suffix):
-	'Get the file path with all spaces in the basename replaced with underscores.'
-	suffixFileName = getUntilDot(fileName) + suffix
-	suffixDirectoryName = os.path.dirname(suffixFileName)
-	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
-	return os.path.join(suffixDirectoryName, suffixReplacedBaseName)
-
-def getFilesWithFileTypesWithoutWords(fileTypes, words = [], fileInDirectory=''):
-	'Get files which have a given file type, but with do not contain a word in a list.'
-	filesWithFileTypes = []
-	for fileType in fileTypes:
-		filesWithFileTypes += getFilesWithFileTypeWithoutWords(fileType, words, fileInDirectory)
-	filesWithFileTypes.sort()
-	return filesWithFileTypes
-
-def getFilesWithFileTypeWithoutWords(fileType, words = [], fileInDirectory=''):
-	'Get files which have a given file type, but with do not contain a word in a list.'
-	filesWithFileType = []
-	directoryName = os.getcwd()
-	if fileInDirectory != '':
-		directoryName = os.path.dirname(fileInDirectory)
-	directory = os.listdir(directoryName)
-	for fileName in directory:
-		joinedFileName = fileName
-		if fileInDirectory != '':
-			joinedFileName = os.path.join(directoryName, fileName)
-		if isFileWithFileTypeWithoutWords(fileType, joinedFileName, words):
-			filesWithFileType.append(joinedFileName)
-	filesWithFileType.sort()
-	return filesWithFileType
-
-def getFileText(fileName, readMode = 'r', printWarning=True):
-	'Get the entire text of a file.'
-	try:
-		file = open(fileName, readMode)
-		fileText = file.read()
-		file.close()
-		return fileText
-	except IOError:
-		if printWarning:
-			print('The file ' + fileName + ' does not exist.')
-		return ''
-
-def getFileTextInFileDirectory(fileInDirectory, fileName, readMode='r'):
-	'Get the entire text of a file in the directory of the file in directory.'
-	absoluteFilePathInFileDirectory = os.path.join(os.path.dirname(fileInDirectory), fileName)
-	return getFileText(absoluteFilePathInFileDirectory, readMode)
-
 def getFirstWord(splitLine):
 	'Get the first word of a split line.'
 	if len(splitLine) > 0:
@@ -182,7 +108,7 @@ def getGcodeFileText(fileName, gcodeText):
 	if gcodeText != '':
 		return gcodeText
 	if fileName.endswith('.gcode'):
-		return getFileText(fileName)
+		return archive.getFileText(fileName)
 	return ''
 
 def getLocationFromSplitLine(oldLocation, splitLine):
@@ -194,83 +120,6 @@ def getLocationFromSplitLine(oldLocation, splitLine):
 		getDoubleFromCharacterSplitLineValue('Y', splitLine, oldLocation.y),
 		getDoubleFromCharacterSplitLineValue('Z', splitLine, oldLocation.z))
 
-def getModuleWithDirectoryPath(directoryPath, fileName):
-	'Get the module from the fileName and folder name.'
-	if fileName == '':
-		print('The file name in getModule in gcodec was empty.')
-		return None
-	originalSystemPath = sys.path[:]
-	try:
-		sys.path.insert(0, directoryPath)
-		folderPluginsModule = __import__(fileName)
-		sys.path = originalSystemPath
-		return folderPluginsModule
-	except:
-		sys.path = originalSystemPath
-		print('')
-		print('Exception traceback in getModuleWithDirectoryPath in gcodec:')
-		traceback.print_exc(file=sys.stdout)
-		print('')
-		print('That error means; could not import a module with the fileName ' + fileName)
-		print('and an absolute directory name of ' + directoryPath)
-		print('')
-	return None
-
-def getModuleWithPath(path):
-	'Get the module from the path.'
-	return getModuleWithDirectoryPath(os.path.dirname(path), os.path.basename(path))
-
-def getPluginFileNamesFromDirectoryPath(directoryPath):
-	'Get the file names of the python plugins in the directory path.'
-	fileInDirectory = os.path.join(directoryPath, '__init__.py')
-	fullPluginFileNames = getPythonFileNamesExceptInit(fileInDirectory)
-	pluginFileNames = []
-	for fullPluginFileName in fullPluginFileNames:
-		pluginBasename = os.path.basename(fullPluginFileName)
-		pluginBasename = getUntilDot(pluginBasename)
-		pluginFileNames.append(pluginBasename)
-	return pluginFileNames
-
-def getPythonDirectoryNames(directoryName):
-	'Get the python directories.'
-	pythonDirectoryNames = []
-	directory = os.listdir(directoryName)
-	for fileName in directory:
-		subdirectoryName = os.path.join(directoryName, fileName)
-		if os.path.isdir(subdirectoryName):
-			if os.path.isfile(os.path.join(subdirectoryName, '__init__.py')):
-				pythonDirectoryNames.append(subdirectoryName)
-	return pythonDirectoryNames
-
-def getPythonDirectoryNamesRecursively(directoryName=''):
-	'Get the python directories recursively.'
-	recursivePythonDirectoryNames = []
-	if directoryName == '':
-		directoryName = os.getcwd()
-	if os.path.isfile(os.path.join(directoryName, '__init__.py')):
-		recursivePythonDirectoryNames.append(directoryName)
-		pythonDirectoryNames = getPythonDirectoryNames(directoryName)
-		for pythonDirectoryName in pythonDirectoryNames:
-			recursivePythonDirectoryNames += getPythonDirectoryNamesRecursively(pythonDirectoryName)
-	else:
-		return []
-	return recursivePythonDirectoryNames
-
-def getPythonFileNamesExceptInit(fileInDirectory=''):
-	'Get the python fileNames of the directory which the fileInDirectory is in, except for the __init__.py file.'
-	pythonFileNamesExceptInit = getFilesWithFileTypeWithoutWords('py', ['__init__.py'], fileInDirectory)
-	pythonFileNamesExceptInit.sort()
-	return pythonFileNamesExceptInit
-
-def getPythonFileNamesExceptInitRecursively(directoryName=''):
-	'Get the python fileNames of the directory recursively, except for the __init__.py files.'
-	pythonDirectoryNames = getPythonDirectoryNamesRecursively(directoryName)
-	pythonFileNamesExceptInitRecursively = []
-	for pythonDirectoryName in pythonDirectoryNames:
-		pythonFileNamesExceptInitRecursively += getPythonFileNamesExceptInit(os.path.join(pythonDirectoryName, '__init__.py'))
-	pythonFileNamesExceptInitRecursively.sort()
-	return pythonFileNamesExceptInitRecursively
-
 def getSplitLineBeforeBracketSemicolon(line):
 	'Get the split line before a bracket or semicolon.'
 	semicolonIndex = line.find(';')
@@ -281,13 +130,6 @@ def getSplitLineBeforeBracketSemicolon(line):
 		return line[: bracketIndex].split()
 	return line.split()
 
-def getStartsWithByList(word, wordPrefixes):
-	'Determine if the word starts with a prefix in a list.'
-	for wordPrefix in wordPrefixes:
-		if word.startswith(wordPrefix):
-			return True
-	return False
-
 def getStringFromCharacterSplitLine(character, splitLine):
 	'Get the string after the first occurence of the character in the split line.'
 	indexOfCharacter = indexOfStartingWithSecond(character, splitLine)
@@ -295,114 +137,12 @@ def getStringFromCharacterSplitLine(character, splitLine):
 		return None
 	return splitLine[indexOfCharacter][1 :]
 
-def getSummarizedFileName(fileName):
-	'Get the fileName basename if the file is in the current working directory, otherwise return the original full name.'
-	if os.getcwd() == os.path.dirname(fileName):
-		return os.path.basename(fileName)
-	return fileName
-
-def getTextIfEmpty(fileName, text):
-	'Get the text from a file if it the text is empty.'
-	if text != '':
-		return text
-	return getFileText(fileName)
-
-def getTextLines(text):
-	'Get the all the lines of text of a text.'
-	return text.replace('\r', '\n').replace('\n\n', '\n').split('\n')
-
-def getUnmodifiedGCodeFiles(fileInDirectory=''):
-	'Get gcode files which are not modified.'
-	#transform may be needed in future but probably won't
-	words = ' carve clip comb comment cool fill fillet hop inset oozebane raft stretch tower wipe'.replace(' ', ' _').split()
-	return getFilesWithFileTypeWithoutWords('gcode', words, fileInDirectory)
-
-def getUntilDot(text):
-	'Get the text until the last dot, if any.'
-	dotIndex = text.rfind('.')
-	if dotIndex < 0:
-		return text
-	return text[: dotIndex]
-
-def getVersionFileName():
-	'Get the file name of the version date.'
-	return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'version.txt')
-
 def getWithoutBracketsEqualTab(line):
 	'Get a string without the greater than sign, the bracket and less than sign, the equal sign or the tab.'
 	line = line.replace('=', ' ')
 	line = line.replace('(<', '')
 	line = line.replace('>', '')
 	return line.replace('\t', '')
-
-def getXMLTagSplitLines(combinedLine):
-	'Get the xml lines split at a tag.'
-	characterIndex = 0
-	lastWord = None
-	splitIndexes = []
-	tagEnd = False
-	while characterIndex < len(combinedLine):
-		character = combinedLine[characterIndex]
-		if character == '"' or character == "'":
-			lastWord = character
-		elif combinedLine[characterIndex : characterIndex + len('<!--')] == '<!--':
-			lastWord = '-->'
-		elif combinedLine[characterIndex : characterIndex + len('<![CDATA[')] == '<![CDATA[':
-			lastWord = ']]>'
-		if lastWord != None:
-			characterIndex = combinedLine.find(lastWord, characterIndex + 1)
-			if characterIndex == -1:
-				return [combinedLine]
-			character = None
-			lastWord = None
-		if character == '>':
-			tagEnd = True
-		elif character == '<':
-			if tagEnd:
-				if combinedLine[characterIndex : characterIndex + 2] != '</':
-					splitIndexes.append(characterIndex)
-		characterIndex += 1
-	if len(splitIndexes) < 1:
-		return [combinedLine]
-	xmlTagSplitLines = []
-	lastSplitIndex = 0
-	for splitIndex in splitIndexes:
-		xmlTagSplitLines.append(combinedLine[lastSplitIndex : splitIndex])
-		lastSplitIndex = splitIndex
-	xmlTagSplitLines.append(combinedLine[lastSplitIndex :])
-	return xmlTagSplitLines
-
-def getXMLLines(text):
-	'Get the all the xml lines of a text.'
-	accumulatedOutput = None
-	textLines = getTextLines(text)
-	combinedLines = []
-	lastWord = '>'
-	for textLine in textLines:
-		strippedLine = textLine.strip()
-		firstCharacter = None
-		lastCharacter = None
-		if len( strippedLine ) > 1:
-			firstCharacter = strippedLine[0]
-			lastCharacter = strippedLine[-1]
-		if firstCharacter == '<' and lastCharacter != '>' and accumulatedOutput == None:
-			accumulatedOutput = cStringIO.StringIO()
-			accumulatedOutput.write( textLine )
-			if strippedLine[ : len('<!--') ] == '<!--':
-				lastWord = '-->'
-		else:
-			if accumulatedOutput == None:
-				addXMLLine( textLine, combinedLines )
-			else:
-				accumulatedOutput.write('\n' + textLine )
-				if strippedLine[ - len( lastWord ) : ] == lastWord:
-					addXMLLine( accumulatedOutput.getvalue(), combinedLines )
-					accumulatedOutput = None
-					lastWord = '>'
-	xmlLines = []
-	for combinedLine in combinedLines:
-		xmlLines += getXMLTagSplitLines(combinedLine)
-	return xmlLines
 
 def indexOfStartingWithSecond(letter, splitLine):
 	'Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found'
@@ -413,22 +153,11 @@ def indexOfStartingWithSecond(letter, splitLine):
 			return wordIndex
 	return - 1
 
-def isFileWithFileTypeWithoutWords(fileType, fileName, words):
-	'Determine if file has a given file type, but with does not contain a word in a list.'
-	fileName = os.path.basename(fileName)
-	fileTypeDot = '.' + fileType
-	if not fileName.endswith(fileTypeDot):
-		return False
-	for word in words:
-		if fileName.find(word) >= 0:
-			return False
-	return True
-
 def isProcedureDone(gcodeText, procedure):
 	'Determine if the procedure has been done on the gcode text.'
 	if gcodeText == '':
 		return False
-	lines = getTextLines(gcodeText)
+	lines = archive.getTextLines(gcodeText)
 	for line in lines:
 		withoutBracketsEqualTabQuotes = getWithoutBracketsEqualTab(line).replace('"', '').replace("'", '')
 		splitLine = getWithoutBracketsEqualTab( withoutBracketsEqualTabQuotes ).split()
@@ -462,30 +191,6 @@ def isThereAFirstWord(firstWord, lines, startIndex):
 		if firstWord == getFirstWord(splitLine):
 			return True
 	return False
-
-def makeDirectory(directory):
-	'Make a directory if it does not already exist.'
-	if os.path.isdir(directory):
-		return
-	try:
-		os.makedirs(directory)
-	except OSError:
-		print('Skeinforge can not make the directory %s so give it read/write permission for that directory and the containing directory.' % directory)
-
-def writeFileMessageEnd(end, fileName, fileText, message):
-	'Write to a fileName with a suffix and print a message.'
-	suffixFileName = getUntilDot(fileName) + end
-	writeFileText(suffixFileName, fileText)
-	print( message + getSummarizedFileName(suffixFileName) )
-
-def writeFileText(fileName, fileText, writeMode='w+'):
-	'Write a text to a file.'
-	try:
-		file = open(fileName, writeMode)
-		file.write(fileText)
-		file.close()
-	except IOError:
-		print('The file ' + fileName + ' can not be written to.')
 
 
 class BoundingRectangle:

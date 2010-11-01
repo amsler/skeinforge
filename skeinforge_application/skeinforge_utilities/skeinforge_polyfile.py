@@ -26,7 +26,7 @@ def getFileOrGcodeDirectory( fileName, wasCancelled, words = [] ):
 			print('The file name should have a suffix, like myfile.xml.')
 			print('Since the file name does not have a suffix, nothing will be done')
 		suffix = fileName[ dotIndex + 1 : ]
-		return gcodec.getFilesWithFileTypeWithoutWords( suffix, words, fileName )
+		return archive.getFilesWithFileTypeWithoutWords( suffix, words, fileName )
 	return [ fileName ]
 
 def getFileOrDirectoryTypes( fileName, fileTypes, wasCancelled ):
@@ -34,16 +34,16 @@ def getFileOrDirectoryTypes( fileName, fileTypes, wasCancelled ):
 	if isEmptyOrCancelled( fileName, wasCancelled ):
 		return []
 	if isDirectorySetting():
-		return gcodec.getFilesWithFileTypesWithoutWords( fileTypes, [], fileName )
+		return archive.getFilesWithFileTypesWithoutWords( fileTypes, [], fileName )
 	return [ fileName ]
 
-def getFileOrDirectoryTypesUnmodifiedGcode( fileName, fileTypes, wasCancelled ):
+def getFileOrDirectoryTypesUnmodifiedGcode(fileName, fileTypes, wasCancelled):
 	"Get the gcode files in the directory the file is in if directory setting is true.  Otherwise, return the file in a list."
-	if isEmptyOrCancelled( fileName, wasCancelled ):
+	if isEmptyOrCancelled(fileName, wasCancelled):
 		return []
 	if isDirectorySetting():
-		return gcodec.getFilesWithFileTypesWithoutWords( fileTypes, [], fileName ) + gcodec.getUnmodifiedGCodeFiles(fileName)
-	return [ fileName ]
+		return archive.getFilesWithFileTypesWithoutWords(fileTypes, [], fileName)
+	return [fileName]
 
 def getNewRepository():
 	"Get the repository constructor."

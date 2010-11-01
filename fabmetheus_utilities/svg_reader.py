@@ -40,24 +40,57 @@ def addFunctionsToDictionary( dictionary, functions, prefix ):
 
 def getArcComplexes(begin, end, largeArcFlag, radius, sweepFlag, xAxisRotation):
 	'Get the arc complexes, procedure at http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes'
+	if begin == end:
+		print('Warning, begin equals end in getArcComplexes in svgReader')
+		print(begin)
+		print(end)
+		return []
+	if radius.imag < 0.0:
+		print('Warning, radius.imag is less than zero in getArcComplexes in svgReader')
+		print(radius)
+		radius = complex(radius.real, abs(radius.imag))
+	if radius.real < 0.0:
+		print('Warning, radius.real is less than zero in getArcComplexes in svgReader')
+		print(radius)
+		radius = complex(abs(radius.real), radius.imag)
+	if radius.imag <= 0.0:
+		print('Warning, radius.imag is too small for getArcComplexes in svgReader')
+		print(radius)
+		return [end]
+	if radius.real <= 0.0:
+		print('Warning, radius.real is too small for getArcComplexes in svgReader')
+		print(radius)
+		return [end]
 	xAxisRotationComplex = euclidean.getWiddershinsUnitPolar(xAxisRotation)
 	reverseXAxisRotationComplex = complex(xAxisRotationComplex.real, -xAxisRotationComplex.imag)
 	beginRotated = begin * reverseXAxisRotationComplex
-	beginTransformed = complex(beginRotated.real / radius.real, beginRotated.imag / radius.imag)
 	endRotated = end * reverseXAxisRotationComplex
+	beginTransformed = complex(beginRotated.real / radius.real, beginRotated.imag / radius.imag)
 	endTransformed = complex(endRotated.real / radius.real, endRotated.imag / radius.imag)
 	midpointTransformed = 0.5 * (beginTransformed + endTransformed)
 	midMinusBeginTransformed = midpointTransformed - beginTransformed
 	midMinusBeginTransformedLength = abs(midMinusBeginTransformed)
+	if midMinusBeginTransformedLength > 1.0:
+		print('Warning, midMinusBeginTransformedLength is too large for getArcComplexes in svgReader')
+		print(begin)
+		print(end)
+		print(beginTransformed)
+		print(endTransformed)
+		print(midpointTransformed)
+		print(midMinusBeginTransformed)
+		print('The ellipse will be scaled to fit.')
+		radius *= midMinusBeginTransformedLength
+		scale = 1.0 / midMinusBeginTransformedLength
+		beginTransformed *= scale
+		endTransformed *= scale
+		midpointTransformed *= scale
+		midMinusBeginTransformed *= scale
+		midMinusBeginTransformedLength = 1.0
 	midWiddershinsTransformed = complex(-midMinusBeginTransformed.imag, midMinusBeginTransformed.real)
 	midWiddershinsLengthSquared = 1.0 - midMinusBeginTransformedLength * midMinusBeginTransformedLength
 	if midWiddershinsLengthSquared < 0.0:
-		print('Warning, the radius is too small for getArcComplexes in svgReader')
-		print(begin)
-		print(end)
-		print(radius)
-		return []
-	midWiddershinsLength = midWiddershinsLengthSquared
+		midWiddershinsLengthSquared = 0.0
+	midWiddershinsLength = math.sqrt(midWiddershinsLengthSquared)
 	midWiddershinsTransformed *= midWiddershinsLength / abs(midWiddershinsTransformed)
 	centerTransformed = midpointTransformed
 	if largeArcFlag == sweepFlag:
@@ -126,7 +159,7 @@ def getFontReader(fontFamily):
 		return globalFontReaderDictionary[fontLower]
 	global globalFontFileNames
 	if globalFontFileNames == None:
-		globalFontFileNames = gcodec.getPluginFileNamesFromDirectoryPath(getFontsDirectoryPath())
+		globalFontFileNames = archive.getPluginFileNamesFromDirectoryPath(getFontsDirectoryPath())
 	if fontLower not in globalFontFileNames:
 		print('Warning, the %s font was not found in the fonts folder, so Gentium Basic Regular will be substituted.' % fontFamily)
 		fontLower = 'gentium_basic_regular'
@@ -464,7 +497,7 @@ class FontReader:
 		self.glyphXMLElementDictionary = {}
 		self.missingGlyph = None
 		fileName = os.path.join(getFontsDirectoryPath(), fontFamily + '.svg')
-		self.xmlParser = XMLSimpleReader(fileName, None, gcodec.getFileText(fileName))
+		self.xmlParser = XMLSimpleReader(fileName, None, archive.getFileText(fileName))
 		self.fontXMLElement = self.xmlParser.getRoot().getFirstChildWithClassName('defs').getFirstChildWithClassName('font')
 		self.fontFaceXMLElement = self.fontXMLElement.getFirstChildWithClassName('font-face')
 		self.unitsPerEM = float(self.fontFaceXMLElement.attributeDictionary['units-per-em'])

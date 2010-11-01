@@ -222,12 +222,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.vector3 import Vector3
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
@@ -245,7 +246,7 @@ __license__ = 'GPL 3.0'
 #raft outline temperature http://hydraraptor.blogspot.com/2008/09/screw-top-pot.html
 def getCraftedText( fileName, text = '', repository=None):
 	"Raft the file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Raft a gcode linear move text."
@@ -742,15 +743,16 @@ class RaftSkein:
 		self.repository = repository
 		self.minimumSupportRatio = math.tan( math.radians( repository.supportMinimumAngle.value ) )
 		self.supportEndText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Support_End.gcode')
-		self.supportEndLines = gcodec.getTextLines( self.supportEndText )
+		self.supportEndLines = archive.getTextLines( self.supportEndText )
 		self.supportStartText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Support_Start.gcode')
-		self.supportStartLines = gcodec.getTextLines( self.supportStartText )
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.supportStartLines = archive.getTextLines( self.supportStartText )
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		self.temperatureChangeTimeBeforeRaft = 0.0
-		if self.repository.initialCircling:
-			firstMaxTemperature = max( max( self.baseTemperature, self.interfaceTemperature ), self.objectFirstLayerPerimeterTemperature )
-			self.temperatureChangeTimeBeforeRaft = self.getTemperatureChangeTime( firstMaxTemperature )
+		if self.repository.initialCircling.value:
+			maxBaseInterfaceTemperature = max(self.baseTemperature, self.interfaceTemperature)
+			firstMaxTemperature = max(maxBaseInterfaceTemperature, self.objectFirstLayerPerimeterTemperature)
+			self.temperatureChangeTimeBeforeRaft = self.getTemperatureChangeTime(firstMaxTemperature)
 		if repository.addRaftElevateNozzleOrbitSetAltitude.value:
 			self.addRaft()
 		self.addTemperatureLineIfDifferent( self.objectFirstLayerPerimeterTemperature )

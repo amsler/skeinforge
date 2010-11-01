@@ -80,13 +80,14 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.geometry.solids import trianglemesh
-from fabmetheus_utilities.vector3 import Vector3
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
@@ -168,7 +169,7 @@ def addSegmentOutline( isThick, outlines, pointBegin, pointEnd, width ):
 
 def getCraftedText( fileName, text = '', repository=None):
 	"Inset the preface file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Inset the preface gcode text."
@@ -374,7 +375,7 @@ class InsetSkein:
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the bevel gcode."
 		self.repository = repository
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:
 			self.parseLine(line)

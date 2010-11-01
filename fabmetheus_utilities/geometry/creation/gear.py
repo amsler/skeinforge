@@ -9,6 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import extrude
 from fabmetheus_utilities.geometry.creation import lineation
+from fabmetheus_utilities.geometry.creation import shaft
 from fabmetheus_utilities.geometry.creation import teardrop
 from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
@@ -104,23 +105,6 @@ def addCollarShaftSetDerivation(collarDerivation, collarThickness, derivation, n
 	drillEnd = Vector3(0.0, derivation.shaftRimRadius, drillZ)
 	drillStart = Vector3(0.0, 0.0, drillZ)
 	teardrop.addNegativesByRadius(drillEnd, negatives, derivation.keywayRadius, drillStart, xmlElement)
-
-def addHorizontallyBoundedPoint(begin, center, end, horizontalBegin, horizontalEnd, path):
-	'Add point if it is within the horizontal bounds.'
-	if center.real >= horizontalEnd and center.real <= horizontalBegin:
-		path.append(center)
-		return
-	if end != None:
-		if center.real > horizontalBegin and end.real <= horizontalBegin:
-			centerMinusEnd = center - end
-			along = (center.real - horizontalBegin) / centerMinusEnd.real
-			path.append(center - along * centerMinusEnd)
-			return
-	if begin != None:
-		if center.real < horizontalEnd and begin.real >= horizontalEnd:
-			centerMinusBegin = center - begin
-			along = (center.real - horizontalEnd) / centerMinusBegin.real
-			path.append(center - along * centerMinusBegin)
 
 def addLighteningHoles(derivation, gearHolePaths, negatives, pitchRadius, positives):
 	"Add lightening holes."
@@ -226,7 +210,7 @@ def getGearProfileRack(derivation, toothProfile):
 		translateComplex = complex(-toothIndex * derivation.wavelength, 0.0)
 		translatedPath = euclidean.getTranslatedComplexPath(toothProfile, translateComplex)
 		gearProfile += translatedPath
-	gearProfile = getHorizontallyBoundedPath(rackDemilengthPlus, -rackDemilengthPlus, gearProfile)
+	gearProfile = euclidean.getHorizontallyBoundedPath(rackDemilengthPlus, -rackDemilengthPlus, gearProfile)
 	firstPoint = gearProfile[0]
 	lastPoint = gearProfile[-1]
 	rackWidth = derivation.rackWidth
@@ -324,21 +308,6 @@ def getHelixComplexPath(derivation, xmlElement):
 	print(derivation.helixType)
 	print(derivation.xmlElement)
 
-def getHorizontallyBoundedPath(horizontalBegin, horizontalEnd, path):
-	'Get horizontally bounded path.'
-	horizontallyBoundedPath = []
-	for pointIndex, point in enumerate(path):
-		begin = None
-		previousIndex = pointIndex - 1
-		if previousIndex >= 0:
-			begin = path[previousIndex]
-		end = None
-		nextIndex = pointIndex + 1
-		if nextIndex < len(path):
-			end = path[nextIndex]
-		addHorizontallyBoundedPoint(begin, point, end, horizontalBegin, horizontalEnd, horizontallyBoundedPath)
-	return horizontallyBoundedPath
-
 def getLiftedOutput(derivation, geometryOutput, xmlElement):
 	"Get extrude output for a rack."
 	if derivation.moveType.lower()[: 1] == 'm':
@@ -384,16 +353,6 @@ def getLighteningHoles(derivation, gearHolePaths, pitchRadius):
 		lighteningHoles.append(lighteningHole)
 		startAngle += sideAngle
 	return euclidean.getVector3Paths(lighteningHoles)
-
-def getMirrorPath(path):
-	"Get mirror path."
-	close = 0.001 * euclidean.getPathLength(path)
-	for pointIndex in xrange(len(path) - 1, -1, -1):
-		point = path[pointIndex]
-		flipPoint = complex(-point.real, point.imag)
-		if abs(flipPoint - path[-1]) > close:
-			path.append(flipPoint)
-	return path
 
 def getOutputCylinder(
 		collarThickness, derivation, gearHolePaths, pitchRadius, teeth, twist, vector3GearProfile, xmlElement):
@@ -507,27 +466,6 @@ def getPathOutput(creationFirst, derivation, translation, vector3GearProfileFirs
 	euclidean.translateVector3Paths(packedGearGeometry, translation)
 	return vector3GearProfileFirst + packedGearGeometry
 
-def getShaftPath(derivation):
-	'Get shaft with the option of a flat on the top and/or bottom.'
-	if derivation.shaftRadius <= 0.0:
-		return []
-	sideAngle = 2.0 * math.pi / float(derivation.shaftSides)
-	startAngle = 0.5 * sideAngle
-	endAngle = math.pi - 0.1 * sideAngle
-	shaftProfile = []
-	while startAngle < endAngle:
-		unitPolar = euclidean.getWiddershinsUnitPolar(startAngle)
-		shaftProfile.append(unitPolar * derivation.shaftRadius)
-		startAngle += sideAngle
-	if derivation.shaftSides % 2 == 1:
-		shaftProfile.append(complex(-derivation.shaftRadius, 0.0))
-	horizontalBegin = derivation.shaftRadius - derivation.shaftDepthTop
-	horizontalEnd = derivation.shaftDepthBottom - derivation.shaftRadius
-	shaftProfile = getHorizontallyBoundedPath(horizontalBegin, horizontalEnd, shaftProfile)
-	for shaftPointIndex, shaftPoint in enumerate(shaftProfile):
-		shaftProfile[shaftPointIndex] = complex(shaftPoint.imag, shaftPoint.real)
-	return euclidean.getVector3Path(getMirrorPath(shaftProfile))
-
 def getToothProfile(derivation, pitchRadius, teeth):
 	'Get profile for one tooth.'
 	if teeth < 0:
@@ -572,7 +510,7 @@ def getToothProfileAnnulus(derivation, pitchRadius, teeth):
 		toothProfileHalf += bevelPath
 	else:
 		toothProfileHalf.append(extensionPoint)
-	toothProfileAnnulus = getMirrorPath(toothProfileHalf)
+	toothProfileAnnulus = euclidean.getMirrorPath(toothProfileHalf)
 	toothProfileAnnulus.reverse()
 	return toothProfileAnnulus
 
@@ -609,7 +547,7 @@ def getToothProfileCylinderByProfile(derivation, pitchRadius, teeth, toothProfil
 		bevelPath = getBevelPath(profilePenultimate, derivation.tipBevel, profileLast, mirrorPoint)
 		bevelPath.reverse()
 		toothProfileHalf = toothProfileHalf[: -1] + bevelPath
-	return getMirrorPath(toothProfileHalf)
+	return euclidean.getMirrorPath(toothProfileHalf)
 
 def getToothProfileHalfCylinder(derivation, pitchRadius):
 	'Get profile for half of a one tooth of a cylindrical gear.'
@@ -665,7 +603,7 @@ def getToothProfileRack(derivation):
 		toothProfile += bevelPath
 	else:
 		toothProfile.append(addendumComplex)
-	return getMirrorPath(getWidthMultipliedPath(toothProfile, derivation.toothWidthMultiplier))
+	return euclidean.getMirrorPath(getWidthMultipliedPath(toothProfile, derivation.toothWidthMultiplier))
 
 def getWidthMultipliedPath(path, widthMultiplier):
 	"Get width multiplied path."
@@ -730,7 +668,6 @@ class GearDerivation:
 		self.rimWidthOverRadius = 0.2
 		self.rootBevel = None
 		self.rootBevelOverClearance = 0.5
-		self.shaftSides = 4
 		self.shaftDepthBottom = None
 		self.shaftDepthBottomOverRadius = 0.0
 		self.shaftDepthTop = None
@@ -738,6 +675,7 @@ class GearDerivation:
 		self.shaftPath = None
 		self.shaftRadius = None
 		self.shaftRadiusOverPitchRadius = 0.0
+		self.shaftSides = 4
 		self.teethPinion = 7
 		self.teethGear = 17
 		self.tipBevel = None
@@ -756,8 +694,7 @@ class GearDerivation:
 			self.clearanceOverWavelength, 'clearanceOverWavelength', xmlElement)
 		self.collarWidthOverShaftRadius = evaluate.getEvaluatedFloatDefault(
 			self.collarWidthOverShaftRadius, 'collarWidthOverShaftRadius', xmlElement)
-		if xmlElement != None:
-			self.copyShallow = xmlElement.getCopyShallow()
+		self.copyShallow = xmlElement.getCopyShallow()
 		self.creationType = evaluate.getEvaluatedStringDefault(self.creationType, 'creationType', xmlElement)
 		self.gearCollarThicknessOverThickness = evaluate.getEvaluatedFloatDefault(
 			self.gearCollarThicknessOverThickness, 'gearCollarThicknessOverThickness', xmlElement)
@@ -872,7 +809,7 @@ class GearDerivation:
 		if self.shaftPath == None:
 			self.shaftPath = evaluate.getTransformedPathByKey('shaftPath', xmlElement)
 		if len(self.shaftPath) < 3:
-			self.shaftPath = getShaftPath(self)
+			self.shaftPath = shaft.getShaftPath(self.shaftDepthBottom, self.shaftDepthTop, self.shaftRadius, -self.shaftSides)
 		if self.tipBevel == None:
 			self.tipBevel = self.clearance * self.tipBevelOverClearance
 		self.tipBevel = evaluate.getEvaluatedFloatDefault(self.tipBevel, 'tipBevel', xmlElement)

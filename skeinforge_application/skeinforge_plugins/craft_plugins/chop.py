@@ -105,9 +105,10 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from fabmetheus_utilities import svg_writer
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -126,7 +127,7 @@ __license__ = 'GPL 3.0'
 def getCraftedText( fileName, gcodeText = '', repository=None):
 	"Get chopped text."
 	if fileName.endswith('.svg'):
-		gcodeText = gcodec.getTextIfEmpty(fileName, gcodeText)
+		gcodeText = archive.getTextIfEmpty(fileName, gcodeText)
 		if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'chop'):
 			return gcodeText
 	carving = svg_writer.getCarving(fileName)
@@ -144,7 +145,7 @@ def getNewRepository():
 def writeOutput(fileName=''):
 	"Chop a GNU Triangulated Surface file.  If no fileName is specified, chop the first GNU Triangulated Surface file in this folder."
 	startTime = time.time()
-	print('File ' + gcodec.getSummarizedFileName(fileName) + ' is being chopped.')
+	print('File ' + archive.getSummarizedFileName(fileName) + ' is being chopped.')
 	repository = ChopRepository()
 	settings.getReadRepository(repository)
 	chopGcode = getCraftedText( fileName, '', repository )
@@ -154,8 +155,8 @@ def writeOutput(fileName=''):
 	suffixDirectoryName = os.path.dirname(suffixFileName)
 	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
-	gcodec.writeFileText( suffixFileName, chopGcode )
-	print('The chopped file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
+	archive.writeFileText( suffixFileName, chopGcode )
+	print('The chopped file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
 	print('It took %s to chop the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
@@ -168,7 +169,7 @@ class ChopRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '')
 		self.addExtraTopLayerIfNecessary = settings.BooleanSetting().getFromValue('Add Extra Top Layer if Necessary', self, True )
 		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
-		self.extraDecimalPlaces = settings.IntSpin().getFromValue( 0, 'Extra Decimal Places (integer):', self, 2, 1 )
+		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 2.0, 1.0)
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
@@ -217,7 +218,7 @@ class ChopSkein:
 			self.addExtraTopLayerIfNecessary( carving, layerThickness, rotatedBoundaryLayers )
 		rotatedBoundaryLayers.reverse()
 		layerThickness = carving.getCarveLayerThickness()
-		decimalPlacesCarried = max( 0, 1 + repository.extraDecimalPlaces.value - int( math.floor( math.log10( layerThickness ) ) ) )
+		decimalPlacesCarried = euclidean.getDecimalPlacesCarried(repository.extraDecimalPlaces.value, layerThickness)
 		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
 		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedBoundaryLayers)
 		return svgWriter.getReplacedSVGTemplate( fileName, 'chop', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())

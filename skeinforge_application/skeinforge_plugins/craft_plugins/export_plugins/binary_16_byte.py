@@ -94,6 +94,7 @@ Byte 14 is worth a few extra notes, this byte is used to define which of the axe
 
 from __future__ import absolute_import
 import __init__
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
@@ -148,8 +149,8 @@ def writeOutput( fileName, gcodeText = ''):
 	gcodeText = gcodec.getGcodeFileText(fileName, gcodeText)
 	skeinOutput = getOutput( gcodeText, binary16ByteRepository )
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '.' + binary16ByteRepository.fileExtension.value
-	gcodec.writeFileText( suffixFileName, skeinOutput )
-	print('The converted file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
+	archive.writeFileText( suffixFileName, skeinOutput )
+	print('The converted file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
 
 
 class Binary16ByteRepository:
@@ -186,7 +187,7 @@ class Binary16ByteSkein:
 	def getCraftedGcode( self, gcodeText, binary16ByteRepository ):
 		"Parse gcode text and store the gcode."
 		self.binary16ByteRepository = binary16ByteRepository
-		lines = gcodec.getTextLines(gcodeText)
+		lines = archive.getTextLines(gcodeText)
 		for line in lines:
 			self.parseLine(line)
 		return self.output.getvalue()

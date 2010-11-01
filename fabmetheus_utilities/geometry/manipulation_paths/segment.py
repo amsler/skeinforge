@@ -25,11 +25,11 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get segment loop."
 	if len(loop) < 3:
 		return [loop]
-	path = evaluate.getPathByPrefix( getSegmentPathDefault(), prefix, xmlElement )
+	path = evaluate.getPathByPrefix(getSegmentPathDefault(), prefix, xmlElement)
 	if path == getSegmentPathDefault():
 		return [loop]
 	path = getXNormalizedVector3Path(path)
-	segmentCenter = evaluate.getVector3ByPrefix( prefix + 'center', None, xmlElement )
+	segmentCenter = evaluate.getVector3ByPrefix(prefix + 'center', None, xmlElement)
 	if euclidean.getIsWiddershinsByVector3(loop):
 		path = path[: : -1]
 		for point in path:
@@ -37,13 +37,13 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 			if segmentCenter == None:
 				point.y = - point.y
 	segmentLoop = []
-	startEnd = lineation.StartEnd( len(loop), prefix, xmlElement )
+	startEnd = StartEnd(len(loop), prefix, xmlElement)
 	for pointIndex in xrange(len(loop)):
 		if pointIndex >= startEnd.start and pointIndex < startEnd.end:
-			segmentLoop += getSegmentPath( loop, path, pointIndex, segmentCenter )
+			segmentLoop += getSegmentPath(loop, path, pointIndex, segmentCenter)
 		else:
-			segmentLoop.append( loop[pointIndex] )
-	return [ euclidean.getLoopWithoutCloseSequentialPoints( close, segmentLoop ) ]
+			segmentLoop.append(loop[pointIndex])
+	return [euclidean.getLoopWithoutCloseSequentialPoints( close, segmentLoop)]
 
 def getRadialPath( begin, end, path, segmentCenter ):
 	"Get radial path."
@@ -137,3 +137,21 @@ def getWiddershinsAverageByVector3( centerMinusBeginComplex, endMinusCenterCompl
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	lineation.processXMLElementByFunction(getManipulatedPaths, xmlElement)
+
+
+class StartEnd:
+	'Class to get a start through end range.'
+	def __init__(self, modulo, prefix, xmlElement):
+		"Initialize."
+		self.start = evaluate.getEvaluatedIntDefault(0, prefix + 'start', xmlElement)
+		self.start = lineation.getWrappedInteger(self.start, modulo)
+		self.extent = evaluate.getEvaluatedIntDefault(modulo - self.start, prefix + 'extent', xmlElement)
+		self.end = evaluate.getEvaluatedIntDefault(self.start + self.extent, prefix + 'end', xmlElement)
+		self.end = lineation.getWrappedInteger(self.end, modulo)
+		self.revolutions = evaluate.getEvaluatedIntDefault(1, prefix + 'revolutions', xmlElement)
+		if self.revolutions > 1:
+			self.end += modulo * (self.revolutions - 1)
+
+	def __repr__(self):
+		"Get the string representation of this StartEnd."
+		return '%s, %s, %s' % (self.start, self.end, self.revolutions)

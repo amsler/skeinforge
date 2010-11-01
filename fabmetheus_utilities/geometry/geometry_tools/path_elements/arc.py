@@ -1,6 +1,9 @@
 """
 Arc vertexes.
 
+From:
+http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands
+
 """
 
 from __future__ import absolute_import
@@ -31,6 +34,8 @@ def getArcPath(xmlElement):
 	xAxisRotation = math.radians(evaluate.getEvaluatedFloatDefault(0.0, 'xAxisRotation', xmlElement ))
 	arcComplexes = svg_reader.getArcComplexes(begin.dropAxis(), end.dropAxis(), largeArcFlag, radius, sweepFlag, xAxisRotation)
 	path = []
+	if len(arcComplexes) < 1:
+		return []
 	incrementZ = (end.z - begin.z) / float(len(arcComplexes))
 	z = begin.z
 	for pointIndex in xrange(len(arcComplexes)):

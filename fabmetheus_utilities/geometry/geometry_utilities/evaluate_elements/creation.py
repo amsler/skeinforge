@@ -9,6 +9,7 @@ import __init__
 
 
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 
 
@@ -26,7 +27,7 @@ def _getAccessibleAttribute(attributeName, xmlElement):
 		print(functionName)
 		print(xmlElement)
 		return None
-	pluginModule = gcodec.getModuleWithPath(evaluate.globalCreationDictionary[functionName])
+	pluginModule = archive.getModuleWithPath(evaluate.globalCreationDictionary[functionName])
 	if pluginModule == None:
 		print('Warning, _getAccessibleAttribute in creation can not get a pluginModule for:')
 		print(functionName)
@@ -54,6 +55,6 @@ class Creation:
 			firstArgument = arguments[0]
 		if firstArgument.__class__ == dict:
 			dictionary.update(firstArgument)
-			return self.pluginModule.getGeometryOutput(self.xmlElement.getCopyShallow(dictionary))
+			return self.pluginModule.getGeometryOutput(None, self.xmlElement.getCopyShallow(dictionary))
 		copyShallow = self.xmlElement.getCopyShallow(dictionary)
 		return self.pluginModule.getGeometryOutputByArguments(arguments, copyShallow)

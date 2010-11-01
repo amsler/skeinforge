@@ -7,6 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 import os
@@ -19,11 +20,11 @@ __license__ = 'GPL 3.0'
 
 def getPluginFileNames():
 	"Get meta plugin file names."
-	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
+	return archive.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'meta_plugins') )
+	return archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'meta_plugins') )
 
 def getNewRepository():
 	"Get the repository constructor."

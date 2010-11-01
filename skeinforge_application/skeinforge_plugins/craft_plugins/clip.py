@@ -57,6 +57,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
@@ -76,7 +77,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, clipRepository = None ):
 	"Clip a gcode linear move file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), clipRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), clipRepository )
 
 def getCraftedTextFromText( gcodeText, clipRepository = None ):
 	"Clip a gcode linear move text."
@@ -219,7 +220,7 @@ class ClipSkein:
 
 	def getCraftedGcode( self, clipRepository, gcodeText ):
 		"Parse gcode text and store the clip gcode."
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization( clipRepository )
 		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			line = self.lines[self.lineIndex]

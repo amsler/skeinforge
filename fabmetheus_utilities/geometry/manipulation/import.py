@@ -11,6 +11,7 @@ from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.geometry.solids import group
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 import cStringIO
@@ -38,10 +39,10 @@ def processXMLElement(xmlElement):
 	if fileName == None:
 		return
 	parserFileName = xmlElement.getRoot().parser.fileName
-	absoluteFileName = gcodec.getAbsoluteFolderPath( parserFileName, fileName )
+	absoluteFileName = archive.getAbsoluteFolderPath( parserFileName, fileName )
 	xmlText = ''
 	if fileName.endswith('.xml'):
-		xmlText = gcodec.getFileText( absoluteFileName )
+		xmlText = archive.getFileText( absoluteFileName )
 	else:
 		xmlText = getXMLFromCarvingFileName( absoluteFileName )
 	if xmlText == '':
@@ -50,7 +51,7 @@ def processXMLElement(xmlElement):
 	if '_importname' in xmlElement.attributeDictionary:
 		xmlElement.importName = xmlElement.attributeDictionary['_importname']
 	else:
-		xmlElement.importName = gcodec.getUntilDot(fileName)
+		xmlElement.importName = archive.getUntilDot(fileName)
 		xmlElement.attributeDictionary['_importname'] = xmlElement.importName
 	XMLSimpleReader( parserFileName, xmlElement, xmlText )
 	originalChildren = xmlElement.children[:]

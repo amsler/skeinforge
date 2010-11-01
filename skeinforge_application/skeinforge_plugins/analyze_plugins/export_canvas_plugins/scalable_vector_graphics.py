@@ -11,9 +11,11 @@ An export canvas plugin is a script in the export_canvas_plugins folder which ha
 
 """
 
-
 from __future__ import absolute_import
+#Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
+
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 import cStringIO
@@ -62,24 +64,24 @@ class ScalableVectorGraphicsRepository:
 
 	def execute(self):
 		"Export the canvas as an svg file."
-		svgFileName = gcodec.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )
+		svgFileName = archive.getFilePathWithUnderscoredBasename( self.fileName, self.suffix )
 		boundingBox = self.canvas.bbox( settings.Tkinter.ALL ) # tuple (w, n, e, s)
 		self.boxW = boundingBox[0]
 		self.boxN = boundingBox[1]
 		boxWidth = boundingBox[2] - self.boxW
 		boxHeight = boundingBox[3] - self.boxN
 		print('Exported svg file saved as ' + svgFileName )
-		svgTemplateText = gcodec.getFileTextInFileDirectory( settings.__file__, os.path.join('templates', 'canvas_template.svg') )
+		svgTemplateText = archive.getFileTextInFileDirectory( settings.__file__, os.path.join('templates', 'canvas_template.svg') )
 		output = cStringIO.StringIO()
-		lines = gcodec.getTextLines( svgTemplateText )
+		lines = archive.getTextLines( svgTemplateText )
 		firstWordTable = {}
 		firstWordTable['height="999px"'] = '		height="%spx"' % int( round( boxHeight ) )
 		firstWordTable['<!--replaceLineWith_coloredLines-->'] = self.getCanvasLinesOutput()
-		firstWordTable['replaceLineWithTitle'] = gcodec.getSummarizedFileName( self.fileName )
+		firstWordTable['replaceLineWithTitle'] = archive.getSummarizedFileName( self.fileName )
 		firstWordTable['width="999px"'] = '		width="%spx"' % int( round( boxWidth ) )
 		for line in lines:
 			parseLineReplace( firstWordTable, line, output )
-		gcodec.writeFileText( svgFileName, output.getvalue() )
+		archive.writeFileText( svgFileName, output.getvalue() )
 		fileExtension = self.fileExtension.value
 		svgViewer = self.svgViewer.value
 		if svgViewer == '':
@@ -99,7 +101,7 @@ class ScalableVectorGraphicsRepository:
 				print('If so, try installing the %s program or look for another svg viewer, like Netscape which can be found at:' % svgViewer )
 				print('http://www.netscape.org/')
 			return
-		convertedFileName = gcodec.getFilePathWithUnderscoredBasename( svgFilePath, '.' + fileExtension + '"')
+		convertedFileName = archive.getFilePathWithUnderscoredBasename( svgFilePath, '.' + fileExtension + '"')
 		shellCommand += ' ' + convertedFileName
 		print('Sending the shell command:')
 		print( shellCommand )

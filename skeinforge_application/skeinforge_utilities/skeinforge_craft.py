@@ -9,9 +9,10 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_analyze
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -29,7 +30,7 @@ def getChainText( fileName, procedure ):
 	"Get a crafted shape file."
 	text = ''
 	if fileName.endswith('.gcode') or fileName.endswith('.svg'):
-		text = gcodec.getFileText(fileName)
+		text = archive.getFileText(fileName)
 	procedures = getProcedures( procedure, text )
 	return getChainTextFromProcedures( fileName, procedures, text )
 
@@ -47,7 +48,7 @@ def getChainTextFromProcedures( fileName, procedures, text ):
 
 def getCraftModule(fileName):
 	"Get craft module."
-	return gcodec.getModuleWithDirectoryPath( getPluginsDirectoryPath(), fileName )
+	return archive.getModuleWithDirectoryPath( getPluginsDirectoryPath(), fileName )
 
 def getLastModule():
 	"Get the last tool."
@@ -62,7 +63,7 @@ def getNewRepository():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'craft_plugins') )
+	return archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'craft_plugins') )
 
 def getPluginFileNames():
 	"Get craft plugin fileNames."
@@ -108,7 +109,7 @@ def writeChainTextWithNounMessage( fileName, procedure ):
 	craftText = getChainText( fileName, procedure )
 	if craftText == '':
 		return
-	gcodec.writeFileText( fileNameSuffix, craftText )
+	archive.writeFileText( fileNameSuffix, craftText )
 	print('')
 	print('The %s tool has created the file:' % procedure )
 	print( fileNameSuffix )
@@ -170,7 +171,7 @@ class CraftRepository:
 		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_craft.html', None, self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Craft', self, '')
 		self.importantFileNames = ['carve', 'chop', 'feed', 'flow', 'lift', 'raft', 'speed']
-		allCraftNames = gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
+		allCraftNames = archive.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 		radioPlugins = settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), self.importantFileNames, allCraftNames, self )
 		CraftRadioButtonsSaveListener().getFromRadioPlugins( radioPlugins, self )
 		self.executeTitle = 'Craft'

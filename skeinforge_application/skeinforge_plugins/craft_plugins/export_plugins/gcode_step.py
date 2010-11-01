@@ -69,6 +69,7 @@ Defines the Z axis step length.
 
 from __future__ import absolute_import
 import __init__
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
@@ -124,8 +125,8 @@ def writeOutput( fileName, gcodeText = ''):
 	settings.getReadRepository(repository)
 	output = getOutput(gcodeText, repository)
 	suffixFileName = fileName[ : fileName.rfind('.') ] + '_gcode_step.gcode'
-	gcodec.writeFileText( suffixFileName, output )
-	print('The converted file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
+	archive.writeFileText( suffixFileName, output )
+	print('The converted file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
 
 
 class GcodeStepRepository:
@@ -184,7 +185,7 @@ class GcodeStepSkein:
 	def getCraftedGcode( self, gcodeStepRepository, gcodeText ):
 		"Parse gcode text and store the gcode."
 		self.gcodeStepRepository = gcodeStepRepository
-		lines = gcodec.getTextLines(gcodeText)
+		lines = archive.getTextLines(gcodeText)
 		for line in lines:
 			self.parseLine(line)
 		return self.output.getvalue()

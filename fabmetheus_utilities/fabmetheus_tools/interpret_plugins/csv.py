@@ -30,8 +30,9 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities import xml_simple_reader
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
+from fabmetheus_utilities import xml_simple_reader
 import sys
 
 
@@ -43,12 +44,12 @@ __license__ = 'GPL 3.0'
 
 def getCarving(fileName=''):
 	"Get the carving for the csv file."
-	csvText = gcodec.getFileText(fileName)
+	csvText = archive.getFileText(fileName)
 	if csvText == '':
 		return None
 	csvParser = CSVSimpleParser( fileName, None, csvText )
 	lowerClassName = csvParser.getRoot().className.lower()
-	pluginModule = gcodec.getModuleWithDirectoryPath( getPluginsDirectoryPath(), lowerClassName )
+	pluginModule = archive.getModuleWithDirectoryPath( getPluginsDirectoryPath(), lowerClassName )
 	if pluginModule == None:
 		return None
 	return pluginModule.getCarvingFromParser( csvParser )
@@ -65,7 +66,7 @@ def getLineDictionary(line):
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'xml_plugins')
+	return archive.getAbsoluteFrozenFolderPath( __file__, 'xml_plugins')
 
 
 class CSVElement( xml_simple_reader.XMLElement ):
@@ -130,7 +131,7 @@ class CSVSimpleParser( xml_simple_reader.XMLSimpleReader ):
 		"Add empty lists."
 		self.continueFunction = None
 		self.extraLeadingTabCount = None
-		self.lines = gcodec.getTextLines( csvText )
+		self.lines = archive.getTextLines( csvText )
 		self.oldCSVElement = None
 		self.root = None
 		for line in self.lines:

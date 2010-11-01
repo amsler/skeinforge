@@ -94,10 +94,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -113,7 +114,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, coolRepository = None ):
 	"Cool a gcode linear move text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), coolRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), coolRepository )
 
 def getCraftedTextFromText( gcodeText, coolRepository = None ):
 	"Cool a gcode linear move text."
@@ -247,11 +248,11 @@ class CoolSkein:
 		"Parse gcode text and store the cool gcode."
 		self.coolRepository = coolRepository
 		self.coolEndText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Cool_End.gcode')
-		self.coolEndLines = gcodec.getTextLines( self.coolEndText )
+		self.coolEndLines = archive.getTextLines( self.coolEndText )
 		self.coolStartText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Cool_Start.gcode')
-		self.coolStartLines = gcodec.getTextLines( self.coolStartText )
+		self.coolStartLines = archive.getTextLines( self.coolStartText )
 		self.halfCorner = complex( coolRepository.minimumOrbitalRadius.value, coolRepository.minimumOrbitalRadius.value )
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.minimumArea = 4.0 * coolRepository.minimumOrbitalRadius.value * coolRepository.minimumOrbitalRadius.value
 		self.parseInitialization()
 		self.boundingRectangle = gcodec.BoundingRectangle().getFromGcodeLines( self.lines[self.lineIndex :], 0.5 * self.perimeterWidth )

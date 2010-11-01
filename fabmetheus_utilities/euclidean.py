@@ -70,6 +70,23 @@ def addElementToPixelListFromPoint( element, pixelDictionary, point ):
 	'Add an element to the pixel list.'
 	addElementToPixelList( element, pixelDictionary, int( round( point.real ) ), int( round( point.imag ) ) )
 
+def addHorizontallyBoundedPoint(begin, center, end, horizontalBegin, horizontalEnd, path):
+	'Add point if it is within the horizontal bounds.'
+	if center.real >= horizontalEnd and center.real <= horizontalBegin:
+		path.append(center)
+		return
+	if end != None:
+		if center.real > horizontalBegin and end.real <= horizontalBegin:
+			centerMinusEnd = center - end
+			along = (center.real - horizontalBegin) / centerMinusEnd.real
+			path.append(center - along * centerMinusEnd)
+			return
+	if begin != None:
+		if center.real < horizontalEnd and begin.real >= horizontalEnd:
+			centerMinusBegin = center - begin
+			along = (center.real - horizontalEnd) / centerMinusBegin.real
+			path.append(center - along * centerMinusBegin)
+
 def addListToListTable( elementList, key, listTable ):
 	'Add a list to the list table.'
 	if key in listTable:
@@ -603,6 +620,10 @@ def getCrossProduct( firstComplex, secondComplex ):
 	'Get z component cross product of a pair of complexes.'
 	return firstComplex.real * secondComplex.imag - firstComplex.imag * secondComplex.real
 
+def getDecimalPlacesCarried(extraDecimalPlaces, value):
+	'Get decimal places carried by the decimal places of the value plus the extraDecimalPlaces.'
+	return max(0, 1 + int(math.ceil(extraDecimalPlaces - math.log10(value))))
+
 def getDiagonalFlippedLoop(loop):
 	'Get loop flipped over the dialogonal, in other words with the x and y swapped.'
 	diagonalFlippedLoop = []
@@ -811,6 +832,21 @@ def getHalfSimplifiedPath(path, radius, remainder):
 			simplified.append(point)
 	simplified.append(path[-1])
 	return simplified
+
+def getHorizontallyBoundedPath(horizontalBegin, horizontalEnd, path):
+	'Get horizontally bounded path.'
+	horizontallyBoundedPath = []
+	for pointIndex, point in enumerate(path):
+		begin = None
+		previousIndex = pointIndex - 1
+		if previousIndex >= 0:
+			begin = path[previousIndex]
+		end = None
+		nextIndex = pointIndex + 1
+		if nextIndex < len(path):
+			end = path[nextIndex]
+		addHorizontallyBoundedPoint(begin, point, end, horizontalBegin, horizontalEnd, horizontallyBoundedPath)
+	return horizontallyBoundedPath
 
 def getHorizontalSegmentListsFromLoopLists( alreadyFilledArounds, front, numberOfLines, rotatedFillLoops, width ):
 	'Get horizontal segment lists inside loops.'
@@ -1083,6 +1119,16 @@ def getMinimumFromVec3List( vec3List ):
 	for point in vec3List:
 		minimum = getMinimum( minimum, point.dropAxis(2) )
 	return minimum
+
+def getMirrorPath(path):
+	"Get mirror path."
+	close = 0.001 * getPathLength(path)
+	for pointIndex in xrange(len(path) - 1, -1, -1):
+		point = path[pointIndex]
+		flipPoint = complex(-point.real, point.imag)
+		if abs(flipPoint - path[-1]) > close:
+			path.append(flipPoint)
+	return path
 
 def getNearestDistanceIndex( point, loop ):
 	'Get the distance squared to the nearest segment of the loop and index of that segment.'

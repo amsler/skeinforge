@@ -45,20 +45,6 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 #	"Process the xml element."
 #	processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
 
-#def processXMLElementByGeometry(geometryOutput, xmlElement):
-#	"Process the xml element by geometryOutput."
-#	firstElement = None
-#	if len(geometryOutput) > 0:
-#		firstElement = geometryOutput[0]
-#	if firstElement.__class__ == list:
-#		if len( firstElement ) > 1:
-#			path.convertXMLElementRenameByPaths(geometryOutput, xmlElement)
-#		else:
-#			path.convertXMLElementRename(firstElement, xmlElement)
-#	else:
-#		path.convertXMLElementRename(geometryOutput, xmlElement)
-#	path.processXMLElement(xmlElement)
-
 def getGeometryOutputByManipulation(geometryOutput, xmlElement):
 	"Get geometryOutput manipulated by the plugins in the manipulation shapes & solids folders."
 	xmlProcessor = xmlElement.getXMLProcessor()
@@ -81,6 +67,14 @@ def processXMLElementByFunction(manipulationFunction, xmlElement):
 		return
 	lineation.processXMLElementByGeometry(target, xmlElement)
 	manipulationFunction(xmlElement, xmlElement)
+
+def processXMLElementByGeometry(geometryOutput, xmlElement):
+	"Process the xml element by geometryOutput."
+	if geometryOutput == None:
+		return
+	xmlProcessor = xmlElement.getXMLProcessor()
+	xmlProcessor.convertXMLElement(geometryOutput, xmlElement)
+	xmlProcessor.processXMLElement(xmlElement)
 
 
 class SolidDerivation:

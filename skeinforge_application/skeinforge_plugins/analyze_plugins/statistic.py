@@ -68,6 +68,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -88,13 +89,13 @@ def getNewRepository():
 
 def getWindowAnalyzeFile(fileName):
 	"Write statistics for a gcode file."
-	return getWindowAnalyzeFileGivenText( fileName, gcodec.getFileText(fileName) )
+	return getWindowAnalyzeFileGivenText( fileName, archive.getFileText(fileName) )
 
 def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
 	"Write statistics for a gcode file."
 	print('')
 	print('')
-	print('Statistics are being generated for the file ' + gcodec.getSummarizedFileName(fileName) )
+	print('Statistics are being generated for the file ' + archive.getSummarizedFileName(fileName) )
 	if repository == None:
 		repository = settings.getReadRepository( StatisticRepository() )
 	skein = StatisticSkein()
@@ -102,13 +103,13 @@ def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
 	if repository.printStatistics.value:
 		print( statisticGcode )
 	if repository.saveStatistics.value:
-		gcodec.writeFileMessageEnd('.txt', fileName, statisticGcode, 'The statistics file is saved as ')
+		archive.writeFileMessageEnd('.txt', fileName, statisticGcode, 'The statistics file is saved as ')
 
 def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Write statistics for a skeinforge gcode file, if 'Write Statistics File for Skeinforge Chain' is selected."
 	repository = settings.getReadRepository( StatisticRepository() )
 	if gcodeText == '':
-		gcodeText = gcodec.getFileText( fileNameSuffix )
+		gcodeText = archive.getFileText( fileNameSuffix )
 	if repository.activateStatistic.value:
 		getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
@@ -188,7 +189,7 @@ class StatisticSkein:
 		self.totalBuildTime = 0.0
 		self.totalDistanceExtruded = 0.0
 		self.totalDistanceTraveled = 0.0
-		lines = gcodec.getTextLines(gcodeText)
+		lines = archive.getTextLines(gcodeText)
 		for line in lines:
 			self.parseLine(line)
 		averageFeedRate = self.totalDistanceTraveled / self.totalBuildTime

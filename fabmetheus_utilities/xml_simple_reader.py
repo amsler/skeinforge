@@ -33,6 +33,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import xml_simple_writer
@@ -43,6 +44,91 @@ __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
+
+
+def addXMLLine(line, xmlLines):
+	'Get the all the xml lines of a text.'
+	strippedLine = line.strip()
+	if strippedLine[ : len('<!--') ] == '<!--':
+		endIndex = line.find('-->')
+		if endIndex != - 1:
+			endIndex += len('-->')
+			commentLine = line[: endIndex]
+			remainderLine = line[endIndex :].strip()
+			if len(remainderLine) > 0:
+				xmlLines.append(commentLine)
+				xmlLines.append(remainderLine)
+				return
+	xmlLines.append(line)
+
+def getXMLLines(text):
+	'Get the all the xml lines of a text.'
+	accumulatedOutput = None
+	textLines = archive.getTextLines(text)
+	combinedLines = []
+	lastWord = '>'
+	for textLine in textLines:
+		strippedLine = textLine.strip()
+		firstCharacter = None
+		lastCharacter = None
+		if len( strippedLine ) > 1:
+			firstCharacter = strippedLine[0]
+			lastCharacter = strippedLine[-1]
+		if firstCharacter == '<' and lastCharacter != '>' and accumulatedOutput == None:
+			accumulatedOutput = cStringIO.StringIO()
+			accumulatedOutput.write( textLine )
+			if strippedLine[ : len('<!--') ] == '<!--':
+				lastWord = '-->'
+		else:
+			if accumulatedOutput == None:
+				addXMLLine( textLine, combinedLines )
+			else:
+				accumulatedOutput.write('\n' + textLine )
+				if strippedLine[ - len( lastWord ) : ] == lastWord:
+					addXMLLine( accumulatedOutput.getvalue(), combinedLines )
+					accumulatedOutput = None
+					lastWord = '>'
+	xmlLines = []
+	for combinedLine in combinedLines:
+		xmlLines += getXMLTagSplitLines(combinedLine)
+	return xmlLines
+
+def getXMLTagSplitLines(combinedLine):
+	'Get the xml lines split at a tag.'
+	characterIndex = 0
+	lastWord = None
+	splitIndexes = []
+	tagEnd = False
+	while characterIndex < len(combinedLine):
+		character = combinedLine[characterIndex]
+		if character == '"' or character == "'":
+			lastWord = character
+		elif combinedLine[characterIndex : characterIndex + len('<!--')] == '<!--':
+			lastWord = '-->'
+		elif combinedLine[characterIndex : characterIndex + len('<![CDATA[')] == '<![CDATA[':
+			lastWord = ']]>'
+		if lastWord != None:
+			characterIndex = combinedLine.find(lastWord, characterIndex + 1)
+			if characterIndex == -1:
+				return [combinedLine]
+			character = None
+			lastWord = None
+		if character == '>':
+			tagEnd = True
+		elif character == '<':
+			if tagEnd:
+				if combinedLine[characterIndex : characterIndex + 2] != '</':
+					splitIndexes.append(characterIndex)
+		characterIndex += 1
+	if len(splitIndexes) < 1:
+		return [combinedLine]
+	xmlTagSplitLines = []
+	lastSplitIndex = 0
+	for splitIndex in splitIndexes:
+		xmlTagSplitLines.append(combinedLine[lastSplitIndex : splitIndex])
+		lastSplitIndex = splitIndex
+	xmlTagSplitLines.append(combinedLine[lastSplitIndex :])
+	return xmlTagSplitLines
 
 
 class XMLElement:
@@ -369,7 +455,7 @@ class XMLSimpleReader:
 		self.root = None
 		if parent != None:
 			self.root = parent.getRoot()
-		self.lines = gcodec.getXMLLines(xmlText)
+		self.lines = getXMLLines(xmlText)
 		for self.lineIndex, line in enumerate(self.lines):
 			self.parseLine(line)
 		self.xmlText = xmlText

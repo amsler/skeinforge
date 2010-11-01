@@ -148,7 +148,7 @@ def getDisplayedDialogFromConstructor(repository):
 
 def getDisplayedDialogFromPath(path):
 	"Display the repository dialog."
-	pluginModule = gcodec.getModuleWithPath(path)
+	pluginModule = archive.getModuleWithPath(path)
 	if pluginModule == None:
 		return None
 	return getDisplayedDialogFromConstructor( pluginModule.getNewRepository() )
@@ -173,7 +173,7 @@ def getEachWordCapitalized( name ):
 def getFileInAlterationsOrGivenDirectory( directory, fileName ):
 	"Get the file from the fileName or the lowercase fileName in the alterations directories, if there is no file look in the given directory."
 	settingsAlterationsDirectory = archive.getSettingsPath('alterations')
-	gcodec.makeDirectory( settingsAlterationsDirectory )
+	archive.makeDirectory( settingsAlterationsDirectory )
 	fileInSettingsAlterationsDirectory = getFileInGivenDirectory( settingsAlterationsDirectory, fileName )
 	if fileInSettingsAlterationsDirectory != '':
 		return fileInSettingsAlterationsDirectory
@@ -197,11 +197,11 @@ def getFileInGivenDirectory( directory, fileName ):
 def getFileTextGivenDirectoryFileName( directory, fileName ):
 	"Get the entire text of a file with the given file name in the given directory."
 	absoluteFilePath = os.path.join( directory, fileName )
-	return gcodec.getFileText( absoluteFilePath )
+	return archive.getFileText( absoluteFilePath )
 
 def getFolders(directory):
 	"Get the folder list in a directory."
-	gcodec.makeDirectory(directory)
+	archive.makeDirectory(directory)
 	directoryListing = []
 	try:
 		directoryListing = os.listdir(directory)
@@ -262,13 +262,13 @@ def getRadioPluginsAddPluginFrame( directoryPath, importantFileNames, names, rep
 
 def getReadRepository(repository):
 	"Read and return settings from a file."
-	text = gcodec.getFileText(archive.getProfilesPath(getProfileBaseName(repository)), 'r', False)
+	text = archive.getFileText(archive.getProfilesPath(getProfileBaseName(repository)), 'r', False)
 	if text == '':
 		if repository.baseNameSynonym != None:
-			text = gcodec.getFileText(archive.getProfilesPath(getProfileBaseNameSynonym(repository)), 'r', False)
+			text = archive.getFileText(archive.getProfilesPath(getProfileBaseNameSynonym(repository)), 'r', False)
 	if text == '':
 		print('The default %s will be written in the .skeinforge folder in the home directory.' % repository.title.lower() )
-		text = gcodec.getFileText( getProfilesDirectoryInAboveDirectory( getProfileBaseName(repository) ), 'r', False )
+		text = archive.getFileText( getProfilesDirectoryInAboveDirectory( getProfileBaseName(repository) ), 'r', False )
 		if text != '':
 			readSettingsFromText( repository, text )
 		writeSettings(repository)
@@ -315,7 +315,7 @@ def getSelectedRadioPlugin( names, radioPlugins ):
 
 def getSubfolderWithBasename( basename, directory ):
 	"Get the subfolder in the directory with the basename."
-	gcodec.makeDirectory(directory)
+	archive.makeDirectory(directory)
 	directoryListing = os.listdir(directory)
 	for fileName in directoryListing:
 		joinedFileName = os.path.join( directory, fileName )
@@ -375,7 +375,7 @@ def openWebPage( webPagePath ):
 		redirectionText = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">\n<html>\n<head>\n'
 		redirectionText += '<meta http-equiv="REFRESH" content="0;url=%s"></head>\n</HTML>\n' % webPagePath
 		webPagePath = archive.getDocumentationPath('redirect.html')
-		gcodec.writeFileText( webPagePath, redirectionText )
+		archive.writeFileText( webPagePath, redirectionText )
 	webPagePath = '"%s"' % webPagePath # " to get around space in url bug
 	try:
 		os.startfile( webPagePath )#this is available on some python environments, but not all
@@ -419,7 +419,7 @@ def quitWindows( event=None ):
 
 def readSettingsFromText( repository, text ):
 	"Read settings from a text."
-	lines = gcodec.getTextLines(text)
+	lines = archive.getTextLines(text)
 	settingDictionary = {}
 	for setting in repository.preferences:
 		settingDictionary[getUntilFirstBracket(setting.name)] = setting
@@ -524,8 +524,8 @@ def writeValueListToRepositoryWriter( repositoryWriter, setting ):
 def writeSettings(repository):
 	"Write the settings to a file."
 	profilesDirectoryPath = archive.getProfilesPath( getProfileBaseName(repository) )
-	gcodec.makeDirectory( os.path.dirname( profilesDirectoryPath ) )
-	gcodec.writeFileText( profilesDirectoryPath, getRepositoryText(repository) )
+	archive.makeDirectory( os.path.dirname( profilesDirectoryPath ) )
+	archive.writeFileText( profilesDirectoryPath, getRepositoryText(repository) )
 
 def writeSettingsPrintMessage(repository):
 	"Set the settings to the dialog then write them."
@@ -767,7 +767,7 @@ class FileHelpMenuBar:
 
 	def addPluginToMenuBar( self, modulePath, repository, window ):
 		"Add a menu to the menu bar from a tool."
-		pluginModule = gcodec.getModuleWithPath( modulePath )
+		pluginModule = archive.getModuleWithPath( modulePath )
 		if pluginModule == None:
 			print('this should never happen, pluginModule in addMenuToMenuBar in settings is None.')
 			return None
@@ -786,7 +786,7 @@ class FileHelpMenuBar:
 		self.fileMenu.add_separator()
 		addAcceleratorCommand('<Control-KeyPress-q>', quitWindows, self.root, self.fileMenu, 'Quit')
 		skeinforgePluginsPath = archive.getSkeinforgePath('skeinforge_plugins')
-		pluginFileNames = gcodec.getPluginFileNamesFromDirectoryPath(skeinforgePluginsPath)
+		pluginFileNames = archive.getPluginFileNamesFromDirectoryPath(skeinforgePluginsPath)
 		for pluginFileName in pluginFileNames:
 			self.addPluginToMenuBar(os.path.join(skeinforgePluginsPath, pluginFileName), repository, window)
 
@@ -809,7 +809,7 @@ class FileNameInput( StringSetting ):
 		parent = self.gridPosition.master
 		try:
 			import tkFileDialog
-			summarized = gcodec.getSummarizedFileName(self.value)
+			summarized = archive.getSummarizedFileName(self.value)
 			initialDirectory = os.path.dirname( summarized )
 			if len( initialDirectory ) > 0:
 				initialDirectory += os.sep
@@ -1459,7 +1459,7 @@ class PluginFrame:
 			self.defaultRadioButton.setSelect()
 		self.gridTable[ self.latentStringVar.getString() ] = gridVertical
 		path = os.path.join( self.directoryPath, self.latentStringVar.getString() )
-		pluginModule = gcodec.getModuleWithPath(path)
+		pluginModule = archive.getModuleWithPath(path)
 		if pluginModule == None:
 			print('this should never happen, pluginModule in addToDialog in PluginFrame in settings is None')
 			print(path)
@@ -1562,7 +1562,7 @@ class PluginGroupFrame( PluginFrame ):
 			self.defaultRadioButton.setSelect()
 		self.gridTable[ self.latentStringVar.getString() ] = gridVertical
 		path = os.path.join( self.directoryPath, self.latentStringVar.getString() )
-		pluginModule = gcodec.getModuleWithPath(path)
+		pluginModule = archive.getModuleWithPath(path)
 		if pluginModule == None:
 			print('this should never happen, pluginModule in addToDialog in PluginFrame in settings is None')
 			print(path)

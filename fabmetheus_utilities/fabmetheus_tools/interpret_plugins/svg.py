@@ -30,6 +30,7 @@ import __init__
 
 from fabmetheus_utilities.svg_reader import SVGReader
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import svg_writer
@@ -46,7 +47,7 @@ __license__ = 'GPL 3.0'
 def getCarving(fileName=''):
 	"Get the triangle mesh for the gts file."
 	carving = SVGCarving()
-	carving.parseSVG( fileName, gcodec.getFileText(fileName) )
+	carving.parseSVG( fileName, archive.getFileText(fileName) )
 	return carving
 
 

@@ -204,6 +204,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -214,21 +215,17 @@ import os
 import sys
 
 
-# test grid types
-# ,, into None,None,
-# get list of XMLElements for paths
+# minor save
+# maybe vector3 relative to previous, getPreviousVertex in document
+# iso svg
 # mirror axis center & origin, concatenate
 # matrixTetragrid to tetragrid, matrix.transform, target
 # maybe matrix array form a00 a01.. also
-# move stuff to archive
 # matrix rotate around axis http://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
 # linear bearing
 # grate separate
-# float decimal places
-# drill from teardrop
 # xml_creation
-# bring back original xml in svgWriter
-# move StartEnd to segment
+# class, pymethe
 # fill rename shortenedSegmentList gridSegmentList and delete comments
 # array paths, follow paths, later maybe targetequation radius xyz give index
 # writeTagged, tags, creationTags, writeMatrix='true'
@@ -237,36 +234,29 @@ import sys
 # bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
 # look over copy module, make copy solid like copy lineation
 # document gear script
-# big save, initial circling moved to raft from temperature
 #
 # classify more of evaluate.xml
 # maybe in svgReader if loop intersection with previous union else add
 #
 # unimportant
 # minor outline problem when an end path goes through a path, like in the letter A
-# carve time is missing
 # view profile 1 mm thickness
 # svg inskcape layer label, import into inskscape in general
 # only parse svg once, do not parse again if yAxisPointingUpward="true"
-# getControlPoints, also handle no controlPoint in which case make coincident
-# maybe vector3 relative to previous
 #
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # del previous, add begin & end if far  get actual path
 # polling
-# svgCanvas with xmlWriter instead of directly writing
 # speed up CircleIntersection by performing isWithinCircles before creation
 # getNormal, getIsFlat?
-# write svg for visible paths
-# distance in equation
+# write svg for visible paths???
 # combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
 # getConnection of some kind like getConnectionVertexes, getConnection
 # import module, overwriteRoot
 # pixel, voxel, surfaxel/boxel, lattice, mesh
-# maybe replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
+# probably not replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
 # equation for vertexes if not already
 # mesh. for cube, then cyliner, then sphere after lathe
-# extrude take radius
 # tube
 # rotor
 # test translate
@@ -277,7 +267,11 @@ import sys
 # manipulate solid, maybe manipulate around elements
 # hollow top
 # boolean loop corner outset
+# dovetail
+# creationID, addObject, getTarget, copyXMLElement?
+# maybe not getNewObject, getNew, addToBoolean
 # work out close and radius
+# maybe try to get rid of comment if possible
 # voronoi average location intersection looped inset intercircles
 # maybe move and give geometryOutput to cube, cylinder, sphere
 #
@@ -288,14 +282,9 @@ import sys
 #
 # stretch add back addAlong
 # maybe save all generated_files option
-# creationID, addObject, getTarget, copyXMLElement?
-# drill
-# dovetail
 # maybe meta overhang
-# maybe not getNewObject, getNew, addToBoolean
 # convert global repository settings to local settings
 # table to dictionary
-# maybe try to get rid of comment if possible
 # check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # remove cool set at end of layer
 # add fan on when hot in chamber
@@ -489,11 +478,11 @@ def addToProfileMenu( profileSelection, profileType, repository ):
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'skeinforge_plugins')
+	return archive.getAbsoluteFrozenFolderPath( __file__, 'skeinforge_plugins')
 
 def getPluginFileNames():
 	"Get analyze plugin fileNames."
-	return gcodec.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
+	return archive.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
 
 def getNewRepository():
 	"Get the repository constructor."
@@ -531,7 +520,7 @@ class SkeinforgeRepository:
 		skeinforgeSearch.column += 2
 		webSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_web.html', 'Web', self )
 		webSearch.column += 4
-		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
+		versionText = archive.getFileText( archive.getVersionFileName() )
 		self.version = settings.LabelDisplay().getFromName('Version: ' + versionText, self )
 		settings.LabelDisplay().getFromName('', self )
 		importantFileNames = ['craft', 'profile']

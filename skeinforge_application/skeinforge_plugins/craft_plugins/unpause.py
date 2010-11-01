@@ -58,6 +58,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
@@ -76,7 +77,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, gcodeText, repository=None):
 	"Unpause a gcode linear move file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, gcodeText ), repository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, gcodeText ), repository )
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Unpause a gcode linear move text."
@@ -140,7 +141,7 @@ class UnpauseSkein:
 		self.maximumSpeed = repository.maximumSpeed.value
 		self.minimumSpeedUpReciprocal = 1.0 / self.maximumSpeed
 		self.repository = repository
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			line = self.lines[self.lineIndex]

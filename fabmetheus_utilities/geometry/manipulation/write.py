@@ -50,5 +50,5 @@ def writeXMLElement(fileNames, target, xmlElement):
 	fileNames.append(fileName)
 	folderName = evaluate.getEvaluatedStringDefault('', 'folder', xmlElement)
 	absoluteFolderDirectory = os.path.join(os.path.dirname(xmlElement.getRoot().parser.fileName), folderName)
-	gcodec.makeDirectory(absoluteFolderDirectory)
-	gcodec.writeFileText(os.path.join(absoluteFolderDirectory, fileName), object.getFabricationText())
+	archive.makeDirectory(absoluteFolderDirectory)
+	archive.writeFileText(os.path.join(absoluteFolderDirectory, fileName), object.getFabricationText())

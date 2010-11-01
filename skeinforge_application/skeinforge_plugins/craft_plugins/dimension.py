@@ -76,10 +76,11 @@ The dimension tool has created the file:
 import __init__
 
 from datetime import date
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -96,7 +97,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, gcodeText = '', repository=None):
 	"Dimension a gcode file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty(fileName, gcodeText), repository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, gcodeText), repository )
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Dimension a gcode text."
@@ -164,7 +165,7 @@ class DimensionSkein:
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the dimension gcode."
 		self.repository = repository
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		if self.operatingFlowRate == None:
 			print('There is no operatingFlowRate so dimension will do nothing.')

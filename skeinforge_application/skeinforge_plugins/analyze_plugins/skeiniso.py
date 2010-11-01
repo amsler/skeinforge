@@ -240,6 +240,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -273,7 +274,7 @@ def getNewRepository():
 
 def getWindowAnalyzeFile(fileName):
 	"Skeiniso a gcode file."
-	gcodeText = gcodec.getFileText(fileName)
+	gcodeText = archive.getFileText(fileName)
 	return getWindowAnalyzeFileGivenText(fileName, gcodeText)
 
 def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
@@ -296,7 +297,7 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Write a skeinisoed gcode file for a skeinforge gcode file, if 'Activate Skeiniso' is selected."
 	repository = settings.getReadRepository( SkeinisoRepository() )
 	if repository.activateSkeiniso.value:
-		gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
+		gcodeText = archive.getTextIfEmpty( fileNameSuffix, gcodeText )
 		getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
@@ -505,7 +506,7 @@ class SkeinisoSkein:
 		self.cornerHigh = Vector3(-999999999.0, -999999999.0, -999999999.0)
 		self.cornerLow = Vector3(999999999.0, 999999999.0, 999999999.0)
 		self.goAroundExtruderOffTravel = repository.goAroundExtruderOffTravel.value
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.isThereALayerStartWord = gcodec.isThereAFirstWord('(<layer>', self.lines, 1 )
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:

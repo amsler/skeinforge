@@ -24,9 +24,10 @@
 <a href="fabmetheus_utilities.geometry.creation.lineation.html">fabmetheus_utilities.geometry.creation.lineation</a><br>
 <a href="math.html">math</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.manipulation_evaluator.matrix.html">fabmetheus_utilities.geometry.manipulation_evaluator.matrix</a><br>
+<a href="fabmetheus_utilities.geometry.creation.shaft.html">fabmetheus_utilities.geometry.creation.shaft</a><br>
 <a href="fabmetheus_utilities.geometry.creation.teardrop.html">fabmetheus_utilities.geometry.creation.teardrop</a><br>
-<a href="fabmetheus_utilities.geometry.solids.trianglemesh.html">fabmetheus_utilities.geometry.solids.trianglemesh</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.solids.trianglemesh.html">fabmetheus_utilities.geometry.solids.trianglemesh</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -63,7 +64,6 @@
  <dl><dt><a name="-addBottomLoop"><strong>addBottomLoop</strong></a>(deltaZ, loops)</dt><dd><tt>Add&nbsp;bottom&nbsp;loop&nbsp;to&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-addCollarShaft"><strong>addCollarShaft</strong></a>(collarThickness, derivation, negatives, positives, xmlElement)</dt><dd><tt>Add&nbsp;collar.</tt></dd></dl>
  <dl><dt><a name="-addCollarShaftSetDerivation"><strong>addCollarShaftSetDerivation</strong></a>(collarDerivation, collarThickness, derivation, negatives, positives, xmlElement)</dt><dd><tt>Add&nbsp;collar&nbsp;and&nbsp;shaft.</tt></dd></dl>
- <dl><dt><a name="-addHorizontallyBoundedPoint"><strong>addHorizontallyBoundedPoint</strong></a>(begin, center, end, horizontalBegin, horizontalEnd, path)</dt><dd><tt>Add&nbsp;point&nbsp;if&nbsp;it&nbsp;is&nbsp;within&nbsp;the&nbsp;horizontal&nbsp;bounds.</tt></dd></dl>
  <dl><dt><a name="-addLighteningHoles"><strong>addLighteningHoles</strong></a>(derivation, gearHolePaths, negatives, pitchRadius, positives)</dt><dd><tt>Add&nbsp;lightening&nbsp;holes.</tt></dd></dl>
  <dl><dt><a name="-addRackHole"><strong>addRackHole</strong></a>(derivation, vector3RackProfiles, x, xmlElement)</dt><dd><tt>Add&nbsp;rack&nbsp;hole&nbsp;to&nbsp;vector3RackProfiles.</tt></dd></dl>
  <dl><dt><a name="-addRackHoles"><strong>addRackHoles</strong></a>(derivation, vector3RackProfiles, xmlElement)</dt><dd><tt>Add&nbsp;rack&nbsp;holes&nbsp;to&nbsp;vector3RackProfiles.</tt></dd></dl>
@@ -78,14 +78,11 @@
  <dl><dt><a name="-getGeometryOutputByArguments"><strong>getGeometryOutputByArguments</strong></a>(arguments, xmlElement)</dt><dd><tt>Get&nbsp;vector3&nbsp;vertexes&nbsp;from&nbsp;attribute&nbsp;dictionary&nbsp;by&nbsp;arguments.</tt></dd></dl>
  <dl><dt><a name="-getHalfwave"><strong>getHalfwave</strong></a>(pitchRadius, teeth)</dt><dd><tt>Get&nbsp;tooth&nbsp;halfwave.</tt></dd></dl>
  <dl><dt><a name="-getHelixComplexPath"><strong>getHelixComplexPath</strong></a>(derivation, xmlElement)</dt><dd><tt>Set&nbsp;gear&nbsp;helix&nbsp;path.</tt></dd></dl>
- <dl><dt><a name="-getHorizontallyBoundedPath"><strong>getHorizontallyBoundedPath</strong></a>(horizontalBegin, horizontalEnd, path)</dt><dd><tt>Get&nbsp;horizontally&nbsp;bounded&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getLiftedOutput"><strong>getLiftedOutput</strong></a>(derivation, geometryOutput, xmlElement)</dt><dd><tt>Get&nbsp;extrude&nbsp;output&nbsp;for&nbsp;a&nbsp;rack.</tt></dd></dl>
  <dl><dt><a name="-getLighteningHoles"><strong>getLighteningHoles</strong></a>(derivation, gearHolePaths, pitchRadius)</dt><dd><tt>Get&nbsp;cutout&nbsp;circles.</tt></dd></dl>
- <dl><dt><a name="-getMirrorPath"><strong>getMirrorPath</strong></a>(path)</dt><dd><tt>Get&nbsp;mirror&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getOutputCylinder"><strong>getOutputCylinder</strong></a>(collarThickness, derivation, gearHolePaths, pitchRadius, teeth, twist, vector3GearProfile, xmlElement)</dt><dd><tt>Get&nbsp;extrude&nbsp;output&nbsp;for&nbsp;a&nbsp;cylinder&nbsp;gear.</tt></dd></dl>
  <dl><dt><a name="-getOutputRack"><strong>getOutputRack</strong></a>(derivation, vector3GearProfile, xmlElement)</dt><dd><tt>Get&nbsp;extrude&nbsp;output&nbsp;for&nbsp;a&nbsp;rack.</tt></dd></dl>
  <dl><dt><a name="-getPathOutput"><strong>getPathOutput</strong></a>(creationFirst, derivation, translation, vector3GearProfileFirst, vector3GearPaths, xmlElement)</dt><dd><tt>Get&nbsp;gear&nbsp;path&nbsp;output.</tt></dd></dl>
- <dl><dt><a name="-getShaftPath"><strong>getShaftPath</strong></a>(derivation)</dt><dd><tt>Get&nbsp;shaft&nbsp;with&nbsp;the&nbsp;option&nbsp;of&nbsp;a&nbsp;flat&nbsp;on&nbsp;the&nbsp;top&nbsp;and/or&nbsp;bottom.</tt></dd></dl>
  <dl><dt><a name="-getToothProfile"><strong>getToothProfile</strong></a>(derivation, pitchRadius, teeth)</dt><dd><tt>Get&nbsp;profile&nbsp;for&nbsp;one&nbsp;tooth.</tt></dd></dl>
  <dl><dt><a name="-getToothProfileAnnulus"><strong>getToothProfileAnnulus</strong></a>(derivation, pitchRadius, teeth)</dt><dd><tt>Get&nbsp;profile&nbsp;for&nbsp;one&nbsp;tooth&nbsp;of&nbsp;an&nbsp;annulus.</tt></dd></dl>
  <dl><dt><a name="-getToothProfileCylinder"><strong>getToothProfileCylinder</strong></a>(derivation, pitchRadius, teeth)</dt><dd><tt>Get&nbsp;profile&nbsp;for&nbsp;one&nbsp;tooth&nbsp;of&nbsp;a&nbsp;cylindrical&nbsp;gear.</tt></dd></dl>

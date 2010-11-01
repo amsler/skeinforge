@@ -45,6 +45,7 @@ import __init__
 from fabmetheus_utilities.geometry.geometry_tools import face
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from struct import unpack
 
@@ -56,7 +57,7 @@ __license__ = 'GPL 3.0'
 
 def addFacesGivenText( objText, triangleMesh ):
 	"Add faces given obj text."
-	lines = gcodec.getTextLines( objText )
+	lines = archive.getTextLines( objText )
 	for line in lines:
 		splitLine = line.split()
 		firstWord = gcodec.getFirstWord(splitLine)
@@ -82,7 +83,7 @@ def getCarving(fileName=''):
 	"Get the triangle mesh for the obj file."
 	if fileName == '':
 		return None
-	objText = gcodec.getFileText( fileName, 'rb')
+	objText = archive.getFileText( fileName, 'rb')
 	if objText == '':
 		return None
 	triangleMesh = trianglemesh.TriangleMesh()

@@ -245,11 +245,7 @@ def insertTwistPortions(extrudeDerivation, xmlElement):
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	geometryOutput = getGeometryOutput(None, xmlElement)
-	if geometryOutput == None:
-		return
-	xmlElement.getXMLProcessor().convertXMLElement(geometryOutput, xmlElement)
-	xmlElement.getXMLProcessor().processXMLElement(xmlElement)
+	solid.processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
 
 def setOffsetByMultiplier( begin, end, multiplier, offset ):
 	"Set the offset by the multiplier."

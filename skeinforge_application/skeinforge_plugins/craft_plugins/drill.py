@@ -53,10 +53,11 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -70,7 +71,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, repository=None):
 	"Drill a gcode linear move file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Drill a gcode linear move text."
@@ -179,7 +180,7 @@ class DrillSkein:
 
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the drill gcode."
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.repository = repository
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:

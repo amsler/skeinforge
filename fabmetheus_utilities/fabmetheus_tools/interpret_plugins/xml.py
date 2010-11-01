@@ -107,6 +107,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 import os
 import sys
@@ -119,19 +120,19 @@ __license__ = 'GPL 3.0'
 
 def getCarving(fileName=''):
 	"Get the carving for the xml file."
-	xmlText = gcodec.getFileText(fileName)
+	xmlText = archive.getFileText(fileName)
 	if xmlText == '':
 		return None
 	xmlParser = XMLSimpleReader( fileName, None, xmlText )
 	lowerClassName = xmlParser.getRoot().className.lower()
-	pluginModule = gcodec.getModuleWithDirectoryPath( getPluginsDirectoryPath(), lowerClassName )
+	pluginModule = archive.getModuleWithDirectoryPath( getPluginsDirectoryPath(), lowerClassName )
 	if pluginModule == None:
 		return None
 	return pluginModule.getCarvingFromParser( xmlParser )
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return gcodec.getAbsoluteFolderPath( __file__, 'xml_plugins')
+	return archive.getAbsoluteFrozenFolderPath( __file__, 'xml_plugins')
 
 def main():
 	"Display the inset dialog."

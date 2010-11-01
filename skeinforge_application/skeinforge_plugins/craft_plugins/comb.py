@@ -58,10 +58,11 @@ except:
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -77,7 +78,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text, combRepository = None ):
 	"Comb a gcode linear move text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), combRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), combRepository )
 
 def getCraftedTextFromText( gcodeText, combRepository = None ):
 	"Comb a gcode linear move text."
@@ -222,7 +223,7 @@ class CombSkein:
 	def getCraftedGcode( self, combRepository, gcodeText ):
 		"Parse gcode text and store the comb gcode."
 		self.combRepository = combRepository
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization( combRepository )
 		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			line = self.lines[lineIndex]

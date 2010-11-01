@@ -7,6 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 import cStringIO
@@ -53,7 +54,7 @@ def getNavigationHypertext( fileText, transferredFileNameIndex, transferredFileN
 	helpTextEnd = fileText.find('</p>')
 	helpTextStart = fileText.find('<p>')
 	helpText = fileText[ helpTextStart : helpTextEnd ]
-	lines = gcodec.getTextLines( helpText )
+	lines = archive.getTextLines( helpText )
 	headings = []
 	headingLineTable = {}
 	for line in lines:
@@ -106,25 +107,25 @@ def getWrappedHypertext( fileText, hypertextFileIndex, hypertextFiles ):
 
 def readWriteDeleteHypertextHelp( documentDirectoryPath, hypertextFileIndex, hypertextFiles, transferredFileNames ):
 	"Read the pydoc hypertext help documents, write them in the documentation folder then delete the originals."
-	fileName = hypertextFiles[ hypertextFileIndex ]
-	print(fileName)
+	fileName = os.path.basename(hypertextFiles[ hypertextFileIndex ])
+	print('readWriteDeleteHypertextHelp ' + fileName)
 	filePath = os.path.join( documentDirectoryPath, fileName )
-	fileText = gcodec.getFileText(fileName)
+	fileText = archive.getFileText(fileName)
 	fileText = getWrappedHypertext( fileText, hypertextFileIndex, hypertextFiles )
 	if fileText.find('This page is in the table of contents.') > - 1:
 		fileText = fileText.replace('This page is in the table of contents.', '')
 		transferredFileNames.append(fileName)
-	gcodec.writeFileText( filePath, fileText )
+	archive.writeFileText( filePath, fileText )
 	os.remove(fileName)
 
 def readWriteNavigationHelp( documentDirectoryPath, transferredFileNameIndex, transferredFileNames ):
 	"Read the hypertext help documents, and add the navigation lines to them."
-	fileName = transferredFileNames[ transferredFileNameIndex ]
-	print(fileName)
+	fileName = os.path.basename(transferredFileNames[ transferredFileNameIndex ])
+	print('readWriteNavigationHelp ' + fileName)
 	filePath = os.path.join( documentDirectoryPath, fileName )
-	fileText = gcodec.getFileText(filePath)
+	fileText = archive.getFileText(filePath)
 	fileText = getNavigationHypertext( fileText, transferredFileNameIndex, transferredFileNames )
-	gcodec.writeFileText( filePath, fileText )
+	archive.writeFileText( filePath, fileText )
 
 def removeFilesInDirectory(directoryPath):
 	"Remove all the files in a directory."
@@ -144,7 +145,7 @@ def writeContentsFile( documentDirectoryPath, hypertextFiles ):
 	output.write( navigationLine )
 	output.write('  </body>\n</html>\n')
 	filePath = os.path.join( documentDirectoryPath, 'contents.html')
-	gcodec.writeFileText( filePath, output.getvalue() )
+	archive.writeFileText( filePath, output.getvalue() )
 
 def writeContentsLine( hypertextFile, output ):
 	"Write a line of the contents file."
@@ -163,11 +164,11 @@ def writeHypertext():
 	if commandResult != 0:
 		print('Failed to execute the following command in writeHypertext in docwrap.')
 		print( shellCommand )
-	hypertextFiles = gcodec.getFilesWithFileTypeWithoutWords('html')
+	hypertextFiles = archive.getFilesWithFileTypeWithoutWords('html')
 	if len( hypertextFiles ) <= 0:
 		print('Failed to find any help files in writeHypertext in docwrap.')
 		return
-	documentDirectoryPath = gcodec.getAbsoluteFolderPath( hypertextFiles[0], 'documentation')
+	documentDirectoryPath = archive.getAbsoluteFolderPath( hypertextFiles[0], 'documentation')
 	removeFilesInDirectory( documentDirectoryPath )
 	sortedReplaceFiles = []
 	for hypertextFile in hypertextFiles:

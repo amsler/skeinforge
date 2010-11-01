@@ -51,16 +51,12 @@ The lift tool has created the file:
 """
 
 from __future__ import absolute_import
-try:
-	import psyco
-	psyco.full()
-except:
-	pass
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities import gcodec
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities import archive
+from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -75,7 +71,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text = '', liftRepository = None ):
 	"Lift the preface file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), liftRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), liftRepository )
 
 def getCraftedTextFromText( gcodeText, liftRepository = None ):
 	"Lift the preface gcode text."
@@ -138,7 +134,7 @@ class LiftSkein:
 	def getCraftedGcode( self, liftRepository, gcodeText ):
 		"Parse gcode text and store the lift gcode."
 		self.liftRepository = liftRepository
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		self.oldLocation = None
 		if self.layerStep == None:

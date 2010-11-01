@@ -1,6 +1,9 @@
 """
 Cubic vertexes.
 
+From:
+http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands
+
 """
 
 from __future__ import absolute_import
@@ -28,15 +31,26 @@ def getCubicPath(xmlElement):
 		print(xmlElement)
 		return [end]
 	begin = xmlElement.getPreviousVertex(Vector3())
+	evaluatedControlPoints = evaluate.getTransformedPathByKey('controlPoints', xmlElement)
+	if len(evaluatedControlPoints) > 1:
+		return getCubicPathByBeginEnd(begin, evaluatedControlPoints, end, xmlElement)
 	controlPoint0 = evaluate.getVector3ByPrefix('controlPoint0', None, xmlElement)
+	controlPoint1 = evaluate.getVector3ByPrefix('controlPoint1', None, xmlElement)
+	if len(evaluatedControlPoints) == 1:
+		controlPoint1 = evaluatedControlPoints[0]
 	if controlPoint0 == None:
 		oldControlPoint = evaluate.getVector3ByPrefixes(['controlPoint','controlPoint1'], None, previousXMLElement)
 		if oldControlPoint == None:
-			print('Warning, can not get oldControlPoint in getCubicPath in cubic for:')
-			print(xmlElement)
-			return [end]
+			oldControlPoints = evaluate.getTransformedPathByKey('controlPoints', previousXMLElement)
+			if len(oldControlPoints) > 0:
+				oldControlPoint = oldControlPoints[-1]
+		if oldControlPoint == None:
+			oldControlPoint = end
 		controlPoint0 = begin + begin - oldControlPoint
-	controlPoints = [controlPoint0, evaluate.getVector3ByPrefix('controlPoint1', None, xmlElement)]
+	return getCubicPathByBeginEnd(begin, [controlPoint0, controlPoint1], end, xmlElement)
+
+def getCubicPathByBeginEnd(begin, controlPoints, end, xmlElement):
+	"Get the cubic path by begin and end."
 	return svg_reader.getCubicPoints(begin, controlPoints, end, lineation.getNumberOfBezierPoints(begin, end, xmlElement))
 
 def processXMLElement(xmlElement):

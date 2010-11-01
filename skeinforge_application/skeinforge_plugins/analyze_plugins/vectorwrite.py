@@ -61,6 +61,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -84,7 +85,7 @@ def getNewRepository():
 
 def getWindowAnalyzeFile(fileName):
 	"Write scalable vector graphics for a gcode file."
-	gcodeText = gcodec.getFileText(fileName)
+	gcodeText = archive.getFileText(fileName)
 	return getWindowAnalyzeFileGivenText(fileName, gcodeText)
 
 def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
@@ -101,8 +102,8 @@ def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
 	suffixDirectoryName = os.path.dirname(suffixFileName)
 	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
 	suffixFileName = os.path.join( suffixDirectoryName, suffixReplacedBaseName )
-	gcodec.writeFileText( suffixFileName, vectorwriteGcode )
-	print('The vectorwrite file is saved as ' + gcodec.getSummarizedFileName(suffixFileName) )
+	archive.writeFileText( suffixFileName, vectorwriteGcode )
+	print('The vectorwrite file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
 	print('It took %s to vectorwrite the file.' % euclidean.getDurationString( time.time() - startTime ) )
 	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
@@ -111,7 +112,7 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	repository = settings.getReadRepository( VectorwriteRepository() )
 	if not repository.activateVectorwrite.value:
 		return
-	gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
+	gcodeText = archive.getTextIfEmpty( fileNameSuffix, gcodeText )
 	getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
@@ -234,7 +235,7 @@ class VectorwriteSkein:
 		self.isLoop = False
 		self.isOuter = False
 		self.isPerimeter = False
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.oldLocation = None
 		self.thread = []
 		self.rotatedBoundaryLayers = []

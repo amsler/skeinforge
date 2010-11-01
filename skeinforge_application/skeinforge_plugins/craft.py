@@ -10,6 +10,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -30,13 +31,13 @@ def addSubmenus( menu, pluginFileName, pluginFolderPath, pluginPath ):
 	menu.add_cascade( label = pluginFileName.capitalize(), menu = submenu )
 	settings.ToolDialog().addPluginToMenu( submenu, pluginPath )
 	submenu.add_separator()
-	submenuFileNames = gcodec.getPluginFileNamesFromDirectoryPath( pluginFolderPath )
+	submenuFileNames = archive.getPluginFileNamesFromDirectoryPath( pluginFolderPath )
 	for submenuFileName in submenuFileNames:
 		settings.ToolDialog().addPluginToMenu( submenu, os.path.join( pluginFolderPath, submenuFileName ) )
 
 def addToCraftMenu( menu ):
 	"Add a craft plugin menu."
-	settings.ToolDialog().addPluginToMenu( menu, gcodec.getUntilDot( os.path.abspath( __file__ ) ) )
+	settings.ToolDialog().addPluginToMenu( menu, archive.getUntilDot( os.path.abspath( __file__ ) ) )
 	menu.add_separator()
 	directoryPath = skeinforge_craft.getPluginsDirectoryPath()
 	directoryFolders = settings.getFolders(directoryPath)

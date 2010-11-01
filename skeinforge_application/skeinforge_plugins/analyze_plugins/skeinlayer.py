@@ -148,6 +148,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -173,7 +174,7 @@ def getRankIndex( rulingSeparationWidthMillimeters, screenOrdinate ):
 
 def getWindowAnalyzeFile(fileName):
 	"Display a gcode file in a skeinlayer window."
-	gcodeText = gcodec.getFileText(fileName)
+	gcodeText = archive.getFileText(fileName)
 	return getWindowAnalyzeFileGivenText(fileName, gcodeText)
 
 def getWindowAnalyzeFileGivenText( fileName, gcodeText, repository=None):
@@ -196,7 +197,7 @@ def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Display a skeinlayered gcode file for a skeinforge gcode file, if 'Activate Skeinlayer' is selected."
 	repository = settings.getReadRepository( SkeinlayerRepository() )
 	if repository.activateSkeinlayer.value:
-		gcodeText = gcodec.getTextIfEmpty( fileNameSuffix, gcodeText )
+		gcodeText = archive.getTextIfEmpty( fileNameSuffix, gcodeText )
 		getWindowAnalyzeFileGivenText( fileNameSuffix, gcodeText, repository )
 
 
@@ -327,7 +328,7 @@ class SkeinlayerSkein:
 		self.initializeActiveLocation()
 		self.cornerHigh = Vector3(-999999999.0, -999999999.0, -999999999.0)
 		self.cornerLow = Vector3(999999999.0, 999999999.0, 999999999.0)
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.isThereALayerStartWord = gcodec.isThereAFirstWord('(<layer>', self.lines, 1 )
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:

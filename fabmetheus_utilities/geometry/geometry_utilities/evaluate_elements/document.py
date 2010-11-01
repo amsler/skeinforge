@@ -49,7 +49,7 @@ class Document:
 		elementByID = self.xmlElement.getXMLElementByImportID(idKey)
 		if elementByID == None:
 			print('Warning, could not get elementByID in getElementByID in document for:')
-			print(arguments[0])
+			print(idKey)
 			print(self.xmlElement)
 		return elementByID
 

@@ -61,6 +61,7 @@ import __init__
 from datetime import date
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
@@ -81,7 +82,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText(fileName, svgText='', repository=None):
 	"Bottom and convert an svg file or svgText."
-	return getCraftedTextFromText(fileName, gcodec.getTextIfEmpty(fileName, svgText), repository)
+	return getCraftedTextFromText(fileName, archive.getTextIfEmpty(fileName, svgText), repository)
 
 def getCraftedTextFromText(fileName, svgText, repository=None):
 	"Bottom and convert an svgText."
@@ -132,7 +133,7 @@ def writeOutput(fileName=''):
 	craftText = skeinforge_craft.getChainText(fileName, 'bottom')
 	if craftText == '':
 		return
-	gcodec.writeFileText(fileNameSuffix, craftText)
+	archive.writeFileText(fileNameSuffix, craftText)
 	print('')
 	print('The bottom tool has created the file:')
 	print(fileNameSuffix)

@@ -76,12 +76,13 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
-from fabmetheus_utilities.vector3 import Vector3
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
@@ -96,7 +97,7 @@ __license__ = 'GPL 3.0'
 #maybe speed up feedRate option
 def getCraftedText( fileName, gcodeText, stretchRepository = None ):
 	"Stretch a gcode linear move text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty(fileName, gcodeText), stretchRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, gcodeText), stretchRepository )
 
 def getCraftedTextFromText( gcodeText, stretchRepository = None ):
 	"Stretch a gcode linear move text."
@@ -264,7 +265,7 @@ class StretchSkein:
 
 	def getCraftedGcode( self, gcodeText, stretchRepository ):
 		"Parse gcode text and store the stretch gcode."
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.stretchRepository = stretchRepository
 		self.parseInitialization()
 		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):

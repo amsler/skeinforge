@@ -58,11 +58,12 @@ The limit tool has created the file:
 import __init__
 
 from datetime import date
+from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
-from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
@@ -79,7 +80,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText(fileName, gcodeText='', repository=None):
 	'Limit a gcode file or text.'
-	return getCraftedTextFromText( gcodec.getTextIfEmpty(fileName, gcodeText), repository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, gcodeText), repository )
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	'Limit a gcode text.'
@@ -134,7 +135,7 @@ class LimitSkein:
 		self.maximumZTravelFeedRatePerSecond = repository.maximumZFeedRatePerSecond.value
 		self.maximumZFeedRatePerSecond = self.maximumZTravelFeedRatePerSecond
 		self.repository = repository
-		self.lines = gcodec.getTextLines(gcodeText)
+		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			self.parseLine( lineIndex )

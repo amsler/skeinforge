@@ -93,6 +93,7 @@ from datetime import date
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.svg_reader import SVGReader
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
+from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import intercircle
@@ -112,7 +113,7 @@ __license__ = 'GPL 3.0'
 
 def getCraftedText( fileName, text = '', prefaceRepository = None ):
 	"Preface and convert an svg file or text."
-	return getCraftedTextFromText( gcodec.getTextIfEmpty( fileName, text ), prefaceRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), prefaceRepository )
 
 def getCraftedTextFromText( text, prefaceRepository = None ):
 	"Preface and convert an svg text."
@@ -175,7 +176,7 @@ class PrefaceSkein:
 	def addFromUpperLowerFile( self, fileName ):
 		"Add lines of text from the fileName or the lowercase fileName, if there is no file by the original fileName in the directory."
 		fileText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), fileName )
-		fileLines = gcodec.getTextLines(fileText)
+		fileLines = archive.getTextLines(fileText)
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode( fileLines )
 
 	def addInitializationToOutput(self):
@@ -184,8 +185,8 @@ class PrefaceSkein:
 		self.distanceFeedRate.addTagBracketedLine('creation', 'skeinforge') # GCode formatted comment
 		absoluteFilePathUntilDot = os.path.abspath( __file__ )[ : os.path.abspath( __file__ ).rfind('.') ]
 		if absoluteFilePathUntilDot == '/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/preface': #is this script on Enrique's computer?
-			gcodec.writeFileText( gcodec.getVersionFileName(), date.today().isoformat().replace('-', '.')[ 2 : ] )
-		versionText = gcodec.getFileText( gcodec.getVersionFileName() )
+			archive.writeFileText( archive.getVersionFileName(), date.today().isoformat().replace('-', '.')[ 2 : ] )
+		versionText = archive.getFileText( archive.getVersionFileName() )
 		self.distanceFeedRate.addTagBracketedLine('version', versionText ) # GCode formatted comment
 		self.distanceFeedRate.addLine('(<extruderInitialization>)') # GCode formatted comment
 		if self.prefaceRepository.setPositioningToAbsolute.value:
