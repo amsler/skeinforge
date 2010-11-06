@@ -266,7 +266,7 @@ class displaySkein:
 		setPointToSplitLine( location, splitLine )
 		location = location + self.oldLocation
 		center = Vector3( self.oldLocation )
-		indexOfR = indexOfStartingWithSecond( "R", splitLine )
+		indexOfR = getIndexOfStartingWithSecond( "R", splitLine )
 		if indexOfR > 0:
 			radius = getDoubleAfterFirstLetter( splitLine[ indexOfR ] )
 			halfLocationMinusOld = location - self.oldLocation
@@ -370,7 +370,7 @@ class displaySkein:
 
 	def setFeedrate( self, splitLine ):
 		"Set the feedrate to the gcode split line."
-		indexOfF = indexOfStartingWithSecond( "F", splitLine )
+		indexOfF = getIndexOfStartingWithSecond( "F", splitLine )
 		if indexOfF > 0:
 			self.feedrateMinute = getDoubleAfterFirstLetter( splitLine[indexOfF] )
 

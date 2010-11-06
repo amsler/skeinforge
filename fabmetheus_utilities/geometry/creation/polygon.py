@@ -76,4 +76,4 @@ class PolygonDerivation:
 		self.revolutions = evaluate.getEvaluatedIntDefault(self.revolutions, 'revolutions', xmlElement)
 		if self.revolutions > 1:
 			self.end += self.sidesCeiling * (self.revolutions - 1)
-		self.spiral = evaluate.getVector3ByPrefix('spiral', self.spiral, xmlElement)
+		self.spiral = evaluate.getVector3ByPrefix(self.spiral, 'spiral', xmlElement)

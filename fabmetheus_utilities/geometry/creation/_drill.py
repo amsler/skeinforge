@@ -57,8 +57,8 @@ class DrillDerivation:
 
 	def setToXMLElement(self, xmlElement):
 		"Set to the xmlElement."
-		self.end = evaluate.getVector3ByPrefix('end', self.end, xmlElement)
-		self.start = evaluate.getVector3ByPrefix('start', self.start, xmlElement)
+		self.end = evaluate.getVector3ByPrefix(self.end, 'end', xmlElement)
+		self.start = evaluate.getVector3ByPrefix(self.start, 'start', xmlElement)
 		self.radius = lineation.getFloatByPrefixBeginEnd('radius', 'diameter', self.radius, xmlElement)
 		size = evaluate.getEvaluatedFloatDefault(None, 'size', xmlElement)
 		if size != None:

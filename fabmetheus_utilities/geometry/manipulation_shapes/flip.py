@@ -51,8 +51,8 @@ globalExecutionOrder = 200
 # return M
 def flipPoints(points, prefix, xmlElement):
 	"Flip the points."
-	origin = evaluate.getVector3ByPrefix(prefix + 'origin', Vector3(), xmlElement)
-	axis = evaluate.getVector3ByPrefix(prefix + 'axis', Vector3(1.0, 0.0, 0.0), xmlElement).getNormalized()
+	origin = evaluate.getVector3ByPrefix(Vector3(), prefix + 'origin', xmlElement)
+	axis = evaluate.getVector3ByPrefix(Vector3(1.0, 0.0, 0.0), prefix + 'axis', xmlElement).getNormalized()
 	for point in points:
 		point.setToVector3(point - 2.0 * axis.dot(point - origin) * axis)
 
@@ -89,7 +89,7 @@ def manipulateXMLElement(target, xmlElement):
 			triangleMesh.edges = []
 			triangleMesh.setEdgesForAllFaces()
 #	for connectionAxisKey in ['connectionStart', 'connectionEnd', 'xAxis']:
-#		connectionAxisValue = evaluate.getVector3ByPrefix(connectionAxisKey, Vector3(), target)
+#		connectionAxisValue = evaluate.getVector3ByPrefix(Vector3(), connectionAxisKey, target)
 #		if not connectionAxisValue.getIsDefault():
 #			flipPoints([connectionAxisValue], '', xmlElement)
 #			target.attributeDictionary[connectionAxisKey] = str(connectionAxisValue)

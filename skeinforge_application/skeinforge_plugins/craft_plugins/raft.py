@@ -790,24 +790,24 @@ class RaftSkein:
 	def getRaftedLine( self, splitLine ):
 		"Get elevated gcode line with operating feed rate."
 		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
-		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
+		self.feedRateMinute = gcodec.getFeedRateMinute(self.feedRateMinute, splitLine)
 		feedRateMinuteMultiplied = self.feedRateMinute
 		self.oldLocation = location
 		z = location.z
 		if self.operatingJump != None:
 			z += self.operatingJump
 		if self.layerIndex == 0:
-			self.addFlowRateValueIfDifferent( self.repository.objectFirstLayerFlowRateMultiplier.value * self.oldFlowRateInput )
+			self.addFlowRateValueIfDifferent(self.repository.objectFirstLayerFlowRateMultiplier.value * self.oldFlowRateInput)
 			if self.isPerimeter:
 				feedRateMinuteMultiplied *= self.repository.objectFirstLayerFeedRatePerimeterMultiplier.value
-				self.addTemperatureLineIfDifferent( self.objectFirstLayerPerimeterTemperature )
+				self.addTemperatureLineIfDifferent(self.objectFirstLayerPerimeterTemperature)
 			else:
 				feedRateMinuteMultiplied *= self.repository.objectFirstLayerFeedRateInfillMultiplier.value
-				self.addTemperatureLineIfDifferent( self.objectFirstLayerInfillTemperature )
+				self.addTemperatureLineIfDifferent(self.objectFirstLayerInfillTemperature)
 		else:
-			self.addFlowRateValueIfDifferent( self.oldFlowRateInput )
-			self.addTemperatureLineIfDifferent( self.objectNextLayersTemperature )
-		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinuteMultiplied, location.dropAxis(2), z )
+			self.addFlowRateValueIfDifferent(self.oldFlowRateInput)
+			self.addTemperatureLineIfDifferent(self.objectNextLayersTemperature)
+		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate(feedRateMinuteMultiplied, location.dropAxis(2), z)
 
 	def getStepsUntilEnd( self, begin, end, stepSize ):
 		"Get steps from the beginning until the end."

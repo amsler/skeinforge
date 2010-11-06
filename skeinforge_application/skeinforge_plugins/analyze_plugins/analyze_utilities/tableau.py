@@ -434,7 +434,7 @@ class TableauWindow:
 
 	def getRoundedRulingText( self, extraDecimalPlaces, number ):
 		"Get the rounded ruling text."
-		rulingText = euclidean.getRoundedToDecimalPlacesString( extraDecimalPlaces - math.floor( math.log10( self.rulingSeparationWidthMillimeters ) ), number )
+		rulingText = euclidean.getRoundedToPlacesString( extraDecimalPlaces - math.floor( math.log10( self.rulingSeparationWidthMillimeters ) ), number )
 		if self.rulingSeparationWidthMillimeters < .99:
 			return rulingText
 		if rulingText[ - len('.0') : ] == '.0':

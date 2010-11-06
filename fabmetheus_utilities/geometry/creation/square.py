@@ -85,4 +85,4 @@ class SquareDerivation:
 		self.topDemiwidth = lineation.getFloatByPrefixBeginEnd('topdemiwidth', 'topwidth', self.demiwidth, xmlElement)
 		self.interiorAngle = evaluate.getEvaluatedFloatDefault(self.interiorAngle, 'interiorangle', xmlElement)
 		self.revolutions = evaluate.getEvaluatedIntDefault(self.revolutions, 'revolutions', xmlElement)
-		self.spiral = evaluate.getVector3ByPrefix('spiral', self.spiral, xmlElement)
+		self.spiral = evaluate.getVector3ByPrefix(self.spiral, 'spiral', xmlElement)

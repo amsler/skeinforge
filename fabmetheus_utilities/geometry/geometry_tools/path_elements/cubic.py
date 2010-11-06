@@ -34,8 +34,8 @@ def getCubicPath(xmlElement):
 	evaluatedControlPoints = evaluate.getTransformedPathByKey('controlPoints', xmlElement)
 	if len(evaluatedControlPoints) > 1:
 		return getCubicPathByBeginEnd(begin, evaluatedControlPoints, end, xmlElement)
-	controlPoint0 = evaluate.getVector3ByPrefix('controlPoint0', None, xmlElement)
-	controlPoint1 = evaluate.getVector3ByPrefix('controlPoint1', None, xmlElement)
+	controlPoint0 = evaluate.getVector3ByPrefix(None, 'controlPoint0', xmlElement)
+	controlPoint1 = evaluate.getVector3ByPrefix(None, 'controlPoint1', xmlElement)
 	if len(evaluatedControlPoints) == 1:
 		controlPoint1 = evaluatedControlPoints[0]
 	if controlPoint0 == None:

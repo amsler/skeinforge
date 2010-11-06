@@ -1,5 +1,5 @@
 """
-Face of a triangle mesh.
+Path.
 
 """
 

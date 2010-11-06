@@ -313,6 +313,18 @@ def getSelectedRadioPlugin( names, radioPlugins ):
 	print( names )
 	return radioPlugin[0]
 
+def getShortestUniqueSettingName(settingName, settings):
+	"Get the shortest unique name in the settings."
+	for length in xrange(3, len(settingName)):
+		numberOfEquals = 0
+		shortName = settingName[: length]
+		for setting in settings:
+			if setting.name[: length] == shortName:
+				numberOfEquals += 1
+		if numberOfEquals < 2:
+			return shortName
+	return settingName
+
 def getSubfolderWithBasename( basename, directory ):
 	"Get the subfolder in the directory with the basename."
 	archive.makeDirectory(directory)
@@ -420,11 +432,22 @@ def quitWindows( event=None ):
 def readSettingsFromText( repository, text ):
 	"Read settings from a text."
 	lines = archive.getTextLines(text)
-	settingDictionary = {}
+	shortDictionary = {}
 	for setting in repository.preferences:
-		settingDictionary[getUntilFirstBracket(setting.name)] = setting
+		shortDictionary[getShortestUniqueSettingName(setting.name, repository.preferences)] = setting
 	for lineIndex in xrange(len(lines)):
-		setRepositoryToLine(lineIndex, lines, settingDictionary)
+		setRepositoryToLine(lineIndex, lines, shortDictionary)
+
+def setRepositoryToLine(lineIndex, lines, shortDictionary):
+	"Set setting dictionary to a setting line."
+	line = lines[lineIndex]
+	splitLine = line.split(globalSpreadsheetSeparator)
+	if len(splitLine) < 2:
+		return
+	fileSettingName = splitLine[0]
+	for shortDictionaryKey in shortDictionary:
+		if fileSettingName[: len(shortDictionaryKey)] == shortDictionaryKey:
+			shortDictionary[shortDictionaryKey].setValueToSplitLine(lineIndex, lines, splitLine)
 
 def saveAll():
 	"Save all the dialogs."
@@ -438,16 +461,6 @@ def saveRepository(repository):
 	writeSettingsPrintMessage(repository)
 	for saveListener in repository.saveListenerTable.values():
 		saveListener()
-
-def setRepositoryToLine(lineIndex, lines, settingDictionary):
-	"Set setting dictionary to a setting line."
-	line = lines[lineIndex]
-	splitLine = line.split(globalSpreadsheetSeparator)
-	if len(splitLine) < 2:
-		return
-	fileSettingName = getUntilFirstBracket(splitLine[0])
-	if fileSettingName in settingDictionary:
-		settingDictionary[fileSettingName].setValueToSplitLine(lineIndex, lines, splitLine)
 
 def setButtonFontWeightString( button, isBold ):
 	"Set button font weight given isBold."
@@ -539,6 +552,10 @@ class StringSetting:
 		"Set the update function to none."
 		self.entry = None
 		self.updateFunction = None
+
+	def __repr__(self):
+		"Get the string representation of this StringSetting."
+		return str(self.__dict__)
 
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."

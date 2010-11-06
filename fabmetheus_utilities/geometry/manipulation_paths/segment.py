@@ -29,7 +29,7 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	if path == getSegmentPathDefault():
 		return [loop]
 	path = getXNormalizedVector3Path(path)
-	segmentCenter = evaluate.getVector3ByPrefix(prefix + 'center', None, xmlElement)
+	segmentCenter = evaluate.getVector3ByPrefix(None, prefix + 'center', xmlElement)
 	if euclidean.getIsWiddershinsByVector3(loop):
 		path = path[: : -1]
 		for point in path:

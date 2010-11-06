@@ -137,7 +137,9 @@ Below are examples of euclidean use.<br>
 
 <dl><dt><a name="ProjectiveSpace-getByBasisXZ"><strong>getByBasisXZ</strong></a>(self, basisX, basisZ)</dt><dd><tt>Get&nbsp;by&nbsp;x&nbsp;basis&nbsp;x&nbsp;and&nbsp;y&nbsp;basis.</tt></dd></dl>
 
-<dl><dt><a name="ProjectiveSpace-getByBasisZTop"><strong>getByBasisZTop</strong></a>(self, basisZ, top)</dt><dd><tt>Get&nbsp;by&nbsp;z&nbsp;basis&nbsp;and&nbsp;top.</tt></dd></dl>
+<dl><dt><a name="ProjectiveSpace-getByBasisZFirst"><strong>getByBasisZFirst</strong></a>(self, basisZ, firstVector3)</dt><dd><tt>Get&nbsp;by&nbsp;basisZ&nbsp;and&nbsp;first.</tt></dd></dl>
+
+<dl><dt><a name="ProjectiveSpace-getByBasisZTop"><strong>getByBasisZTop</strong></a>(self, basisZ, top)</dt><dd><tt>Get&nbsp;by&nbsp;basisZ&nbsp;and&nbsp;top.</tt></dd></dl>
 
 <dl><dt><a name="ProjectiveSpace-getByLatitudeLongitude"><strong>getByLatitudeLongitude</strong></a>(self, viewpointLatitude, viewpointLongitude)</dt><dd><tt>Get&nbsp;by&nbsp;latitude&nbsp;and&nbsp;longitude.</tt></dd></dl>
 
@@ -293,12 +295,16 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getComplexPath"><strong>getComplexPath</strong></a>(vector3Path)</dt><dd><tt>Get&nbsp;the&nbsp;complex&nbsp;path&nbsp;from&nbsp;the&nbsp;vector3&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getComplexPaths"><strong>getComplexPaths</strong></a>(vector3Paths)</dt><dd><tt>Get&nbsp;the&nbsp;complex&nbsp;paths&nbsp;from&nbsp;the&nbsp;vector3&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-getComplexPolygon"><strong>getComplexPolygon</strong></a>(center, radius, sides, startAngle<font color="#909090">=0.0</font>)</dt><dd><tt>Get&nbsp;the&nbsp;complex&nbsp;polygon.</tt></dd></dl>
+ <dl><dt><a name="-getComplexPolygonByStartEnd"><strong>getComplexPolygonByStartEnd</strong></a>(endAngle, radius, sides, startAngle<font color="#909090">=0.0</font>)</dt><dd><tt>Get&nbsp;the&nbsp;complex&nbsp;polygon&nbsp;by&nbsp;start&nbsp;and&nbsp;end&nbsp;angle.</tt></dd></dl>
  <dl><dt><a name="-getConcatenatedList"><strong>getConcatenatedList</strong></a>(originalLists)</dt><dd><tt>Get&nbsp;the&nbsp;lists&nbsp;as&nbsp;one&nbsp;concatenated&nbsp;list.</tt></dd></dl>
  <dl><dt><a name="-getConnectedPaths"><strong>getConnectedPaths</strong></a>(paths, pixelDictionary, width)</dt><dd><tt>Get&nbsp;connected&nbsp;paths&nbsp;from&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-getCrossProduct"><strong>getCrossProduct</strong></a>(firstComplex, secondComplex)</dt><dd><tt>Get&nbsp;z&nbsp;component&nbsp;cross&nbsp;product&nbsp;of&nbsp;a&nbsp;pair&nbsp;of&nbsp;complexes.</tt></dd></dl>
  <dl><dt><a name="-getDecimalPlacesCarried"><strong>getDecimalPlacesCarried</strong></a>(extraDecimalPlaces, value)</dt><dd><tt>Get&nbsp;decimal&nbsp;places&nbsp;carried&nbsp;by&nbsp;the&nbsp;decimal&nbsp;places&nbsp;of&nbsp;the&nbsp;value&nbsp;plus&nbsp;the&nbsp;extraDecimalPlaces.</tt></dd></dl>
  <dl><dt><a name="-getDiagonalFlippedLoop"><strong>getDiagonalFlippedLoop</strong></a>(loop)</dt><dd><tt>Get&nbsp;loop&nbsp;flipped&nbsp;over&nbsp;the&nbsp;dialogonal,&nbsp;in&nbsp;other&nbsp;words&nbsp;with&nbsp;the&nbsp;x&nbsp;and&nbsp;y&nbsp;swapped.</tt></dd></dl>
  <dl><dt><a name="-getDiagonalFlippedLoops"><strong>getDiagonalFlippedLoops</strong></a>(loops)</dt><dd><tt>Get&nbsp;loops&nbsp;flipped&nbsp;over&nbsp;the&nbsp;dialogonal,&nbsp;in&nbsp;other&nbsp;words&nbsp;with&nbsp;the&nbsp;x&nbsp;and&nbsp;y&nbsp;swapped.</tt></dd></dl>
+ <dl><dt><a name="-getDistanceToLine"><strong>getDistanceToLine</strong></a>(begin, end, point)</dt><dd><tt>Get&nbsp;the&nbsp;distance&nbsp;from&nbsp;a&nbsp;vector3&nbsp;point&nbsp;to&nbsp;an&nbsp;infinite&nbsp;line.</tt></dd></dl>
+ <dl><dt><a name="-getDistanceToLineByPath"><strong>getDistanceToLineByPath</strong></a>(begin, end, path)</dt><dd><tt>Get&nbsp;the&nbsp;maximum&nbsp;distance&nbsp;from&nbsp;a&nbsp;path&nbsp;to&nbsp;an&nbsp;infinite&nbsp;line.</tt></dd></dl>
+ <dl><dt><a name="-getDistanceToLineByPaths"><strong>getDistanceToLineByPaths</strong></a>(begin, end, paths)</dt><dd><tt>Get&nbsp;the&nbsp;maximum&nbsp;distance&nbsp;from&nbsp;paths&nbsp;to&nbsp;an&nbsp;infinite&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-getDistanceToPlaneSegment"><strong>getDistanceToPlaneSegment</strong></a>(segmentBegin, segmentEnd, point)</dt><dd><tt>Get&nbsp;the&nbsp;distance&nbsp;squared&nbsp;from&nbsp;a&nbsp;point&nbsp;to&nbsp;the&nbsp;x&nbsp;&amp;&nbsp;y&nbsp;components&nbsp;of&nbsp;a&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-getDotProduct"><strong>getDotProduct</strong></a>(firstComplex, secondComplex)</dt><dd><tt>Get&nbsp;the&nbsp;dot&nbsp;product&nbsp;of&nbsp;a&nbsp;pair&nbsp;of&nbsp;complexes.</tt></dd></dl>
  <dl><dt><a name="-getDotProductPlusOne"><strong>getDotProductPlusOne</strong></a>(firstComplex, secondComplex)</dt><dd><tt>Get&nbsp;the&nbsp;dot&nbsp;product&nbsp;plus&nbsp;one&nbsp;of&nbsp;the&nbsp;x&nbsp;and&nbsp;y&nbsp;components&nbsp;of&nbsp;a&nbsp;pair&nbsp;of&nbsp;Vector3s.</tt></dd></dl>
@@ -352,6 +358,9 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getMirrorPath"><strong>getMirrorPath</strong></a>(path)</dt><dd><tt>Get&nbsp;mirror&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getNearestDistanceIndex"><strong>getNearestDistanceIndex</strong></a>(point, loop)</dt><dd><tt>Get&nbsp;the&nbsp;distance&nbsp;squared&nbsp;to&nbsp;the&nbsp;nearest&nbsp;segment&nbsp;of&nbsp;the&nbsp;loop&nbsp;and&nbsp;index&nbsp;of&nbsp;that&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-getNearestPointOnSegment"><strong>getNearestPointOnSegment</strong></a>(segmentBegin, segmentEnd, point)</dt><dd><tt>Get&nbsp;the&nbsp;nearest&nbsp;point&nbsp;on&nbsp;the&nbsp;segment.</tt></dd></dl>
+ <dl><dt><a name="-getNormal"><strong>getNormal</strong></a>(begin, center, end)</dt><dd><tt>Get&nbsp;normal.</tt></dd></dl>
+ <dl><dt><a name="-getNormalByPath"><strong>getNormalByPath</strong></a>(path)</dt><dd><tt>Get&nbsp;normal&nbsp;by&nbsp;path.</tt></dd></dl>
+ <dl><dt><a name="-getNormalWeighted"><strong>getNormalWeighted</strong></a>(begin, center, end)</dt><dd><tt>Get&nbsp;weighted&nbsp;normal.</tt></dd></dl>
  <dl><dt><a name="-getNormalized"><strong>getNormalized</strong></a>(complexNumber)</dt><dd><tt>Get&nbsp;the&nbsp;normalized&nbsp;complex.</tt></dd></dl>
  <dl><dt><a name="-getNumberOfIntersectionsToLeft"><strong>getNumberOfIntersectionsToLeft</strong></a>(loop, point)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;intersections&nbsp;through&nbsp;the&nbsp;loop&nbsp;for&nbsp;the&nbsp;line&nbsp;going&nbsp;left.</tt></dd></dl>
  <dl><dt><a name="-getNumberOfIntersectionsToLeftOfLoops"><strong>getNumberOfIntersectionsToLeftOfLoops</strong></a>(loops, point)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;intersections&nbsp;through&nbsp;the&nbsp;loop&nbsp;for&nbsp;the&nbsp;line&nbsp;starting&nbsp;from&nbsp;the&nbsp;left&nbsp;point&nbsp;and&nbsp;going&nbsp;left.</tt></dd></dl>
@@ -369,8 +378,8 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getRotatedWiddershinsQuarterAroundZAxis"><strong>getRotatedWiddershinsQuarterAroundZAxis</strong></a>(vector3)</dt><dd><tt>Get&nbsp;Vector3&nbsp;rotated&nbsp;a&nbsp;quarter&nbsp;widdershins&nbsp;turn&nbsp;around&nbsp;Z&nbsp;axis.</tt></dd></dl>
  <dl><dt><a name="-getRoundZAxisByPlaneAngle"><strong>getRoundZAxisByPlaneAngle</strong></a>(planeAngle, vector3)</dt><dd><tt>Get&nbsp;Vector3&nbsp;rotated&nbsp;by&nbsp;a&nbsp;plane&nbsp;angle.</tt></dd></dl>
  <dl><dt><a name="-getRoundedPoint"><strong>getRoundedPoint</strong></a>(point)</dt><dd><tt>Get&nbsp;point&nbsp;with&nbsp;each&nbsp;component&nbsp;rounded.</tt></dd></dl>
- <dl><dt><a name="-getRoundedToDecimalPlaces"><strong>getRoundedToDecimalPlaces</strong></a>(decimalPlaces, number)</dt><dd><tt>Get&nbsp;number&nbsp;rounded&nbsp;to&nbsp;a&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places.</tt></dd></dl>
- <dl><dt><a name="-getRoundedToDecimalPlacesString"><strong>getRoundedToDecimalPlacesString</strong></a>(decimalPlaces, number)</dt><dd><tt>Get&nbsp;number&nbsp;rounded&nbsp;to&nbsp;a&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places&nbsp;as&nbsp;a&nbsp;string.</tt></dd></dl>
+ <dl><dt><a name="-getRoundedToPlaces"><strong>getRoundedToPlaces</strong></a>(decimalPlaces, number)</dt><dd><tt>Get&nbsp;number&nbsp;rounded&nbsp;to&nbsp;a&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places.</tt></dd></dl>
+ <dl><dt><a name="-getRoundedToPlacesString"><strong>getRoundedToPlacesString</strong></a>(decimalPlaces, number)</dt><dd><tt>Get&nbsp;number&nbsp;rounded&nbsp;to&nbsp;a&nbsp;number&nbsp;of&nbsp;decimal&nbsp;places&nbsp;as&nbsp;a&nbsp;string.</tt></dd></dl>
  <dl><dt><a name="-getRoundedToThreePlaces"><strong>getRoundedToThreePlaces</strong></a>(number)</dt><dd><tt>Get&nbsp;number&nbsp;rounded&nbsp;to&nbsp;three&nbsp;places&nbsp;as&nbsp;a&nbsp;string.</tt></dd></dl>
  <dl><dt><a name="-getSegmentFromPath"><strong>getSegmentFromPath</strong></a>(path, pathIndex)</dt><dd><tt>Get&nbsp;endpoint&nbsp;segment&nbsp;from&nbsp;a&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getSegmentFromPoints"><strong>getSegmentFromPoints</strong></a>(begin, end)</dt><dd><tt>Get&nbsp;endpoint&nbsp;segment&nbsp;from&nbsp;a&nbsp;pair&nbsp;of&nbsp;points.</tt></dd></dl>

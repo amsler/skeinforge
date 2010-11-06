@@ -31,7 +31,7 @@ def getQuadraticPath(xmlElement):
 		print(xmlElement)
 		return [end]
 	begin = xmlElement.getPreviousVertex(Vector3())
-	controlPoint = evaluate.getVector3ByPrefix('controlPoint', None, xmlElement)
+	controlPoint = evaluate.getVector3ByPrefix(None, 'controlPoint', xmlElement)
 	if controlPoint == None:
 		oldControlPoint = evaluate.getVector3ByPrefixes(['controlPoint','controlPoint1'], None, previousXMLElement)
 		if oldControlPoint == None:

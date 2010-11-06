@@ -247,22 +247,15 @@ class ExportSkein:
 			self.parseLine( exportRepository, line )
 		return self.output.getvalue()
 
-	def getLineWithTruncatedNumber( self, character, line ):
+	def getLineWithTruncatedNumber(self, character, line, splitLine):
 		'Get a line with the number after the character truncated.'
-		indexOfCharacter = line.find( character )
-		if indexOfCharacter < 0:
+		numberString = gcodec.getStringFromCharacterSplitLine(character, splitLine)
+		if numberString == None:
 			return line
-		indexOfNumberEnd = line.find(' ', indexOfCharacter )
-		if indexOfNumberEnd < 0:
-			indexOfNumberEnd = len(line)
-		indexOfNumberStart = indexOfCharacter + 1
-		numberString = line[ indexOfNumberStart : indexOfNumberEnd ]
-		if numberString == '':
-			return line
-		roundedNumberString = euclidean.getRoundedToDecimalPlacesString( self.decimalPlacesExported, float( numberString ) )
-		return line[ : indexOfNumberStart ] + roundedNumberString + line[ indexOfNumberEnd : ]
+		roundedNumberString = euclidean.getRoundedToPlacesString(self.decimalPlacesExported, float(numberString))
+		return gcodec.getLineWithValueString(character, line, splitLine, roundedNumberString)
 
-	def parseLine( self, exportRepository, line ):
+	def parseLine(self, exportRepository, line):
 		"Parse a gcode line."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len(splitLine) < 1:
@@ -277,12 +270,12 @@ class ExportSkein:
 		if firstWord != 'G1' and firstWord != 'G2' and firstWord != 'G3' :
 			self.addLine(line)
 			return
-		line = self.getLineWithTruncatedNumber('X', line )
-		line = self.getLineWithTruncatedNumber('Y', line )
-		line = self.getLineWithTruncatedNumber('Z', line )
-		line = self.getLineWithTruncatedNumber('I', line )
-		line = self.getLineWithTruncatedNumber('J', line )
-		line = self.getLineWithTruncatedNumber('R', line )
+		line = self.getLineWithTruncatedNumber('X', line, splitLine)
+		line = self.getLineWithTruncatedNumber('Y', line, splitLine)
+		line = self.getLineWithTruncatedNumber('Z', line, splitLine)
+		line = self.getLineWithTruncatedNumber('I', line, splitLine)
+		line = self.getLineWithTruncatedNumber('J', line, splitLine)
+		line = self.getLineWithTruncatedNumber('R', line, splitLine)
 		self.addLine(line)
 
 

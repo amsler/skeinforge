@@ -263,7 +263,7 @@ class StatisticSkein:
 	def getLocationSetFeedRateToSplitLine( self, splitLine ):
 		"Get location ans set feed rate to the plsit line."
 		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
-		indexOfF = gcodec.indexOfStartingWithSecond( "F", splitLine )
+		indexOfF = gcodec.getIndexOfStartingWithSecond( "F", splitLine )
 		if indexOfF > 0:
 			self.feedRateMinute = gcodec.getDoubleAfterFirstLetter( splitLine[indexOfF] )
 		return location
@@ -275,7 +275,7 @@ class StatisticSkein:
 		location = self.getLocationSetFeedRateToSplitLine(splitLine)
 		location += self.oldLocation
 		center = self.oldLocation.copy()
-		indexOfR = gcodec.indexOfStartingWithSecond( "R", splitLine )
+		indexOfR = gcodec.getIndexOfStartingWithSecond( "R", splitLine )
 		if indexOfR > 0:
 			radius = gcodec.getDoubleAfterFirstLetter( splitLine[ indexOfR ] )
 			halfLocationMinusOld = location - self.oldLocation

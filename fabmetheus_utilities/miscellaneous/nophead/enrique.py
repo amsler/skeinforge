@@ -25,10 +25,10 @@ def getDoubleAfterFirstLetter(word):
 
 # Get the double value of the word after the first occurence of the letter in the split line.
 def getDoubleForLetter(letter, splitLine):
-    return getDoubleAfterFirstLetter( splitLine[ indexOfStartingWithSecond(letter, splitLine) ] )
+    return getDoubleAfterFirstLetter( splitLine[ getIndexOfStartingWithSecond(letter, splitLine) ] )
 
 # Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found
-def indexOfStartingWithSecond(letter, splitLine):
+def getIndexOfStartingWithSecond(letter, splitLine):
     for wordIndex in xrange( 1, len(splitLine) ):
         word = splitLine[ wordIndex ]
         firstLetter = word[0]
@@ -89,7 +89,7 @@ class g2gif:
 
     # Set the feedRate to the gcode split line.
     def setFeedRate( self, splitLine ):
-        indexOfF = indexOfStartingWithSecond( "F", splitLine )
+        indexOfF = getIndexOfStartingWithSecond( "F", splitLine )
         if indexOfF > 0:
             self.feedRateMinute = getDoubleAfterFirstLetter( splitLine[indexOfF] )
 
@@ -97,7 +97,7 @@ class g2gif:
     def setPointComponent( self, point, splitLine ):
         point.x = getDoubleForLetter( "X", splitLine )
         point.y = getDoubleForLetter( "Y", splitLine )
-        indexOfZ = indexOfStartingWithSecond( "Z", splitLine )
+        indexOfZ = getIndexOfStartingWithSecond( "Z", splitLine )
         if indexOfZ > 0:
             point.z = getDoubleAfterFirstLetter( splitLine[indexOfZ] )
 

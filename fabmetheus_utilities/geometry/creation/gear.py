@@ -31,7 +31,7 @@ def addBevelGear(derivation, extrudeDerivation, pitchRadius, positives, teeth, v
 	totalPitchRadius = derivation.pitchRadiusGear + derivation.pitchRadius
 	totalTeeth = derivation.teethPinion + derivation.teethGear
 	portionDirections = extrude.getSpacedPortionDirections(extrudeDerivation.interpolationDictionary)
-	loopLists = extrude.getLoopListsByPath(None, extrudeDerivation, vector3GearProfile[0], portionDirections)
+	loopLists = extrude.getLoopListsByPath(extrudeDerivation, None, vector3GearProfile[0], portionDirections)
 	firstLoopList = loopLists[0]
 	gearOverPinion = float(totalTeeth - teeth) / float(teeth)
 	thirdLayerThickness = 0.33333333333 * evaluate.getLayerThickness(derivation.xmlElement)
@@ -382,11 +382,11 @@ def getOutputCylinder(
 		return extrude.getGeometryOutputByNegativesPositives(extrudeDerivation, negatives, positives, xmlElement)
 	portionDirections = extrude.getSpacedPortionDirections(extrudeDerivation.interpolationDictionary)
 	outerGearProfile = vector3GearProfile[0]
-	outerLoopLists = extrude.getLoopListsByPath(None, extrudeDerivation, outerGearProfile, portionDirections)
+	outerLoopLists = extrude.getLoopListsByPath(extrudeDerivation, None, outerGearProfile, portionDirections)
 	addBottomLoop(-derivation.plateClearance, outerLoopLists[0])
 	geometryOutput = trianglemesh.getPillarsOutput(outerLoopLists)
 	positives.append(geometryOutput)
-	innerLoopLists = extrude.getLoopListsByPath(None, extrudeDerivation, vector3GearProfile[1], portionDirections)
+	innerLoopLists = extrude.getLoopListsByPath(extrudeDerivation, None, vector3GearProfile[1], portionDirections)
 	addBottomLoop(-derivation.plateClearance, innerLoopLists[0])
 	geometryOutput = trianglemesh.getPillarsOutput(innerLoopLists)
 	negatives.append(geometryOutput)

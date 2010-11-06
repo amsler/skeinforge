@@ -116,7 +116,7 @@ def getSliceElementZ(sliceElement):
 
 def setSliceElementZ(decimalPlacesCarried, sliceElement, sliceElementIndex, z):
 	"Set the slice element z."
-	roundedZ = euclidean.getRoundedToDecimalPlacesString(decimalPlacesCarried, z)
+	roundedZ = euclidean.getRoundedToPlacesString(decimalPlacesCarried, z)
 	idValue = 'z:%s' % roundedZ
 	sliceElement.attributeDictionary['id'] = idValue
 	textElement = sliceElement.getFirstChildWithClassName('text')

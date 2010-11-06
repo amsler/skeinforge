@@ -215,14 +215,16 @@ import os
 import sys
 
 
-# minor save
-# maybe vector3 relative to previous, getPreviousVertex in document
+# scale xy z
 # iso svg
+# set derivations to lathe form
+# gear separated diagonally, center distance
+# linear bearing
 # mirror axis center & origin, concatenate
 # matrixTetragrid to tetragrid, matrix.transform, target
 # maybe matrix array form a00 a01.. also
 # matrix rotate around axis http://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
-# linear bearing
+# lathe, transform normal in getRemaining, getConnection
 # grate separate
 # xml_creation
 # class, pymethe
@@ -234,8 +236,8 @@ import sys
 # bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
 # look over copy module, make copy solid like copy lineation
 # document gear script
+# stretch add back addAlong
 #
-# classify more of evaluate.xml
 # maybe in svgReader if loop intersection with previous union else add
 #
 # unimportant
@@ -247,7 +249,6 @@ import sys
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # del previous, add begin & end if far  get actual path
 # polling
-# speed up CircleIntersection by performing isWithinCircles before creation
 # getNormal, getIsFlat?
 # write svg for visible paths???
 # combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
@@ -255,8 +256,10 @@ import sys
 # import module, overwriteRoot
 # pixel, voxel, surfaxel/boxel, lattice, mesh
 # probably not replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
+# probably not speed up CircleIntersection by performing isWithinCircles before creation
 # equation for vertexes if not already
 # mesh. for cube, then cyliner, then sphere after lathe
+# probably not move alterations and profiles
 # tube
 # rotor
 # test translate
@@ -278,9 +281,8 @@ import sys
 # comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
 # global simplify pathBetween
 # comb documentation
-# maybe move after clip
 #
-# stretch add back addAlong
+# maybe move widen before bottom
 # maybe save all generated_files option
 # maybe meta overhang
 # convert global repository settings to local settings
@@ -389,8 +391,9 @@ import sys
 #6 16855,3226
 #7 20081, 2189
 #8 22270, 2625
-#9 24895, 2967
-#10 27862
+#9 24895, 2967, 98
+#10 27862, 3433, 110
+#11 31295
 #85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?

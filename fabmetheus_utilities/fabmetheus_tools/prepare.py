@@ -25,16 +25,21 @@ def prepareWikify():
 
 def removeGeneratedFiles():
 	'Remove generated files.'
-	svgFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['svg'])
-	for svgFilePath in svgFilePaths:
-		if archive.getEndsWithList(svgFilePath, ['_bottom.svg', '_carve.svg', '_chop.svg', '_cleave.svg']):
-			os.remove(svgFilePath)
-			print('removeGeneratedFiles deleted ' + svgFilePath)
 	gcodeFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['gcode'])
 	for gcodeFilePath in gcodeFilePaths:
 		if 'alterations' not in gcodeFilePath:
 			os.remove(gcodeFilePath)
 			print('removeGeneratedFiles deleted ' + gcodeFilePath)
+	svgFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['svg'])
+	for svgFilePath in svgFilePaths:
+		if archive.getEndsWithList(svgFilePath, ['_bottom.svg', '_carve.svg', '_chop.svg', '_cleave.svg']):
+			os.remove(svgFilePath)
+			print('removeGeneratedFiles deleted ' + svgFilePath)
+	xmlFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['xml'])
+	for xmlFilePath in xmlFilePaths:
+		if archive.getEndsWithList(xmlFilePath, ['_interpret.xml']):
+			os.remove(xmlFilePath)
+			print('removeGeneratedFiles deleted ' + xmlFilePath)
 	archive.removeBackupFilesByTypes(['gcode', 'svg', 'xml'])
 
 def removeZip():

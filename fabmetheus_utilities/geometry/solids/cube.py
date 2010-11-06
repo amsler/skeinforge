@@ -61,7 +61,7 @@ class Cube( trianglemesh.TriangleMesh ):
 			complex( self.inradius.x, self.inradius.y ),
 			complex( - self.inradius.x, self.inradius.y ) ]
 		bottomTopSquare = trianglemesh.getAddIndexedLoops( square, self.vertexes, [ - self.inradius.z, self.inradius.z ] )
-		trianglemesh.addPillarFromConvexLoops( self.faces, bottomTopSquare )
+		trianglemesh.addPillarByLoops( self.faces, bottomTopSquare )
 
 	def setToObjectAttributeDictionary(self):
 		"Set the shape of this carvable object info."

@@ -109,7 +109,7 @@ def getBeginGeometryXMLOutput(xmlElement):
 	if xmlElement != None:
 		root = xmlElement.getRoot()
 		attributeDictionary = root.attributeDictionary
-	attributeDictionary['version'] = '2010-03-29'
+#	attributeDictionary['version'] = '10.11.30'
 	addBeginXMLTag( attributeDictionary, 'fabmetheus', 0, output )
 	return output
 

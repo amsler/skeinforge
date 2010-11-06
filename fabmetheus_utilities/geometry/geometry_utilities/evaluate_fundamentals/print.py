@@ -23,12 +23,12 @@ def _getAccessibleAttribute(attributeName):
 	return None
 
 def continuous(valueString):
-	"Print continuous."
+	'Print continuous.'
 	sys.stdout.write(str(valueString))
 	return valueString
 
 def line(valueString):
-	"Print line."
+	'Print line.'
 	print(valueString)
 	return valueString
 

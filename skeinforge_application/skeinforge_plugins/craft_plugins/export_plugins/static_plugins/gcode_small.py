@@ -37,7 +37,7 @@ def getSplitLineBeforeBracketSemicolon(line):
 
 def getStringFromCharacterSplitLine(character, splitLine):
 	"Get the string after the first occurence of the character in the split line."
-	indexOfCharacter = indexOfStartingWithSecond(character, splitLine)
+	indexOfCharacter = getIndexOfStartingWithSecond(character, splitLine)
 	if indexOfCharacter < 0:
 		return None
 	return splitLine[indexOfCharacter][1 :]
@@ -52,7 +52,7 @@ def getTextLines(text):
 	"Get the all the lines of text of a text."
 	return text.replace('\r', '\n').split('\n')
 
-def indexOfStartingWithSecond(letter, splitLine):
+def getIndexOfStartingWithSecond(letter, splitLine):
 	"Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found"
 	for wordIndex in xrange( 1, len(splitLine) ):
 		word = splitLine[ wordIndex ]

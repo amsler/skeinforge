@@ -93,7 +93,7 @@ def getFloatFromCharacterSplitLine(character, splitLine):
 	lineFromCharacter = gcodec.getStringFromCharacterSplitLine(character, splitLine)
 	if lineFromCharacter == None:
 		return None
-	return float( lineFromCharacter )
+	return float(lineFromCharacter)
 
 def getOutput(gcodeText, repository=None):
 	'Get the exported version of a gcode file.'

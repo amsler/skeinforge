@@ -238,7 +238,7 @@ class SpeedSkein:
 
 	def getSpeededLine(self, line, splitLine):
 		"Get gcode line with feed rate."
-		if gcodec.indexOfStartingWithSecond('F', splitLine) > 0:
+		if gcodec.getIndexOfStartingWithSecond('F', splitLine) > 0:
 			return line
 		feedRateMinute = 60.0 * self.feedRatePerSecond
 		if self.isBridgeLayer:
@@ -248,7 +248,7 @@ class SpeedSkein:
 		self.addFlowRateLineIfNecessary()
 		if not self.isExtruderActive:
 			feedRateMinute = self.travelFeedRatePerMinute
-		return line + ' ' + self.distanceFeedRate.getRounded(feedRateMinute)
+		return self.distanceFeedRate.getLineWithFeedRate(feedRateMinute, line, splitLine)
 
 	def parseInitialization(self):
 		'Parse gcode initialization and store the parameters.'

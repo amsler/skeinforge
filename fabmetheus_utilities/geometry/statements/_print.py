@@ -1,5 +1,9 @@
 """
-Polygon path.
+Print statement.
+
+There is also the print attribute in geometry_utilities/evaluate_fundamentals/print.py
+
+The model is xml_models/geometry_utilities/evaluate_fundamentals/print.xml
 
 """
 
@@ -47,6 +51,9 @@ def printAttributeDictionaryKey( attributeDictionaryKey, xmlElement):
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
+	if len(xmlElement.text) > 1:
+		print(xmlElement.text)
+		return
 	attributeDictionaryKeys = xmlElement.attributeDictionary.keys()
 	if len( attributeDictionaryKeys ) < 1:
 		print('')

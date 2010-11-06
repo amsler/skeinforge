@@ -154,8 +154,8 @@ class Vector3Index:
 		return self.x != 0 or self.y != 0 or self.z != 0
 
 	def __repr__(self):
-		"Get the string representation of this Vector3."
-		return '(%s, %s, %s, %s)' % ( self.index, self.x, self.y, self.z )
+		"Get the string representation of this Vector3 index."
+		return '(%s, %s, %s, %s)' % (self.index, self.x, self.y, self.z)
 
 	def __rdiv__(self, other):
 		"Get a new Vector3 by dividing each component of this one."

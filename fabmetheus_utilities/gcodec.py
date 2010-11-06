@@ -66,11 +66,11 @@ def getDoubleAfterFirstLetter(word):
 
 def getDoubleForLetter(letter, splitLine):
 	'Get the double value of the word after the first occurence of the letter in the split line.'
-	return getDoubleAfterFirstLetter(splitLine[indexOfStartingWithSecond(letter, splitLine)])
+	return getDoubleAfterFirstLetter(splitLine[getIndexOfStartingWithSecond(letter, splitLine)])
 
 def getDoubleFromCharacterSplitLine(character, splitLine):
 	'Get the double value of the string after the first occurence of the character in the split line.'
-	indexOfCharacter = indexOfStartingWithSecond(character, splitLine)
+	indexOfCharacter = getIndexOfStartingWithSecond(character, splitLine)
 	if indexOfCharacter < 0:
 		return None
 	floatString = splitLine[indexOfCharacter][1 :]
@@ -88,7 +88,7 @@ def getDoubleFromCharacterSplitLineValue(character, splitLine, value):
 
 def getFeedRateMinute(feedRateMinute, splitLine):
 	'Get the feed rate per minute if the split line has a feed rate.'
-	indexOfF = indexOfStartingWithSecond('F', splitLine)
+	indexOfF = getIndexOfStartingWithSecond('F', splitLine)
 	if indexOfF > 0:
 		return getDoubleAfterFirstLetter( splitLine[indexOfF] )
 	return feedRateMinute
@@ -111,6 +111,24 @@ def getGcodeFileText(fileName, gcodeText):
 		return archive.getFileText(fileName)
 	return ''
 
+def getIndexOfStartingWithSecond(letter, splitLine):
+	'Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found'
+	for wordIndex in xrange( 1, len(splitLine) ):
+		word = splitLine[ wordIndex ]
+		firstLetter = word[0]
+		if firstLetter == letter:
+			return wordIndex
+	return - 1
+
+def getLineWithValueString(character, line, splitLine, valueString):
+	'Get the line with a valueString.'
+	roundedValueString = character + valueString
+	indexOfValue = getIndexOfStartingWithSecond(character, splitLine)
+	if indexOfValue == - 1:
+		return line + ' ' + roundedValueString
+	word = splitLine[indexOfValue]
+	return line.replace(word, roundedValueString)
+
 def getLocationFromSplitLine(oldLocation, splitLine):
 	'Get the location from the split line.'
 	if oldLocation == None:
@@ -132,7 +150,7 @@ def getSplitLineBeforeBracketSemicolon(line):
 
 def getStringFromCharacterSplitLine(character, splitLine):
 	'Get the string after the first occurence of the character in the split line.'
-	indexOfCharacter = indexOfStartingWithSecond(character, splitLine)
+	indexOfCharacter = getIndexOfStartingWithSecond(character, splitLine)
 	if indexOfCharacter < 0:
 		return None
 	return splitLine[indexOfCharacter][1 :]
@@ -143,15 +161,6 @@ def getWithoutBracketsEqualTab(line):
 	line = line.replace('(<', '')
 	line = line.replace('>', '')
 	return line.replace('\t', '')
-
-def indexOfStartingWithSecond(letter, splitLine):
-	'Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found'
-	for wordIndex in xrange( 1, len(splitLine) ):
-		word = splitLine[ wordIndex ]
-		firstLetter = word[0]
-		if firstLetter == letter:
-			return wordIndex
-	return - 1
 
 def isProcedureDone(gcodeText, procedure):
 	'Determine if the procedure has been done on the gcode text.'
@@ -347,43 +356,23 @@ class DistanceFeedRate:
 
 	def getLineWithFeedRate(self, feedRateMinute, line, splitLine):
 		'Get the line with a feed rate.'
-		roundedFeedRateString = 'F' + self.getRounded(feedRateMinute)
-		indexOfF = indexOfStartingWithSecond('F', splitLine)
-		if indexOfF < 0:
-			return line + ' ' + roundedFeedRateString
-		word = splitLine[indexOfF]
-		return line.replace(word, roundedFeedRateString)
+		return getLineWithValueString('F', line, splitLine, self.getRounded(feedRateMinute))
 
 	def getLineWithX(self, line, splitLine, x):
 		'Get the line with an x.'
-		roundedXString = 'X' + self.getRounded(x)
-		indexOfX = indexOfStartingWithSecond('X', splitLine)
-		if indexOfX == - 1:
-			return line + ' ' + roundedXString
-		word = splitLine[indexOfX]
-		return line.replace(word, roundedXString)
+		return getLineWithValueString('X', line, splitLine, self.getRounded(x))
 
 	def getLineWithY(self, line, splitLine, y):
 		'Get the line with a y.'
-		roundedYString = 'Y' + self.getRounded(y)
-		indexOfY = indexOfStartingWithSecond('Y', splitLine)
-		if indexOfY == - 1:
-			return line + ' ' + roundedYString
-		word = splitLine[indexOfY]
-		return line.replace(word, roundedYString)
+		return getLineWithValueString('Y', line, splitLine, self.getRounded(y))
 
 	def getLineWithZ(self, line, splitLine, z):
 		'Get the line with a z.'
-		roundedZString = 'Z' + self.getRounded(z)
-		indexOfZ = indexOfStartingWithSecond('Z', splitLine)
-		if indexOfZ == - 1:
-			return line + ' ' + roundedZString
-		word = splitLine[indexOfZ]
-		return line.replace(word, roundedZString)
+		return getLineWithValueString('Z', line, splitLine, self.getRounded(z))
 
 	def getRounded(self, number):
 		'Get number rounded to the number of carried decimal places as a string.'
-		return euclidean.getRoundedToDecimalPlacesString(self.decimalPlacesCarried, number)
+		return euclidean.getRoundedToPlacesString(self.decimalPlacesCarried, number)
 
 	def parseSplitLine(self, firstWord, splitLine):
 		'Parse gcode split line and store the parameters.'

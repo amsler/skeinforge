@@ -75,7 +75,8 @@ class CircleDerivation:
 		"Set to the xmlElement."
 		self.radius = lineation.getRadiusComplex(self.radius, xmlElement)
 		if self.sides == None:
-			self.sides = evaluate.getSidesMinimumThreeBasedOnPrecisionSides(max(self.radius.real, self.radius.imag), xmlElement)
+			radiusMaximum = max(self.radius.real, self.radius.imag)
+			self.sides = evaluate.getSidesMinimumThreeBasedOnPrecisionSides(radiusMaximum, xmlElement)
 		self.start = evaluate.getEvaluatedFloatDefault(self.start, 'start', xmlElement)
 		self.start = getWrappedFloat(self.start, 360.0)
 		self.extent = evaluate.getEvaluatedFloatDefault(360.0 - self.start, 'extent', xmlElement)
@@ -85,4 +86,4 @@ class CircleDerivation:
 		if self.revolutions > 1:
 			self.end += 360.0 * (self.revolutions - 1)
 		self.extent = self.end - self.start
-		self.spiral = evaluate.getVector3ByPrefix('spiral', self.spiral, xmlElement)
+		self.spiral = evaluate.getVector3ByPrefix(self.spiral, 'spiral', xmlElement)

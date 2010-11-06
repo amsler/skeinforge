@@ -52,7 +52,7 @@ class Cylinder( cube.Cube ):
 		bottomTopPolygon = [
 			trianglemesh.getAddIndexedLoop(polygonBottom, self.vertexes, - self.inradius.z),
 			trianglemesh.getAddIndexedLoop(polygonTop, self.vertexes, self.inradius.z)]
-		trianglemesh.addPillarFromConvexLoops(self.faces, bottomTopPolygon)
+		trianglemesh.addPillarByLoops(self.faces, bottomTopPolygon)
 
 	def setToObjectAttributeDictionary(self):
 		"Set the shape of this carvable object info."

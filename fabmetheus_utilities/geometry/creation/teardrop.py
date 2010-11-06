@@ -107,8 +107,8 @@ class TeardropDerivation:
 
 	def setToXMLElement(self, xmlElement):
 		"Set to the xmlElement."
-		end = evaluate.getVector3ByPrefix('end', None, xmlElement)
-		start = evaluate.getVector3ByPrefix('start', Vector3(), xmlElement)
+		end = evaluate.getVector3ByPrefix(None, 'end', xmlElement)
+		start = evaluate.getVector3ByPrefix(Vector3(), 'start', xmlElement)
 		inclinationDegree = math.degrees(getInclination(end, start))
 		self.inclination = math.radians(evaluate.getEvaluatedFloatDefault(inclinationDegree, 'inclination', xmlElement))
 		self.radius = lineation.getFloatByPrefixBeginEnd('radius', 'diameter', self.radius, xmlElement)

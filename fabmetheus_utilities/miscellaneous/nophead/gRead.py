@@ -22,7 +22,7 @@ def getDoubleAfterFirstLetter(word):
     return float( word[1 :] )
 
 # Get index of the first occurence of the given letter in the split line, starting with the second word.  Return - 1 if letter is not found
-def indexOfStartingWithSecond(letter, splitLine):
+def getIndexOfStartingWithSecond(letter, splitLine):
     for wordIndex in xrange( 1, len(splitLine) ):
         word = splitLine[ wordIndex ]
         firstLetter = word[0]
@@ -68,13 +68,13 @@ class gRead:
 
     # Set a point to the gcode split line.
     def setPointComponent( self, point, splitLine ):
-        indexOfX = indexOfStartingWithSecond( "X", splitLine )
+        indexOfX = getIndexOfStartingWithSecond( "X", splitLine )
         if indexOfX > 0:
             point.x = getDoubleAfterFirstLetter( splitLine[indexOfX] )
-        indexOfY = indexOfStartingWithSecond( "Y", splitLine )
+        indexOfY = getIndexOfStartingWithSecond( "Y", splitLine )
         if indexOfY > 0:
             point.y = getDoubleAfterFirstLetter( splitLine[indexOfY] )
-        indexOfZ = indexOfStartingWithSecond( "Z", splitLine )
+        indexOfZ = getIndexOfStartingWithSecond( "Z", splitLine )
         if indexOfZ > 0:
             point.z = getDoubleAfterFirstLetter( splitLine[indexOfZ] )
 

@@ -185,16 +185,16 @@ def getBracketValuesDeleteEvaluator(bracketBeginIndex, bracketEndIndex, evaluato
 
 def getCumulativeVector3(prefix, vector3, xmlElement):
 	"Get cumulative vector3 and delete the prefixed attributes."
-	cumulativeVector3 = getVector3ByPrefix(prefix + 'rectangular', vector3, xmlElement)
-	cylindrical = getVector3ByPrefix(prefix + 'cylindrical', Vector3(), xmlElement)
+	cumulativeVector3 = getVector3ByPrefix(vector3, prefix + 'rectangular', xmlElement)
+	cylindrical = getVector3ByPrefix(Vector3(), prefix + 'cylindrical', xmlElement)
 	if not cylindrical.getIsDefault():
 		cylindricalComplex = euclidean.getWiddershinsUnitPolar(math.radians(cylindrical.y)) * cylindrical.x
 		cumulativeVector3 += Vector3(cylindricalComplex.real, cylindricalComplex.imag, cylindrical.z)
-	polar = getVector3ByPrefix(prefix + 'polar', Vector3(), xmlElement)
+	polar = getVector3ByPrefix(Vector3(), prefix + 'polar', xmlElement)
 	if not polar.getIsDefault():
 		polarComplex = euclidean.getWiddershinsUnitPolar(math.radians(polar.y)) * polar.x
 		cumulativeVector3 += Vector3(polarComplex.real, polarComplex.imag)
-	spherical = getVector3ByPrefix(prefix + 'spherical', Vector3(), xmlElement)
+	spherical = getVector3ByPrefix(Vector3(), prefix + 'spherical', xmlElement)
 	if not spherical.getIsDefault():
 		radius = spherical.x
 		elevationComplex = euclidean.getWiddershinsUnitPolar(math.radians(spherical.z)) * radius
@@ -613,8 +613,8 @@ def getPathByPrefix(path, prefix, xmlElement):
 			path[ pointIndex ] = pathByKey[ pointIndex ]
 	else:
 		path = pathByKey
-	path[0] = getVector3ByPrefix( prefix + 'pathStart', path[0], xmlElement )
-	path[-1] = getVector3ByPrefix( prefix + 'pathEnd', path[-1], xmlElement )
+	path[0] = getVector3ByPrefix(path[0], prefix + 'pathStart', xmlElement)
+	path[-1] = getVector3ByPrefix(path[-1], prefix + 'pathEnd', xmlElement)
 	return path
 
 def getPathsByKey(key, xmlElement):
@@ -715,8 +715,8 @@ def getTransformedPathByPrefix(path, prefix, xmlElement):
 			path[ pointIndex ] = pathByKey[ pointIndex ]
 	else:
 		path = pathByKey
-	path[0] = getVector3ByPrefix( prefix + 'pathStart', path[0], xmlElement )
-	path[-1] = getVector3ByPrefix( prefix + 'pathEnd', path[-1], xmlElement )
+	path[0] = getVector3ByPrefix(path[0], prefix + 'pathStart', xmlElement)
+	path[-1] = getVector3ByPrefix(path[-1], prefix + 'pathEnd', xmlElement)
 	return path
 
 def getTransformedPathsByKey(key, xmlElement):
@@ -799,7 +799,7 @@ def getVector3ByMultiplierPrefix( multiplier, prefix, vector3, xmlElement ):
 	if multiplier == 0.0:
 		return vector3
 	oldMultipliedValueVector3 = vector3 * multiplier
-	vector3ByPrefix = getVector3ByPrefix( prefix, oldMultipliedValueVector3.copy(), xmlElement )
+	vector3ByPrefix = getVector3ByPrefix(oldMultipliedValueVector3.copy(), prefix, xmlElement)
 	if vector3ByPrefix == oldMultipliedValueVector3:
 		return vector3
 	return vector3ByPrefix / multiplier
@@ -810,29 +810,29 @@ def getVector3ByMultiplierPrefixes( multiplier, prefixes, vector3, xmlElement ):
 		vector3 = getVector3ByMultiplierPrefix( multiplier, prefix, vector3, xmlElement )
 	return vector3
 
-def getVector3ByPrefix(prefix, vector3, xmlElement):
+def getVector3ByPrefix(defaultVector3, prefix, xmlElement):
 	"Get vector3 from prefix and xml element."
 	value = getEvaluatedValue(prefix, xmlElement)
 	if value != None:
-		vector3 = getVector3ByDictionaryListValue(value, vector3)
+		defaultVector3 = getVector3ByDictionaryListValue(value, defaultVector3)
 	x = getEvaluatedFloat(prefix + '.x', xmlElement)
 	if x != None:
-		vector3 = getVector3IfNone(vector3)
-		vector3.x = x
+		defaultVector3 = getVector3IfNone(defaultVector3)
+		defaultVector3.x = x
 	y = getEvaluatedFloat(prefix + '.y', xmlElement)
 	if y != None:
-		vector3 = getVector3IfNone(vector3)
-		vector3.y = y
+		defaultVector3 = getVector3IfNone(defaultVector3)
+		defaultVector3.y = y
 	z = getEvaluatedFloat(prefix + '.z', xmlElement)
 	if z != None:
-		vector3 = getVector3IfNone(vector3)
-		vector3.z = z
-	return vector3
+		defaultVector3 = getVector3IfNone(defaultVector3)
+		defaultVector3.z = z
+	return defaultVector3
 
 def getVector3ByPrefixes( prefixes, vector3, xmlElement ):
 	"Get vector3 from prefixes and xml element."
 	for prefix in prefixes:
-		vector3 = getVector3ByPrefix(prefix, vector3, xmlElement)
+		vector3 = getVector3ByPrefix(vector3, prefix, xmlElement)
 	return vector3
 
 def getVector3FromXMLElement(xmlElement):
@@ -865,7 +865,7 @@ def getVector3ListsRecursively(floatLists):
 
 def getVector3RemoveByPrefix(prefix, vector3, xmlElement):
 	"Get vector3 from prefix and xml element, then remove prefix attributes from dictionary."
-	vector3RemoveByPrefix = getVector3ByPrefix(prefix, vector3, xmlElement)
+	vector3RemoveByPrefix = getVector3ByPrefix(vector3, prefix, xmlElement)
 	euclidean.removePrefixFromDictionary( xmlElement.attributeDictionary, prefix )
 	return vector3RemoveByPrefix
 

@@ -103,16 +103,14 @@ function init() {
 	}
 
 	//Slider
+	beginningOfControlSection = document.getElementById( 'beginningOfControlSection' );
+	beginningOfControlSection.addEventListener( 'mouseup', sliderUp, false );
+	beginningOfControlSection.addEventListener( 'mousemove', sliderMove, false );
 	slider = document.getElementById( 'slider' );
-	thumb = document.getElementById( 'thumb' );
-	document.getElementById( 'javascriptControls' ).addEventListener( 'mouseup', sliderUp, false );
 	slider.addEventListener( 'mousedown', sliderDownMove, false );
-	slider.addEventListener( 'mouseup', sliderUp, false );
-	slider.addEventListener( 'mousemove', sliderMove, false );
-	thumb.addEventListener( 'mousedown', sliderDown, false );
-	thumb.addEventListener( 'mouseup', sliderUp, false );
-	thumb.addEventListener( 'mousemove', sliderMove, false );
-
+	thumb = document.getElementById( 'thumb' );
+	thumb.addEventListener( 'mousedown', sliderDownMove, false );
+	
 	//Control box data
 	setText( 'layerMax', layers.length - 1 );
 	setText( 'minX', sliceMinX );

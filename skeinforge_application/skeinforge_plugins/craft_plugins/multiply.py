@@ -149,6 +149,7 @@ class MultiplySkein:
 	"A class to multiply a skein of extrusions."
 	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
+		self.isExtrusionActive = False
 		self.layerCount = settings.LayerCount()
 		self.layerIndex = 0
 		self.layerLines = []
@@ -256,16 +257,22 @@ class MultiplySkein:
 
 	def setCorners(self):
 		"Set maximum and minimum corners and z."
-		locationComplexes = []
+		cornerHighComplex = complex(-987654321.0, -987654321.0)
+		cornerLowComplex = -cornerHighComplex
 		for line in self.lines[self.lineIndex :]:
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'G1':
 				location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
-				locationComplexes.append( location.dropAxis(2) )
+				if self.isExtrusionActive:
+					locationComplex = location.dropAxis()
+					cornerHighComplex = euclidean.getMaximum(locationComplex,  cornerHighComplex)
+					cornerLowComplex = euclidean.getMinimum(locationComplex,  cornerLowComplex)
 				self.oldLocation = location
-		cornerHighComplex = euclidean.getMaximumByPathComplex( locationComplexes )
-		cornerLowComplex = euclidean.getMinimumByPathComplex( locationComplexes )
+			elif firstWord == 'M101':
+				self.isExtrusionActive = True
+			elif firstWord == 'M103':
+				self.isExtrusionActive = False
 		self.extent = cornerHighComplex - cornerLowComplex
 		self.shapeCenter = 0.5 * ( cornerHighComplex + cornerLowComplex )
 		self.separation = self.multiplyRepository.separationOverPerimeterWidth.value * self.absolutePerimeterWidth

@@ -105,8 +105,8 @@ class LineDerivation:
 	def setToXMLElement(self, xmlElement):
 		"Set to the xmlElement."
 		self.closed = evaluate.getEvaluatedBooleanDefault(False, 'closed', xmlElement)
-		self.end = evaluate.getVector3ByPrefix('end', self.end, xmlElement)
-		self.start = evaluate.getVector3ByPrefix('start', self.start, xmlElement)
+		self.end = evaluate.getVector3ByPrefix(self.end, 'end', xmlElement)
+		self.start = evaluate.getVector3ByPrefix(self.start, 'start', xmlElement)
 		self.step = evaluate.getEvaluatedFloatDefault(self.step, 'step', xmlElement)
 		self.steps = evaluate.getEvaluatedFloatDefault(self.steps, 'steps', xmlElement)
 		self.typeString = evaluate.getEvaluatedStringDefault(self.typeString, 'type', xmlElement)

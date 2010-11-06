@@ -37,81 +37,89 @@ def addEdgePair( edgePairTable, edges, faceEdgeIndex, remainingEdgeIndex, remain
 	edgePair = EdgePair().getFromIndexesEdges( [ remainingEdgeIndex, faceEdgeIndex ], edges )
 	edgePairTable[ str( edgePair ) ] = edgePair
 
-def addFacesByLoop(faces, indexedLoop):
-	"Add faces from a polygon which may be concave."
+def addFacesByConcaveLoop(faces, indexedLoop):
+	"Add faces from a polygon which is concave."
+	if len(indexedLoop) < 3:
+		return
 	remainingLoop = indexedLoop[:]
 	while len(remainingLoop) > 2:
 		remainingLoop = getRemainingLoopAddFace(faces, remainingLoop)
 
-def getIsPathEntirelyOutsideTriangle(begin, center, end, vector3Path):
-	"Determine if a path is entirely outside another loop."
-	loop = [begin.dropAxis(), center.dropAxis(), end.dropAxis()]
-	for vector3 in vector3Path:
-		point = vector3.dropAxis()
-		if euclidean.isPointInsideLoop(loop, point):
-			return False
-	return True
+def addFacesByConvex(faces, indexedLoop):
+	"Add faces from a convex polygon."
+	if len(indexedLoop) < 3:
+		return
+	indexBegin = indexedLoop[0].index
+	for indexedPointIndex in xrange(1, len(indexedLoop) - 1):
+		indexCenter = indexedLoop[indexedPointIndex].index
+		indexEnd = indexedLoop[(indexedPointIndex + 1) % len(indexedLoop) ].index
+		if indexBegin != indexCenter and indexCenter != indexEnd and indexEnd != indexBegin:
+			faceFromConvex = face.Face()
+			faceFromConvex.index = len(faces)
+			faceFromConvex.vertexIndexes.append(indexBegin)
+			faceFromConvex.vertexIndexes.append(indexCenter)
+			faceFromConvex.vertexIndexes.append(indexEnd)
+			faces.append(faceFromConvex)
 
-def getRemainingLoopAddFace(faces, remainingLoop):
-	"Get the remaining loop and add face."
-	for indexedVertexIndex, indexedVertex in enumerate(remainingLoop):
-		nextIndex = (indexedVertexIndex + 1) % len(remainingLoop)
-		previousIndex = (indexedVertexIndex + len(remainingLoop) - 1) % len(remainingLoop)
-		nextVertex = remainingLoop[nextIndex]
-		previousVertex = remainingLoop[previousIndex]
-		remainingPath = euclidean.getAroundLoop((indexedVertexIndex + 2) % len(remainingLoop), previousIndex, remainingLoop)
-		if len(remainingLoop) < 4 or getIsPathEntirelyOutsideTriangle(previousVertex, indexedVertex, nextVertex, remainingPath):
-			faceConvex = face.Face()
-			faceConvex.index = len(faces)
-			faceConvex.vertexIndexes.append(indexedVertex.index)
-			faceConvex.vertexIndexes.append(nextVertex.index)
-			faceConvex.vertexIndexes.append(previousVertex.index)
-			faces.append(faceConvex)
-			return euclidean.getAroundLoop(nextIndex, indexedVertexIndex, remainingLoop)
-	print('Warning, could not decompose polygon in getRemainingLoopAddFace in trianglemesh for:')
-	print(remainingLoop)
-	return []
+def addFacesByConvexBottomTopLoop(faces, indexedLoopBottom, indexedLoopTop):
+	"Add faces from loops."
+	for indexedLoopIndex in xrange(max(len(indexedLoopBottom), len(indexedLoopTop))):
+		indexedLoopIndexEnd = (indexedLoopIndex + 1) % len(indexedLoopBottom)
+		indexedConvex = []
+		if len(indexedLoopBottom) > 1:
+			indexedConvex.append(indexedLoopBottom[indexedLoopIndex])
+			indexedConvex.append(indexedLoopBottom[(indexedLoopIndex + 1) % len(indexedLoopBottom)])
+		else:
+			indexedConvex.append(indexedLoopBottom[0])
+		if len(indexedLoopTop) > 1:
+			indexedConvex.append(indexedLoopTop[(indexedLoopIndex + 1) % len(indexedLoopTop)])
+			indexedConvex.append(indexedLoopTop[indexedLoopIndex])
+		else:
+			indexedConvex.append(indexedLoopTop[0])
+		addFacesByConvex(faces, indexedConvex)
+
+def addFacesByConvexLoops(faces, indexedLoops):
+	"Add faces from loops."
+	if len(indexedLoops) < 2:
+		return
+	for indexedLoopsIndex in xrange(len(indexedLoops) - 2):
+		addFacesByConvexBottomTopLoop(faces, indexedLoops[indexedLoopsIndex], indexedLoops[indexedLoopsIndex + 1])
+	indexedLoopBottom = indexedLoops[-2]
+	indexedLoopTop = indexedLoops[-1]
+	if len(indexedLoopTop) < 1:
+		indexedLoopTop = indexedLoops[0]
+	addFacesByConvexBottomTopLoop(faces, indexedLoopBottom, indexedLoopTop)
+
+def addFacesByConvexReversed(faces, indexedLoop):
+	"Add faces from a reversed convex polygon."
+	addFacesByConvex(faces, indexedLoop[: : -1])
+
+def addFacesByLoop(faces, indexedLoop):
+	"Add faces from a polygon which may be concave."
+	if len(indexedLoop) < 3:
+		return
+	lastNormal = None
+	for pointIndex, point in enumerate(indexedLoop):
+		center = indexedLoop[(pointIndex + 1) % len(indexedLoop)]
+		end = indexedLoop[(pointIndex + 2) % len(indexedLoop)]
+		normal = euclidean.getNormalWeighted(point, center, end)
+		if abs(normal) > 0.0:
+			if lastNormal != None:
+				if lastNormal.dot(normal) < 0.0:
+					addFacesByConcaveLoop(faces, indexedLoop)
+					return
+			lastNormal = normal
+#	totalNormal = Vector3()
+#	for pointIndex, point in enumerate(indexedLoop):
+#		center = indexedLoop[(pointIndex + 1) % len(indexedLoop)]
+#		end = indexedLoop[(pointIndex + 2) % len(indexedLoop)]
+#		totalNormal += euclidean.getNormalWeighted(point, center, end)
+#	totalNormal.normalize()
+	addFacesByConvex(faces, indexedLoop)
 
 def addFacesByLoopReversed(faces, indexedLoop):
 	"Add faces from a reversed convex polygon."
 	addFacesByLoop(faces, indexedLoop[: : -1])
-
-def addFacesFromConvex(faces, indexedLoop):
-	"Add faces from a convex polygon."
-	if len(indexedLoop) < 1:
-		return
-	zeroIndex = indexedLoop[0].index
-	for indexedPointIndex in xrange(1, len(indexedLoop) - 1):
-		faceFromConvex = face.Face()
-		faceFromConvex.index = len(faces)
-		faceFromConvex.vertexIndexes.append(zeroIndex)
-		faceFromConvex.vertexIndexes.append(indexedLoop[indexedPointIndex].index)
-		faceFromConvex.vertexIndexes.append(indexedLoop[(indexedPointIndex + 1) % len(indexedLoop) ].index)
-		faces.append(faceFromConvex)
-
-def addFacesFromConvexLoops(faces, indexedLoops):
-	"Add faces from loops."
-	for indexedLoopsIndex in xrange( len( indexedLoops ) - 1 ):
-		indexedLoopBottom = indexedLoops[ indexedLoopsIndex ]
-		indexedLoopTop = indexedLoops[ indexedLoopsIndex + 1 ]
-		for indexedLoopIndex in xrange( max( len( indexedLoopBottom ), len( indexedLoopTop ) ) ):
-			indexedLoopIndexEnd = ( indexedLoopIndex + 1 ) % len( indexedLoopBottom )
-			indexedConvex = []
-			if len( indexedLoopBottom ) > 1:
-				indexedConvex.append( indexedLoopBottom[ indexedLoopIndex ] )
-				indexedConvex.append( indexedLoopBottom[ ( indexedLoopIndex + 1 ) % len( indexedLoopBottom ) ] )
-			else:
-				indexedConvex.append( indexedLoopBottom[0] )
-			if len( indexedLoopTop ) > 1:
-				indexedConvex.append( indexedLoopTop[ ( indexedLoopIndex + 1 ) % len( indexedLoopTop ) ] )
-				indexedConvex.append( indexedLoopTop[ indexedLoopIndex ] )
-			else:
-				indexedConvex.append( indexedLoopTop[0] )
-			addFacesFromConvex( faces, indexedConvex )
-
-def addFacesFromConvexReversed(faces, indexedLoop):
-	"Add faces from a reversed convex polygon."
-	addFacesFromConvex(faces, indexedLoop[: : -1])
 
 def addLoopToPointTable( loop, pointTable ):
 	"Add the points in the loop to the point table."
@@ -120,25 +128,24 @@ def addLoopToPointTable( loop, pointTable ):
 
 def addPillarByLoops(faces, indexedLoops):
 	"Add pillar by loops which may be concave."
+	if len(indexedLoops) < 1:
+		return
+	if len(indexedLoops[-1]) < 1:
+		addFacesByConvexLoops(faces, indexedLoops)
+		return
 	addFacesByLoopReversed(faces, indexedLoops[0])
-	addFacesFromConvexLoops(faces, indexedLoops)
+	addFacesByConvexLoops(faces, indexedLoops)
 	addFacesByLoop(faces, indexedLoops[-1])
-
-def addPillarFromConvexLoops(faces, indexedLoops):
-	"Add pillar from convex loops."
-	addFacesFromConvexReversed(faces, indexedLoops[0])
-	addFacesFromConvexLoops(faces, indexedLoops)
-	addFacesFromConvex(faces, indexedLoops[-1])
 
 def addPillarFromConvexLoopsGrids( faces, grids, indexedLoops ):
 	"Add pillar from convex loops and grids."
 	cellBottomLoops = getIndexedCellLoopsFromIndexedGrid( grids[0] )
 	for cellBottomLoop in cellBottomLoops:
-		addFacesFromConvexReversed( faces, cellBottomLoop )
-	addFacesFromConvexLoops(faces, indexedLoops)
+		addFacesByConvexReversed( faces, cellBottomLoop )
+	addFacesByConvexLoops(faces, indexedLoops)
 	cellTopLoops = getIndexedCellLoopsFromIndexedGrid( grids[-1] )
 	for cellTopLoop in cellTopLoops:
-		addFacesFromConvex( faces, cellTopLoop )
+		addFacesByConvex( faces, cellTopLoop )
 
 def addPointsAtZ( edgePair, points, radius, vertexes, z ):
 	"Add point complexes on the segment between the edge intersections with z."
@@ -356,6 +363,15 @@ def getInsetPoint( loop, tinyRadius ):
 	midpointNormalized = midpoint / abs( midpoint )
 	return point + midpointNormalized * tinyRadius
 
+def getIsPathEntirelyOutsideTriangle(begin, center, end, vector3Path):
+	"Determine if a path is entirely outside another loop."
+	loop = [begin.dropAxis(), center.dropAxis(), end.dropAxis()]
+	for vector3 in vector3Path:
+		point = vector3.dropAxis()
+		if euclidean.isPointInsideLoop(loop, point):
+			return False
+	return True
+
 def getLoopsFromCorrectMesh( edges, faces, vertexes, z ):
 	"Get loops from a carve of a correct mesh."
 	remainingEdgeTable = getRemainingEdgeTable(edges, vertexes, z)
@@ -482,9 +498,18 @@ def getPath( edges, pathIndexes, loop, z ):
 def getPillarOutput(loops):
 	"Get pillar output."
 	faces = []
-	vertexes = euclidean.getConcatenatedList(loops)
-	for vertexIndex in xrange(len(vertexes)):
-		vertexes[vertexIndex].index = vertexIndex
+	vertexDictionary = {}
+	vertexes = []
+	for loop in loops:
+		for vertexIndex, vertex in enumerate(loop):
+			position = (vertex.x, vertex.y, vertex.z)
+			if position in vertexDictionary:
+				loop[vertexIndex] = vertexDictionary[position]
+			else:
+				if vertex.__class__ != Vector3Index:
+					loop[vertexIndex] = Vector3Index(len(vertexDictionary), vertex.x, vertex.y, vertex.z)
+				vertexDictionary[position] = loop[vertexIndex]
+				vertexes.append(loop[vertexIndex])
 	addPillarByLoops(faces, loops)
 	return {'trianglemesh' : {'vertex' : vertexes, 'face' : faces}}
 
@@ -508,6 +533,26 @@ def getRemainingEdgeTable(edges, vertexes, z):
 		if ( edge.zMinimum < z ) and ( edge.zMaximum > z ):
 			remainingEdgeTable[ edgeIndex ] = edge
 	return remainingEdgeTable
+
+def getRemainingLoopAddFace(faces, remainingLoop):
+	"Get the remaining loop and add face."
+	for indexedVertexIndex, indexedVertex in enumerate(remainingLoop):
+		nextIndex = (indexedVertexIndex + 1) % len(remainingLoop)
+		previousIndex = (indexedVertexIndex + len(remainingLoop) - 1) % len(remainingLoop)
+		nextVertex = remainingLoop[nextIndex]
+		previousVertex = remainingLoop[previousIndex]
+		remainingPath = euclidean.getAroundLoop((indexedVertexIndex + 2) % len(remainingLoop), previousIndex, remainingLoop)
+		if len(remainingLoop) < 4 or getIsPathEntirelyOutsideTriangle(previousVertex, indexedVertex, nextVertex, remainingPath):
+			faceConvex = face.Face()
+			faceConvex.index = len(faces)
+			faceConvex.vertexIndexes.append(indexedVertex.index)
+			faceConvex.vertexIndexes.append(nextVertex.index)
+			faceConvex.vertexIndexes.append(previousVertex.index)
+			faces.append(faceConvex)
+			return euclidean.getAroundLoop(nextIndex, indexedVertexIndex, remainingLoop)
+	print('Warning, could not decompose polygon in getRemainingLoopAddFace in trianglemesh for:')
+	print(remainingLoop)
+	return []
 
 def getSharedFace( firstEdge, faces, secondEdge ):
 	"Get the face which is shared by two edges."
