@@ -3,7 +3,7 @@ This page is in the table of contents.
 Multiply is a script to multiply the shape into an array of copies arranged in a table.
 
 The multiply manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Multiply
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Multiply
 
 Besides using the multiply tool, another way of printing many copies of the model is to duplicate the model in Art of Illusion, however many times you want, with the appropriate offsets.  Then you can either use the Join Objects script in the scripts submenu to create a combined shape or you can export the whole scene as an xml file, which skeinforge can then slice.
 
@@ -124,7 +124,7 @@ class MultiplyRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.multiply.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Multiply', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Multiply')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Multiply')
 		self.activateMultiply = settings.BooleanSetting().getFromValue('Activate Multiply:', self, False )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Center -', self )
@@ -248,7 +248,7 @@ class MultiplySkein:
 			self.addLayer()
 			self.distanceFeedRate.addLine(line)
 			return
-		elif firstWord == '(</extrusion>)':
+		elif firstWord == '(</crafting>)':
 			self.shouldAccumulate = False
 		if self.shouldAccumulate:
 			self.layerLines.append(line)

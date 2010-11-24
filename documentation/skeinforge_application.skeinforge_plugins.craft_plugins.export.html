@@ -16,13 +16,16 @@
 Export is a script to pick an export plugin and optionally print the output to a file.<br>
  <br>
 The export manual page is at:<br>
-<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Export">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Export</a><br>
+<a href="http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Export">http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Export</a><br>
  <br>
 <br />
 <a href="#Operation">Operation</a><br />
 <a href="#Settings">Settings</a><br />
 &nbsp;&nbsp;<a href="#Also Send Output To">Also Send Output To</a><br />
-&nbsp;&nbsp;<a href="#Delete Comments">Delete Comments</a><br />
+&nbsp;&nbsp;<a href="#Comment Choice">Comment Choice</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Do Not Delete Comments">Do Not Delete Comments</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Delete Crafting Comments">Delete Crafting Comments</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Delete All Comments">Delete All Comments</a><br />
 &nbsp;&nbsp;<a href="#Export Operations">Export Operations</a><br />
 &nbsp;&nbsp;<a href="#File Extension">File Extension</a><br />
 &nbsp;&nbsp;<a href="#Save Penultimate Gcode">Save Penultimate Gcode</a><br />
@@ -44,11 +47,21 @@ Default is empty.<br>
  <br>
 Defines the output name for sending to a file or pipe.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  With the empty default, nothing will be done.<br>
  <br>
-<a name="Delete Comments" id="Delete Comments"></a><h3>Delete Comments</h3>
+<a name="Comment Choice" id="Comment Choice"></a><h3>Comment Choice</h3>
 
-Default is on.<br>
+Default is 'Delete Crafting Comments'.<br>
  <br>
-When selected, export will delete the comments.  The comments are not necessary to run a fabricator.<br>
+<a name="Do Not Delete Comments" id="Do Not Delete Comments"></a><h4>Do Not Delete Comments</h4>
+
+When selected, export will not delete comments.  Crafting comments slow down the processing in many firmware types, which leads to segment pauses.<br>
+ <br>
+<a name="Delete Crafting Comments" id="Delete Crafting Comments"></a><h4>Delete Crafting Comments</h4>
+
+When selected, export will delete the time consuming crafting comments, but leave the initialization comments.  Since the crafting comments are deleted, there are no additional segment pauses.  The remaining initialization comments provide some useful information for the analyze tools.<br>
+ <br>
+<a name="Delete All Comments" id="Delete All Comments"></a><h4>Delete All Comments</h4>
+
+When selected, export will delete all comments.  The comments are not necessary to run a fabricator.<br>
  <br>
 <a name="Export Operations" id="Export Operations"></a><h3>Export Operations</h3>
 
@@ -64,7 +77,7 @@ Defines the file extension added to the name of the output file.<br>
 
 Default is off.<br>
  <br>
-When selected, export will save the gcode with the suffix '_penultimate.gcode' just before it is exported.  This is useful because the code after it is exported could be in a form which the viewers can not display.<br>
+When selected, export will save the gcode file with the suffix '_penultimate.gcode' just before it is exported.  This is useful because the code after it is exported could be in a form which the viewers can not display well.<br>
  <br>
 <a name="Alterations" id="Alterations"></a><h2>Alterations</h2>
 <hr>
@@ -193,6 +206,7 @@ The export tool has created the file:<br>
  <dl><dt><a name="-getDistanceGcode"><strong>getDistanceGcode</strong></a>(exportText)</dt><dd><tt>Get&nbsp;gcode&nbsp;lines&nbsp;with&nbsp;distance&nbsp;variable&nbsp;added.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getReplaced"><strong>getReplaced</strong></a>(exportText)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;strings&nbsp;replaced&nbsp;according&nbsp;to&nbsp;replace.csv&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-getReplacedByLine"><strong>getReplacedByLine</strong></a>(exportText, line)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;strings&nbsp;replaced&nbsp;according&nbsp;to&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-getSelectedPluginModule"><strong>getSelectedPluginModule</strong></a>(plugins)</dt><dd><tt>Get&nbsp;the&nbsp;selected&nbsp;plugin&nbsp;module.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;export&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>

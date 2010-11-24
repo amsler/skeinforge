@@ -23,11 +23,10 @@ __license__ = 'GPL 3.0'
 def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
 	if derivation == None:
-		derivation = PolygonDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = PolygonDerivation(xmlElement)
 	loop = []
 	spiral = lineation.Spiral(derivation.spiral, 0.5 * derivation.sideAngle / math.pi)
-	for side in xrange(derivation.start, derivation.end):
+	for side in xrange(derivation.start, derivation.start + derivation.extent):
 		angle = float(side) * derivation.sideAngle
 		unitPolar = euclidean.getWiddershinsUnitPolar(angle)
 		vertex = spiral.getSpiralPoint(unitPolar, Vector3(unitPolar.real * derivation.radius.real, unitPolar.imag * derivation.radius.imag))
@@ -48,32 +47,24 @@ def processXMLElement(xmlElement):
 
 class PolygonDerivation:
 	"Class to hold polygon variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.radius = complex(1.0, 1.0)
-		self.revolutions = 1
-		self.sides = 4.0
-		self.spiral = None
-		self.start = 0
+		self.sides = evaluate.getEvaluatedFloatDefault(4.0, 'sides', xmlElement)
+		self.sideAngle = 2.0 * math.pi / self.sides
+		cosSide = math.cos(0.5 * self.sideAngle)
+		self.radius = lineation.getComplexByMultiplierPrefixes(cosSide, ['apothem', 'inradius'], complex(1.0, 1.0), xmlElement)
+		self.radius = lineation.getComplexByPrefixes(['demisize', 'radius'], self.radius, xmlElement)
+		self.radius = lineation.getComplexByMultiplierPrefixes(2.0, ['diameter', 'size'], self.radius, xmlElement)
+		self.sidesCeiling = int(math.ceil(abs(self.sides)))
+		self.start = evaluate.getEvaluatedIntDefault(0, 'start', xmlElement)
+		self.start = lineation.getWrappedInteger(self.start, 360.0)
+		end = evaluate.getEvaluatedIntDefault(self.sidesCeiling, 'end', xmlElement)
+		end = lineation.getWrappedInteger(end, self.sidesCeiling)
+		self.revolutions = evaluate.getEvaluatedIntDefault(1, 'revolutions', xmlElement)
+		self.extent = evaluate.getEvaluatedIntDefault(end - self.start, 'extent', xmlElement)
+		self.extent += self.sidesCeiling * (self.revolutions - 1)
+		self.spiral = evaluate.getVector3ByPrefix(None, 'spiral', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this PolygonDerivation."
 		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.sides = evaluate.getEvaluatedFloatDefault(self.sides, 'sides', xmlElement)
-		self.sideAngle = 2.0 * math.pi / self.sides
-		self.radius = lineation.getComplexByMultiplierPrefixes(math.cos(0.5 * self.sideAngle), ['apothem', 'inradius'], self.radius, xmlElement)
-		self.radius = lineation.getComplexByPrefixes(['demisize', 'radius'], self.radius, xmlElement)
-		self.radius = lineation.getComplexByMultiplierPrefixes(2.0, ['diameter', 'size'], self.radius, xmlElement)
-		self.sidesCeiling = int(math.ceil(abs(self.sides)))
-		self.start = evaluate.getEvaluatedIntDefault(self.start, 'start', xmlElement)
-		self.start = lineation.getWrappedInteger(self.start, 360.0)
-		self.extent = evaluate.getEvaluatedIntDefault(self.sidesCeiling - self.start, 'extent', xmlElement)
-		self.end = evaluate.getEvaluatedIntDefault(self.start + self.extent, 'end', xmlElement)
-		self.end = lineation.getWrappedInteger(self.end, self.sidesCeiling)
-		self.revolutions = evaluate.getEvaluatedIntDefault(self.revolutions, 'revolutions', xmlElement)
-		if self.revolutions > 1:
-			self.end += self.sidesCeiling * (self.revolutions - 1)
-		self.spiral = evaluate.getVector3ByPrefix(self.spiral, 'spiral', xmlElement)

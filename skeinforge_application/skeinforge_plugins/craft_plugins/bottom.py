@@ -1,10 +1,7 @@
 #! /usr/bin/env python
 """
 This page is in the table of contents.
-Bottom converts the svg slices into gcode extrusion layers, optionally bottom with some gcode commands.
-
-The bottom manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Bottom
+Bottom sets the bottom of the carving to the defined altitude.
 
 ==Operation==
 The default 'Activate Bottom' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -66,6 +63,7 @@ from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from fabmetheus_utilities import svg_writer
+from fabmetheus_utilities import xml_simple_writer
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
@@ -98,50 +96,22 @@ def getNewRepository():
 	"Get the repository constructor."
 	return BottomRepository()
 
-def getSliceElements(xmlElement):
-	"Get the slice elements."
-	gElements = xmlElement.getChildrenWithClassNameRecursively('g')
-	sliceElements = []
-	for gElement in gElements:
-		if 'id' in gElement.attributeDictionary:
-			idValue = gElement.attributeDictionary['id'].strip()
-			if idValue.startswith('z:'):
-				sliceElements.append(gElement)
-	return sliceElements
-
-def getSliceElementZ(sliceElement):
+def getSliceXMLElementZ(sliceXMLElement):
 	"Get the slice element z."
-	idValue = sliceElement.attributeDictionary['id'].strip()
+	idValue = sliceXMLElement.attributeDictionary['id'].strip()
 	return float(idValue[len('z:') :].strip())
 
-def setSliceElementZ(decimalPlacesCarried, sliceElement, sliceElementIndex, z):
+def setSliceXMLElementZ(decimalPlacesCarried, sliceXMLElement, sliceXMLElementIndex, z):
 	"Set the slice element z."
 	roundedZ = euclidean.getRoundedToPlacesString(decimalPlacesCarried, z)
 	idValue = 'z:%s' % roundedZ
-	sliceElement.attributeDictionary['id'] = idValue
-	textElement = sliceElement.getFirstChildWithClassName('text')
-	textElement.text = 'Layer %s, %s' % (sliceElementIndex, idValue)
+	sliceXMLElement.attributeDictionary['id'] = idValue
+	textXMLElement = sliceXMLElement.getFirstChildWithClassName('text')
+	textXMLElement.text = 'Layer %s, %s' % (sliceXMLElementIndex, idValue)
 
-def writeOutput(fileName=''):
-	"Bottom the carving of a gcode file."
-	print('')
-	print('The bottom tool is parsing the file:')
-	print(os.path.basename(fileName))
-	print('')
-	startTime = time.time()
-	fileNameSuffix = fileName[: fileName.rfind('.')] + '_bottom.svg'
-	craftText = skeinforge_craft.getChainText(fileName, 'bottom')
-	if craftText == '':
-		return
-	archive.writeFileText(fileNameSuffix, craftText)
-	print('')
-	print('The bottom tool has created the file:')
-	print(fileNameSuffix)
-	print('')
-	print('It took %s to craft the file.' % euclidean.getDurationString(time.time() - startTime))
-	repository = BottomRepository()
-	settings.getReadRepository(repository)
-	settings.openSVGPage(fileNameSuffix, repository.svgViewer.value)
+def writeOutput(fileName):
+	'Bottom the carving.'
+	skeinforge_craft.writeSVGTextWithNounMessage(fileName, BottomRepository())
 
 
 class BottomRepository:
@@ -168,7 +138,11 @@ class BottomSkein:
 		"Parse svgText and store the bottom svgText."
 		xmlParser = XMLSimpleReader(fileName, None, svgText)
 		root = xmlParser.getRoot()
-		sliceElements = getSliceElements(root)
+		if root == None:
+			print('Warning, root was None in getCraftedGcode in BottomSkein, so nothing will be done for:')
+			print(fileName)
+			return ''
+		sliceXMLElements = svg_writer.getSliceXMLElements(root)
 		sliceDictionary = svg_writer.getSliceDictionary(root)
 		decimalPlacesCarried = int(sliceDictionary['decimalPlacesCarried'])
 		layerThickness = float(sliceDictionary['layerThickness'])
@@ -176,15 +150,13 @@ class BottomSkein:
 		procedures.append('bottom')
 		sliceDictionary['procedureDone'] = ','.join(procedures)
 		zMinimum = 987654321.0
-		for sliceElement in sliceElements:
-			zMinimum = min(getSliceElementZ(sliceElement), zMinimum)
+		for sliceXMLElement in sliceXMLElements:
+			zMinimum = min(getSliceXMLElementZ(sliceXMLElement), zMinimum)
 		deltaZ = repository.altitude.value + 0.5 * layerThickness - zMinimum
-		for sliceElementIndex, sliceElement in enumerate(sliceElements):
-			z = getSliceElementZ(sliceElement) + deltaZ
-			setSliceElementZ(decimalPlacesCarried, sliceElement, sliceElementIndex, z)
-		output = cStringIO.StringIO()
-		root.addXML(0, output)
-		return output.getvalue()
+		for sliceXMLElementIndex, sliceXMLElement in enumerate(sliceXMLElements):
+			z = getSliceXMLElementZ(sliceXMLElement) + deltaZ
+			setSliceXMLElementZ(decimalPlacesCarried, sliceXMLElement, sliceXMLElementIndex, z)
+		return xml_simple_writer.getBeforeRootOutput(xmlParser)
 
 
 def main():

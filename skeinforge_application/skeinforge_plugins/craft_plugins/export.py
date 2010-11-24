@@ -3,7 +3,7 @@ This page is in the table of contents.
 Export is a script to pick an export plugin and optionally print the output to a file.
 
 The export manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Export
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Export
 
 ==Operation==
 The default 'Activate Export' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -14,10 +14,17 @@ Default is empty.
 
 Defines the output name for sending to a file or pipe.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  With the empty default, nothing will be done.
 
-===Delete Comments===
-Default is on.
+===Comment Choice===
+Default is 'Delete Crafting Comments'.
 
-When selected, export will delete the comments.  The comments are not necessary to run a fabricator.
+====Do Not Delete Comments====
+When selected, export will not delete comments.  Crafting comments slow down the processing in many firmware types, which leads to segment pauses.
+
+====Delete Crafting Comments====
+When selected, export will delete the time consuming crafting comments, but leave the initialization comments.  Since the crafting comments are deleted, there are no additional segment pauses.  The remaining initialization comments provide some useful information for the analyze tools.
+
+====Delete All Comments====
+When selected, export will delete all comments.  The comments are not necessary to run a fabricator.
 
 ===Export Operations===
 Export presents the user with a choice of the export plugins in the export_plugins folder.  The chosen plugin will then modify the gcode or translate it into another format.  There is also the "Do Not Change Output" choice, which will not change the output.  An export plugin is a script in the export_plugins folder which has the getOutput function, the globalIsReplaceable variable and if it's output is not replaceable, the writeOutput function.
@@ -30,7 +37,7 @@ Defines the file extension added to the name of the output file.
 ===Save Penultimate Gcode===
 Default is off.
 
-When selected, export will save the gcode with the suffix '_penultimate.gcode' just before it is exported.  This is useful because the code after it is exported could be in a form which the viewers can not display.
+When selected, export will save the gcode file with the suffix '_penultimate.gcode' just before it is exported.  This is useful because the code after it is exported could be in a form which the viewers can not display well.
 
 ==Alterations==
 Export looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Export does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the skeinforge_plugins folder.
@@ -128,17 +135,20 @@ def getNewRepository():
 	"Get the repository constructor."
 	return ExportRepository()
 
-def getReplaced( exportText ):
+def getReplaced(exportText):
 	"Get text with strings replaced according to replace.csv file."
-	replaceText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Replace.csv')
-	if replaceText == '':
-		return exportText
-	lines = archive.getTextLines( replaceText )
+	replaceText = settings.getFileInAlterationsOrGivenDirectory(os.path.dirname(__file__), 'Replace.csv')
+	lines = archive.getTextLines(replaceText)
 	for line in lines:
-		splitLine = line.split('\t')
-		if len(splitLine) > 1:
-			exportText = exportText.replace( splitLine[0], splitLine[1] )
+		exportText = getReplacedByLine(exportText, line)
 	return exportText
+
+def getReplacedByLine(exportText, line):
+	"Get text with strings replaced according to line."
+	splitLine = line.replace('\\n', '\t').split('\t')
+	if len(splitLine) < 1:
+		return exportText
+	return exportText.replace(splitLine[0], '\n'.join(splitLine[1 :]))
 
 def getSelectedPluginModule( plugins ):
 	"Get the selected plugin module."
@@ -153,39 +163,40 @@ def writeOutput(fileName=''):
 	if fileName == '':
 		return
 	exportRepository = ExportRepository()
-	settings.getReadRepository( exportRepository )
+	settings.getReadRepository(exportRepository)
 	startTime = time.time()
 	print('File ' + archive.getSummarizedFileName(fileName) + ' is being chain exported.')
-	suffixFileName = fileName[ : fileName.rfind('.') ] + '_export.' + exportRepository.fileExtension.value
-	gcodeText = gcodec.getGcodeFileText( fileName, '')
-	procedures = skeinforge_craft.getProcedures('export', gcodeText )
-	gcodeText = skeinforge_craft.getChainTextFromProcedures( fileName, procedures[ : - 1 ], gcodeText )
+	suffixFileName = fileName[: fileName.rfind('.')] + '_export.' + exportRepository.fileExtension.value
+	gcodeText = gcodec.getGcodeFileText(fileName, '')
+	procedures = skeinforge_craft.getProcedures('export', gcodeText)
+	gcodeText = skeinforge_craft.getChainTextFromProcedures(fileName, procedures[ : - 1 ], gcodeText)
 	if gcodeText == '':
 		return
-	skeinforge_analyze.writeOutput( fileName, suffixFileName, gcodeText )
+	window = skeinforge_analyze.writeOutput(fileName, suffixFileName, gcodeText)
 	if exportRepository.savePenultimateGcode.value:
-		penultimateFileName = fileName[ : fileName.rfind('.') ] + '_penultimate.gcode'
-		archive.writeFileText( penultimateFileName, gcodeText )
-		print('The penultimate file is saved as ' + archive.getSummarizedFileName( penultimateFileName ) )
-	exportChainGcode = getCraftedTextFromText( gcodeText, exportRepository )
+		penultimateFileName = fileName[: fileName.rfind('.')] + '_penultimate.gcode'
+		archive.writeFileText(penultimateFileName, gcodeText)
+		print('The penultimate file is saved as ' + archive.getSummarizedFileName(penultimateFileName))
+	exportChainGcode = getCraftedTextFromText(gcodeText, exportRepository)
 	replaceableExportChainGcode = None
-	selectedPluginModule = getSelectedPluginModule( exportRepository.exportPlugins )
+	selectedPluginModule = getSelectedPluginModule(exportRepository.exportPlugins)
 	if selectedPluginModule == None:
 		replaceableExportChainGcode = exportChainGcode
 	else:
 		if selectedPluginModule.globalIsReplaceable:
-			replaceableExportChainGcode = selectedPluginModule.getOutput( exportChainGcode )
+			replaceableExportChainGcode = selectedPluginModule.getOutput(exportChainGcode)
 		else:
-			selectedPluginModule.writeOutput( suffixFileName, exportChainGcode )
+			selectedPluginModule.writeOutput(suffixFileName, exportChainGcode)
 	if replaceableExportChainGcode != None:
-		replaceableExportChainGcode = getReplaced( replaceableExportChainGcode )
+		replaceableExportChainGcode = getReplaced(replaceableExportChainGcode)
 		archive.writeFileText( suffixFileName, replaceableExportChainGcode )
-		print('The exported file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
+		print('The exported file is saved as ' + archive.getSummarizedFileName(suffixFileName))
 	if exportRepository.alsoSendOutputTo.value != '':
 		if replaceableExportChainGcode == None:
-			replaceableExportChainGcode = selectedPluginModule.getOutput( exportChainGcode )
+			replaceableExportChainGcode = selectedPluginModule.getOutput(exportChainGcode)
 		exec('print >> ' + exportRepository.alsoSendOutputTo.value + ', replaceableExportChainGcode')
-	print('It took %s to export the file.' % euclidean.getDurationString( time.time() - startTime ) )
+	print('It took %s to export the file.' % euclidean.getDurationString(time.time() - startTime))
+	return window
 
 
 class ExportRepository:
@@ -194,32 +205,35 @@ class ExportRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Export', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Export')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Export')
 		self.activateExport = settings.BooleanSetting().getFromValue('Activate Export', self, True )
 		self.alsoSendOutputTo = settings.StringSetting().getFromValue('Also Send Output To:', self, '')
-		self.deleteComments = settings.BooleanSetting().getFromValue('Delete Comments', self, True )
-		exportPluginsFolderPath = archive.getAbsoluteFrozenFolderPath( __file__, 'export_plugins')
-		exportStaticDirectoryPath = os.path.join( exportPluginsFolderPath, 'static_plugins')
-		exportPluginFileNames = archive.getPluginFileNamesFromDirectoryPath( exportPluginsFolderPath )
-		exportStaticPluginFileNames = archive.getPluginFileNamesFromDirectoryPath( exportStaticDirectoryPath )
-		self.exportLabel = settings.LabelDisplay().getFromName('Export Operations: ', self )
+		self.commentChoice = settings.MenuButtonDisplay().getFromName('Comment Choice:', self )
+		self.doNotDeleteComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Do Not Delete Comments', self, False)
+		self.deleteCraftingComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Delete Crafting Comments', self, True)
+		self.deleteAllComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Delete All Comments', self, False)
+		exportPluginsFolderPath = archive.getAbsoluteFrozenFolderPath(__file__, 'export_plugins')
+		exportStaticDirectoryPath = os.path.join(exportPluginsFolderPath, 'static_plugins')
+		exportPluginFileNames = archive.getPluginFileNamesFromDirectoryPath(exportPluginsFolderPath)
+		exportStaticPluginFileNames = archive.getPluginFileNamesFromDirectoryPath(exportStaticDirectoryPath)
+		self.exportLabel = settings.LabelDisplay().getFromName('Export Operations: ', self)
 		self.exportPlugins = []
 		exportLatentStringVar = settings.LatentStringVar()
-		self.doNotChangeOutput = settings.RadioCapitalized().getFromRadio( exportLatentStringVar, 'Do Not Change Output', self, True )
+		self.doNotChangeOutput = settings.RadioCapitalized().getFromRadio(exportLatentStringVar, 'Do Not Change Output', self, True)
 		self.doNotChangeOutput.directoryPath = None
 		allExportPluginFileNames = exportPluginFileNames + exportStaticPluginFileNames
 		for exportPluginFileName in allExportPluginFileNames:
 			exportPlugin = None
 			if exportPluginFileName in exportPluginFileNames:
-				path = os.path.join( exportPluginsFolderPath, exportPluginFileName )
-				exportPlugin = settings.RadioCapitalizedButton().getFromPath( exportLatentStringVar, exportPluginFileName, path, self, False )
+				path = os.path.join(exportPluginsFolderPath, exportPluginFileName)
+				exportPlugin = settings.RadioCapitalizedButton().getFromPath(exportLatentStringVar, exportPluginFileName, path, self, False)
 				exportPlugin.directoryPath = exportPluginsFolderPath
 			else:
-				exportPlugin = settings.RadioCapitalized().getFromRadio( exportLatentStringVar, exportPluginFileName, self, False )
+				exportPlugin = settings.RadioCapitalized().getFromRadio(exportLatentStringVar, exportPluginFileName, self, False)
 				exportPlugin.directoryPath = exportStaticDirectoryPath
-			self.exportPlugins.append( exportPlugin )
+			self.exportPlugins.append(exportPlugin)
 		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, 'gcode')
-		self.savePenultimateGcode = settings.BooleanSetting().getFromValue('Save Penultimate Gcode', self, False )
+		self.savePenultimateGcode = settings.BooleanSetting().getFromValue('Save Penultimate Gcode', self, False)
 		self.executeTitle = 'Export'
 
 	def execute(self):
@@ -232,6 +246,7 @@ class ExportRepository:
 class ExportSkein:
 	"A class to export a skein of extrusions."
 	def __init__(self):
+		self.crafting = False
 		self.decimalPlacesExported = 2
 		self.output = cStringIO.StringIO()
 
@@ -261,10 +276,15 @@ class ExportSkein:
 		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
-		if firstWord == '(<decimalPlacesCarried>':
-			self.decimalPlacesExported = max( 1, int(splitLine[1]) - 1 )
-		if firstWord[0] == '(' and exportRepository.deleteComments.value:
-			return
+		if firstWord == '(</crafting>)':
+			self.crafting = False
+		if firstWord[0] == '(':
+			if exportRepository.deleteAllComments.value:
+				return
+			if exportRepository.deleteCraftingComments.value and self.crafting:
+				return
+		if firstWord == '(<crafting>)':
+			self.crafting = True
 		if firstWord == '(</extruderInitialization>)':
 			self.addLine('(<procedureDone> export </procedureDone>)')
 		if firstWord != 'G1' and firstWord != 'G2' and firstWord != 'G3' :

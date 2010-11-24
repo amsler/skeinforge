@@ -89,13 +89,13 @@ def addCollarShaft(collarThickness, derivation, negatives, positives, xmlElement
 		addShaft(derivation, negatives, positives)
 		return
 	connectionEnd = Vector3(0.0, 0.0, derivation.pinionThickness + collarThickness)
-	collarDerivation = extrude.ExtrudeDerivation()
-	collarDerivation.offsetPathDefault = [Vector3(0.0, 0.0, derivation.pinionThickness), connectionEnd]
+	copyShallow = derivation.xmlElement.getCopyShallow()
+	copyShallow.attributeDictionary['path'] = [Vector3(0.0, 0.0, derivation.pinionThickness), connectionEnd]
+	collarDerivation = extrude.ExtrudeDerivation(copyShallow)
 	addCollarShaftSetDerivation(collarDerivation, collarThickness, derivation, negatives, positives, xmlElement)
 
 def addCollarShaftSetDerivation(collarDerivation, collarThickness, derivation, negatives, positives, xmlElement):
 	'Add collar and shaft.'
-	collarDerivation.setToXMLElement(derivation.copyShallow)
 	collarSides = evaluate.getSidesMinimumThreeBasedOnPrecision(derivation.shaftRimRadius, xmlElement)
 	collarProfile = euclidean.getComplexPolygon(complex(), derivation.shaftRimRadius, collarSides)
 	vector3CollarProfile = euclidean.getVector3Path(collarProfile)
@@ -108,12 +108,12 @@ def addCollarShaftSetDerivation(collarDerivation, collarThickness, derivation, n
 
 def addLighteningHoles(derivation, gearHolePaths, negatives, pitchRadius, positives):
 	"Add lightening holes."
-	extrudeDerivation = extrude.ExtrudeDerivation()
 	positiveVertexes = matrix.getVertexes(positives)
 	bottomPath = euclidean.getTopPath(positiveVertexes)
 	topPath = euclidean.getBottomPath(positiveVertexes)
-	extrudeDerivation.offsetPathDefault = [Vector3(0.0, 0.0, bottomPath), Vector3(0.0, 0.0, topPath)]
-	extrudeDerivation.setToXMLElement(derivation.copyShallow)
+	copyShallow = derivation.xmlElement.getCopyShallow()
+	copyShallow.attributeDictionary['path'] = [Vector3(0.0, 0.0, bottomPath), Vector3(0.0, 0.0, topPath)]
+	extrudeDerivation = extrude.ExtrudeDerivation(copyShallow)
 	vector3LighteningHoles = getLighteningHoles(derivation, gearHolePaths, pitchRadius)
 	extrude.addNegativesPositives(extrudeDerivation, negatives, vector3LighteningHoles, positives)
 
@@ -141,12 +141,12 @@ def addShaft(derivation, negatives, positives):
 	"Add shaft."
 	if len(derivation.shaftPath) < 3:
 		return
-	extrudeDerivation = extrude.ExtrudeDerivation()
 	positiveVertexes = matrix.getVertexes(positives)
 	bottomPath = euclidean.getTopPath(positiveVertexes)
 	topPath = euclidean.getBottomPath(positiveVertexes)
-	extrudeDerivation.offsetPathDefault = [Vector3(0.0, 0.0, bottomPath), Vector3(0.0, 0.0, topPath)]
-	extrudeDerivation.setToXMLElement(derivation.copyShallow)
+	copyShallow = derivation.xmlElement.getCopyShallow()
+	copyShallow.attributeDictionary['path'] = [Vector3(0.0, 0.0, bottomPath), Vector3(0.0, 0.0, topPath)]
+	extrudeDerivation = extrude.ExtrudeDerivation(copyShallow)
 	extrude.addNegativesPositives(extrudeDerivation, negatives, [derivation.shaftPath], positives)
 
 def getAxialMargin(circleRadius, numberOfSides, polygonRadius):
@@ -225,8 +225,7 @@ def getGearProfileRack(derivation, toothProfile):
 def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
 	if derivation == None:
-		derivation = GearDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = GearDerivation(xmlElement)
 	creationFirst = derivation.creationType.lower()[: 1]
 	toothProfileGear = getToothProfile(derivation, derivation.pitchRadiusGear, derivation.teethGear)
 	gearProfileFirst = getGearProfileCylinder(derivation.teethPinion, derivation.pinionToothProfile)
@@ -357,9 +356,9 @@ def getLighteningHoles(derivation, gearHolePaths, pitchRadius):
 def getOutputCylinder(
 		collarThickness, derivation, gearHolePaths, pitchRadius, teeth, twist, vector3GearProfile, xmlElement):
 	"Get extrude output for a cylinder gear."
-	extrudeDerivation = extrude.ExtrudeDerivation()
-	extrudeDerivation.offsetPathDefault = [Vector3(), Vector3(0.0, 0.0, derivation.pinionThickness)]
-	extrudeDerivation.setToXMLElement(derivation.copyShallow)
+	copyShallow = derivation.xmlElement.getCopyShallow()
+	copyShallow.attributeDictionary['path'] = [Vector3(), Vector3(0.0, 0.0, derivation.pinionThickness)]
+	extrudeDerivation = extrude.ExtrudeDerivation(copyShallow)
 	negatives = []
 	positives = []
 	if twist != 0.0:
@@ -391,9 +390,9 @@ def getOutputCylinder(
 	geometryOutput = trianglemesh.getPillarsOutput(innerLoopLists)
 	negatives.append(geometryOutput)
 	connectionStart = Vector3(0.0, 0.0, -derivation.plateThickness)
-	plateDerivation = extrude.ExtrudeDerivation()
-	plateDerivation.offsetPathDefault = [connectionStart, Vector3(0.0, 0.0, -derivation.plateClearance)]
-	plateDerivation.setToXMLElement(derivation.copyShallow)
+	copyShallow = derivation.xmlElement.getCopyShallow()
+	copyShallow.attributeDictionary['path'] = [connectionStart, Vector3(0.0, 0.0, -derivation.plateClearance)]
+	plateDerivation = extrude.ExtrudeDerivation(copyShallow)
 	extrude.addNegativesPositives(plateDerivation, negatives, [outerGearProfile], positives)
 	vector3LighteningHoles = getLighteningHoles(derivation, gearHolePaths, pitchRadius)
 	extrude.addNegativesPositives(plateDerivation, negatives, vector3LighteningHoles, positives)
@@ -407,8 +406,9 @@ def getOutputCylinder(
 	negatives = []
 	positives = []
 	connectionEnd = Vector3(0.0, 0.0, derivation.pinionThickness + collarThickness)
-	collarDerivation = extrude.ExtrudeDerivation()
-	collarDerivation.offsetPathDefault = [Vector3(0.0, 0.0, -derivation.plateClearance), connectionEnd]
+	copyShallow = derivation.xmlElement.getCopyShallow()
+	copyShallow.attributeDictionary['path'] = [Vector3(0.0, 0.0, -derivation.plateClearance), connectionEnd]
+	collarDerivation = extrude.ExtrudeDerivation(copyShallow)
 	addCollarShaftSetDerivation(collarDerivation, collarThickness, derivation, negatives, positives, xmlElement)
 	collarOutput = {'difference' : {'shapes' : positives + negatives}}
 	cylinderOutput = {'union' : {'shapes' : [annulusPlateOutput, collarOutput]}}
@@ -417,12 +417,13 @@ def getOutputCylinder(
 
 def getOutputRack(derivation, vector3GearProfile, xmlElement):
 	"Get extrude output for a rack."
-	extrudeDerivation = extrude.ExtrudeDerivation()
-	extrudeDerivation.offsetPathDefault = []
+	path = []
 	for complexPoint in derivation.helixPath:
 		point = Vector3(derivation.helixThickness * complexPoint.imag, 0.0, derivation.pinionThickness * complexPoint.real)
-		extrudeDerivation.offsetPathDefault.append(point)
-	extrudeDerivation.setToXMLElement(derivation.copyShallow)
+		path.append(point)
+	copyShallow = derivation.xmlElement.getCopyShallow()
+	copyShallow.attributeDictionary['path'] = path
+	extrudeDerivation = extrude.ExtrudeDerivation(copyShallow)
 	negatives = []
 	positives = []
 	vector3RackProfiles = [vector3GearProfile]
@@ -623,195 +624,100 @@ def processXMLElement(xmlElement):
 
 class GearDerivation:
 	"Class to hold gear variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.clearance = None
-		self.clearanceOverWavelength = 0.1
-		self.collarWidth = None
-		self.collarWidthOverShaftRadius = 1.0
-		self.copyShallow = None
-		self.creationType = 'both'
-		self.gearCollarThickness = None
-		self.gearCollarThicknessOverThickness = 0.0
-		self.gearHolePaths = None
-		self.helixAngle = 0.0
-		self.helixPath = None
-		self.helixType = 'basic'
-		self.keywayRadius = None
-		self.keywayRadiusOverRadius = 0.5
-		self.lighteningHoleMargin = None
-		self.lighteningHoleMarginOverRimWidth = 1.0
-		self.lighteningHoleMinimumRadius = 1.0
-		self.moveType = 'separate'
-		self.operatingAngle = 180.0
-		self.pinionCollarThickness = None
-		self.pinionCollarThicknessOverThickness = 0.0
-		self.plateClearance = None
-		self.plateClearanceOverThickness = 0.2
-		self.plateThickness = None
-		self.plateThicknessOverThickness = 0.5
-		self.pinionThickness = 10.0
-		self.pitchRadius = 20.0
-		self.pressureAngle = 20.0
-		self.profileSurfaces = 11
-		self.rackHoleBelow = None
-		self.rackHoleBelowOverWidth = 0.6
-		self.rackHoleRadius = None
-		self.rackHoleRadiusOverWidth = 0.0
-		self.rackHoleStep = None
-		self.rackHoleStepOverWidth = 1.0
-		self.rackLength = None
-		self.rackLengthOverRadius = math.pi + math.pi
-		self.rackWidth = None
-		self.rackWidthOverThickness = 1.0
-		self.rimWidth = None
-		self.rimWidthOverRadius = 0.2
-		self.rootBevel = None
-		self.rootBevelOverClearance = 0.5
-		self.shaftDepthBottom = None
-		self.shaftDepthBottomOverRadius = 0.0
-		self.shaftDepthTop = None
-		self.shaftDepthTopOverRadius = 0.0
-		self.shaftPath = None
-		self.shaftRadius = None
-		self.shaftRadiusOverPitchRadius = 0.0
-		self.shaftSides = 4
-		self.teethPinion = 7
-		self.teethGear = 17
-		self.tipBevel = None
-		self.tipBevelOverClearance = 0.1
-		# tooth multiplied by 0.99999 to avoid an intersection
-		self.toothWidthMultiplier = 0.99999
-		self.xmlElement = None
-
-	def __repr__(self):
-		"Get the string representation of this GearDerivation."
-		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.clearanceOverWavelength = evaluate.getEvaluatedFloatDefault(
-			self.clearanceOverWavelength, 'clearanceOverWavelength', xmlElement)
-		self.collarWidthOverShaftRadius = evaluate.getEvaluatedFloatDefault(
-			self.collarWidthOverShaftRadius, 'collarWidthOverShaftRadius', xmlElement)
+		self.clearanceOverWavelength = evaluate.getEvaluatedFloatDefault(0.1, 'clearanceOverWavelength', xmlElement)
+		self.collarWidthOverShaftRadius = evaluate.getEvaluatedFloatDefault(1.0, 'collarWidthOverShaftRadius', xmlElement)
 		self.copyShallow = xmlElement.getCopyShallow()
-		self.creationType = evaluate.getEvaluatedStringDefault(self.creationType, 'creationType', xmlElement)
+		self.creationType = evaluate.getEvaluatedStringDefault('both', 'creationType', xmlElement)
 		self.gearCollarThicknessOverThickness = evaluate.getEvaluatedFloatDefault(
-			self.gearCollarThicknessOverThickness, 'gearCollarThicknessOverThickness', xmlElement)
-		self.helixAngle = evaluate.getEvaluatedFloatDefault(self.helixAngle, 'helixAngle', xmlElement)
-		self.helixType = evaluate.getEvaluatedStringDefault(self.helixType, 'helixType', xmlElement)
-		self.keywayRadiusOverRadius = evaluate.getEvaluatedFloatDefault(
-			self.keywayRadiusOverRadius, 'keywayRadiusOverRadius', xmlElement)
+			0.0, 'gearCollarThicknessOverThickness', xmlElement)
+		self.helixAngle = evaluate.getEvaluatedFloatDefault(0.0, 'helixAngle', xmlElement)
+		self.helixType = evaluate.getEvaluatedStringDefault('basic', 'helixType', xmlElement)
+		self.keywayRadiusOverRadius = evaluate.getEvaluatedFloatDefault(0.5, 'keywayRadiusOverRadius', xmlElement)
 		self.lighteningHoleMarginOverRimWidth = evaluate.getEvaluatedFloatDefault(
-			self.lighteningHoleMarginOverRimWidth, 'lighteningHoleMarginOverRimWidth', xmlElement)
+			1.0, 'lighteningHoleMarginOverRimWidth', xmlElement)
 		self.lighteningHoleMinimumRadius = evaluate.getEvaluatedFloatDefault(
-			self.lighteningHoleMinimumRadius, 'lighteningHoleMinimumRadius', xmlElement)
-		self.moveType = evaluate.getEvaluatedStringDefault(self.moveType, 'moveType', xmlElement)
-		self.operatingAngle = evaluate.getEvaluatedFloatDefault(self.operatingAngle, 'operatingAngle', xmlElement)
+			1.0, 'lighteningHoleMinimumRadius', xmlElement)
+		self.moveType = evaluate.getEvaluatedStringDefault('separate', 'moveType', xmlElement)
+		self.operatingAngle = evaluate.getEvaluatedFloatDefault(180.0, 'operatingAngle', xmlElement)
 		self.pinionCollarThicknessOverThickness = evaluate.getEvaluatedFloatDefault(
-			self.pinionCollarThicknessOverThickness, 'pinionCollarThicknessOverThickness', xmlElement)
-		self.pinionThickness = evaluate.getEvaluatedFloatDefault(self.pinionThickness, 'pinionThickness', xmlElement)
+			0.0, 'pinionCollarThicknessOverThickness', xmlElement)
+		self.pinionThickness = evaluate.getEvaluatedFloatDefault(10.0, 'pinionThickness', xmlElement)
 		self.pinionThickness = evaluate.getEvaluatedFloatDefault(self.pinionThickness, 'thickness', xmlElement)
-		self.pitchRadius = evaluate.getEvaluatedFloatDefault(self.pitchRadius, 'pitchRadius', xmlElement)
-		self.plateClearanceOverThickness = evaluate.getEvaluatedFloatDefault(
-			self.plateClearanceOverThickness, 'plateClearanceOverThickness', xmlElement)
-		self.plateThicknessOverThickness = evaluate.getEvaluatedFloatDefault(
-			self.plateThicknessOverThickness, 'plateThicknessOverThickness', xmlElement)
-		self.pressureAngle = evaluate.getEvaluatedFloatDefault(self.pressureAngle, 'pressureAngle', xmlElement)
-		self.profileSurfaces = evaluate.getEvaluatedIntDefault(self.profileSurfaces, 'profileSurfaces', xmlElement)
-		self.rackHoleRadiusOverWidth = evaluate.getEvaluatedFloatDefault(
-			self.rackHoleRadiusOverWidth, 'rackHoleRadiusOverWidth', xmlElement)
-		self.rackHoleBelowOverWidth = evaluate.getEvaluatedFloatDefault(
-			self.rackHoleBelowOverWidth, 'rackHoleBelowOverWidth', xmlElement)
-		self.rackHoleStep = evaluate.getEvaluatedFloatDefault(
-			self.rackHoleStep, 'rackHoleStep', xmlElement)
-		self.rackLengthOverRadius = evaluate.getEvaluatedFloatDefault(self.rackLengthOverRadius, 'rackLengthOverRadius', xmlElement)
-		self.rackWidthOverThickness = evaluate.getEvaluatedFloatDefault(
-			self.rackWidthOverThickness, 'rackWidthOverThickness', xmlElement)
-		self.rimWidthOverRadius = evaluate.getEvaluatedFloatDefault(self.rimWidthOverRadius, 'rimWidthOverRadius', xmlElement)
-		self.rootBevelOverClearance = evaluate.getEvaluatedFloatDefault(
-			self.rootBevelOverClearance, 'rootBevelOverClearance', xmlElement)
-		self.shaftDepthBottomOverRadius = evaluate.getEvaluatedFloatDefault(
-			self.shaftDepthBottomOverRadius, 'shaftDepthBottomOverRadius', xmlElement)
-		self.shaftDepthTopOverRadius = evaluate.getEvaluatedFloatDefault(
-			self.shaftDepthTopOverRadius, 'shaftDepthOverRadius', xmlElement)
+		self.plateClearanceOverThickness = evaluate.getEvaluatedFloatDefault(0.2, 'plateClearanceOverThickness', xmlElement)
+		self.plateThicknessOverThickness = evaluate.getEvaluatedFloatDefault(0.5, 'plateThicknessOverThickness', xmlElement)
+		self.pressureAngle = evaluate.getEvaluatedFloatDefault(20.0, 'pressureAngle', xmlElement)
+		self.profileSurfaces = evaluate.getEvaluatedIntDefault(11, 'profileSurfaces', xmlElement)
+		self.rackHoleRadiusOverWidth = evaluate.getEvaluatedFloatDefault(0.0, 'rackHoleRadiusOverWidth', xmlElement)
+		self.rackHoleBelowOverWidth = evaluate.getEvaluatedFloatDefault(0.6, 'rackHoleBelowOverWidth', xmlElement)
+		self.rackHoleStepOverWidth = evaluate.getEvaluatedFloatDefault(1.0, 'rackHoleStepOverWidth', xmlElement)
+		self.rackLengthOverRadius = evaluate.getEvaluatedFloatDefault(math.pi + math.pi, 'rackLengthOverRadius', xmlElement)
+		self.rackWidthOverThickness = evaluate.getEvaluatedFloatDefault(1.0, 'rackWidthOverThickness', xmlElement)
+		self.rimWidthOverRadius = evaluate.getEvaluatedFloatDefault(0.2, 'rimWidthOverRadius', xmlElement)
+		self.rootBevelOverClearance = evaluate.getEvaluatedFloatDefault(0.5, 'rootBevelOverClearance', xmlElement)
+		self.shaftDepthBottomOverRadius = evaluate.getEvaluatedFloatDefault(0.0, 'shaftDepthBottomOverRadius', xmlElement)
+		self.shaftDepthTopOverRadius = evaluate.getEvaluatedFloatDefault(0.0, 'shaftDepthOverRadius', xmlElement)
 		self.shaftDepthTopOverRadius = evaluate.getEvaluatedFloatDefault(
 			self.shaftDepthTopOverRadius, 'shaftDepthTopOverRadius', xmlElement)
-		self.shaftRadiusOverPitchRadius = evaluate.getEvaluatedFloatDefault(
-			self.shaftRadiusOverPitchRadius, 'shaftRadiusOverPitchRadius', xmlElement)
-		self.shaftSides = evaluate.getEvaluatedIntDefault(self.shaftSides, 'shaftSides', xmlElement)
-		self.teethPinion = evaluate.getEvaluatedIntDefault(self.teethPinion, 'teeth', xmlElement)
+		self.shaftRadiusOverPitchRadius = evaluate.getEvaluatedFloatDefault(0.0, 'shaftRadiusOverPitchRadius', xmlElement)
+		self.shaftSides = evaluate.getEvaluatedIntDefault(4, 'shaftSides', xmlElement)
+		self.teethPinion = evaluate.getEvaluatedIntDefault(7, 'teeth', xmlElement)
 		self.teethPinion = evaluate.getEvaluatedIntDefault(self.teethPinion, 'teethPinion', xmlElement)
-		self.teethGear = evaluate.getEvaluatedIntDefault(self.teethGear, 'teethGear', xmlElement)
-		self.tipBevelOverClearance = evaluate.getEvaluatedFloatDefault(self.tipBevelOverClearance, 'tipBevelOverClearance', xmlElement)
-		self.toothWidthMultiplier = evaluate.getEvaluatedFloatDefault(self.toothWidthMultiplier, 'toothWidthMultiplier', xmlElement)
+		self.teethGear = evaluate.getEvaluatedIntDefault(17, 'teethGear', xmlElement)
+		totalTeethOverPinionTeeth = float(self.teethGear + self.teethPinion) / float(self.teethPinion)
+		self.centerDistance = evaluate.getEvaluatedFloatDefault(20.0 * totalTeethOverPinionTeeth, 'centerDistance', xmlElement)
+		derivedPitchRadius = self.centerDistance / totalTeethOverPinionTeeth
+		self.pitchRadius = evaluate.getEvaluatedFloatDefault(derivedPitchRadius, 'pitchRadius', xmlElement)
+		self.tipBevelOverClearance = evaluate.getEvaluatedFloatDefault(0.1, 'tipBevelOverClearance', xmlElement)
+		# tooth multiplied by 0.99999 to avoid an intersection
+		self.toothWidthMultiplier = evaluate.getEvaluatedFloatDefault(0.99999, 'toothWidthMultiplier', xmlElement)
 		# Set absolute variables.
 		self.wavelength = self.pitchRadius * 2.0 * math.pi / float(self.teethPinion)
-		if self.clearance == None:
-			self.clearance = self.wavelength * self.clearanceOverWavelength
+		self.clearance = self.wavelength * self.clearanceOverWavelength
 		self.clearance = evaluate.getEvaluatedFloatDefault(self.clearance, 'clearance', xmlElement)
-		if self.gearCollarThickness == None:
-			self.gearCollarThickness = self.pinionThickness * self.gearCollarThicknessOverThickness
+		self.gearCollarThickness = self.pinionThickness * self.gearCollarThicknessOverThickness
 		self.gearCollarThickness = evaluate.getEvaluatedFloatDefault(self.gearCollarThickness, 'gearCollarThickness', xmlElement)
-		if self.gearHolePaths == None:
-			self.gearHolePaths = evaluate.getTransformedPathsByKey('gearHolePaths', xmlElement)
-		if self.pinionCollarThickness == None:
-			self.pinionCollarThickness = self.pinionThickness * self.pinionCollarThicknessOverThickness
+		self.gearHolePaths = evaluate.getTransformedPathsByKey([], 'gearHolePaths', xmlElement)
+		self.pinionCollarThickness = self.pinionThickness * self.pinionCollarThicknessOverThickness
 		self.pinionCollarThickness = evaluate.getEvaluatedFloatDefault(self.pinionCollarThickness, 'pinionCollarThickness', xmlElement)
-		if self.plateThickness == None:
-			self.plateThickness = self.pinionThickness * self.plateThicknessOverThickness
+		self.plateThickness = self.pinionThickness * self.plateThicknessOverThickness
 		self.plateThickness = evaluate.getEvaluatedFloatDefault(self.plateThickness, 'plateThickness', xmlElement)
-		if self.plateClearance == None:
-			self.plateClearance = self.plateThickness * self.plateClearanceOverThickness
+		self.plateClearance = self.plateThickness * self.plateClearanceOverThickness
 		self.plateClearance = evaluate.getEvaluatedFloatDefault(self.plateClearance, 'plateClearance', xmlElement)
-		if self.rackLength == None:
-			self.rackLength = self.pitchRadius * self.rackLengthOverRadius
+		self.rackLength = self.pitchRadius * self.rackLengthOverRadius
 		self.rackLength = evaluate.getEvaluatedFloatDefault(self.rackLength, 'rackLength', xmlElement)
 		self.rackDemilength = 0.5 * self.rackLength
-		if self.rackWidth == None:
-			self.rackWidth = self.pinionThickness * self.rackWidthOverThickness
+		self.rackWidth = self.pinionThickness * self.rackWidthOverThickness
 		self.rackWidth = evaluate.getEvaluatedFloatDefault(self.rackWidth, 'rackWidth', xmlElement)
-		if self.rimWidth == None:
-			self.rimWidth = self.pitchRadius * self.rimWidthOverRadius
+		self.rimWidth = self.pitchRadius * self.rimWidthOverRadius
 		self.rimWidth = evaluate.getEvaluatedFloatDefault(self.rimWidth, 'rimWidth', xmlElement)
-		if self.rootBevel == None:
-			self.rootBevel = self.clearance * self.rootBevelOverClearance
+		self.rootBevel = self.clearance * self.rootBevelOverClearance
 		self.rootBevel = evaluate.getEvaluatedFloatDefault(self.rootBevel, 'rootBevel', xmlElement)
-		if self.shaftRadius == None:
-			self.shaftRadius = self.pitchRadius * self.shaftRadiusOverPitchRadius
+		self.shaftRadius = self.pitchRadius * self.shaftRadiusOverPitchRadius
 		self.shaftRadius = evaluate.getEvaluatedFloatDefault(self.shaftRadius, 'shaftRadius', xmlElement)
-		if self.collarWidth == None:
-			self.collarWidth = self.shaftRadius * self.collarWidthOverShaftRadius
+		self.collarWidth = self.shaftRadius * self.collarWidthOverShaftRadius
 		self.collarWidth = evaluate.getEvaluatedFloatDefault(self.collarWidth, 'collarWidth', xmlElement)
-		if self.keywayRadius == None:
-			self.keywayRadius = self.shaftRadius * self.keywayRadiusOverRadius
+		self.keywayRadius = self.shaftRadius * self.keywayRadiusOverRadius
 		self.keywayRadius = lineation.getFloatByPrefixBeginEnd('keywayRadius', 'keywayDiameter', self.keywayRadius, xmlElement)
-		if self.lighteningHoleMargin == None:
-			self.lighteningHoleMargin = self.rimWidth * self.lighteningHoleMarginOverRimWidth
+		self.lighteningHoleMargin = self.rimWidth * self.lighteningHoleMarginOverRimWidth
 		self.lighteningHoleMargin = evaluate.getEvaluatedFloatDefault(
 			self.lighteningHoleMargin, 'lighteningHoleMargin', xmlElement)
-		if self.rackHoleBelow == None:
-			self.rackHoleBelow = self.rackWidth * self.rackHoleBelowOverWidth
+		self.rackHoleBelow = self.rackWidth * self.rackHoleBelowOverWidth
 		self.rackHoleBelow = evaluate.getEvaluatedFloatDefault(self.rackHoleBelow, 'rackHoleBelow', xmlElement)
-		if self.rackHoleRadius == None:
-			self.rackHoleRadius = self.rackWidth * self.rackHoleRadiusOverWidth
+		self.rackHoleRadius = self.rackWidth * self.rackHoleRadiusOverWidth
 		self.rackHoleRadius = lineation.getFloatByPrefixBeginEnd('rackHoleRadius', 'rackHoleDiameter', self.rackHoleRadius, xmlElement)
-		if self.rackHoleStep == None:
-			self.rackHoleStep = self.rackWidth * self.rackHoleStepOverWidth
+		self.rackHoleStep = self.rackWidth * self.rackHoleStepOverWidth
 		self.rackHoleStep = evaluate.getEvaluatedFloatDefault(self.rackHoleStep, 'rackHoleStep', xmlElement)
-		if self.shaftDepthBottom == None:
-			self.shaftDepthBottom = self.shaftRadius * self.shaftDepthBottomOverRadius
+		self.shaftDepthBottom = self.shaftRadius * self.shaftDepthBottomOverRadius
 		self.shaftDepthBottom = evaluate.getEvaluatedFloatDefault(self.shaftDepthBottom, 'shaftDepthBottom', xmlElement)
-		if self.shaftDepthTop == None:
-			self.shaftDepthTop = self.shaftRadius * self.shaftDepthTopOverRadius
+		self.shaftDepthTop = self.shaftRadius * self.shaftDepthTopOverRadius
 		self.shaftDepthTop = evaluate.getEvaluatedFloatDefault(self.shaftDepthTop, 'shaftDepth', xmlElement)
 		self.shaftDepthTop = evaluate.getEvaluatedFloatDefault(self.shaftDepthTop, 'shaftDepthTop', xmlElement)
-		if self.shaftPath == None:
-			self.shaftPath = evaluate.getTransformedPathByKey('shaftPath', xmlElement)
+		self.shaftPath = evaluate.getTransformedPathByKey([], 'shaftPath', xmlElement)
 		if len(self.shaftPath) < 3:
 			self.shaftPath = shaft.getShaftPath(self.shaftDepthBottom, self.shaftDepthTop, self.shaftRadius, -self.shaftSides)
-		if self.tipBevel == None:
-			self.tipBevel = self.clearance * self.tipBevelOverClearance
+		self.tipBevel = self.clearance * self.tipBevelOverClearance
 		self.tipBevel = evaluate.getEvaluatedFloatDefault(self.tipBevel, 'tipBevel', xmlElement)
 		# Set derived values.
 		self.helixRadian = math.radians(self.helixAngle)
@@ -828,8 +734,7 @@ class GearDerivation:
 		self.sinPressure = math.sin(self.pressureRadian)
 		self.tanPressure = math.tan(self.pressureRadian)
 		self.halfWavelength = 0.5 * self.wavelength
-		if self.helixPath == None:
-			self.helixPath = euclidean.getComplexPath(evaluate.getTransformedPathByKey('helixPath', xmlElement))
+		self.helixPath = euclidean.getComplexPath(evaluate.getTransformedPathByKey([], 'helixPath', xmlElement))
 		if len(self.helixPath) < 1:
 			self.helixPath = getHelixComplexPath(self, xmlElement)
 		self.quarterWavelength = 0.25 * self.wavelength
@@ -840,3 +745,7 @@ class GearDerivation:
 		self.dedendum = abs(self.toothProfileHalf[-1]) - self.pitchRadius + self.clearance
 		self.pinionToothProfile = getToothProfileCylinderByProfile(self, self.pitchRadius, self.teethPinion, self.toothProfileHalf)
 		self.xmlElement = xmlElement
+
+	def __repr__(self):
+		"Get the string representation of this GearDerivation."
+		return str(self.__dict__)

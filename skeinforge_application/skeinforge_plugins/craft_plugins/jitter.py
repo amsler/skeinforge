@@ -3,7 +3,7 @@ This page is in the table of contents.
 Jitter jitters the loop end position to a different place on each layer to prevent the a ridge from forming.
 
 The jitter manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Jitter
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Jitter
 
 ==Operation==
 The default 'Activate Jitter' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -132,7 +132,7 @@ class JitterRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.jitter.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Jitter', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Jitter')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Jitter')
 		self.activateJitter = settings.BooleanSetting().getFromValue('Activate Jitter', self, True )
 		self.jitterOverPerimeterWidth = settings.FloatSpin().getFromValue( 1.0, 'Jitter Over Perimeter Width (ratio):', self, 3.0, 2.0 )
 		self.executeTitle = 'Jitter'

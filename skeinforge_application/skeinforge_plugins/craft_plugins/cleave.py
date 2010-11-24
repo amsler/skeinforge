@@ -11,7 +11,7 @@ When selected, the layer template will be added to the svg output, which adds ja
 When off, no controls will be added, the svg output will only include the fabrication paths.  So 'Add Layer Template to SVG' should be deselected when the svg will be used by other software, like Inkscape.
 
 ===Extra Decimal Places===
-Default is one.
+Default is two.
 
 Defines the number of extra decimal places export will output compared to the number of decimal places in the layer thickness.  The higher the 'Extra Decimal Places', the more significant figures the output numbers will have.
 
@@ -163,7 +163,7 @@ class CleaveRepository:
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.cleave.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Cleaved', self, '')
 		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
-		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 2.0, 1.0)
+		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 3.0, 2.0)
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
@@ -197,7 +197,7 @@ class CleaveSkein:
 		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
 		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
 		if len( rotatedBoundaryLayers ) < 1:
-			print('There are no slices for the model, this could be because the model is too small.')
+			print('Warning, there are no slices for the model, this could be because the model is too small for the Layer Thickness.')
 			return ''
 		layerThickness = carving.getCarveLayerThickness()
 		decimalPlacesCarried = euclidean.getDecimalPlacesCarried(repository.extraDecimalPlaces.value, layerThickness)

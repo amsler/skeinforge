@@ -577,17 +577,17 @@ def getOverhangSupportAngle(xmlElement):
 	"Get the overhang support angle in radians."
 	return math.radians(xmlElement.getCascadeFloat(45.0, 'overhangSupportAngle'))
 
-def getPathByKey(key, xmlElement):
+def getPathByKey(defaultPath, key, xmlElement):
 	"Get path from prefix and xml element."
 	if key not in xmlElement.attributeDictionary:
-		return []
+		return defaultPath
 	word = str(xmlElement.attributeDictionary[key]).strip()
 	evaluatedLinkValue = getEvaluatedLinkValue(word, xmlElement)
 	if evaluatedLinkValue.__class__ == list:
 		return getPathByList(evaluatedLinkValue)
 	xmlElementObject = getXMLElementObject(evaluatedLinkValue)
 	if xmlElementObject == None:
-		return []
+		return defaultPath
 	return xmlElementObject.getPaths()[0]
 
 def getPathByList( vertexList ):
@@ -607,7 +607,7 @@ def getPathByPrefix(path, prefix, xmlElement):
 	if len(path) < 2:
 		print('Warning, bug, path is too small in evaluate in setPathByPrefix.')
 		return
-	pathByKey = getPathByKey( prefix + 'path', xmlElement )
+	pathByKey = getPathByKey([], prefix + 'path', xmlElement)
 	if len( pathByKey ) < len(path):
 		for pointIndex in xrange( len( pathByKey ) ):
 			path[ pointIndex ] = pathByKey[ pointIndex ]
@@ -617,10 +617,10 @@ def getPathByPrefix(path, prefix, xmlElement):
 	path[-1] = getVector3ByPrefix(path[-1], prefix + 'pathEnd', xmlElement)
 	return path
 
-def getPathsByKey(key, xmlElement):
+def getPathsByKey(defaultPaths, key, xmlElement):
 	"Get paths by key."
 	if key not in xmlElement.attributeDictionary:
-		return []
+		return defaultPaths
 	word = str(xmlElement.attributeDictionary[key]).strip()
 	evaluatedLinkValue = getEvaluatedLinkValue(word, xmlElement)
 	if evaluatedLinkValue.__class__ == dict or evaluatedLinkValue.__class__ == list:
@@ -628,15 +628,8 @@ def getPathsByKey(key, xmlElement):
 		return getPathsByLists(evaluatedLinkValue)
 	xmlElementObject = getXMLElementObject(evaluatedLinkValue)
 	if xmlElementObject == None:
-		return []
+		return defaultPaths
 	return xmlElementObject.getPaths()
-
-def getPathsByKeys(keys, xmlElement):
-	"Get paths by keys."
-	pathsByKeys = []
-	for key in keys:
-		pathsByKeys += getPathsByKey(key, xmlElement)
-	return pathsByKeys
 
 def getPathsByLists(vertexLists):
 	"Get paths by lists."
@@ -691,17 +684,17 @@ def getTokenByNumber(number):
 	"Get token by number."
 	return '_%s_' % number
 
-def getTransformedPathByKey(key, xmlElement):
+def getTransformedPathByKey(defaultTransformedPath, key, xmlElement):
 	"Get transformed path from prefix and xml element."
 	if key not in xmlElement.attributeDictionary:
-		return []
+		return defaultTransformedPath
 	word = str(xmlElement.attributeDictionary[key]).strip()
 	evaluatedLinkValue = getEvaluatedLinkValue(word, xmlElement)
 	if evaluatedLinkValue.__class__ == list:
 		return getPathByList(evaluatedLinkValue)
 	xmlElementObject = getXMLElementObject(evaluatedLinkValueClass)
 	if xmlElementObject == None:
-		return []
+		return defaultTransformedPath
 	return xmlElementObject.getTransformedPaths()[0]
 
 def getTransformedPathByPrefix(path, prefix, xmlElement):
@@ -709,7 +702,7 @@ def getTransformedPathByPrefix(path, prefix, xmlElement):
 	if len(path) < 2:
 		print('Warning, bug, path is too small in evaluate in setPathByPrefix.')
 		return
-	pathByKey = getTransformedPathByKey( prefix + 'path', xmlElement )
+	pathByKey = getTransformedPathByKey([], prefix + 'path', xmlElement)
 	if len( pathByKey ) < len(path):
 		for pointIndex in xrange( len( pathByKey ) ):
 			path[ pointIndex ] = pathByKey[ pointIndex ]
@@ -719,10 +712,10 @@ def getTransformedPathByPrefix(path, prefix, xmlElement):
 	path[-1] = getVector3ByPrefix(path[-1], prefix + 'pathEnd', xmlElement)
 	return path
 
-def getTransformedPathsByKey(key, xmlElement):
+def getTransformedPathsByKey(defaultTransformedPaths, key, xmlElement):
 	"Get transformed paths by key."
 	if key not in xmlElement.attributeDictionary:
-		return []
+		return defaultTransformedPaths
 	word = str(xmlElement.attributeDictionary[key]).strip()
 	evaluatedLinkValue = getEvaluatedLinkValue(word, xmlElement)
 	if evaluatedLinkValue.__class__ == dict or evaluatedLinkValue.__class__ == list:
@@ -730,7 +723,7 @@ def getTransformedPathsByKey(key, xmlElement):
 		return getPathsByLists(evaluatedLinkValue)
 	xmlElementObject = getXMLElementObject(evaluatedLinkValue)
 	if xmlElementObject == None:
-		return []
+		return defaultTransformedPaths
 	return xmlElementObject.getTransformedPaths()
 
 def getUniqueQuoteIndex( uniqueQuoteIndex, word ):

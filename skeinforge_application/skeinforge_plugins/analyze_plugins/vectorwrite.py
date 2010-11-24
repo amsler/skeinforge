@@ -3,7 +3,7 @@ This page is in the table of contents.
 Vectorwrite is a script to write Scalable Vector Graphics for a gcode file.
 
 The vectorwrite manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Vectorwrite
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Vectorwrite
 
 Vectorwrite generates a Scalable Vector Graphics file which can be opened by an SVG viewer or an SVG capable browser like Mozilla:
 http://www.mozilla.com/firefox/
@@ -166,7 +166,7 @@ class VectorwriteRepository:
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.vectorwrite.html', self )
 		self.activateVectorwrite = settings.BooleanSetting().getFromValue('Activate Vectorwrite', self, False )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to Write Vector Graphics for', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Vectorwrite')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Vectorwrite')
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Layers -', self )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
@@ -267,7 +267,7 @@ class VectorwriteSkein:
 				self.decimalPlacesCarried = int(splitLine[1])
 			elif firstWord == '(<layerThickness>':
 				self.layerThickness = float(splitLine[1])
-			elif firstWord == '(<extrusion>)':
+			elif firstWord == '(<crafting>)':
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float(splitLine[1])

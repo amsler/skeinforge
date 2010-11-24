@@ -37,7 +37,7 @@ def addSubmenus( menu, pluginFileName, pluginFolderPath, pluginPath ):
 
 def addToCraftMenu( menu ):
 	"Add a craft plugin menu."
-	settings.ToolDialog().addPluginToMenu( menu, archive.getUntilDot( os.path.abspath( __file__ ) ) )
+	settings.ToolDialog().addPluginToMenu( menu, archive.getUntilDot( os.path.abspath(__file__) ) )
 	menu.add_separator()
 	directoryPath = skeinforge_craft.getPluginsDirectoryPath()
 	directoryFolders = settings.getFolders(directoryPath)
@@ -60,7 +60,7 @@ def getNewRepository():
 
 def writeOutput(fileName=''):
 	"Craft a gcode file."
-	skeinforge_craft.writeOutput(fileName)
+	return skeinforge_craft.writeOutput(fileName)
 
 
 class CraftMenuSaveListener:
@@ -120,7 +120,7 @@ class CraftRadioButtonsSaveListener:
 def main():
 	"Display the craft dialog."
 	if len(sys.argv) > 1:
-		writeOutput(' '.join(sys.argv[1 :]))
+		settings.startMainLoopFromWindow(writeOutput(' '.join(sys.argv[1 :])))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 

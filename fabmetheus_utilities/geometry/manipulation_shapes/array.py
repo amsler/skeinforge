@@ -24,7 +24,7 @@ globalExecutionOrder = 200
 
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get array path."
-	arrayPaths = evaluate.getTransformedPathsByKey([prefix + 'path', prefix + 'paths'], xmlElement)
+	arrayPaths = evaluate.getTransformedPathsByKey([], [prefix + 'path', prefix + 'paths'], xmlElement)
 	manipulatedByPaths = []
 	for arrayPath in arrayPaths:
 		for arrayPoint in arrayPath:
@@ -48,7 +48,7 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 
 def getVertexesByKey(key, xmlElement):
 	"Get the vertexes by key."
-	return euclidean.getConcatenatedList(evaluate.getTransformedPathsByKey(key, xmlElement))
+	return euclidean.getConcatenatedList(evaluate.getTransformedPathsByKey([], key, xmlElement))
 
 def processXMLElement(xmlElement):
 	"Process the xml element."

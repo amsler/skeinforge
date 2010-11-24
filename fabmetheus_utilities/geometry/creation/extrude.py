@@ -134,8 +134,7 @@ def comparePortionDirection( portionDirection, otherPortionDirection ):
 def getGeometryOutput(derivation, xmlElement):
 	"Get triangle mesh from attribute dictionary."
 	if derivation == None:
-		derivation = ExtrudeDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = ExtrudeDerivation(xmlElement)
 	if derivation.radius != complex():
 		maximumRadius = max(derivation.radius.real, derivation.radius.imag)
 		sides = int(math.ceil(evaluate.getSidesMinimumThreeBasedOnPrecisionSides(maximumRadius, xmlElement)))
@@ -255,46 +254,34 @@ def setOffsetByMultiplier( begin, end, multiplier, offset ):
 
 class ExtrudeDerivation:
 	"Class to hold extrude variables."
-	def __init__(self):
-		'Set defaults.'
-		self.maximumUnbuckling = 5.0
+	def __init__(self, xmlElement):
+		'Initialize.'
 		self.interpolationDictionary = {}
-		self.offsetAlongDefault = [Vector3(), Vector3(1.0, 0.0, 0.0)]
-		self.offsetPathDefault = [Vector3(), Vector3(0.0, 0.0, 1.0)]
-		self.radius = complex()
-		self.scalePathDefault = [Vector3(1.0, 1.0, 0.0), Vector3(1.0, 1.0, 1.0)]
-		self.target = []
-		self.tiltFollow = True
-		self.tiltPathDefault = [Vector3(), Vector3(0.0, 0.0, 1.0)]
-		self.tiltTop = None
-		self.twist = 0.0
-		self.twistPathDefault = [Vector3(), Vector3(1.0)]
-
-	def __repr__(self):
-		"Get the string representation of this ExtrudeDerivation."
-		return '%s, %s' % ( self.interpolationDictionary, self.tiltTop )
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.radius = lineation.getRadiusComplex(self.radius, xmlElement)
-		self.tiltFollow = evaluate.getEvaluatedBooleanDefault(self.tiltFollow, 'tiltfollow', xmlElement)
-		self.tiltTop = evaluate.getVector3ByPrefix(self.tiltTop, 'tilttop', xmlElement)
-		self.maximumUnbuckling = evaluate.getEvaluatedFloatDefault(self.maximumUnbuckling, 'maximumUnbuckling', xmlElement)
-		self.interpolationDictionary['scale'] = Interpolation().getByPrefixZ(self.scalePathDefault, 'scale', xmlElement)
-		if len(self.target) < 1:
-			self.target = evaluate.getTransformedPathsByKey('target', xmlElement)
+		self.radius = lineation.getRadiusComplex(complex(), xmlElement)
+		self.tiltFollow = evaluate.getEvaluatedBooleanDefault(True, 'tiltfollow', xmlElement)
+		self.tiltTop = evaluate.getVector3ByPrefix(None, 'tilttop', xmlElement)
+		self.maximumUnbuckling = evaluate.getEvaluatedFloatDefault(5.0, 'maximumUnbuckling', xmlElement)
+		scalePathDefault = [Vector3(1.0, 1.0, 0.0), Vector3(1.0, 1.0, 1.0)]
+		self.interpolationDictionary['scale'] = Interpolation().getByPrefixZ(scalePathDefault, 'scale', xmlElement)
+		self.target = evaluate.getTransformedPathsByKey([], 'target', xmlElement)
 		if self.tiltTop == None:
-			self.interpolationDictionary['offset'] = Interpolation().getByPrefixZ(self.offsetPathDefault, '', xmlElement)
-			self.interpolationDictionary['tilt'] = Interpolation().getByPrefixZ(self.tiltPathDefault, 'tilt', xmlElement)
+			offsetPathDefault = [Vector3(), Vector3(0.0, 0.0, 1.0)]
+			self.interpolationDictionary['offset'] = Interpolation().getByPrefixZ(offsetPathDefault, '', xmlElement)
+			tiltPathDefault = [Vector3(), Vector3(0.0, 0.0, 1.0)]
+			self.interpolationDictionary['tilt'] = Interpolation().getByPrefixZ(tiltPathDefault, 'tilt', xmlElement)
 			for point in self.interpolationDictionary['tilt'].path:
 				point.x = math.radians(point.x)
 				point.y = math.radians(point.y)
 		else:
-			self.interpolationDictionary['offset'] = Interpolation().getByPrefixAlong(self.offsetAlongDefault, '', xmlElement)
-		self.twist = evaluate.getEvaluatedFloatDefault(self.twist, 'twist', xmlElement )
-		if self.twist != 0.0:
-			self.twistPathDefault = [Vector3(), Vector3(1.0, self.twist) ]
+			offsetAlongDefault = [Vector3(), Vector3(1.0, 0.0, 0.0)]
+			self.interpolationDictionary['offset'] = Interpolation().getByPrefixAlong(offsetAlongDefault, '', xmlElement)
+		self.twist = evaluate.getEvaluatedFloatDefault(0.0, 'twist', xmlElement )
+		self.twistPathDefault = [Vector3(), Vector3(1.0, self.twist) ]
 		insertTwistPortions(self, xmlElement)
+
+	def __repr__(self):
+		"Get the string representation of this ExtrudeDerivation."
+		return str(self.__dict__)
 
 
 class Interpolation:
@@ -302,6 +289,10 @@ class Interpolation:
 	def __init__(self):
 		"Set index."
 		self.interpolationIndex = 0
+
+	def __repr__(self):
+		"Get the string representation of this Interpolation."
+		return str(self.__dict__)
 
 	def getByDistances(self):
 		"Get by distances."

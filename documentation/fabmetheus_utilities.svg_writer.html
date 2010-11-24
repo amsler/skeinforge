@@ -21,13 +21,14 @@ Svg_writer uses the layer_template.svg file in the templates folder in the same 
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
 <a href="fabmetheus_utilities.archive.html">fabmetheus_utilities.archive</a><br>
-</td><td width="25%" valign=top><a href="cStringIO.html">cStringIO</a><br>
-<a href="fabmetheus_utilities.euclidean.html">fabmetheus_utilities.euclidean</a><br>
-</td><td width="25%" valign=top><a href="fabmetheus_utilities.fabmetheus_tools.fabmetheus_interpret.html">fabmetheus_utilities.fabmetheus_tools.fabmetheus_interpret</a><br>
+<a href="cStringIO.html">cStringIO</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.euclidean.html">fabmetheus_utilities.euclidean</a><br>
+<a href="fabmetheus_utilities.fabmetheus_tools.fabmetheus_interpret.html">fabmetheus_utilities.fabmetheus_tools.fabmetheus_interpret</a><br>
 <a href="fabmetheus_utilities.gcodec.html">fabmetheus_utilities.gcodec</a><br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
 <a href="os.html">os</a><br>
-</td></tr></table></td></tr></table><p>
+<a href="fabmetheus_utilities.xml_simple_writer.html">fabmetheus_utilities.xml_simple_writer</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -71,7 +72,11 @@ Svg_writer uses the layer_template.svg file in the templates folder in the same 
 
 <dl><dt><a name="SVGWriter-getTransformString"><strong>getTransformString</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;svg&nbsp;transform&nbsp;string.</tt></dd></dl>
 
-<dl><dt><a name="SVGWriter-setMetadataNoscriptElement"><strong>setMetadataNoscriptElement</strong></a>(self, prefix, value)</dt><dd><tt>Set&nbsp;the&nbsp;metadata&nbsp;value&nbsp;and&nbsp;the&nbsp;NoJavascript&nbsp;text.</tt></dd></dl>
+<dl><dt><a name="SVGWriter-setDimensionTexts"><strong>setDimensionTexts</strong></a>(self, key, valueString)</dt><dd><tt>Set&nbsp;the&nbsp;texts&nbsp;to&nbsp;the&nbsp;valueString&nbsp;followed&nbsp;by&nbsp;mm.</tt></dd></dl>
+
+<dl><dt><a name="SVGWriter-setMetadataNoscriptElement"><strong>setMetadataNoscriptElement</strong></a>(self, key, prefix, value)</dt><dd><tt>Set&nbsp;the&nbsp;metadata&nbsp;value&nbsp;and&nbsp;the&nbsp;text.</tt></dd></dl>
+
+<dl><dt><a name="SVGWriter-setTexts"><strong>setTexts</strong></a>(self, key, valueString)</dt><dd><tt>Set&nbsp;the&nbsp;texts&nbsp;to&nbsp;the&nbsp;valueString.</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -83,6 +88,7 @@ Svg_writer uses the layer_template.svg file in the templates folder in the same 
 <td width="100%"><dl><dt><a name="-getCarving"><strong>getCarving</strong></a>(fileName)</dt><dd><tt>Get&nbsp;a&nbsp;carving&nbsp;for&nbsp;the&nbsp;file&nbsp;using&nbsp;an&nbsp;import&nbsp;plugin.</tt></dd></dl>
  <dl><dt><a name="-getSVGByLoopLayers"><strong>getSVGByLoopLayers</strong></a>(addLayerTemplateToSVG, rotatedLoopLayers, svgCarving)</dt><dd><tt>Get&nbsp;the&nbsp;svg&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getSliceDictionary"><strong>getSliceDictionary</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;metadata&nbsp;slice&nbsp;attribute&nbsp;dictionary.</tt></dd></dl>
+ <dl><dt><a name="-getSliceXMLElements"><strong>getSliceXMLElements</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;slice&nbsp;elements.</tt></dd></dl>
  <dl><dt><a name="-getTruncatedRotatedBoundaryLayers"><strong>getTruncatedRotatedBoundaryLayers</strong></a>(repository, rotatedBoundaryLayers)</dt><dd><tt>Get&nbsp;the&nbsp;truncated&nbsp;rotated&nbsp;boundary&nbsp;layers.</tt></dd></dl>
  <dl><dt><a name="-setSVGCarvingCorners"><strong>setSVGCarvingCorners</strong></a>(rotatedLoopLayers, svgCarving)</dt><dd><tt>Parse&nbsp;SVG&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;layers.</tt></dd></dl>
 </td></tr></table><p>

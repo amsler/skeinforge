@@ -61,11 +61,24 @@ def getFabmetheusUtilitiesPath(subName=''):
 	'Get the fabmetheus utilities directory path.'
 	return getJoinedPath(getFabmetheusPath('fabmetheus_utilities'), subName)
 
+def getFileNamesByFilePaths(pluginFilePaths):
+	'Get the file names of the plugins by the file paths.'
+	fileNames = []
+	for pluginFilePath in pluginFilePaths:
+		pluginBasename = os.path.basename(pluginFilePath)
+		pluginBasename = getUntilDot(pluginBasename)
+		fileNames.append(pluginBasename)
+	return fileNames
+
 def getFilePaths(fileInDirectory=''):
 	'Get the file paths in the directory of the file in directory.'
 	directoryName = os.getcwd()
 	if fileInDirectory != '':
 		directoryName = os.path.dirname(fileInDirectory)
+	return getFilePathsByDirectory(directoryName)
+
+def getFilePathsByDirectory(directoryName):
+	'Get the file paths in the directory of the file in directory.'
 	absoluteDirectoryPath = os.path.abspath(directoryName)
 	directory = os.listdir(directoryName)
 	filePaths = []
@@ -197,13 +210,7 @@ def getModuleWithPath(path):
 def getPluginFileNamesFromDirectoryPath(directoryPath):
 	'Get the file names of the python plugins in the directory path.'
 	fileInDirectory = os.path.join(directoryPath, '__init__.py')
-	fullPluginFileNames = getPythonFileNamesExceptInit(fileInDirectory)
-	pluginFileNames = []
-	for fullPluginFileName in fullPluginFileNames:
-		pluginBasename = os.path.basename(fullPluginFileName)
-		pluginBasename = getUntilDot(pluginBasename)
-		pluginFileNames.append(pluginBasename)
-	return pluginFileNames
+	return getFileNamesByFilePaths(getPythonFileNamesExceptInit(fileInDirectory))
 
 def getProfilesPath(subName=''):
 	'Get the profiles directory path, which is the settings directory joined with profiles.'
@@ -271,7 +278,11 @@ def getTextIfEmpty(fileName, text):
 
 def getTextLines(text):
 	'Get the all the lines of text of a text.'
-	return text.replace('\r', '\n').replace('\n\n', '\n').split('\n')
+	textLines = text.replace('\r', '\n').replace('\n\n', '\n').split('\n')
+	if len(textLines) == 1:
+		if textLines[0] == '':
+			return []
+	return textLines
 
 def getUntilDot(text):
 	'Get the text until the last dot, if any.'

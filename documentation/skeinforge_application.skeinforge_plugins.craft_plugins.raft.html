@@ -10,13 +10,13 @@
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/raft.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/raft.py</a></font></td></tr></table>
     <p>
-<a href="skeinforge_application.skeinforge_plugins.craft_plugins.preface.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.speed.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_application.skeinforge_plugins.craft_plugins.preface.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.scale.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
 Raft is a script to create a raft, elevate the nozzle and set the temperature.<br>
  <br>
 The raft manual page is at:<br>
-<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Raft">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Raft</a><br>
+<a href="http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Raft">http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Raft</a><br>
  <br>
 Allan Ecker aka The Masked Retriever's has written two quicktips for raft which follow below.<br>
 "Skeinforge Quicktip: The Raft, Part 1" at:<br>
@@ -29,12 +29,14 @@ Pictures of rafting in action are available from the Metalab blog at:<br>
  <br>
 Raft is based on the Nophead's reusable raft, which has a base layer running one way, and a couple of perpendicular layers above.  Each set of layers can be set to a different temperature.  There is the option of having the extruder orbit the raft for a while, so the heater barrel has time to reach a different temperature, without ooze accumulating around the nozzle.<br>
  <br>
+If you want to only set the temperature or only create support material or only elevate the nozzle without creating a raft, set the Base Layers and Interface Layers to zero.<br>
+ <br>
 The important values for the raft settings are the temperatures of the raft, the first layer and the next layers.  These will be different for each material.  The default settings for ABS, HDPE, PCL &amp; PLA are extrapolated from Nophead's experiments.<br>
  <br>
 <br />
 <a href="#Operation">Operation</a><br />
 <a href="#Settings">Settings</a><br />
-&nbsp;&nbsp;<a href="#Add Raft, Elevate Nozzle, Orbit and Set Altitude">Add Raft, Elevate Nozzle, Orbit and Set Altitude</a><br />
+&nbsp;&nbsp;<a href="#Add Raft, Elevate Nozzle, Orbit">Add Raft, Elevate Nozzle, Orbit</a><br />
 &nbsp;&nbsp;<a href="#Base">Base</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Feed Rate Multiplier">Base Feed Rate Multiplier</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Flow Rate Multiplier">Base Flow Rate Multiplier</a><br />
@@ -42,7 +44,6 @@ The important values for the raft settings are the temperatures of the raft, the
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Layer Height over Layer Thickness">Base Layer Height over Layer Thickness</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Layers">Base Layers</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Base Nozzle Lift over Base Layer Thickness">Base Nozzle Lift over Base Layer Thickness</a><br />
-&nbsp;&nbsp;<a href="#Bottom Altitude">Bottom Altitude</a><br />
 &nbsp;&nbsp;<a href="#Initial Circling">Initial Circling</a><br />
 &nbsp;&nbsp;<a href="#Infill Overhang over Extrusion Width">Infill Overhang over Extrusion Width</a><br />
 &nbsp;&nbsp;<a href="#Interface">Interface</a><br />
@@ -82,7 +83,7 @@ The default 'Activate Raft' checkbox is on.  When it is on, the functions descri
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
-<a name="Add Raft, Elevate Nozzle, Orbit and Set Altitude" id="Add Raft, Elevate Nozzle, Orbit and Set Altitude"></a><h3>Add Raft, Elevate Nozzle, Orbit and Set Altitude</h3>
+<a name="Add Raft, Elevate Nozzle, Orbit" id="Add Raft, Elevate Nozzle, Orbit"></a><h3>Add Raft, Elevate Nozzle, Orbit</h3>
 
 Default is on.<br>
  <br>
@@ -125,12 +126,6 @@ Defines the number of base layers.<br>
 Default is 0.4.<br>
  <br>
 Defines the amount the nozzle is above the center of the base extrusion divided by the base layer thickness.<br>
- <br>
-<a name="Bottom Altitude" id="Bottom Altitude"></a><h3>Bottom Altitude</h3>
-
-Default is zero.<br>
- <br>
-Defines the altitude of the bottom of the raft.<br>
  <br>
 <a name="Initial Circling" id="Initial Circling"></a><h3>Initial Circling</h3>
 
@@ -318,7 +313,7 @@ Screw Holder Bottom_raft.gcode</tt>
 <br />
 <br />
 <p>
-<a href="skeinforge_application.skeinforge_plugins.craft_plugins.preface.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.speed.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_application.skeinforge_plugins.craft_plugins.preface.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.scale.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>

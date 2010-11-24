@@ -31,12 +31,9 @@ class DisplayLine( MouseToolBase ):
 	def button1( self, event, shift = False ):
 		"Print line text and connection line."
 		self.destroyEverythingGetFocus()
-		x = self.canvas.canvasx( event.x )
-		y = self.canvas.canvasy( event.y )
+		x = self.canvas.canvasx(event.x)
+		y = self.canvas.canvasy(event.y)
 		tags = self.getTagsGivenXY(x, y)
-		if tags == 'pointer':
-			self.canvas.delete('pointer')
-			tags = self.getTagsGivenXY(x, y)
 		if tags == '':
 			return
 		if tags.startswith('colored_line_index:'):
@@ -46,6 +43,11 @@ class DisplayLine( MouseToolBase ):
 			tags = self.getSelectedColoredLine().displayString
 		self.drawLineText( complex( float(x), float(y) ), tags )
 
+	def destroyEverything(self):
+		"Destroy items."
+		self.canvas.delete('mouse_item')
+		self.canvas.delete('selection_line')
+
 	def drawLineText( self, location, tags ):
 		"Draw the line text."
 		self.window.getDrawnLineText( location, 'mouse_item', tags )
@@ -53,10 +55,10 @@ class DisplayLine( MouseToolBase ):
 	def drawSelectedColoredLineText(self):
 		"Draw the selected line and text."
 		selectedColoredLine = self.getSelectedColoredLine()
-		if len( self.canvas.find_withtag('mouse_item') ) < 1 or selectedColoredLine == None:
+		if len( self.canvas.find_withtag('selection_line') ) < 1 or selectedColoredLine == None:
 			return
 		tags = selectedColoredLine.displayString
-		lineCoordinates = self.canvas.coords( self.canvas.find_withtag('mouse_item')[-1] )
+		lineCoordinates = self.canvas.coords( self.canvas.find_withtag('selection_line')[-1] )
 		begin = complex( lineCoordinates[0], lineCoordinates[1] )
 		end = complex( lineCoordinates[2], lineCoordinates[3] )
 		segment = end - begin
@@ -72,19 +74,18 @@ class DisplayLine( MouseToolBase ):
 		"Draw the selected line, add it to the items and return the colored line."
 		self.window.cancelTimerResetButtons()
 		coloredLines = self.window.getColoredLines()
-		self.repository.line.value = max( 0, self.repository.line.value )
-		if len( coloredLines ) < 1:
+		self.repository.line.value = max(0, self.repository.line.value)
+		if len(coloredLines) < 1:
 			return None
-		self.repository.line.value = min( len( coloredLines ) - 1, self.repository.line.value )
-		coloredLine = coloredLines[ self.repository.line.value ]
-		lineCoordinates = self.canvas.coords( self.window.getDrawnSelectedColoredLine( coloredLine ) )
-		end = complex( lineCoordinates[2], lineCoordinates[3] )
-		radiusComplex = complex( 16.0, 16.0 )
+		self.repository.line.value = min(len(coloredLines) - 1, self.repository.line.value)
+		self.window.setLineButtonsState()
+		coloredLine = coloredLines[self.repository.line.value]
+		lineCoordinates = self.canvas.coords(self.window.getDrawnSelectedColoredLine(coloredLine))
+		end = complex(lineCoordinates[2], lineCoordinates[3])
+		radiusComplex = complex(16.0, 16.0)
 		upperLeft = end - radiusComplex
 		lowerRight = end + radiusComplex
-		self.canvas.create_oval ( int( upperLeft.real ), int( upperLeft.imag ), int( lowerRight.real ), int( lowerRight.imag ), tags = 'mouse_item')
-		settings.setEntryText( self.window.lineEntry, self.repository.line.value )
-		self.window.setLineButtonsState()
+		self.canvas.create_oval (int(upperLeft.real), int(upperLeft.imag), int(lowerRight.real), int(lowerRight.imag), tags = 'mouse_item')
 		return coloredLine
 
 	def isSelectionTool(self):

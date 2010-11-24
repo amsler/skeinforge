@@ -3,7 +3,7 @@ This page is in the table of contents.
 Raft is a script to create a raft, elevate the nozzle and set the temperature.
 
 The raft manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Raft
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Raft
 
 Allan Ecker aka The Masked Retriever's has written two quicktips for raft which follow below.
 "Skeinforge Quicktip: The Raft, Part 1" at:
@@ -16,13 +16,15 @@ http://reprap.soup.io/?search=rafting
 
 Raft is based on the Nophead's reusable raft, which has a base layer running one way, and a couple of perpendicular layers above.  Each set of layers can be set to a different temperature.  There is the option of having the extruder orbit the raft for a while, so the heater barrel has time to reach a different temperature, without ooze accumulating around the nozzle.
 
+If you want to only set the temperature or only create support material or only elevate the nozzle without creating a raft, set the Base Layers and Interface Layers to zero.
+
 The important values for the raft settings are the temperatures of the raft, the first layer and the next layers.  These will be different for each material.  The default settings for ABS, HDPE, PCL & PLA are extrapolated from Nophead's experiments.
 
 ==Operation==
 The default 'Activate Raft' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The raft script sets the temperature.
 
 ==Settings==
-===Add Raft, Elevate Nozzle, Orbit and Set Altitude===
+===Add Raft, Elevate Nozzle, Orbit===
 Default is on.
 
 When selected, the script will also create a raft, elevate the nozzle, orbit and set the altitude of the bottom of the raft.
@@ -57,11 +59,6 @@ Defines the number of base layers.
 Default is 0.4.
 
 Defines the amount the nozzle is above the center of the base extrusion divided by the base layer thickness.
-
-===Bottom Altitude===
-Default is zero.
-
-Defines the altitude of the bottom of the raft.
 
 ===Initial Circling===
 Default is off.
@@ -321,9 +318,9 @@ class RaftRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.raft.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Raft', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Raft')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Raft')
 		self.activateRaft = settings.BooleanSetting().getFromValue('Activate Raft', self, True )
-		self.addRaftElevateNozzleOrbitSetAltitude = settings.BooleanSetting().getFromValue('Add Raft, Elevate Nozzle, Orbit and Set Altitude:', self, True )
+		self.addRaftElevateNozzleOrbitSetAltitude = settings.BooleanSetting().getFromValue('Add Raft, Elevate Nozzle, Orbit:', self, True )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Base -', self )
 		self.baseFeedRateMultiplier = settings.FloatSpin().getFromValue( 0.7, 'Base Feed Rate Multiplier (ratio):', self, 1.1, 1.0 )
@@ -742,9 +739,9 @@ class RaftSkein:
 		"Parse gcode text and store the raft gcode."
 		self.repository = repository
 		self.minimumSupportRatio = math.tan( math.radians( repository.supportMinimumAngle.value ) )
-		self.supportEndText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Support_End.gcode')
+		self.supportEndText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), 'Support_End.gcode')
 		self.supportEndLines = archive.getTextLines( self.supportEndText )
-		self.supportStartText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Support_Start.gcode')
+		self.supportStartText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), 'Support_Start.gcode')
 		self.supportStartLines = archive.getTextLines( self.supportStartText )
 		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
@@ -934,7 +931,7 @@ class RaftSkein:
 			self.oldFlowRateInput = float( flowRateOutputString )
 		elif firstWord == '(<boundaryPoint>':
 			line = self.getElevatedBoundaryLine(splitLine)
-		elif firstWord == '(</extrusion>)':
+		elif firstWord == '(</crafting>)':
 			self.extrusionStart = False
 			self.distanceFeedRate.addLine( self.operatingLayerEndLine )
 		elif firstWord == '(<layer>':

@@ -115,8 +115,7 @@ def getFloatByPrefixSide( prefix, side, xmlElement ):
 def getGeometryOutput(derivation, xmlElement):
 	"Get geometry output from paths."
 	if derivation == None:
-		derivation = LineationDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = LineationDerivation(xmlElement)
 	geometryOutput = []
 	for path in derivation.target:
 		sideLoop = SideLoop(path)
@@ -130,7 +129,7 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 def getGeometryOutputByFunction( manipulationFunction, xmlElement ):
 	"Get geometry output by manipulationFunction."
 	geometryOutput = []
-	target = evaluate.getPathsByKey('target', xmlElement )
+	target = evaluate.getPathsByKey([], 'target', xmlElement )
 	for path in target:
 		geometryOutput += getGeometryOutputByLoopFunction(manipulationFunction, SideLoop(path), xmlElement)
 	return getUnpackedLoops(geometryOutput)
@@ -245,18 +244,13 @@ def setClosedAttribute(revolutions, xmlElement):
 
 class LineationDerivation:
 	"Class to hold lineation variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.target = []
+		self.target = evaluate.getTransformedPathsByKey([], 'target', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this LineationDerivation."
 		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		if len(self.target) < 1:
-			self.target = evaluate.getTransformedPathsByKey('target', xmlElement)
 
 
 class SideLoop:

@@ -100,7 +100,7 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'profile_plugins') )
+	return archive.getAbsoluteFolderPath( os.path.dirname(__file__), os.path.join('skeinforge_plugins', 'profile_plugins') )
 
 def getProfileDirectory():
 	"Get the profile directory."
@@ -266,7 +266,7 @@ class ProfileListboxSetting( settings.StringSetting ):
 
 	def buttonReleaseOne(self, event):
 		"Button one released."
-		self.setValueToIndex( self.listbox.nearest( event.y ) )
+		self.setValueToIndex( self.listbox.nearest(event.y) )
 
 	def focusIn(self, event):
 		"The root has gained focus."

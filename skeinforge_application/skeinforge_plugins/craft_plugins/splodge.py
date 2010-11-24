@@ -3,7 +3,7 @@ This page is in the table of contents.
 Splodge turns the extruder on just before the start of a thread.  This is to give the extrusion a bit anchoring at the beginning.
 
 The splodge manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Splodge
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Splodge
 
 ==Operation==
 The default 'Activate Splodge' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -127,7 +127,7 @@ class SplodgeRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Splodge', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Splodge')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Splodge')
 		self.activateSplodge = settings.BooleanSetting().getFromValue('Activate Splodge', self, False )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Initial -', self )

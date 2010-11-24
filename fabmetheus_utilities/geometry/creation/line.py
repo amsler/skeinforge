@@ -23,8 +23,7 @@ __license__ = 'GPL 3.0'
 def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
 	if derivation == None:
-		derivation = LineDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = LineDerivation(xmlElement)
 	endMinusStart = derivation.end - derivation.start
 	endMinusStartLength = abs(endMinusStart)
 	if endMinusStartLength <= 0.0:
@@ -89,24 +88,15 @@ def processXMLElement(xmlElement):
 
 class LineDerivation:
 	"Class to hold line variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.closed = False
-		self.end = Vector3()
-		self.step = None
-		self.steps = None
-		self.start = Vector3()
-		self.typeString = 'minimum'
+		self.closed = evaluate.getEvaluatedBooleanDefault(False, 'closed', xmlElement)
+		self.end = evaluate.getVector3ByPrefix(Vector3(), 'end', xmlElement)
+		self.start = evaluate.getVector3ByPrefix(Vector3(), 'start', xmlElement)
+		self.step = evaluate.getEvaluatedFloatDefault(None, 'step', xmlElement)
+		self.steps = evaluate.getEvaluatedFloatDefault(None, 'steps', xmlElement)
+		self.typeString = evaluate.getEvaluatedStringDefault('minimum', 'type', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this LineDerivation."
 		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.closed = evaluate.getEvaluatedBooleanDefault(False, 'closed', xmlElement)
-		self.end = evaluate.getVector3ByPrefix(self.end, 'end', xmlElement)
-		self.start = evaluate.getVector3ByPrefix(self.start, 'start', xmlElement)
-		self.step = evaluate.getEvaluatedFloatDefault(self.step, 'step', xmlElement)
-		self.steps = evaluate.getEvaluatedFloatDefault(self.steps, 'steps', xmlElement)
-		self.typeString = evaluate.getEvaluatedStringDefault(self.typeString, 'type', xmlElement)

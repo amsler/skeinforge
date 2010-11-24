@@ -10,17 +10,19 @@ import Tkinter
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/23/04 $"
+__date__ = '$Date: 2008/23/04 $'
 __license__ = 'GPL 3.0'
 
 
-class HiddenScrollbar( Tkinter.Scrollbar ):
-	"A class to hide the scrollbar if it is not needed."
-	def set( self, lo, hi ):
-		"Add to grid is needed, remove if not."
-		if float( lo ) <= 0.0 and float( hi ) >= 1.0:
-			self.tk.call('grid', 'remove', self )
+class HiddenScrollbar(Tkinter.Scrollbar):
+	'A class to hide the scrollbar if it is not needed.'
+	def set(self, lo, hi):
+		'Add to grid is needed, remove if not.'
+		if float(lo) <= 0.0 and float(hi) >= 1.0:
+			self.grid_remove()
+			self.visible = False
 		else:
 			self.grid()
-		Tkinter.Scrollbar.set( self, lo, hi )
+			self.visible = True
+		Tkinter.Scrollbar.set(self, lo, hi)
 

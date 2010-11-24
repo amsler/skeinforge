@@ -159,7 +159,7 @@ def getFontReader(fontFamily):
 		return globalFontReaderDictionary[fontLower]
 	global globalFontFileNames
 	if globalFontFileNames == None:
-		globalFontFileNames = archive.getPluginFileNamesFromDirectoryPath(getFontsDirectoryPath())
+		globalFontFileNames = archive.getFileNamesByFilePaths(archive.getFilePathsByDirectory(getFontsDirectoryPath()))
 	if fontLower not in globalFontFileNames:
 		print('Warning, the %s font was not found in the fonts folder, so Gentium Basic Regular will be substituted.' % fontFamily)
 		fontLower = 'gentium_basic_regular'
@@ -360,21 +360,23 @@ def processSVGElementellipse( svgReader, xmlElement ):
 		loop.append( center + complex( unitPolar.real * radius.real, unitPolar.imag * radius.imag ) )
 	rotatedLoopLayer.loops += getTransformedFillOutline(loop, xmlElement, svgReader.yAxisPointingUpward)
 
-def processSVGElementg( svgReader, xmlElement ):
-	"Process xmlElement by svgReader."
+def processSVGElementg(svgReader, xmlElement):
+	'Process xmlElement by svgReader.'
 	if 'id' not in xmlElement.attributeDictionary:
 		return
-	idString = xmlElement.attributeDictionary['id'].lower()
-	if idString == 'beginningofcontrolsection':
-		svgReader.stopProcessing = True
+	idString = xmlElement.attributeDictionary['id']
+	if 'beginningOfControlSection' in xmlElement.attributeDictionary:
+		if xmlElement.attributeDictionary['beginningOfControlSection'].lower()[: 1] == 't':
+			svgReader.stopProcessing = True
 		return
-	zIndex = idString.find('z:')
+	idStringLower = idString.lower()
+	zIndex = idStringLower.find('z:')
 	if zIndex < 0:
-		idString = getLabelString(xmlElement.attributeDictionary)
-		zIndex = idString.find('z:')
+		idStringLower = getLabelString(xmlElement.attributeDictionary)
+		zIndex = idStringLower.find('z:')
 	if zIndex < 0:
 		return
-	floatFromValue = euclidean.getFloatFromValue( idString[ zIndex + len('z:') : ].strip() )
+	floatFromValue = euclidean.getFloatFromValue(idStringLower[zIndex + len('z:') :].strip())
 	if floatFromValue != None:
 		svgReader.z = floatFromValue
 	svgReader.bridgeRotation = euclidean.getComplexDefaultByDictionary( None, xmlElement.attributeDictionary, 'bridgeRotation')
@@ -846,6 +848,7 @@ class SVGReader:
 		"Add empty lists."
 		self.bridgeRotation = None
 		self.rotatedLoopLayers = []
+		self.sliceDictionary = None
 		self.stopProcessing = False
 		self.z = 0.0
 
@@ -872,7 +875,12 @@ class SVGReader:
 		"Parse SVG text and store the layers."
 		self.fileName = fileName
 		xmlParser = XMLSimpleReader(fileName, None, svgText)
-		self.parseSVGByXMLElement(xmlParser.getRoot())
+		root = xmlParser.getRoot()
+		if root == None:
+			print('Warning, root was None in parseSVG in SVGReader, so nothing will be done for:')
+			print(fileName)
+			return
+		self.parseSVGByXMLElement(root)
 
 	def parseSVGByXMLElement(self, xmlElement):
 		"Parse SVG by xmlElement."

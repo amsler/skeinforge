@@ -24,7 +24,7 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'meta_plugins') )
+	return archive.getAbsoluteFolderPath( os.path.dirname(__file__), os.path.join('skeinforge_plugins', 'meta_plugins') )
 
 def getNewRepository():
 	"Get the repository constructor."

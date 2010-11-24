@@ -8,7 +8,7 @@ For example, if a mug has a very thin wall, widen would widen the outside of the
 For another example, if the outside of the object runs right next to a hole, widen would widen the wall around the hole so that the wall would bulge out around the hole, and the outside filament would not overlap the hole filament.
 
 The widen manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Widen
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Widen
 
 ==Operation==
 The default 'Activate Widen' checkbox is off.  When it is on, widen will work, when it is off, widen will not be called.
@@ -89,19 +89,19 @@ def getCraftedTextFromText(gcodeText, repository=None):
 		return gcodeText
 	return WidenSkein().getCraftedGcode(gcodeText, repository)
 
-def getIntersectingWithinLoops( loop, loopList, outsetLoop ):
+def getIntersectingWithinLoops(loop, loopList, outsetLoop):
 	"Get the loops which are intersecting or which it is within."
 	intersectingWithinLoops = []
 	for otherLoop in loopList:
-		if getIsIntersectingWithinLoop( loop, otherLoop, outsetLoop ):
-			intersectingWithinLoops.append( otherLoop )
+		if getIsIntersectingWithinLoop(loop, otherLoop, outsetLoop):
+			intersectingWithinLoops.append(otherLoop)
 	return intersectingWithinLoops
 
-def getIsIntersectingWithinLoop( loop, otherLoop, outsetLoop ):
+def getIsIntersectingWithinLoop(loop, otherLoop, outsetLoop):
 	"Determine if the loop is intersecting or is within the other loop."
-	if euclidean.isLoopIntersectingLoop( loop, otherLoop ):
+	if euclidean.isLoopIntersectingLoop(loop, otherLoop):
 		return True
-	return euclidean.isPathInsideLoop( otherLoop, loop ) != euclidean.isPathInsideLoop( otherLoop, outsetLoop )
+	return euclidean.isPathInsideLoop(otherLoop, loop) != euclidean.isPathInsideLoop(otherLoop, outsetLoop)
 
 def getIsPointInsideALoop(loops, point):
 	"Determine if a point is inside a loop of a loop list."
@@ -114,15 +114,15 @@ def getNewRepository():
 	"Get the repository constructor."
 	return WidenRepository()
 
-def getWidenedLoop( loop, loopList, outsetLoop, radius ):
+def getWidenedLoop(loop, loopList, outsetLoop, radius):
 	"Get the widened loop."
-	intersectingWithinLoops = getIntersectingWithinLoops( loop, loopList, outsetLoop )
-	if len( intersectingWithinLoops ) < 1:
+	intersectingWithinLoops = getIntersectingWithinLoops(loop, loopList, outsetLoop)
+	if len(intersectingWithinLoops) < 1:
 		return loop
-	loopsUnified = booleansolid.getLoopsUnified( radius, [ [loop], intersectingWithinLoops ] )
-	if len( loopsUnified ) < 1:
+	loopsUnified = booleansolid.getLoopsUnified(radius, [[loop], intersectingWithinLoops])
+	if len(loopsUnified) < 1:
 		return loop
-	return euclidean.getLargestLoop( loopsUnified )
+	return euclidean.getLargestLoop(loopsUnified)
 
 def writeOutput(fileName=''):
 	"Widen the carving of a gcode file."
@@ -137,7 +137,7 @@ class WidenRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.widen.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Widen', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Widen')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Widen')
 		self.activateWiden = settings.BooleanSetting().getFromValue('Activate Widen:', self, False )
 		self.executeTitle = 'Widen'
 
@@ -157,27 +157,30 @@ class WidenSkein:
 		self.lineIndex = 0
 		self.rotatedBoundaryLayer = None
 
-	def addWiden( self, rotatedBoundaryLayer ):
+	def addWiden(self, rotatedBoundaryLayer):
 		"Add widen to the layer."
-		loops = trianglemesh.getLoopsInOrderOfArea( trianglemesh.compareAreaAscending, rotatedBoundaryLayer.loops )
+		loops = trianglemesh.getLoopsInOrderOfArea(trianglemesh.compareAreaAscending, rotatedBoundaryLayer.loops)
 		widdershinsLoops = []
 		clockwiseInsetLoops = []
-		for loopIndex in xrange( len(loops) ):
+		for loopIndex in xrange(len(loops)):
 			loop = loops[loopIndex]
 			if euclidean.isWiddershins(loop):
-				otherLoops = loops[ : loopIndex ] + loops[loopIndex + 1 :]
+				otherLoops = loops[: loopIndex] + loops[loopIndex + 1 :]
 				leftPoint = euclidean.getLeftPoint(loop)
-				if getIsPointInsideALoop( otherLoops, leftPoint ):
-					self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
+				if getIsPointInsideALoop(otherLoops, leftPoint):
+					self.distanceFeedRate.addGcodeFromLoop(loop, rotatedBoundaryLayer.z)
 				else:
 					widdershinsLoops.append(loop)
 			else:
-				clockwiseInsetLoops += intercircle.getInsetLoopsFromLoop( self.doublePerimeterWidth, loop )
-				self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
+#				clockwiseInsetLoop = intercircle.getLargestInsetLoopFromLoop(loop, self.doublePerimeterWidth)
+#				clockwiseInsetLoop.reverse()
+#				clockwiseInsetLoops.append(clockwiseInsetLoop)
+				clockwiseInsetLoops += intercircle.getInsetLoopsFromLoop(loop, self.doublePerimeterWidth)
+				self.distanceFeedRate.addGcodeFromLoop(loop, rotatedBoundaryLayer.z)
 		for widdershinsLoop in widdershinsLoops:
-			outsetLoop = intercircle.getLargestInsetLoopFromLoop( widdershinsLoop, - self.doublePerimeterWidth )
-			widenedLoop = getWidenedLoop( widdershinsLoop, clockwiseInsetLoops, outsetLoop, self.perimeterWidth )
-			self.distanceFeedRate.addGcodeFromLoop( widenedLoop, rotatedBoundaryLayer.z )
+			outsetLoop = intercircle.getLargestInsetLoopFromLoop(widdershinsLoop, -self.doublePerimeterWidth)
+			widenedLoop = getWidenedLoop(widdershinsLoop, clockwiseInsetLoops, outsetLoop, self.perimeterWidth)
+			self.distanceFeedRate.addGcodeFromLoop(widenedLoop, rotatedBoundaryLayer.z)
 
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the widen gcode."
@@ -197,7 +200,7 @@ class WidenSkein:
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'widen')
-			elif firstWord == '(<extrusion>)':
+			elif firstWord == '(<crafting>)':
 				self.distanceFeedRate.addLine(line)
 				return
 			elif firstWord == '(<perimeterWidth>':

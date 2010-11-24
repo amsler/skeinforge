@@ -270,12 +270,12 @@ def getCircleNodesFromPoints( points, radius ):
 		circleNodes.append( CircleNode( point * oneOverRadius, len( circleNodes ) ) )
 	return circleNodes
 
-def getInsetLoopsFromLoop(inset, loop, thresholdRatio=0.9):
+def getInsetLoopsFromLoop(loop, radius, thresholdRatio=0.9):
 	"Get the inset loops, which might overlap."
-	isInset = inset > 0
+	isInset = radius > 0
 	insetLoops = []
 	isLoopWiddershins = euclidean.isWiddershins(loop)
-	arounds = getAroundsFromLoop( loop, inset, thresholdRatio )
+	arounds = getAroundsFromLoop(loop, radius, thresholdRatio)
 	for around in arounds:
 		leftPoint = euclidean.getLeftPoint(around)
 		shouldBeWithin = (isInset == isLoopWiddershins)
@@ -285,11 +285,11 @@ def getInsetLoopsFromLoop(inset, loop, thresholdRatio=0.9):
 			insetLoops.append(around)
 	return insetLoops
 
-def getInsetLoopsFromLoops( inset, loops ):
+def getInsetLoopsFromLoops(inset, loops):
 	"Get the inset loops, which might overlap."
 	insetLoops = []
 	for loop in loops:
-		insetLoops += getInsetLoopsFromLoop( inset, loop )
+		insetLoops += getInsetLoopsFromLoop(loop, inset)
 	return insetLoops
 
 def getInsetLoopsFromVector3Loop(loop, radius, thresholdRatio=0.9):
@@ -297,7 +297,7 @@ def getInsetLoopsFromVector3Loop(loop, radius, thresholdRatio=0.9):
 	if len(loop) < 2:
 		return [loop]
 	loopComplex = euclidean.getComplexPath(loop)
-	loopComplexes = getInsetLoopsFromLoop(radius, loopComplex)
+	loopComplexes = getInsetLoopsFromLoop(loopComplex, radius)
 	return euclidean.getVector3Paths(loopComplexes, loop[0].z)
 
 def getInsetSeparateLoopsFromLoops(inset, loops, thresholdRatio=0.9):
@@ -347,9 +347,9 @@ def getLargestCenterOutsetLoopFromLoopRegardless( loop, radius ):
 	print(loop)
 	return CenterOutset( loop, loop )
 
-def getLargestInsetLoopFromLoop( loop, radius ):
+def getLargestInsetLoopFromLoop(loop, radius):
 	"Get the largest inset loop from the loop."
-	loops = getInsetLoopsFromLoop( radius, loop )
+	loops = getInsetLoopsFromLoop(loop, radius)
 	return euclidean.getLargestLoop(loops)
 
 def getLargestInsetLoopFromLoopRegardless( loop, radius ):
@@ -383,11 +383,11 @@ def getPointsFromLoop(loop, radius, thresholdRatio=0.9):
 		addPointsFromSegment( pointBegin, pointEnd, points, radius, thresholdRatio )
 	return points
 
-def getPointsFromLoops( loops, radius, thresholdRatio=0.9 ):
+def getPointsFromLoops(loops, radius, thresholdRatio=0.9):
 	"Get the points from every point on a loop and between points."
 	points = []
 	for loop in loops:
-		points += getPointsFromLoop( loop, radius, thresholdRatio )
+		points += getPointsFromLoop(loop, radius, thresholdRatio)
 	return points
 
 def getPointsFromPath(path, radius, thresholdRatio=0.9):

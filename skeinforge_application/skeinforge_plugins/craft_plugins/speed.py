@@ -3,7 +3,7 @@ This page is in the table of contents.
 Speed is a script to set the feed rate, and flow rate.
 
 The speed manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Speed
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Speed
 
 ==Operation==
 The default 'Activate Speed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The speed script sets the feed rate, and flow rate.
@@ -157,7 +157,7 @@ class SpeedRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.speed.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Speed', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Speed')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Speed')
 		self.activateSpeed = settings.BooleanSetting().getFromValue('Activate Speed:', self, True )
 		self.addFlowRate = settings.BooleanSetting().getFromValue('Add Flow Rate:', self, True )
 		settings.LabelSeparator().getFromRepository(self)
@@ -192,8 +192,9 @@ class SpeedSkein:
 	def __init__(self):
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRatePerSecond = 16.0
-		self.isExtruderActive = False
 		self.isBridgeLayer = False
+		self.isExtruderActive = False
+		self.isInBoundaryPerimeter = False
 		self.isPerimeter = False
 		self.lineIndex = 0
 		self.lines = None
@@ -237,7 +238,7 @@ class SpeedSkein:
 		return euclidean.getFourSignificantFigures( flowRate )
 
 	def getSpeededLine(self, line, splitLine):
-		"Get gcode line with feed rate."
+		'Get gcode line with feed rate.'
 		if gcodec.getIndexOfStartingWithSecond('F', splitLine) > 0:
 			return line
 		feedRateMinute = 60.0 * self.feedRatePerSecond
@@ -278,7 +279,7 @@ class SpeedSkein:
 		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
-		if firstWord == '(<extrusion>)':
+		if firstWord == '(<crafting>)':
 			self.distanceFeedRate.addLine(line)
 			self.addParameterString('M113', self.repository.dutyCycleAtBeginning.value ) # Set duty cycle .
 			return
@@ -287,15 +288,25 @@ class SpeedSkein:
 		elif firstWord == 'M101':
 			self.isExtruderActive = True
 		elif firstWord == 'M103':
-			self.isPerimeter = False
 			self.isExtruderActive = False
+		elif firstWord == '(<boundaryPerimeter>)':
+			self.isInBoundaryPerimeter = True
+			self.isPerimeter = True
 		elif firstWord == '(<bridgeRotation>':
 			self.isBridgeLayer = True
 		elif firstWord == '(<layer>':
 			self.isBridgeLayer = False
 			self.addFlowRateLineIfNecessary()
+		elif firstWord == '(<loop>':
+			self.isPerimeter = False
 		elif firstWord == '(<perimeter>':
 			self.isPerimeter = True
+		elif firstWord == '(</boundaryPerimeter>)':
+			self.isInBoundaryPerimeter = False
+			self.isPerimeter = False
+		elif firstWord == '(</loop>)':
+			if self.isInBoundaryPerimeter:
+				self.isPerimeter = True
 		self.distanceFeedRate.addLine(line)
 
 

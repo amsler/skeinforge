@@ -18,7 +18,7 @@ __license__ = 'GPL 3.0'
 
 
 def addBeginEndInnerXMLTag( attributeDictionary, className, depth, innerText, output, text = ''):
-	"Add the begin and end xml tag and the inner text if any."
+	'Add the begin and end xml tag and the inner text if any.'
 	if len( innerText ) > 0:
 		addBeginXMLTag( attributeDictionary, className, depth, output, text )
 		output.write( innerText )
@@ -27,12 +27,12 @@ def addBeginEndInnerXMLTag( attributeDictionary, className, depth, innerText, ou
 		addClosedXMLTag( attributeDictionary, className, depth, output, text )
 
 def addBeginXMLTag( attributeDictionary, className, depth, output, text = ''):
-	"Add the begin xml tag."
+	'Add the begin xml tag.'
 	depthStart = '\t' * depth
 	output.write('%s<%s%s>%s\n' % ( depthStart, className, getAttributeDictionaryString(attributeDictionary), text ) )
 
 def addClosedXMLTag( attributeDictionary, className, depth, output, text = ''):
-	"Add the closed xml tag."
+	'Add the closed xml tag.'
 	depthStart = '\t' * depth
 	attributeDictionaryString = getAttributeDictionaryString(attributeDictionary)
 	if len(text) > 0:
@@ -41,12 +41,12 @@ def addClosedXMLTag( attributeDictionary, className, depth, output, text = ''):
 		output.write('%s<%s%s />\n' % ( depthStart, className, attributeDictionaryString ) )
 
 def addEndXMLTag( className, depth, output ):
-	"Add the end xml tag."
+	'Add the end xml tag.'
 	depthStart = '\t' * depth
 	output.write('%s</%s>\n' % ( depthStart, className ) )
 
 def addXMLFromLoopComplexZ( attributeDictionary, depth, loop, output, z ):
-	"Add xml from loop."
+	'Add xml from loop.'
 	addBeginXMLTag( attributeDictionary, 'path', depth, output )
 	for pointComplexIndex in xrange(len(loop)):
 		pointComplex = loop[ pointComplexIndex ]
@@ -54,18 +54,18 @@ def addXMLFromLoopComplexZ( attributeDictionary, depth, loop, output, z ):
 	addEndXMLTag('path', depth, output )
 
 def addXMLFromObjects( depth, objects, output ):
-	"Add xml from objects."
+	'Add xml from objects.'
 	for object in objects:
 		object.addXML(depth, output)
 
 def addXMLFromVertexes( depth, output, vertexes ):
-	"Add xml from loop."
+	'Add xml from loop.'
 	for vertexIndex in xrange(len(vertexes)):
 		vertex = vertexes[vertexIndex]
 		addXMLFromXYZ( depth + 1, vertexIndex, output, vertex.x, vertex.y, vertex.z )
 
 def addXMLFromXYZ( depth, index, output, x, y, z ):
-	"Add xml from x, y & z."
+	'Add xml from x, y & z.'
 	attributeDictionary = { 'index' : str( index ) }
 	if x != 0.0:
 		attributeDictionary['x'] = str(x)
@@ -76,7 +76,7 @@ def addXMLFromXYZ( depth, index, output, x, y, z ):
 	addClosedXMLTag( attributeDictionary, 'vertex', depth, output )
 
 def compareAttributeKeyAscending(key, otherKey):
-	"Get comparison in order to sort attribute keys in ascending order, with the id key first and name second."
+	'Get comparison in order to sort attribute keys in ascending order, with the id key first and name second.'
 	if key == 'id':
 		return - 1
 	if otherKey == 'id':
@@ -90,20 +90,27 @@ def compareAttributeKeyAscending(key, otherKey):
 	return int(key > otherKey)
 
 def getAttributeDictionaryString(attributeDictionary):
-	"Add the closed xml tag."
+	'Add the closed xml tag.'
 	attributeDictionaryString = ''
 	attributeDictionaryKeys = attributeDictionary.keys()
 	attributeDictionaryKeys.sort( compareAttributeKeyAscending )
 	for attributeDictionaryKey in attributeDictionaryKeys:
 		valueString = str(attributeDictionary[attributeDictionaryKey])
-		if '"' in valueString:
-			attributeDictionaryString += " %s='%s'" % (attributeDictionaryKey, valueString)
-		else:
+		if "'" in valueString:
 			attributeDictionaryString += ' %s="%s"' % (attributeDictionaryKey, valueString)
+		else:
+			attributeDictionaryString += " %s='%s'" % (attributeDictionaryKey, valueString)
 	return attributeDictionaryString
 
+def getBeforeRootOutput(xmlParser):
+	'Get the output before the root and the root xml.'
+	output = cStringIO.StringIO()
+	output.write(xmlParser.beforeRoot)
+	xmlParser.getRoot().addXML(0, output)
+	return output.getvalue()
+
 def getBeginGeometryXMLOutput(xmlElement):
-	"Get the beginning of the string representation of this boolean geometry object info."
+	'Get the beginning of the string representation of this boolean geometry object info.'
 	output = getBeginXMLOutput()
 	attributeDictionary = {}
 	if xmlElement != None:
@@ -114,13 +121,13 @@ def getBeginGeometryXMLOutput(xmlElement):
 	return output
 
 def getBeginXMLOutput():
-	"Get the beginning of the string representation of this object info."
+	'Get the beginning of the string representation of this object info.'
 	output = cStringIO.StringIO()
-	output.write( "<?xml version='1.0' ?>\n" )
+	output.write("<?xml version='1.0' ?>\n")
 	return output
 
 def getDictionaryWithoutList( dictionary, withoutList ):
-	"Get the dictionary without the keys in the list."
+	'Get the dictionary without the keys in the list.'
 	dictionaryWithoutList = {}
 	for key in dictionary:
 		if key not in withoutList:
@@ -128,6 +135,6 @@ def getDictionaryWithoutList( dictionary, withoutList ):
 	return dictionaryWithoutList
 
 def getEndGeometryXMLString(output):
-	"Get the string representation of this object info."
+	'Get the string representation of this object info.'
 	addEndXMLTag('fabmetheus', 0, output )
 	return output.getvalue()

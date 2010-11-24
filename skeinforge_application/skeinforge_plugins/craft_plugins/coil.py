@@ -228,7 +228,7 @@ class CoilSkein:
 			elif firstWord == '(<layer>':
 				boundaryLayer = euclidean.LoopLayer(float(splitLine[1]))
 				self.boundaryLayers.append( boundaryLayer )
-			elif firstWord == '(</extrusion>)':
+			elif firstWord == '(</crafting>)':
 				self.shutdownLines = [ line ]
 		for boundaryLayer in self.boundaryLayers:
 			if not euclidean.isWiddershins( boundaryLayer.loops[0] ):

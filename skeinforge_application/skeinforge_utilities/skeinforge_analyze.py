@@ -12,6 +12,8 @@ from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 import os
+import sys
+import traceback
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
@@ -29,20 +31,26 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'analyze_plugins') )
+	return archive.getAbsoluteFolderPath( os.path.dirname(__file__), os.path.join('skeinforge_plugins', 'analyze_plugins') )
 
 def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Analyze a gcode file."
 	gcodeText = archive.getTextIfEmpty(fileName, gcodeText)
 	pluginFileNames = getPluginFileNames()
+	window = None
 	for pluginFileName in pluginFileNames:
 		analyzePluginsDirectoryPath = getPluginsDirectoryPath()
 		pluginModule = archive.getModuleWithDirectoryPath( analyzePluginsDirectoryPath, pluginFileName )
 		if pluginModule != None:
 			try:
-				pluginModule.writeOutput( fileName, fileNameSuffix, gcodeText )
+				newWindow = pluginModule.writeOutput( fileName, fileNameSuffix, gcodeText )
+				if newWindow != None:
+					window = newWindow
 			except:
 				print('Warning, the tool %s could not analyze the output.' % pluginFileName )
+				print('Exception traceback in writeOutput in skeinforge_analyze:')
+				traceback.print_exc(file=sys.stdout)
+	return window
 
 
 class AnalyzeRepository:
@@ -60,3 +68,13 @@ class AnalyzeRepository:
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput( fileName, fileName )
+
+
+def main():
+	"Write analyze output."
+	fileName = ' '.join(sys.argv[1 :])
+	settings.startMainLoopFromWindow(writeOutput(fileName, fileName))
+
+
+if __name__ == "__main__":
+	main()

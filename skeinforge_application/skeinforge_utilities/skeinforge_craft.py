@@ -18,6 +18,7 @@ from skeinforge_application.skeinforge_utilities import skeinforge_analyze
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
 import os
+import sys
 import time
 
 
@@ -34,13 +35,17 @@ def getChainText( fileName, procedure ):
 	procedures = getProcedures( procedure, text )
 	return getChainTextFromProcedures( fileName, procedures, text )
 
-def getChainTextFromProcedures( fileName, procedures, text ):
-	"Get a crafted shape file from a list of procedures."
+def getChainTextFromProcedures(fileName, procedures, text):
+	'Get a crafted shape file from a list of procedures.'
 	lastProcedureTime = time.time()
 	for procedure in procedures:
 		craftModule = getCraftModule(procedure)
 		if craftModule != None:
 			text = craftModule.getCraftedText( fileName, text )
+			if text == '':
+				print('Warning, the text was not recognized in getChainTextFromProcedures in skeinforge_craft for')
+				print(fileName)
+				return ''
 			if gcodec.isProcedureDone( text, procedure ):
 				print('%s procedure took %s.' % (procedure.capitalize(), euclidean.getDurationString(time.time() - lastProcedureTime)))
 				lastProcedureTime = time.time()
@@ -63,7 +68,7 @@ def getNewRepository():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return archive.getAbsoluteFolderPath( os.path.dirname( __file__ ), os.path.join('skeinforge_plugins', 'craft_plugins') )
+	return archive.getAbsoluteFolderPath( os.path.dirname(__file__), os.path.join('skeinforge_plugins', 'craft_plugins') )
 
 def getPluginFileNames():
 	"Get craft plugin fileNames."
@@ -98,30 +103,52 @@ def getSequenceIndexPlusOneFromText(fileText):
 			return craftSequenceIndex + 1
 	return 0
 
-def writeChainTextWithNounMessage( fileName, procedure ):
-	"Get and write a crafted shape file."
+def writeChainTextWithNounMessage(fileName, procedure):
+	'Get and write a crafted shape file.'
 	print('')
-	print('The %s tool is parsing the file:' % procedure )
-	print( os.path.basename(fileName) )
+	print('The %s tool is parsing the file:' % procedure)
+	print(os.path.basename(fileName))
 	print('')
 	startTime = time.time()
-	fileNameSuffix = fileName[ : fileName.rfind('.') ] + '_' + procedure + '.gcode'
-	craftText = getChainText( fileName, procedure )
+	fileNameSuffix = fileName[: fileName.rfind('.')] + '_' + procedure + '.gcode'
+	craftText = getChainText(fileName, procedure)
 	if craftText == '':
+		print('Warning, there was no text output in writeChainTextWithNounMessage in skeinforge_craft for:')
+		print(fileName)
 		return
-	archive.writeFileText( fileNameSuffix, craftText )
+	archive.writeFileText(fileNameSuffix, craftText)
 	print('')
-	print('The %s tool has created the file:' % procedure )
-	print( fileNameSuffix )
+	print('The %s tool has created the file:' % procedure)
+	print(fileNameSuffix)
 	print('')
-	print('It took %s to craft the file.' % euclidean.getDurationString( time.time() - startTime ) )
-	skeinforge_analyze.writeOutput( fileName, fileNameSuffix, craftText )
+	print('It took %s to craft the file.' % euclidean.getDurationString(time.time() - startTime))
+	return skeinforge_analyze.writeOutput(fileName, fileNameSuffix, craftText)
 
 def writeOutput(fileName):
 	"Craft a gcode file with the last module."
 	pluginModule = getLastModule()
 	if pluginModule != None:
-		pluginModule.writeOutput(fileName)
+		return pluginModule.writeOutput(fileName)
+
+def writeSVGTextWithNounMessage(fileName, repository):
+	'Get and write an svg text and print messages.'
+	print('')
+	print('The %s tool is parsing the file:' % repository.lowerName)
+	print(os.path.basename(fileName))
+	print('')
+	startTime = time.time()
+	fileNameSuffix = fileName[: fileName.rfind('.')] + '_' + repository.lowerName + '.svg'
+	craftText = getChainText(fileName, repository.lowerName)
+	if craftText == '':
+		return
+	archive.writeFileText(fileNameSuffix, craftText)
+	print('')
+	print('The %s tool has created the file:' % repository.lowerName)
+	print(fileNameSuffix)
+	print('')
+	print('It took %s to craft the file.' % euclidean.getDurationString(time.time() - startTime))
+	settings.getReadRepository(repository)
+	settings.openSVGPage(fileNameSuffix, repository.svgViewer.value)
 
 
 class CraftRadioButtonsSaveListener:
@@ -181,3 +208,11 @@ class CraftRepository:
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode( self.fileNameInput.value, [], self.fileNameInput.wasCancelled )
 		for fileName in fileNames:
 			writeOutput(fileName)
+
+
+def main():
+	"Write craft output."
+	writeOutput(' '.join(sys.argv[1 :]))
+
+if __name__ == "__main__":
+	main()

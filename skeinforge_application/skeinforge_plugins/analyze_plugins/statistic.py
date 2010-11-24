@@ -3,7 +3,7 @@ This page is in the table of contents.
 Statistic is a script to generate statistics a gcode file.
 
 The statistic manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Statistic
 
 ==Operation==
 The default 'Activate Statistic' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Statistic' checkbox is on, when statistic is run directly.
@@ -119,7 +119,7 @@ class StatisticRepository:
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.statistic.html', None, self )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Statistic')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Statistic')
 		self.activateStatistic = settings.BooleanSetting().getFromValue('Activate Statistic', self, True )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Cost -', self )

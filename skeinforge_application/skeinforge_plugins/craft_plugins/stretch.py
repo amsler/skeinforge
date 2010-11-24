@@ -3,7 +3,7 @@ This page is in the table of contents.
 Stretch is a script to stretch the threads to partially compensate for filament shrinkage when extruded.
 
 The stretch manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Stretch
 
 All the defaults assume that the thread sequence choice setting in fill is the perimeter being extruded first, then the loops, then the infill.  If the thread sequence choice is different, the optimal thread parameters will also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.
 
@@ -231,7 +231,7 @@ class StretchRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.stretch.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Stretch', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Stretch')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Stretch')
 		self.activateStretch = settings.BooleanSetting().getFromValue('Activate Stretch', self, False )
 		self.crossLimitDistanceOverPerimeterWidth = settings.FloatSpin().getFromValue( 3.0, 'Cross Limit Distance Over Perimeter Width (ratio):', self, 10.0, 5.0 )
 		self.loopStretchOverPerimeterWidth = settings.FloatSpin().getFromValue( 0.05, 'Loop Stretch Over Perimeter Width (ratio):', self, 0.25, 0.11 )

@@ -3,7 +3,7 @@ This page is in the table of contents.
 Comb is a script to comb the extrusion hair of a gcode file.
 
 The comb manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Comb
 
 Comb bends the extruder travel paths around holes in the slices, to avoid stringers.  It moves the extruder to the inside of perimeters before turning the extruder on so any start up ooze will be inside the shape.
 
@@ -147,7 +147,7 @@ class CombRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.comb.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Comb', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comb')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Comb')
 		self.activateComb = settings.BooleanSetting().getFromValue('Activate Comb', self, False )
 		self.executeTitle = 'Comb'
 
@@ -161,6 +161,8 @@ class CombRepository:
 class CombSkein:
 	"A class to comb a skein of extrusions."
 	def __init__(self):
+		'Initialize'
+		self.isAlteration = False
 		self.betweenTable = {}
 		self.boundaryLoop = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
@@ -185,7 +187,7 @@ class CombSkein:
 	def addIfTravel( self, splitLine ):
 		"Add travel move around loops if the extruder is off."
 		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
-		if not self.extruderActive and self.oldLocation != None:
+		if not self.isAlteration and not self.extruderActive and self.oldLocation != None:
 			if len( self.getBoundaries() ) > 0:
 				highestZ = max( location.z, self.oldLocation.z )
 				self.addGcodePathZ( self.travelFeedRatePerMinute, self.getPathsBetween( self.oldLocation.dropAxis(2), location.dropAxis(2) ), highestZ )
@@ -211,7 +213,7 @@ class CombSkein:
 			return []
 		self.betweenTable[ self.layerZ ] = []
 		for boundaryLoop in self.layerTable[ self.layerZ ]:
-			self.betweenTable[ self.layerZ ] += intercircle.getInsetLoopsFromLoop( self.betweenInset, boundaryLoop )
+			self.betweenTable[ self.layerZ ] += intercircle.getInsetLoopsFromLoop(boundaryLoop, self.betweenInset)
 		return self.betweenTable[ self.layerZ ]
 
 	def getBoundaries(self):
@@ -417,6 +419,10 @@ class CombSkein:
 			self.extruderActive = True
 		elif firstWord == 'M103':
 			self.extruderActive = False
+		elif firstWord == '(<alteration>)':
+			self.isAlteration = True
+		elif firstWord == '(</alteration>)':
+			self.isAlteration = False
 		elif firstWord == '(<layer>':
 			self.layerCount.printProgressIncrement('comb')
 			self.nextLayerZ = float(splitLine[1])

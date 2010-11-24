@@ -3,7 +3,7 @@ This page is in the table of contents.
 Fillet rounds the corners slightly in a variety of ways.  This is to reduce corner blobbing and sudden extruder acceleration.
 
 The fillet manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fillet
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Fillet
 
 ==Operation==
 The default 'Activate Fillet' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -382,7 +382,7 @@ class FilletRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.fillet.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File to be Filleted', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Fillet')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Fillet')
 		self.activateFillet = settings.BooleanSetting().getFromValue('Activate Fillet', self, False )
 		self.filletProcedureChoiceLabel = settings.LabelDisplay().getFromName('Fillet Procedure Choice: ', self )
 		filletLatentStringVar = settings.LatentStringVar()

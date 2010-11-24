@@ -28,7 +28,7 @@ class ZoomIn( MouseToolBase ):
 		"Print line text and connection line."
 		scaleSetting = self.window.repository.scale
 		scaleSetting.value *= self.getMultiplier()
-		delta = complex( float( event.x ) / float( self.window.screenSize.real ), float( event.y ) / float( self.window.screenSize.imag ) ) - self.window.canvasScreenCenter
+		delta = complex( float(event.x) / float( self.window.screenSize.real ), float(event.y) / float( self.window.screenSize.imag ) ) - self.window.canvasScreenCenter
 		delta *= 1.0 - 1.0 / self.getMultiplier()
 		scrollPaneCenter = self.window.getScrollPaneCenter() + delta
 		self.window.updateNewDestroyOld( scrollPaneCenter )

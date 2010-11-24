@@ -66,15 +66,13 @@ def addOffsetAddToLists( loop, offset, vector3Index, vertexes ):
 def getGeometryOutput(derivation, xmlElement):
 	"Get triangle mesh from attribute dictionary."
 	if derivation == None:
-		derivation = LatheDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = LatheDerivation(xmlElement)
 	if len(euclidean.getConcatenatedList(derivation.target)) == 0:
 		print('Warning, in lathe there are no paths.')
 		print(xmlElement.attributeDictionary)
 		return None
 	negatives = []
 	positives = []
-	print(  derivation)
 	addNegativesPositives(derivation, negatives, derivation.target, positives)
 	return getGeometryOutputByNegativesPositives(derivation, negatives, positives, xmlElement)
 
@@ -135,21 +133,15 @@ def processXMLElement(xmlElement):
 
 class LatheDerivation:
 	"Class to hold lathe variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.axisEnd = None
-		self.axisStart = None
-		self.end = 0.0
-		self.loop = []
-		self.sides = None
-		self.start = 0.0
-
-	def __repr__(self):
-		"Get the string representation of this LatheDerivation."
-		return str(self.__dict__)
-
-	def derive(self, xmlElement):
-		"Derive using the xmlElement."
+		self.axisEnd = evaluate.getVector3ByPrefix(None, 'axisEnd', xmlElement)
+		self.axisStart = evaluate.getVector3ByPrefix(None, 'axisStart', xmlElement)
+		self.end = evaluate.getEvaluatedFloatDefault(0.0, 'end', xmlElement)
+		self.loop = evaluate.getTransformedPathByKey([], 'loop', xmlElement)
+		self.sides = evaluate.getEvaluatedIntDefault(None, 'sides', xmlElement)
+		self.start = evaluate.getEvaluatedFloatDefault(0.0, 'start', xmlElement)
+		self.target = evaluate.getTransformedPathsByKey([], 'target', xmlElement)
 		if len(self.target) < 1:
 			print('Warning, no target in derive in lathe for:')
 			print(xmlElement)
@@ -190,17 +182,6 @@ class LatheDerivation:
 			self.loop = euclidean.getComplexPolygonByStartEnd(math.radians(self.end), 1.0, self.sides, math.radians(self.start))
 		self.normal = euclidean.getNormalByPath(firstPath)
 
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.setToXMLElementOnly(xmlElement)
-		self.derive(xmlElement)
-
-	def setToXMLElementOnly(self, xmlElement):
-		"Set to the xmlElement."
-		self.axisEnd = evaluate.getVector3ByPrefix(self.axisEnd, 'axisEnd', xmlElement)
-		self.axisStart = evaluate.getVector3ByPrefix(self.axisStart, 'axisStart', xmlElement)
-		self.end = evaluate.getEvaluatedFloatDefault(self.end, 'end', xmlElement)
-		self.loop = evaluate.getTransformedPathByKey('loop', xmlElement)
-		self.sides = evaluate.getEvaluatedIntDefault(self.sides, 'sides', xmlElement)
-		self.start = evaluate.getEvaluatedFloatDefault(self.start, 'start', xmlElement)
-		self.target = evaluate.getTransformedPathsByKey('target', xmlElement)
+	def __repr__(self):
+		"Get the string representation of this LatheDerivation."
+		return str(self.__dict__)

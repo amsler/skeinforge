@@ -322,8 +322,8 @@ def getShortestUniqueSettingName(settingName, settings):
 			if setting.name[: length] == shortName:
 				numberOfEquals += 1
 		if numberOfEquals < 2:
-			return shortName
-	return settingName
+			return shortName.lower()
+	return settingName.lower()
 
 def getSubfolderWithBasename( basename, directory ):
 	"Get the subfolder in the directory with the basename."
@@ -438,17 +438,6 @@ def readSettingsFromText( repository, text ):
 	for lineIndex in xrange(len(lines)):
 		setRepositoryToLine(lineIndex, lines, shortDictionary)
 
-def setRepositoryToLine(lineIndex, lines, shortDictionary):
-	"Set setting dictionary to a setting line."
-	line = lines[lineIndex]
-	splitLine = line.split(globalSpreadsheetSeparator)
-	if len(splitLine) < 2:
-		return
-	fileSettingName = splitLine[0]
-	for shortDictionaryKey in shortDictionary:
-		if fileSettingName[: len(shortDictionaryKey)] == shortDictionaryKey:
-			shortDictionary[shortDictionaryKey].setValueToSplitLine(lineIndex, lines, splitLine)
-
 def saveAll():
 	"Save all the dialogs."
 	for globalRepositoryDialogValue in getGlobalRepositoryDialogValues():
@@ -495,6 +484,17 @@ def setIntegerValueToString( integerSetting, valueString ):
 	if valueString.lower() == 'true':
 		integerSetting.value = 1
 
+def setRepositoryToLine(lineIndex, lines, shortDictionary):
+	"Set setting dictionary to a setting line."
+	line = lines[lineIndex]
+	splitLine = line.split(globalSpreadsheetSeparator)
+	if len(splitLine) < 2:
+		return
+	fileSettingName = splitLine[0]
+	for shortDictionaryKey in shortDictionary:
+		if fileSettingName[: len(shortDictionaryKey)].lower() == shortDictionaryKey:
+			shortDictionary[shortDictionaryKey].setValueToSplitLine(lineIndex, lines, splitLine)
+
 def setSpinColor( setting ):
 	"Set the spin box color to the value, yellow if it is lower than the default and blue if it is higher."
 	if setting.entry == None:
@@ -524,6 +524,17 @@ def startMainLoopFromConstructor(repository):
 		print('Warning, displayedDialogFromConstructor in settings is none, so the window will not be displayed.')
 	else:
 		displayedDialogFromConstructor.root.mainloop()
+
+def startMainLoopFromWindow(window):
+	'Display the tableau window and start the main loop.'
+	if window == None:
+		print('Warning, window in startMainLoopFromWindow in settings is none, so the window will not be displayed.')
+		print('This would happen if neither skeiniso nor skeinlayer were activated.')
+		return
+	if window.root == None:
+		print('Warning, window.root in startMainLoopFromWindow in settings is none, so the window will not be displayed.')
+		return
+	window.root.mainloop()
 
 def writeValueListToRepositoryWriter( repositoryWriter, setting ):
 	"Write tab separated name and list to the repository writer."
@@ -871,6 +882,7 @@ class FileNameInput( StringSetting ):
 		"Initialize."
 		self.getFromValueOnly( name, repository, value )
 		self.fileTypes = fileTypes
+		self.wasCancelled = False
 		repository.displayEntities.append(self)
 		repository.preferences.append(self)
 		return self
@@ -1324,6 +1336,10 @@ class LayerCount:
 	def __init__(self):
 		'Initialize.'
 		self.layerIndex = 0
+
+	def __repr__(self):
+		'Get the string representation of this LayerCount.'
+		return str(self.layerIndex)
 
 	def printProgressIncrement(self, procedureName):
 		'Print progress then increment layerIndex.'

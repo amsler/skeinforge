@@ -3,7 +3,7 @@ This page is in the table of contents.
 Comment is a script to comment a gcode file.
 
 The comment manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comment
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Comment
 
 ==Operation==
 The default 'Activate Comment' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Comment' checkbox is on, when comment is run directly.
@@ -91,7 +91,7 @@ class CommentRepository:
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.comment.html', None, self )
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Comment')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Comment')
 		self.activateComment = settings.BooleanSetting().getFromValue('Activate Comment', self, False )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File to Write Comments for', self, '')
 		self.executeTitle = 'Write Comments'

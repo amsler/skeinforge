@@ -2,7 +2,7 @@
 <fabmetheus twistprecision="10" step='.2' >
 	<circle id='circle' name='pillar' radius='9' />
 	<square name='pillar' size='[5,5]' translate.rectangular.y='=20' />
-	<extrude target='=document.getElementsByName(pillar)' />
+	<extrude target='=document.getElementsByName(pillar)' pathEnd.z='4' />
 
 	<!--
 	<path id="vertex_holder">

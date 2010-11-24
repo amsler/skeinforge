@@ -23,8 +23,7 @@ __license__ = 'GPL 3.0'
 def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
 	if derivation == None:
-		derivation = SVGDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = SVGDerivation(xmlElement)
 	return getGeometryOutputBySVGReader(derivation.svgReader, xmlElement)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
@@ -46,21 +45,16 @@ def getGeometryOutputBySVGReader(svgReader, xmlElement):
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	derivation = SVGDerivation()
-	derivation.setToXMLElement(xmlElement)
-	path.convertProcessXMLElementRenameByPaths(getGeometryOutput(derivation, xmlElement), xmlElement)
+	path.convertProcessXMLElementRenameByPaths(getGeometryOutput(None, xmlElement), xmlElement)
 
 
 class SVGDerivation:
 	"Class to hold svg variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
 		self.svgReader = svg_reader.SVGReader()
+		self.svgReader.parseSVGByXMLElement(xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this SVGDerivation."
 		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.svgReader.parseSVGByXMLElement(xmlElement)

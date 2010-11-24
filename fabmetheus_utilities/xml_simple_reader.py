@@ -187,9 +187,9 @@ class XMLElement:
 			output.write( self.text )
 			return
 		innerOutput = cStringIO.StringIO()
-		xml_simple_writer.addXMLFromObjects( depth + 1, self.children, innerOutput )
+		xml_simple_writer.addXMLFromObjects(depth + 1, self.children, innerOutput)
 		innerText = innerOutput.getvalue()
-		xml_simple_writer.addBeginEndInnerXMLTag( self.attributeDictionary, self.className, depth, innerText, output, self.text )
+		xml_simple_writer.addBeginEndInnerXMLTag(self.attributeDictionary, self.className, depth, innerText, output, self.text)
 
 	def copyXMLChildren( self, idSuffix, parent ):
 		"Copy the xml children."
@@ -244,8 +244,10 @@ class XMLElement:
 		self.copyXMLChildren(idSuffix, copy)
 		return copy
 
-	def getCopyShallow(self, attributeDictionary={}):
+	def getCopyShallow(self, attributeDictionary=None):
 		"Copy the xml element and set its dictionary and parent."
+		if attributeDictionary == None: # to evade default initialization bug where a dictionary is initialized to the last dictionary
+			attributeDictionary = {}
 		copyShallow = XMLElement()
 		copyShallow.attributeDictionary = attributeDictionary
 		copyShallow.className = self.className
@@ -451,6 +453,8 @@ class XMLSimpleReader:
 		"Add empty lists."
 		self.beforeRoot = ''
 		self.fileName = fileName
+		self.isXML = False
+		self.numberOfWarnings = 0
 		self.parent = parent
 		self.root = None
 		if parent != None:
@@ -480,6 +484,14 @@ class XMLSimpleReader:
 		if len( lineStripped ) < 1:
 			return
 		if lineStripped.startswith('<?xml'):
+			self.isXML = True
+			return
+		if not self.isXML:
+			if self.numberOfWarnings < 1:
+				print('Warning, xml file should start with <?xml.')
+				print('Until it does, parseLine in XMLSimpleReader will do nothing for:')
+				print(self.fileName)
+				self.numberOfWarnings += 1
 			return
 		xmlElement = XMLElement()
 		self.parent = xmlElement.getParentParseReplacedLine( line, lineStripped, self.parent )

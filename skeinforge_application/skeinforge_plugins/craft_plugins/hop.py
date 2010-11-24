@@ -3,7 +3,7 @@ This page is in the table of contents.
 Hop is a script to raise the extruder when it is not extruding.
 
 The hop manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Hop
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Hop
 
 ==Operation==
 The default 'Activate Hop' checkbox is off.  It is off because Vik and Nophead found better results without hopping.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -105,7 +105,7 @@ class HopRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.hop.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Hop', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Hop')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Hop')
 		self.activateHop = settings.BooleanSetting().getFromValue('Activate Hop', self, False )
 		self.hopOverLayerThickness = settings.FloatSpin().getFromValue( 0.5, 'Hop Over Layer Thickness (ratio):', self, 1.5, 1.0 )
 		self.minimumHopAngle = settings.FloatSpin().getFromValue( 20.0, 'Minimum Hop Angle (degrees):', self, 60.0, 30.0 )

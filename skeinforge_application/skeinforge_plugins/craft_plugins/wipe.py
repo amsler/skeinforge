@@ -5,7 +5,7 @@ At the beginning of a layer, depending on the settings, wipe will move the nozzl
 The wipe path is machine specific, so you'll probably have to change all the default locations.
 
 The wipe manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Wipe
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Wipe
 
 ==Operation==
 The default 'Activate Wipe' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -151,7 +151,7 @@ class WipeRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.wipe.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Wipe', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Wipe')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Wipe')
 		self.activateWipe = settings.BooleanSetting().getFromValue('Activate Wipe', self, False )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Location Arrival -', self )

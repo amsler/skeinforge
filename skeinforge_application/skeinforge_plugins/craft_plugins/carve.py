@@ -3,7 +3,7 @@ This page is in the table of contents.
 Carve is a script to carve a shape into svg slice layers.
 
 The carve manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Carve
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Carve
 
 On the Arcol Blog a method of deriving the layer thickness is posted.  That article "Machine Calibrating" is at:
 http://blog.arcol.hu/?p=157
@@ -22,7 +22,7 @@ Default is one.
 Defines the the ratio of the thickness on the bridge layers over the thickness of the typical non bridge layers.
 
 ===Extra Decimal Places===
-Default is one.
+Default is two.
 
 Defines the number of extra decimal places export will output compared to the number of decimal places in the layer thickness.  The higher the 'Extra Decimal Places', the more significant figures the output numbers will have.
 
@@ -175,10 +175,10 @@ class CarveRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.carve.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Carve')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Carve')
 		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
 		self.bridgeThicknessMultiplier = settings.FloatSpin().getFromValue( 0.8, 'Bridge Thickness Multiplier (ratio):', self, 1.2, 1.0 )
-		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 2.0, 1.0)
+		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 3.0, 2.0)
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
 		self.infillDirectionBridge = settings.BooleanSetting().getFromValue('Infill in Direction of Bridges', self, True )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
@@ -219,7 +219,7 @@ class CarveSkein:
 		carving.setCarveIsCorrectMesh(repository.correctMesh.value)
 		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
 		if len(rotatedBoundaryLayers) < 1:
-			print('There are no slices for the model, this could be because the model is too small.')
+			print('Warning, there are no slices for the model, this could be because the model is too small for the Layer Thickness.')
 			return ''
 		layerThickness = carving.getCarveLayerThickness()
 		decimalPlacesCarried = euclidean.getDecimalPlacesCarried(repository.extraDecimalPlaces.value, layerThickness)

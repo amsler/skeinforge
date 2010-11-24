@@ -16,7 +16,7 @@
 Skeiniso is an analysis script to display a gcode file in an isometric view.<br>
  <br>
 The skeiniso manual page is at:<br>
-<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeiniso">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Skeiniso</a><br>
+<a href="http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Skeiniso">http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Skeiniso</a><br>
  <br>
 <br />
 <a href="#Operation">Operation</a><br />
@@ -72,7 +72,9 @@ The skeiniso manual page is at:<br>
 <a name="Operation" id="Operation"></a><h2>Operation</h2>
 <hr>
 
-The default 'Activate Skeiniso' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeiniso' checkbox is on, when skeiniso is run directly.  Skeiniso can not separate the layers when it reads gcode without comments.<br>
+The default 'Activate Skeiniso' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Skeiniso' checkbox is on, when skeiniso is run directly.<br>
+ <br>
+Skeiniso requires skeinforge comments in the gcode file to distinguish the loops and perimeters.  If the comments are deleted, all threads will be displayed as generic threads.  To get the penultimate file of the tool chain, just before export deletes the comments, select 'Save Penultimate Gcode' in export, and open the gcode file with the suffix '_penultimate.gcode' with skeiniso.<br>
  <br>
 The viewer is simple, the viewpoint can only be moved in a sphere around the center of the model by changing the viewpoint latitude and longitude.  Different regions of the model can be hidden by setting the width of the thread to zero.  The alternating bands act as contour bands and their brightness and width can be changed.<br>
  <br>
@@ -528,7 +530,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyz
 
 <dl><dt><a name="SkeinWindow-getScrollPaneCenter"><strong>getScrollPaneCenter</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;the&nbsp;scroll&nbsp;pane.</tt></dd></dl>
 
-<dl><dt><a name="SkeinWindow-getScrollPaneFraction"><strong>getScrollPaneFraction</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;the&nbsp;scroll&nbsp;pane.</tt></dd></dl>
+<dl><dt><a name="SkeinWindow-getScrollPaneFraction"><strong>getScrollPaneFraction</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;scroll&nbsp;pane&nbsp;top&nbsp;left.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-getSlideShowDelay"><strong>getSlideShowDelay</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;slide&nbsp;show&nbsp;delay&nbsp;in&nbsp;milliseconds.</tt></dd></dl>
 
@@ -584,7 +586,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyz
 
 <dl><dt><a name="SkeinWindow-setDisplayLayerIndex"><strong>setDisplayLayerIndex</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;display&nbsp;of&nbsp;the&nbsp;layer&nbsp;index&nbsp;entry&nbsp;field&nbsp;and&nbsp;buttons.</tt></dd></dl>
 
-<dl><dt><a name="SkeinWindow-setInsetToDisplay"><strong>setInsetToDisplay</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;repository&nbsp;to&nbsp;the&nbsp;display.</tt></dd></dl>
+<dl><dt><a name="SkeinWindow-setInsetToCanvas"><strong>setInsetToCanvas</strong></a>(self, event<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;repository&nbsp;insets&nbsp;to&nbsp;the&nbsp;canvas.</tt></dd></dl>
 
 <dl><dt><a name="SkeinWindow-setLayerIndex"><strong>setLayerIndex</strong></a>(self, layerIndex)</dt><dd><tt>Set&nbsp;the&nbsp;layer&nbsp;index.</tt></dd></dl>
 
@@ -651,8 +653,6 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyz
 <dl><dt><a name="SkeinisoSkein-getLayerZoneIndex"><strong>getLayerZoneIndex</strong></a>(self, z)</dt><dd><tt>Get&nbsp;the&nbsp;layer&nbsp;zone&nbsp;index.</tt></dd></dl>
 
 <dl><dt><a name="SkeinisoSkein-initializeActiveLocation"><strong>initializeActiveLocation</strong></a>(self)</dt><dd><tt>Set&nbsp;variables&nbsp;to&nbsp;default.</tt></dd></dl>
-
-<dl><dt><a name="SkeinisoSkein-isLayerStart"><strong>isLayerStart</strong></a>(self, firstWord, splitLine)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;vector&nbsp;output.</tt></dd></dl>
 
 <dl><dt><a name="SkeinisoSkein-linearCorner"><strong>linearCorner</strong></a>(self, splitLine)</dt><dd><tt>Update&nbsp;the&nbsp;bounding&nbsp;corners.</tt></dd></dl>
 

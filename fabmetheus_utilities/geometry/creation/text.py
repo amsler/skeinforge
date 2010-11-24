@@ -23,8 +23,7 @@ __license__ = 'GPL 3.0'
 def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
 	if derivation == None:
-		derivation = TextDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = TextDerivation(xmlElement)
 	if derivation.textString == '':
 		print('Warning, textString is empty in getGeometryOutput in text for:')
 		print(xmlElement)
@@ -50,22 +49,15 @@ def processXMLElement(xmlElement):
 
 class TextDerivation:
 	"Class to hold text variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.fontFamily = 'Gentium Basic Regular'
-		self.fontSize = 12.0
-		self.textString = ''
+		self.fontFamily = evaluate.getEvaluatedStringDefault('Gentium Basic Regular', 'font-family', xmlElement)
+		self.fontFamily = evaluate.getEvaluatedStringDefault(self.fontFamily, 'fontFamily', xmlElement)
+		self.fontSize = evaluate.getEvaluatedFloatDefault(12.0, 'font-size', xmlElement)
+		self.fontSize = evaluate.getEvaluatedFloatDefault(self.fontSize, 'fontSize', xmlElement)
+		self.textString = xmlElement.text
+		self.textString = evaluate.getEvaluatedStringDefault(self.textString, 'text', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this TextDerivation."
 		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.fontFamily = evaluate.getEvaluatedStringDefault(self.fontFamily, 'font-family', xmlElement)
-		self.fontFamily = evaluate.getEvaluatedStringDefault(self.fontFamily, 'fontFamily', xmlElement)
-		self.fontSize = evaluate.getEvaluatedFloatDefault(self.fontSize, 'font-size', xmlElement)
-		self.fontSize = evaluate.getEvaluatedFloatDefault(self.fontSize, 'fontSize', xmlElement)
-		if self.textString == '':
-			self.textString = xmlElement.text
-		self.textString = evaluate.getEvaluatedStringDefault(self.textString, 'text', xmlElement)

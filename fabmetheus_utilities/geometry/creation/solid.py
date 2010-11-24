@@ -24,8 +24,7 @@ __license__ = 'GPL 3.0'
 def getGeometryOutput(derivation, xmlElement):
 	"Get geometry output from paths."
 	if derivation == None:
-		derivation = SolidDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = SolidDerivation(xmlElement)
 	geometryOutput = []
 	for path in derivation.target:
 		sideLoop = SideLoop(path)
@@ -79,15 +78,10 @@ def processXMLElementByGeometry(geometryOutput, xmlElement):
 
 class SolidDerivation:
 	"Class to hold solid variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.target = []
+		self.target = evaluate.getTransformedPathsByKey([], 'target', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this SolidDerivation."
 		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		if len(self.target) < 1:
-			self.target = evaluate.getTransformedPathsByKey('target', xmlElement)

@@ -3,7 +3,7 @@ This page is in the table of contents.
 Home is a script to home the tool.
 
 The home manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Home
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Home
 
 ==Operation==
 The default 'Activate Home' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -101,7 +101,7 @@ class HomeRepository:
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.home.html', None, self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Home', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_home')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_home')
 		self.activateHome = settings.BooleanSetting().getFromValue('Activate Home', self, True )
 		self.nameOfHomingFile = settings.StringSetting().getFromValue('Name of Homing File:', self, 'homing.gcode')
 		self.executeTitle = 'Home'
@@ -160,7 +160,7 @@ class HomeSkein:
 
 	def getCraftedGcode( self, gcodeText, homeRepository ):
 		"Parse gcode text and store the home gcode."
-		self.homingText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), homeRepository.nameOfHomingFile.value )
+		self.homingText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), homeRepository.nameOfHomingFile.value )
 		if len( self.homingText ) < 1:
 			return gcodeText
 		self.lines = archive.getTextLines(gcodeText)

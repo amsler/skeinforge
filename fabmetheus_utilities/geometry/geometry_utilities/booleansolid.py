@@ -92,7 +92,7 @@ def addLoopXSegmentIntersections( lineLoopsIntersections, loop, segmentFirstX, s
 		pointSecond = rotatedLoop[ (pointIndex + 1) % len( rotatedLoop ) ]
 		addLineXSegmentIntersection( lineLoopsIntersections, segmentFirstX, segmentSecondX, pointFirst, pointSecond, y )
 
-def getInBetweenLoopsFromLoops( importRadius, loops ):
+def getInBetweenLoopsFromLoops(loops, radius):
 	"Get the in between loops from loops."
 	inBetweenLoops = []
 	for loop in loops:
@@ -100,8 +100,8 @@ def getInBetweenLoopsFromLoops( importRadius, loops ):
 		for pointIndex in xrange(len(loop)):
 			pointBegin = loop[pointIndex]
 			pointEnd = loop[(pointIndex + 1) % len(loop)]
-			intercircle.addPointsFromSegment( pointBegin, pointEnd, inBetweenLoop, importRadius )
-		inBetweenLoops.append( inBetweenLoop )
+			intercircle.addPointsFromSegment(pointBegin, pointEnd, inBetweenLoop, radius)
+		inBetweenLoops.append(inBetweenLoop)
 	return inBetweenLoops
 
 def getInsetPointsByInsetLoop( insetLoop, inside, loops, radius ):
@@ -142,8 +142,8 @@ def getLoopsDifference(importRadius, loopLists):
 	corners += getInsetPointsByInsetLoops(negativeLoops, True, positiveLoops, radiusSide)
 	corners += getInsetPointsByInsetLoops(positiveLoops, False, negativeLoops, radiusSide)
 	allPoints = corners[:]
-	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(importRadius, negativeLoops), True, positiveLoops, radiusSide)
-	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(importRadius, positiveLoops), False, negativeLoops, radiusSide)
+	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(negativeLoops, importRadius), True, positiveLoops, radiusSide)
+	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(positiveLoops, importRadius), False, negativeLoops, radiusSide)
 	return trianglemesh.getDescendingAreaLoops( allPoints, corners, importRadius)
 
 def getLoopsIntersection( importRadius, loopLists ):
@@ -165,8 +165,8 @@ def getLoopsIntersectionByPair( importRadius, loopsFirst, loopsLast ):
 	corners += getInsetPointsByInsetLoops( loopsFirst, True, loopsLast, radiusSide )
 	corners += getInsetPointsByInsetLoops( loopsLast, True, loopsFirst, radiusSide )
 	allPoints = corners[:]
-	allPoints += getInsetPointsByInsetLoops( getInBetweenLoopsFromLoops( importRadius, loopsFirst ), True, loopsLast, radiusSide )
-	allPoints += getInsetPointsByInsetLoops( getInBetweenLoopsFromLoops( importRadius, loopsLast ), True, loopsFirst, radiusSide )
+	allPoints += getInsetPointsByInsetLoops( getInBetweenLoopsFromLoops(loopsFirst, importRadius), True, loopsLast, radiusSide )
+	allPoints += getInsetPointsByInsetLoops( getInBetweenLoopsFromLoops(loopsLast, importRadius), True, loopsFirst, radiusSide )
 	return trianglemesh.getDescendingAreaLoops(allPoints, corners, importRadius)
 
 def getLoopsListsIntersections( loopsList ):
@@ -185,18 +185,19 @@ def getLoopsLoopsIntersections( loops, otherLoops ):
 		addLoopLoopsIntersections( loop, loopsLoopsIntersections, otherLoops )
 	return loopsLoopsIntersections
 
-def getLoopsUnified( importRadius, loopLists ):
+def getLoopsUnified(importRadius, loopLists):
 	"Get joined loops sliced through shape."
 	allPoints = []
 	corners = getLoopsListsIntersections(loopLists)
 	radiusSide = 0.01 * importRadius
-	intercircle.directLoopLists( True, loopLists )
-	for loopListIndex in xrange( len(loopLists) ):
+	radiusSideNegative = -radiusSide
+	intercircle.directLoopLists(True, loopLists)
+	for loopListIndex in xrange(len(loopLists)):
 		insetLoops = loopLists[ loopListIndex ]
-		inBetweenInsetLoops = getInBetweenLoopsFromLoops( importRadius, insetLoops )
-		otherLoops = euclidean.getConcatenatedList( loopLists[ : loopListIndex ] + loopLists[ loopListIndex + 1 : ] )
-		corners += getInsetPointsByInsetLoops( insetLoops, False, otherLoops, radiusSide )
-		allPoints += getInsetPointsByInsetLoops( inBetweenInsetLoops, False, otherLoops, radiusSide )
+		inBetweenInsetLoops = getInBetweenLoopsFromLoops(insetLoops, importRadius)
+		otherLoops = euclidean.getConcatenatedList(loopLists[: loopListIndex] + loopLists[loopListIndex + 1 :])
+		corners += getInsetPointsByInsetLoops(insetLoops, False, otherLoops, radiusSide)
+		allPoints += getInsetPointsByInsetLoops(inBetweenInsetLoops, False, otherLoops, radiusSideNegative)
 	allPoints += corners[:]
 	return trianglemesh.getDescendingAreaLoops(allPoints, corners, importRadius)
 

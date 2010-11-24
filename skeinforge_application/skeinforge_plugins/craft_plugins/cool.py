@@ -3,7 +3,7 @@ This page is in the table of contents.
 Cool is a script to cool the shape.
 
 The cool manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Cool
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Cool
 
 Allan Ecker aka The Masked Retriever's has written the "Skeinforge Quicktip: Cool" at:
 http://blog.thingiverse.com/2009/07/28/skeinforge-quicktip-cool/
@@ -143,7 +143,7 @@ class CoolRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.cool.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Cool', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Cool')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Cool')
 		self.activateCool = settings.BooleanSetting().getFromValue('Activate Cool', self, True )
 		self.coolType = settings.MenuButtonDisplay().getFromName('Cool Type:', self )
 		self.orbit = settings.MenuRadio().getFromMenuButtonDisplay( self.coolType, 'Orbit', self, True )
@@ -247,9 +247,9 @@ class CoolSkein:
 	def getCraftedGcode( self, gcodeText, coolRepository ):
 		"Parse gcode text and store the cool gcode."
 		self.coolRepository = coolRepository
-		self.coolEndText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Cool_End.gcode')
+		self.coolEndText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), 'Cool_End.gcode')
 		self.coolEndLines = archive.getTextLines( self.coolEndText )
-		self.coolStartText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname( __file__ ), 'Cool_Start.gcode')
+		self.coolStartText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), 'Cool_Start.gcode')
 		self.coolStartLines = archive.getTextLines( self.coolStartText )
 		self.halfCorner = complex( coolRepository.minimumOrbitalRadius.value, coolRepository.minimumOrbitalRadius.value )
 		self.lines = archive.getTextLines(gcodeText)

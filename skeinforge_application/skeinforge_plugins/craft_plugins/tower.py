@@ -3,7 +3,7 @@ This page is in the table of contents.
 Tower commands the fabricator to extrude a disconnected region for a few layers, then go to another disconnected region and extrude there.  Its purpose is to reduce the number of stringers between a shape and reduce extruder travel.
 
 The tower manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Tower
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Tower
 
 ==Operation==
 The default 'Activate Tower' checkbox is off.  The default is off because tower could result in the extruder colliding with an already extruded part of the shape and because extruding in one region for more than one layer could result in the shape melting.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -144,7 +144,7 @@ class TowerRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.tower.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Tower', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Tower')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Tower')
 		self.activateTower = settings.BooleanSetting().getFromValue('Activate Tower', self, False )
 		self.extruderPossibleCollisionConeAngle = settings.FloatSpin().getFromValue( 40.0, 'Extruder Possible Collision Cone Angle (degrees):', self, 80.0, 60.0 )
 		self.maximumTowerHeight = settings.IntSpin().getFromValue( 2, 'Maximum Tower Height (layers):', self, 10, 5 )
@@ -345,7 +345,7 @@ class TowerSkein:
 			self.island.createBoundingLoop()
 		elif firstWord == '(<boundaryPoint>':
 			self.island.addToBoundary(splitLine)
-		elif firstWord == '(</extrusion>)':
+		elif firstWord == '(</crafting>)':
 			self.shutdownLineIndex = lineIndex
 		elif firstWord == '(<layer>':
 			self.beforeExtrusionLines = [ line ]

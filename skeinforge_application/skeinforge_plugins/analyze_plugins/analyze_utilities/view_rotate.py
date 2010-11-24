@@ -61,16 +61,16 @@ class ViewpointRotate( MouseToolBase ):
 	def button1( self, event, shift = False ):
 		"Print line text and connection line."
 		self.destroyEverything()
-		x = self.canvas.canvasx( event.x )
-		y = self.canvas.canvasy( event.y )
+		x = self.canvas.canvasx(event.x)
+		y = self.canvas.canvasy(event.y)
 		self.buttonOnePressedCanvasCoordinate = complex(x, y)
 
 	def buttonRelease1( self, event, shift = False ):
 		"The left button was released, <ButtonRelease-1> function."
 		if self.buttonOnePressedCanvasCoordinate == None:
 			return
-		x = self.canvas.canvasx( event.x )
-		y = self.canvas.canvasy( event.y )
+		x = self.canvas.canvasx(event.x)
+		y = self.canvas.canvasy(event.y)
 		buttonOneReleasedCanvasCoordinate = complex(x, y)
 		self.moveViewpointGivenCoordinates( buttonOneReleasedCanvasCoordinate, shift, self.buttonOnePressedCanvasCoordinate )
 
@@ -131,8 +131,8 @@ class ViewpointRotate( MouseToolBase ):
 		"Move the motion viewpoint if the mouse was moved."
 		if self.buttonOnePressedCanvasCoordinate == None:
 			return
-		x = self.canvas.canvasx( event.x )
-		y = self.canvas.canvasy( event.y )
+		x = self.canvas.canvasx(event.x)
+		y = self.canvas.canvasy(event.y)
 		motionCoordinate = complex(x, y)
 		self.motionGivenCoordinates( motionCoordinate, shift, self.buttonOnePressedCanvasCoordinate )
 

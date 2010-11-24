@@ -149,11 +149,9 @@ class OutsetSkein:
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'outset')
+				return
 			elif firstWord == '(<perimeterWidth>':
 				self.absoluteHalfPerimeterWidth = 0.5 * abs(float(splitLine[1]))
-			elif firstWord == '(<layer>':
-				self.lineIndex -= 1
-				return
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, lineIndex ):

@@ -13,10 +13,7 @@
 <a href="skeinforge_application.skeinforge_plugins.craft.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.carve.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Bottom converts the svg slices into gcode extrusion layers, optionally bottom with some gcode commands.<br>
- <br>
-The bottom manual page is at:<br>
-<a href="http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Bottom">http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Bottom</a><br>
+Bottom sets the bottom of the carving to the defined altitude.<br>
  <br>
 <br />
 <a href="#Operation">Operation</a><br />
@@ -106,6 +103,7 @@ The bottom tool has created the file:<br>
 <a href="fabmetheus_utilities.svg_writer.html">fabmetheus_utilities.svg_writer</a><br>
 </td><td width="25%" valign=top><a href="sys.html">sys</a><br>
 <a href="time.html">time</a><br>
+<a href="fabmetheus_utilities.xml_simple_writer.html">fabmetheus_utilities.xml_simple_writer</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -153,11 +151,10 @@ The bottom tool has created the file:<br>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, svgText<font color="#909090">=''</font>, repository<font color="#909090">=None</font>)</dt><dd><tt>Bottom&nbsp;and&nbsp;convert&nbsp;an&nbsp;svg&nbsp;file&nbsp;or&nbsp;svgText.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(fileName, svgText, repository<font color="#909090">=None</font>)</dt><dd><tt>Bottom&nbsp;and&nbsp;convert&nbsp;an&nbsp;svgText.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
- <dl><dt><a name="-getSliceElementZ"><strong>getSliceElementZ</strong></a>(sliceElement)</dt><dd><tt>Get&nbsp;the&nbsp;slice&nbsp;element&nbsp;z.</tt></dd></dl>
- <dl><dt><a name="-getSliceElements"><strong>getSliceElements</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;slice&nbsp;elements.</tt></dd></dl>
+ <dl><dt><a name="-getSliceXMLElementZ"><strong>getSliceXMLElementZ</strong></a>(sliceXMLElement)</dt><dd><tt>Get&nbsp;the&nbsp;slice&nbsp;element&nbsp;z.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;bottom&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-setSliceElementZ"><strong>setSliceElementZ</strong></a>(decimalPlacesCarried, sliceElement, sliceElementIndex, z)</dt><dd><tt>Set&nbsp;the&nbsp;slice&nbsp;element&nbsp;z.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Bottom&nbsp;the&nbsp;carving&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-setSliceXMLElementZ"><strong>setSliceXMLElementZ</strong></a>(decimalPlacesCarried, sliceXMLElement, sliceXMLElementIndex, z)</dt><dd><tt>Set&nbsp;the&nbsp;slice&nbsp;element&nbsp;z.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName)</dt><dd><tt>Bottom&nbsp;the&nbsp;carving.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

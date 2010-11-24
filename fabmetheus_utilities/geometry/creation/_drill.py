@@ -26,8 +26,7 @@ __license__ = 'GPL 3.0'
 def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
 	if derivation == None:
-		derivation = DrillDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = DrillDerivation(xmlElement)
 	extrudeDerivation = extrude.ExtrudeDerivation()
 	negatives = []
 	teardrop.addNegativesByDerivation(derivation.end, extrudeDerivation, negatives, derivation.radius, derivation.start, xmlElement)
@@ -45,22 +44,16 @@ def processXMLElement(xmlElement):
 
 class DrillDerivation:
 	"Class to hold drill variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.end = Vector3(0.0, 0.0, 1.0)
-		self.radius = 1.0
-		self.start = Vector3()
-
-	def __repr__(self):
-		"Get the string representation of this DrillDerivation."
-		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.end = evaluate.getVector3ByPrefix(self.end, 'end', xmlElement)
-		self.start = evaluate.getVector3ByPrefix(self.start, 'start', xmlElement)
-		self.radius = lineation.getFloatByPrefixBeginEnd('radius', 'diameter', self.radius, xmlElement)
+		self.end = evaluate.getVector3ByPrefix(Vector3(0.0, 0.0, 1.0), 'end', xmlElement)
+		self.start = evaluate.getVector3ByPrefix(Vector3(), 'start', xmlElement)
+		self.radius = lineation.getFloatByPrefixBeginEnd('radius', 'diameter', 1.0, xmlElement)
 		size = evaluate.getEvaluatedFloatDefault(None, 'size', xmlElement)
 		if size != None:
 			self.radius = 0.5 * size
 		self.xmlElement = xmlElement
+
+	def __repr__(self):
+		"Get the string representation of this DrillDerivation."
+		return str(self.__dict__)

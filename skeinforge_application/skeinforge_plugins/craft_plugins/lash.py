@@ -3,7 +3,7 @@ This page is in the table of contents.
 Lash is a script to partially compensate for the backlash of the tool head.
 
 The lash manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Lash
 
 The lash tool is ported from Erik de Bruijn's 3D-to-5D-Gcode php GPL'd script at:
 http://objects.reprap.org/wiki/3D-to-5D-Gcode.php
@@ -108,7 +108,7 @@ class LashRepository:
 		"Set the default settings, execute title & settings fileName."
 		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.craft_plugins.lash.html', None, self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Lash', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Lash')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Lash')
 		self.activateLash = settings.BooleanSetting().getFromValue('Activate Lash', self, False )
 		self.xBacklash = settings.FloatSpin().getFromValue( 0.1, 'X Backlash (mm):', self, 0.5, 0.2 )
 		self.yBacklash = settings.FloatSpin().getFromValue( 0.1, 'Y Backlash (mm):', self, 0.5, 0.3 )

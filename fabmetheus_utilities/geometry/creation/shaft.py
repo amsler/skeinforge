@@ -22,8 +22,7 @@ __license__ = 'GPL 3.0'
 def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
 	if derivation == None:
-		derivation = ShaftDerivation()
-		derivation.setToXMLElement(xmlElement)
+		derivation = ShaftDerivation(xmlElement)
 	shaftPath = getShaftPath(derivation.depthBottom, derivation.depthTop, derivation.radius, derivation.sides)
 	return lineation.getGeometryOutputByLoop(lineation.SideLoop(shaftPath), xmlElement)
 
@@ -63,34 +62,20 @@ def processXMLElement(xmlElement):
 
 class ShaftDerivation:
 	"Class to hold shaft variables."
-	def __init__(self):
+	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.depthBottom = None
-		self.depthBottomOverRadius = 0.0
-		self.depthTop = None
-		self.depthTopOverRadius = 0.0
-		self.radius = None
-		self.sides = 4
-		self.radius = 1.0
+		self.depthBottomOverRadius = evaluate.getEvaluatedFloatDefault(0.0, 'depthBottomOverRadius', xmlElement)
+		self.depthTopOverRadius = evaluate.getEvaluatedFloatDefault(0.0, 'depthOverRadius', xmlElement)
+		self.depthTopOverRadius = evaluate.getEvaluatedFloatDefault(
+			self.depthTopOverRadius, 'depthTopOverRadius', xmlElement)
+		self.radius = evaluate.getEvaluatedFloatDefault(1.0, 'radius', xmlElement)
+		self.sides = evaluate.getEvaluatedIntDefault(4, 'sides', xmlElement)
+		self.depthBottom = self.radius * self.depthBottomOverRadius
+		self.depthBottom = evaluate.getEvaluatedFloatDefault(self.depthBottom, 'depthBottom', xmlElement)
+		self.depthTop = self.radius * self.depthTopOverRadius
+		self.depthTop = evaluate.getEvaluatedFloatDefault(self.depthTop, 'depth', xmlElement)
+		self.depthTop = evaluate.getEvaluatedFloatDefault(self.depthTop, 'depthTop', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this ShaftDerivation."
 		return str(self.__dict__)
-
-	def setToXMLElement(self, xmlElement):
-		"Set to the xmlElement."
-		self.depthBottomOverRadius = evaluate.getEvaluatedFloatDefault(
-			self.depthBottomOverRadius, 'depthBottomOverRadius', xmlElement)
-		self.depthTopOverRadius = evaluate.getEvaluatedFloatDefault(
-			self.depthTopOverRadius, 'depthOverRadius', xmlElement)
-		self.depthTopOverRadius = evaluate.getEvaluatedFloatDefault(
-			self.depthTopOverRadius, 'depthTopOverRadius', xmlElement)
-		self.radius = evaluate.getEvaluatedFloatDefault(self.radius, 'radius', xmlElement)
-		self.sides = evaluate.getEvaluatedIntDefault(self.sides, 'sides', xmlElement)
-		if self.depthBottom == None:
-			self.depthBottom = self.radius * self.depthBottomOverRadius
-		self.depthBottom = evaluate.getEvaluatedFloatDefault(self.depthBottom, 'depthBottom', xmlElement)
-		if self.depthTop == None:
-			self.depthTop = self.radius * self.depthTopOverRadius
-		self.depthTop = evaluate.getEvaluatedFloatDefault(self.depthTop, 'depth', xmlElement)
-		self.depthTop = evaluate.getEvaluatedFloatDefault(self.depthTop, 'depthTop', xmlElement)

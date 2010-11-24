@@ -23,24 +23,40 @@ def prepareWikify():
 	wikifier.main()
 	removeZip()
 
+def removeGcodeFile(gcodeFilePath):
+	'Remove gcode file.'
+	if 'alterations' not in gcodeFilePath:
+		os.remove(gcodeFilePath)
+		print('removeGeneratedFiles deleted ' + gcodeFilePath)
+		return
+	if 'example_' not in gcodeFilePath:
+		os.remove(gcodeFilePath)
+		print('removeGeneratedFiles deleted ' + gcodeFilePath)
+
 def removeGeneratedFiles():
 	'Remove generated files.'
 	gcodeFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['gcode'])
 	for gcodeFilePath in gcodeFilePaths:
-		if 'alterations' not in gcodeFilePath:
-			os.remove(gcodeFilePath)
-			print('removeGeneratedFiles deleted ' + gcodeFilePath)
+		removeGcodeFile(gcodeFilePath)
 	svgFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['svg'])
 	for svgFilePath in svgFilePaths:
-		if archive.getEndsWithList(svgFilePath, ['_bottom.svg', '_carve.svg', '_chop.svg', '_cleave.svg']):
-			os.remove(svgFilePath)
-			print('removeGeneratedFiles deleted ' + svgFilePath)
+		removeSVGFile(svgFilePath)
 	xmlFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['xml'])
 	for xmlFilePath in xmlFilePaths:
-		if archive.getEndsWithList(xmlFilePath, ['_interpret.xml']):
-			os.remove(xmlFilePath)
-			print('removeGeneratedFiles deleted ' + xmlFilePath)
+		removeXMLFile(xmlFilePath)
 	archive.removeBackupFilesByTypes(['gcode', 'svg', 'xml'])
+
+def removeSVGFile(svgFilePath):
+	'Remove svg file.'
+	if archive.getEndsWithList(svgFilePath, ['_bottom.svg', '_carve.svg', '_chop.svg', '_cleave.svg', '_scale.svg']):
+		os.remove(svgFilePath)
+		print('removeGeneratedFiles deleted ' + svgFilePath)
+
+def removeXMLFile(xmlFilePath):
+	'Remove xml file.'
+	if archive.getEndsWithList(xmlFilePath, ['_interpret.xml']):
+		os.remove(xmlFilePath)
+		print('removeGeneratedFiles deleted ' + xmlFilePath)
 
 def removeZip():
 	'Remove the zip file, then generate a new one.zip -r reprap_python_beanshell * -x \*.pyc \*~'

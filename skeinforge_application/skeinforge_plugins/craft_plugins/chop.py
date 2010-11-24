@@ -16,7 +16,7 @@ Default is on.
 When selected, chop will add an extra layer at the very top of the object if the top of the object is more than half the layer thickness above the first slice.  This is so the cutting tool doesn't cut too deeply through the top of the object on its first pass.
 
 ===Extra Decimal Places===
-Default is one.
+Default is two.
 
 Defines the number of extra decimal places export will output compared to the number of decimal places in the layer thickness.  The higher the 'Extra Decimal Places', the more significant figures the output numbers will have.
 
@@ -169,7 +169,7 @@ class ChopRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File to be Chopped', self, '')
 		self.addExtraTopLayerIfNecessary = settings.BooleanSetting().getFromValue('Add Extra Top Layer if Necessary', self, True )
 		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
-		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 2.0, 1.0)
+		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 3.0, 2.0)
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
 		self.layersFrom = settings.IntSpin().getFromValue( 0, 'Layers From (index):', self, 20, 0 )
@@ -212,7 +212,7 @@ class ChopSkein:
 		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
 		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
 		if len( rotatedBoundaryLayers ) < 1:
-			print('There are no slices for the model, this could be because the model is too small.')
+			print('Warning, there are no slices for the model, this could be because the model is too small for the Layer Thickness.')
 			return ''
 		if repository.addExtraTopLayerIfNecessary.value:
 			self.addExtraTopLayerIfNecessary( carving, layerThickness, rotatedBoundaryLayers )

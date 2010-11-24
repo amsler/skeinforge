@@ -8,7 +8,7 @@ and in Erik de Bruijn's conversion script page at:
 http://objects.reprap.org/wiki/3D-to-5D-Gcode.php
 
 The dimension manual page is at:
-http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Dimension
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Dimension
 
 ==Operation==
 The default 'Activate Dimension' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
@@ -126,7 +126,7 @@ class DimensionRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.dimension.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Dimension', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://www.bitsfrombytes.com/wiki/index.php?title=Skeinforge_Dimension')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Dimension')
 		self.activateDimension = settings.BooleanSetting().getFromValue('Activate Dimension', self, False )
 		extrusionDistanceFormatLatentStringVar = settings.LatentStringVar()
 		self.extrusionDistanceFormatChoiceLabel = settings.LabelDisplay().getFromName('Extrusion Distance Format Choice: ', self )
