@@ -317,11 +317,11 @@ class MillSkein:
 				location = gcodec.getLocationFromSplitLine(None, splitLine)
 				if boundaryLoop == None:
 					boundaryLoop = []
-					boundaryLayer.loops.append( boundaryLoop )
-				boundaryLoop.append( location.dropAxis(2) )
+					boundaryLayer.loops.append(boundaryLoop)
+				boundaryLoop.append(location.dropAxis())
 			elif firstWord == '(<layer>':
 				boundaryLayer = euclidean.LoopLayer(float(splitLine[1]))
-				self.boundaryLayers.append( boundaryLayer )
+				self.boundaryLayers.append(boundaryLayer)
 		if len( self.boundaryLayers ) < 2:
 			return
 		for boundaryLayer in self.boundaryLayers:
@@ -352,7 +352,7 @@ class MillSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> mill </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> mill </procedureName>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float(splitLine[1])
@@ -374,7 +374,7 @@ class MillSkein:
 			if self.isExtruderActive:
 				self.average.addValue(location.z)
 				if self.oldLocation != None:
-					euclidean.addValueSegmentToPixelTable( self.oldLocation.dropAxis(2), location.dropAxis(2), self.aroundPixelTable, None, self.aroundWidth )
+					euclidean.addValueSegmentToPixelTable( self.oldLocation.dropAxis(), location.dropAxis(), self.aroundPixelTable, None, self.aroundWidth )
 			self.oldLocation = location
 		elif firstWord == 'M101':
 			self.isExtruderActive = True

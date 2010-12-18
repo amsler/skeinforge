@@ -37,10 +37,9 @@ def addLoopByComplex(derivation, endMultiplier, loopLists, path, pointComplex, v
 
 def addNegatives(derivation, negatives, paths):
 	"Add pillars output to negatives."
-	portionDirections = getSpacedPortionDirections(derivation.interpolationDictionary)
 	for path in paths:
-		endMultiplier = 1.000001
-		geometryOutput = trianglemesh.getPillarsOutput(getLoopListsByPath(endMultiplier, derivation, path, portionDirections))
+		loopListsByPath = getLoopListsByPath(derivation, 1.000001, path)
+		geometryOutput = trianglemesh.getPillarsOutput(loopListsByPath)
 		negatives.append(geometryOutput)
 
 def addNegativesPositives(derivation, negatives, paths, positives):
@@ -62,6 +61,13 @@ def addOffsetAddToLists( loop, offset, vector3Index, vertexes ):
 	vector3Index += offset
 	loop.append( vector3Index )
 	vertexes.append( vector3Index )
+
+def addPositives(derivation, positives, paths):
+	"Add pillars output to positives."
+	for path in paths:
+		loopListsByPath = getLoopListsByPath(derivation, None, path)
+		geometryOutput = trianglemesh.getPillarsOutput(loopListsByPath)
+		positives.append(geometryOutput)
 
 def getGeometryOutput(derivation, xmlElement):
 	"Get triangle mesh from attribute dictionary."
@@ -114,7 +120,7 @@ def getLoopListsByPath(derivation, endMultiplier, path):
 	if len(derivation.loop) < 2:
 		return loopLists
 	for pointIndex, pointComplex in enumerate(derivation.loop):
-		if endMultiplier != None and derivation.end != derivation.start:
+		if endMultiplier != None and not derivation.isEndCloseToStart:
 			if pointIndex == 0:
 				nextPoint = derivation.loop[1]
 				pointComplex = endMultiplier * (pointComplex - nextPoint) + nextPoint
@@ -122,7 +128,7 @@ def getLoopListsByPath(derivation, endMultiplier, path):
 				previousPoint = derivation.loop[pointIndex - 1]
 				pointComplex = endMultiplier * (pointComplex - previousPoint) + previousPoint
 		addLoopByComplex(derivation, endMultiplier, loopLists, path, pointComplex, vertexes)
-	if derivation.end == derivation.start:
+	if derivation.isEndCloseToStart:
 		loopLists[-1].append([])
 	return loopLists
 
@@ -137,7 +143,7 @@ class LatheDerivation:
 		'Set defaults.'
 		self.axisEnd = evaluate.getVector3ByPrefix(None, 'axisEnd', xmlElement)
 		self.axisStart = evaluate.getVector3ByPrefix(None, 'axisStart', xmlElement)
-		self.end = evaluate.getEvaluatedFloatDefault(0.0, 'end', xmlElement)
+		self.end = evaluate.getEvaluatedFloatDefault(360.0, 'end', xmlElement)
 		self.loop = evaluate.getTransformedPathByKey([], 'loop', xmlElement)
 		self.sides = evaluate.getEvaluatedIntDefault(None, 'sides', xmlElement)
 		self.start = evaluate.getEvaluatedFloatDefault(0.0, 'start', xmlElement)
@@ -178,8 +184,11 @@ class LatheDerivation:
 		if self.sides == None:
 			distanceToLine = euclidean.getDistanceToLineByPaths(self.axisStart, self.axisEnd, self.target)
 			self.sides = evaluate.getSidesMinimumThreeBasedOnPrecisionSides(distanceToLine, xmlElement)
+		endRadian = math.radians(self.end)
+		startRadian = math.radians(self.start)
+		self.isEndCloseToStart = euclidean.getIsRadianClose(endRadian, startRadian)
 		if len(self.loop) < 1:
-			self.loop = euclidean.getComplexPolygonByStartEnd(math.radians(self.end), 1.0, self.sides, math.radians(self.start))
+			self.loop = euclidean.getComplexPolygonByStartEnd(endRadian, 1.0, self.sides, startRadian)
 		self.normal = euclidean.getNormalByPath(firstPath)
 
 	def __repr__(self):

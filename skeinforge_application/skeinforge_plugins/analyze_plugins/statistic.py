@@ -162,8 +162,8 @@ class StatisticSkein:
 			self.totalDistanceTraveled += travel
 			if self.extruderActive:
 				self.totalDistanceExtruded += travel
-				self.cornerHigh = euclidean.getPointMaximum( self.cornerHigh, location )
-				self.cornerLow = euclidean.getPointMinimum( self.cornerLow, location )
+				self.cornerMaximum.maximize(location)
+				self.cornerMinimum.minimize(location)
 		self.oldLocation = location
 
 	def extruderSet( self, active ):
@@ -176,8 +176,8 @@ class StatisticSkein:
 		"Parse gcode text and store the statistics."
 		self.absolutePerimeterWidth = 0.4
 		self.characters = 0
-		self.cornerHigh = Vector3(-999999999.0, -999999999.0, -999999999.0)
-		self.cornerLow = Vector3(999999999.0, 999999999.0, 999999999.0)
+		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, -999999999.0)
+		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
 		self.extruderActive = False
 		self.extruderSpeed = None
 		self.extruderToggled = 0
@@ -197,11 +197,11 @@ class StatisticSkein:
 		kilobytes = round( self.characters / 1024.0 )
 		halfPerimeterWidth = 0.5 * self.absolutePerimeterWidth
 		halfExtrusionCorner = Vector3( halfPerimeterWidth, halfPerimeterWidth, halfPerimeterWidth )
-		self.cornerHigh += halfExtrusionCorner
-		self.cornerLow -= halfExtrusionCorner
-		extent = self.cornerHigh - self.cornerLow
-		roundedHigh = euclidean.getRoundedPoint( self.cornerHigh )
-		roundedLow = euclidean.getRoundedPoint( self.cornerLow )
+		self.cornerMaximum += halfExtrusionCorner
+		self.cornerMinimum -= halfExtrusionCorner
+		extent = self.cornerMaximum - self.cornerMinimum
+		roundedHigh = euclidean.getRoundedPoint( self.cornerMaximum )
+		roundedLow = euclidean.getRoundedPoint( self.cornerMinimum )
 		roundedExtent = euclidean.getRoundedPoint( extent )
 		axisString =  " axis extrusion starts at "
 		crossSectionArea = 0.9 * self.absolutePerimeterWidth * self.layerThickness # 0.9 if from the typical fill density
@@ -343,7 +343,7 @@ class StatisticSkein:
 			self.operatingFeedRatePerSecond = float(splitLine[1])
 		elif firstWord == '(<perimeterWidth>':
 			self.absolutePerimeterWidth = abs(float(splitLine[1]))
-		elif firstWord == '(<procedureDone>':
+		elif firstWord == '(<procedureName>':
 			self.procedures.append(splitLine[1])
 		elif firstWord == '(<version>':
 			self.version = splitLine[1]

@@ -140,7 +140,7 @@ class FlowSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> flow </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> flow </procedureName>)')
 				return
 			self.distanceFeedRate.addLine(line)
 

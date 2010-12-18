@@ -148,7 +148,7 @@ class BevelSkein:
 
 	def addLinearMovePoint( self, feedRateMinute, point ):
 		"Add a gcode linear move, feedRate and newline to the output."
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, point.dropAxis(2), point.z ) )
+		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRateMinute, point.dropAxis(), point.z ) )
 
 	def getCornerFeedRate(self):
 		"Get the corner feed rate, which may be based on the intermediate feed rate."
@@ -224,7 +224,7 @@ class BevelSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> fillet </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> fillet </procedureName>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				perimeterWidth = abs(float(splitLine[1]))
@@ -255,13 +255,13 @@ class BevelSkein:
 		if self.filletRadius < 2.0 * self.minimumRadius:
 			return location
 		afterSegment = nextLocation - location
-		afterSegmentComplex = afterSegment.dropAxis(2)
+		afterSegmentComplex = afterSegment.dropAxis()
 		afterSegmentComplexLength = abs( afterSegmentComplex )
 		thirdAfterSegmentLength = 0.333 * afterSegmentComplexLength
 		if thirdAfterSegmentLength < self.minimumRadius:
 			return location
 		beforeSegment = self.oldLocation - location
-		beforeSegmentComplex = beforeSegment.dropAxis(2)
+		beforeSegmentComplex = beforeSegment.dropAxis()
 		beforeSegmentComplexLength = abs( beforeSegmentComplex )
 		thirdBeforeSegmentLength = 0.333 * beforeSegmentComplexLength
 		if thirdBeforeSegmentLength < self.minimumRadius:
@@ -298,12 +298,12 @@ class ArcSegmentSkein( BevelSkein ):
 		if self.filletRadius < 2.0 * self.minimumRadius:
 			return location
 		afterSegment = nextLocation - location
-		afterSegmentComplex = afterSegment.dropAxis(2)
+		afterSegmentComplex = afterSegment.dropAxis()
 		thirdAfterSegmentLength = 0.333 * abs( afterSegmentComplex )
 		if thirdAfterSegmentLength < self.minimumRadius:
 			return location
 		beforeSegment = self.oldLocation - location
-		beforeSegmentComplex = beforeSegment.dropAxis(2)
+		beforeSegmentComplex = beforeSegment.dropAxis()
 		thirdBeforeSegmentLength = 0.333 * abs( beforeSegmentComplex )
 		if thirdBeforeSegmentLength < self.minimumRadius:
 			return location
@@ -316,11 +316,11 @@ class ArcSegmentSkein( BevelSkein ):
 		beforePoint = euclidean.getPointPlusSegmentWithLength( bevelRadius * abs( beforeSegment ) / abs( beforeSegmentComplex ), location, beforeSegment )
 		self.addLinearMovePoint( self.feedRateMinute, beforePoint )
 		afterPoint = euclidean.getPointPlusSegmentWithLength( bevelRadius * abs( afterSegment ) / abs( afterSegmentComplex ), location, afterSegment )
-		afterPointComplex = afterPoint.dropAxis(2)
-		beforePointComplex = beforePoint.dropAxis(2)
-		locationComplex = location.dropAxis(2)
+		afterPointComplex = afterPoint.dropAxis()
+		beforePointComplex = beforePoint.dropAxis()
+		locationComplex = location.dropAxis()
 		midpoint = 0.5 * ( afterPoint + beforePoint )
-		midpointComplex = midpoint.dropAxis(2)
+		midpointComplex = midpoint.dropAxis()
 		midpointMinusLocationComplex = midpointComplex - locationComplex
 		midpointLocationLength = abs( midpointMinusLocationComplex )
 		if midpointLocationLength < 0.01 * self.filletRadius:
@@ -349,7 +349,7 @@ class ArcPointSkein( ArcSegmentSkein ):
 		firstWord = 'G3'
 		if afterCenterDifferenceAngle < 0.0:
 			firstWord = 'G2'
-		centerMinusBeforeComplex = centerMinusBefore.dropAxis(2)
+		centerMinusBeforeComplex = centerMinusBefore.dropAxis()
 		if abs( centerMinusBeforeComplex ) <= 0.0:
 			return
 		radius = abs( centerMinusBefore )

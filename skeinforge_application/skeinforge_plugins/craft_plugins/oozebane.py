@@ -395,7 +395,7 @@ class OozebaneSkein:
 
 	def getLinearMoveWithFeedRate( self, feedRate, location ):
 		"Get a linear move line with the feed rate."
-		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRate, location.dropAxis(2), location.z )
+		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( feedRate, location.dropAxis(), location.z )
 
 	def getLinearMoveWithFeedRateSplitLine( self, feedRate, splitLine ):
 		"Get a linear move line with the feed rate and split line."
@@ -454,7 +454,7 @@ class OozebaneSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> oozebane </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> oozebane </procedureName>)')
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
 				self.operatingFeedRateMinute = 60.0 * float(splitLine[1])

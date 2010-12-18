@@ -150,8 +150,8 @@ class ClipSkein:
 	def addSegmentToPixelTables( self, location, maskPixelTable, oldLocation ):
 		"Add the segment to the layer and mask table."
 #		segmentTable = {}
-		euclidean.addValueSegmentToPixelTable( oldLocation.dropAxis(2), location.dropAxis(2), self.layerPixelTable, None, self.layerPixelWidth )
-#		euclidean.addValueSegmentToPixelTable( oldLocation.dropAxis(2), location.dropAxis(2), segmentTable, None, self.layerPixelWidth )
+		euclidean.addValueSegmentToPixelTable( oldLocation.dropAxis(), location.dropAxis(), self.layerPixelTable, None, self.layerPixelWidth )
+#		euclidean.addValueSegmentToPixelTable( oldLocation.dropAxis(), location.dropAxis(), segmentTable, None, self.layerPixelWidth )
 #		euclidean.addPixelTableToPixelTable( segmentTable, self.layerPixelTable )
 #		euclidean.addPixelTableToPixelTable( segmentTable, maskPixelTable )
 #		self.maskPixelTableTable[ location ] = maskPixelTable
@@ -185,7 +185,7 @@ class ClipSkein:
 		"Determine if the connection is close enough and does not overlap another thread."
 		if len(path) < 1:
 			return False
-		locationComplex = location.dropAxis(2)
+		locationComplex = location.dropAxis()
 		segment = locationComplex - path[-1]
 		segmentLength = abs( segment )
 		if segmentLength <= 0.0:
@@ -272,7 +272,7 @@ class ClipSkein:
 			if self.extruderActive:
 				self.oldWiddershins = None
 		else:
-			self.loopPath.path.append( location.dropAxis(2) )
+			self.loopPath.path.append(location.dropAxis())
 		self.oldLocation = location
 
 	def parseInitialization( self, clipRepository ):
@@ -283,7 +283,7 @@ class ClipSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> clip </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> clip </procedureName>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float(splitLine[1])
@@ -353,9 +353,9 @@ class ClipSkein:
 			elif firstWord == '(<boundaryPoint>':
 				if boundaryLoop == None:
 					boundaryLoop = []
-					self.boundaryLoops.append( boundaryLoop )
+					self.boundaryLoops.append(boundaryLoop)
 				location = gcodec.getLocationFromSplitLine(None, splitLine)
-				boundaryLoop.append( location.dropAxis(2) )
+				boundaryLoop.append(location.dropAxis())
 			elif firstWord == '(</layer>)':
 				return
 

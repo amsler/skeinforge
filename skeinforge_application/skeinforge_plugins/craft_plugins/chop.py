@@ -193,14 +193,14 @@ class ChopRepository:
 
 class ChopSkein:
 	"A class to chop a carving."
-	def addExtraTopLayerIfNecessary( self, carving, layerThickness, rotatedBoundaryLayers ):
+	def addExtraTopLayerIfNecessary( self, carving, layerThickness, rotatedLoopLayers ):
 		"Add extra top layer if necessary."
-		topRotatedBoundaryLayer = rotatedBoundaryLayers[-1]
+		topRotatedBoundaryLayer = rotatedLoopLayers[-1]
 		cuttingSafeHeight = topRotatedBoundaryLayer.z + 0.5001 * layerThickness
 		if cuttingSafeHeight > carving.getCarveCornerMaximum().z:
 			return
 		extraTopRotatedBoundaryLayer = topRotatedBoundaryLayer.getCopyAtZ( topRotatedBoundaryLayer.z + layerThickness )
-		rotatedBoundaryLayers.append( extraTopRotatedBoundaryLayer )
+		rotatedLoopLayers.append( extraTopRotatedBoundaryLayer )
 
 	def getCarvedSVG( self, carving, fileName, repository ):
 		"Parse gnu triangulated surface text and store the chopped gcode."
@@ -210,17 +210,23 @@ class ChopSkein:
 		importRadius = 0.5 * repository.importCoarseness.value * abs( perimeterWidth )
 		carving.setCarveImportRadius( max( importRadius, 0.01 * layerThickness ) )
 		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
-		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
-		if len( rotatedBoundaryLayers ) < 1:
+		rotatedLoopLayers = carving.getCarveRotatedBoundaryLayers()
+		if len( rotatedLoopLayers ) < 1:
 			print('Warning, there are no slices for the model, this could be because the model is too small for the Layer Thickness.')
 			return ''
 		if repository.addExtraTopLayerIfNecessary.value:
-			self.addExtraTopLayerIfNecessary( carving, layerThickness, rotatedBoundaryLayers )
-		rotatedBoundaryLayers.reverse()
+			self.addExtraTopLayerIfNecessary( carving, layerThickness, rotatedLoopLayers )
+		rotatedLoopLayers.reverse()
 		layerThickness = carving.getCarveLayerThickness()
 		decimalPlacesCarried = euclidean.getDecimalPlacesCarried(repository.extraDecimalPlaces.value, layerThickness)
-		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
-		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedBoundaryLayers)
+		svgWriter = svg_writer.SVGWriter(
+			repository.addLayerTemplateToSVG.value,
+			carving.getCarveCornerMaximum(),
+			carving.getCarveCornerMinimum(),
+			decimalPlacesCarried,
+			carving.getCarveLayerThickness(),
+			perimeterWidth)
+		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedLoopLayers)
 		return svgWriter.getReplacedSVGTemplate( fileName, 'chop', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())
 
 

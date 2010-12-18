@@ -49,7 +49,7 @@ Defines the output name for sending to a file or pipe.  A common choice is sys.s
  <br>
 <a name="Comment Choice" id="Comment Choice"></a><h3>Comment Choice</h3>
 
-Default is 'Delete Crafting Comments'.<br>
+Default is 'Delete All Comments'.<br>
  <br>
 <a name="Do Not Delete Comments" id="Do Not Delete Comments"></a><h4>Do Not Delete Comments</h4>
 
@@ -189,11 +189,11 @@ The export tool has created the file:<br>
 
 <dl><dt><a name="ExportSkein-addLine"><strong>addLine</strong></a>(self, line)</dt><dd><tt>Add&nbsp;a&nbsp;line&nbsp;of&nbsp;text&nbsp;and&nbsp;a&nbsp;newline&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
 
-<dl><dt><a name="ExportSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, exportRepository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;export&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="ExportSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;export&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="ExportSkein-getLineWithTruncatedNumber"><strong>getLineWithTruncatedNumber</strong></a>(self, character, line, splitLine)</dt><dd><tt>Get&nbsp;a&nbsp;line&nbsp;with&nbsp;the&nbsp;number&nbsp;after&nbsp;the&nbsp;character&nbsp;truncated.</tt></dd></dl>
 
-<dl><dt><a name="ExportSkein-parseLine"><strong>parseLine</strong></a>(self, exportRepository, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line.</tt></dd></dl>
+<dl><dt><a name="ExportSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line.</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -202,7 +202,7 @@ The export tool has created the file:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, exportRepository<font color="#909090">=None</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getDistanceGcode"><strong>getDistanceGcode</strong></a>(exportText)</dt><dd><tt>Get&nbsp;gcode&nbsp;lines&nbsp;with&nbsp;distance&nbsp;variable&nbsp;added.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getReplaced"><strong>getReplaced</strong></a>(exportText)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;strings&nbsp;replaced&nbsp;according&nbsp;to&nbsp;replace.csv&nbsp;file.</tt></dd></dl>

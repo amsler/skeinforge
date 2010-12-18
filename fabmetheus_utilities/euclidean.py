@@ -199,7 +199,7 @@ def addSurroundingLoopBeginning( distanceFeedRate, loop, z ):
 
 def addToThreadsFromLoop( extrusionHalfWidth, gcodeType, loop, oldOrderedLocation, skein ):
 	'Add to threads from the last location from loop.'
-	loop = getLoopStartingNearest( extrusionHalfWidth, oldOrderedLocation.dropAxis(2), loop )
+	loop = getLoopStartingNearest( extrusionHalfWidth, oldOrderedLocation.dropAxis(), loop )
 	oldOrderedLocation.x = loop[0].real
 	oldOrderedLocation.y = loop[0].imag
 	gcodeTypeStart = gcodeType
@@ -417,6 +417,10 @@ def getAreaLoop(loop):
 		areaLoopDouble += point.real * pointEnd.imag - pointEnd.real * point.imag
 	return 0.5 * areaLoopDouble
 
+def getAreaLoopAbsolute(loop):
+	'Get the absolute area of a complex polygon.'
+	return abs(getAreaLoop(loop))
+
 def getAreaLoops(loops):
 	'Get the area of a list of complex polygons.'
 	areaLoops = 0.0
@@ -449,7 +453,7 @@ def getAwayPoints( points, radius ):
 
 def getBackOfLoops(loops):
 	'Get the back of the loops.'
-	negativeFloat = - 999999999.75342341
+	negativeFloat = - 987654321.75342341
 	back = negativeFloat
 	for loop in loops:
 		for point in loop:
@@ -475,14 +479,14 @@ def getBooleanFromValue(value):
 
 def getBottomPath(path):
 	'Get the bottom of the path.'
-	bottom = 999999999.9
+	bottom = 987654321.0
 	for point in path:
 		bottom = min(bottom, point.z)
 	return bottom
 
 def getBottomPaths(paths):
 	'Get the bottom of the paths.'
-	bottom = 999999999.9
+	bottom = 987654321.0
 	for path in paths:
 		for point in path:
 			bottom = min(bottom, point.z)
@@ -597,18 +601,16 @@ def getComplexPolygon(center, radius, sides, startAngle=0.0):
 
 def getComplexPolygonByStartEnd(endAngle, radius, sides, startAngle=0.0):
 	'Get the complex polygon by start and end angle.'
-	if endAngle == startAngle:
-		return getComplexPolygon(complex(), radius, sides, startAngle)
 	angleExtent = endAngle - startAngle
 	sideAngle = 2.0 * math.pi / float(sides)
-	sides = math.ceil(abs(angleExtent / sideAngle))
+	sides = int(math.ceil(abs(angleExtent / sideAngle)))
 	sideAngle = angleExtent / float(sides)
 	complexPolygon = []
 	for side in xrange(abs(sides) + 1):
 		unitPolar = getWiddershinsUnitPolar(startAngle)
 		complexPolygon.append(unitPolar * radius)
 		startAngle += sideAngle
-	return complexPolygon
+	return getLoopWithoutCloseEnds(0.000001 * radius, complexPolygon)
 
 def getConcatenatedList( originalLists ):
 	'Get the lists as one concatenated list.'
@@ -813,7 +815,7 @@ def getFourSignificantFigures(number):
 
 def getFrontOfLoops(loops):
 	'Get the front of the loops.'
-	bigFloat = 999999999.196854654
+	bigFloat = 987654321.196854654
 	front = bigFloat
 	for loop in loops:
 		for point in loop:
@@ -961,6 +963,10 @@ def getIsInFilledRegion(loops, point):
 	'Determine if the left point is in the filled region of the loops.'
 	return getNumberOfIntersectionsToLeftOfLoops(loops, point) % 2 == 1
 
+def getIsRadianClose(firstRadian, secondRadian):
+	'Determine if the firstRadian is close to the secondRadian.'
+	return abs(math.pi - abs(math.pi - ((firstRadian - secondRadian) % (math.pi + math.pi) ))) < 0.000001
+
 def getIsWiddershinsByVector3( polygon ):
 	'Determine if the polygon goes round in the widdershins direction.'
 	return isWiddershins( getComplexPath( polygon ) )
@@ -983,7 +989,7 @@ def getLargestLoop(loops):
 	'Get largest loop from loops.'
 	if len(loops) == 1:
 		return loops[0]
-	largestArea = - 999999999.0
+	largestArea = - 987654321.0
 	largestLoop = []
 	for loop in loops:
 		loopArea = abs( getAreaLoop(loop) )
@@ -994,7 +1000,7 @@ def getLargestLoop(loops):
 
 def getLeftPoint(points):
 	'Get the leftmost complex point in the points.'
-	leftmost = 999999999.0
+	leftmost = 987654321.0
 	leftPointComplex = None
 	for pointComplex in points:
 		if pointComplex.real < leftmost:
@@ -1097,14 +1103,22 @@ def getLoopStartingNearest( extrusionHalfWidth, location, loop ):
 		loop = loop[1 :] + [loop[0]]
 	return loop
 
-def getLoopWithoutCloseSequentialPoints( close, loop ):
+def getLoopWithoutCloseEnds(close, loop):
+	'Get loop without close ends.'
+	if len(loop) < 2:
+		return loop
+	if abs(loop[0] - loop[-1]) > close:
+		return loop
+	return loop[: -1]
+
+def getLoopWithoutCloseSequentialPoints(close, loop):
 	'Get loop without close sequential points.'
 	if len(loop) < 2:
 		return loop
 	lastPoint = loop[-1]
 	loopWithoutCloseSequentialPoints = []
 	for point in loop:
-		if abs( point - lastPoint ) > close:
+		if abs(point - lastPoint) > close:
 			loopWithoutCloseSequentialPoints.append(point)
 		lastPoint = point
 	return loopWithoutCloseSequentialPoints
@@ -1113,48 +1127,73 @@ def getMaximum(firstComplex, secondComplex):
 	'Get a complex with each component the maximum of the respective components of a pair of complexes.'
 	return complex(max(firstComplex.real, secondComplex.real), max(firstComplex.imag, secondComplex.imag))
 
-def getMaximumByPathComplex(path):
-	'Get a complex with each component the maximum of the respective components of a list of complex points.'
-	maximum = complex(-999999999.0, -999999999.0)
+def getMaximumByComplexPath(path):
+	'Get a complex with each component the maximum of the respective components of a complex path.'
+	maximum = complex(-987654321.0, -987654321.0)
 	for point in path:
 		maximum = getMaximum(maximum, point)
 	return maximum
 
-def getMaximumByPathsComplex(paths):
-	'Get a complex with each component the maximum of the respective components of lists of complex points.'
-	maximum = complex(-999999999.0, -999999999.0)
+def getMaximumByComplexPaths(paths):
+	'Get a complex with each component the maximum of the respective components of complex paths.'
+	maximum = complex(-987654321.0, -987654321.0)
 	for path in paths:
-		maximum = getMaximum(maximum, getMaximumByPathComplex(path))
+		for point in path:
+			maximum = getMaximum(maximum, point)
+	return maximum
+
+def getMaximumByVector3Path(path):
+	'Get a vector3 with each component the maximum of the respective components of a vector3 path.'
+	maximum = Vector3(-987654321.0, -987654321.0, -987654321.0)
+	for point in path:
+		maximum.maximize(point)
+	return maximum
+
+def getMaximumByVector3Paths(paths):
+	'Get a complex with each component the maximum of the respective components of a complex path.'
+	maximum = Vector3(-987654321.0, -987654321.0, -987654321.0)
+	for path in paths:
+		for point in path:
+			maximum.maximize(point)
 	return maximum
 
 def getMaximumSpan(loop):
 	'Get the maximum span of the loop.'
-	extent = getMaximumByPathComplex(loop) - getMinimumByPathComplex(loop)
+	extent = getMaximumByComplexPath(loop) - getMinimumByComplexPath(loop)
 	return max( extent.real, extent.imag )
 
 def getMinimum(firstComplex, secondComplex):
 	'Get a complex with each component the minimum of the respective components of a pair of complexes.'
 	return complex(min(firstComplex.real, secondComplex.real), min(firstComplex.imag, secondComplex.imag))
 
-def getMinimumByPathComplex(path):
-	'Get a complex with each component the minimum of the respective components of a list of complex points.'
-	minimum = complex(999999999.0, 999999999.0)
+def getMinimumByComplexPath(path):
+	'Get a complex with each component the minimum of the respective components of a complex path.'
+	minimum = complex(987654321.0, 987654321.0)
 	for point in path:
 		minimum = getMinimum(minimum, point)
 	return minimum
 
-def getMinimumByPathsComplex(paths):
-	'Get a complex with each component the minimum of the respective components of lists of complex points.'
-	minimum = complex(999999999.0, 999999999.0)
+def getMinimumByComplexPaths(paths):
+	'Get a complex with each component the minimum of the respective components of complex paths.'
+	minimum = complex(987654321.0, 987654321.0)
 	for path in paths:
-		minimum = getMinimum(minimum, getMinimumByPathComplex(path))
+		for point in path:
+			minimum = getMinimum(minimum, point)
 	return minimum
 
-def getMinimumFromVec3List( vec3List ):
-	'Get a complex with each component the minimum of the respective components of a list of Vector3s.'
-	minimum = complex(999999999.0, 999999999.0)
-	for point in vec3List:
-		minimum = getMinimum( minimum, point.dropAxis(2) )
+def getMinimumByVector3Path(path):
+	'Get a vector3 with each component the minimum of the respective components of a vector3 path.'
+	minimum = Vector3(987654321.0, 987654321.0, 987654321.0)
+	for point in path:
+		minimum.minimize(point)
+	return minimum
+
+def getMinimumByVector3Paths(paths):
+	'Get a complex with each component the minimum of the respective components of a complex path.'
+	minimum = Vector3(987654321.0, 987654321.0, 987654321.0)
+	for path in paths:
+		for point in path:
+			minimum.minimize(point)
 	return minimum
 
 def getMirrorPath(path):
@@ -1169,7 +1208,7 @@ def getMirrorPath(path):
 
 def getNearestDistanceIndex( point, loop ):
 	'Get the distance squared to the nearest segment of the loop and index of that segment.'
-	smallestDistance = 999999999999999999.0
+	smallestDistance = 987654321987654321.0
 	nearestDistanceIndex = None
 	for pointIndex in xrange(len(loop)):
 		segmentBegin = loop[pointIndex]
@@ -1343,14 +1382,6 @@ def getPointsRoundZAxis( planeAngle, points ):
 	for point in points:
 		planeArray.append( planeAngle * point )
 	return planeArray
-
-def getPointMaximum( firstPoint, secondPoint ):
-	'Get a point with each component the maximum of the respective components of a pair of Vector3s.'
-	return Vector3( max( firstPoint.x, secondPoint.x ), max( firstPoint.y, secondPoint.y ), max( firstPoint.z, secondPoint.z ) )
-
-def getPointMinimum( firstPoint, secondPoint ):
-	'Get a point with each component the minimum of the respective components of a pair of Vector3s.'
-	return Vector3( min( firstPoint.x, secondPoint.x ), min( firstPoint.y, secondPoint.y ), min( firstPoint.z, secondPoint.z ) )
 
 def getPointPlusSegmentWithLength( length, point, segment ):
 	'Get point plus a segment scaled to a given length.'
@@ -1527,14 +1558,14 @@ def getThreeSignificantFigures(number):
 
 def getTopPath(path):
 	'Get the top of the path.'
-	top = -999999999.9
+	top = -987654321.0
 	for point in path:
 		top = max(top, point.z)
 	return top
 
 def getTopPaths(paths):
 	'Get the top of the paths.'
-	top = -999999999.9
+	top = -987654321.0
 	for path in paths:
 		for point in path:
 			top = max(top, point.z)
@@ -1544,10 +1575,10 @@ def getTransferClosestSurroundingLoop( oldOrderedLocation, remainingSurroundingL
 	'Get and transfer the closest remaining surrounding loop.'
 	if len( remainingSurroundingLoops ) > 0:
 		oldOrderedLocation.z = remainingSurroundingLoops[0].z
-	closestDistance = 999999999999999999.0
+	closestDistance = 987654321987654321.0
 	closestSurroundingLoop = None
 	for remainingSurroundingLoop in remainingSurroundingLoops:
-		distance = getNearestDistanceIndex( oldOrderedLocation.dropAxis(2), remainingSurroundingLoop.boundary ).distance
+		distance = getNearestDistanceIndex( oldOrderedLocation.dropAxis(), remainingSurroundingLoop.boundary ).distance
 		if distance < closestDistance:
 			closestDistance = distance
 			closestSurroundingLoop = remainingSurroundingLoop
@@ -1586,7 +1617,7 @@ def getVector3Path(complexPath, z=0.0):
 	'Get the vector3 path from the complex path.'
 	vector3Path = []
 	for complexPoint in complexPath:
-		vector3Path.append(Vector3(complexPoint.real, complexPoint.imag))
+		vector3Path.append(Vector3(complexPoint.real, complexPoint.imag, z))
 	return vector3Path
 
 def getVector3Paths(complexPaths, z=0.0):
@@ -1629,7 +1660,7 @@ def getXYComplexFromVector3(vector3):
 	'Get an xy complex from a vector3 if it exists, otherwise return None.'
 	if vector3 == None:
 		return None
-	return vector3.dropAxis(2)
+	return vector3.dropAxis()
 
 def getYIntersectionIfExists( beginComplex, endComplex, x ):
 	'Get the y intersection if it exists.'
@@ -1935,10 +1966,10 @@ def toggleHashtable( hashtable, key, value ):
 
 def transferClosestFillLoop( extrusionHalfWidth, oldOrderedLocation, remainingFillLoops, skein ):
 	'Transfer the closest remaining fill loop.'
-	closestDistance = 999999999999999999.0
+	closestDistance = 987654321987654321.0
 	closestFillLoop = None
 	for remainingFillLoop in remainingFillLoops:
-		distance = getNearestDistanceIndex( oldOrderedLocation.dropAxis(2), remainingFillLoop ).distance
+		distance = getNearestDistanceIndex( oldOrderedLocation.dropAxis(), remainingFillLoop ).distance
 		if distance < closestDistance:
 			closestDistance = distance
 			closestFillLoop = remainingFillLoop
@@ -1951,9 +1982,9 @@ def transferClosestFillLoop( extrusionHalfWidth, oldOrderedLocation, remainingFi
 
 def transferClosestPath( oldOrderedLocation, remainingPaths, skein ):
 	'Transfer the closest remaining path.'
-	closestDistance = 999999999999999999.0
+	closestDistance = 987654321987654321.0
 	closestPath = None
-	oldOrderedLocationComplex = oldOrderedLocation.dropAxis(2)
+	oldOrderedLocationComplex = oldOrderedLocation.dropAxis()
 	for remainingPath in remainingPaths:
 		distance = min( abs( oldOrderedLocationComplex - remainingPath[0] ), abs( oldOrderedLocationComplex - remainingPath[-1] ) )
 		if distance < closestDistance:
@@ -2043,7 +2074,7 @@ class Endpoint:
 
 	def getNearestEndpoint( self, endpoints ):
 		'Get nearest endpoint.'
-		smallestDistance = 999999999999999999.0
+		smallestDistance = 987654321987654321.0
 		nearestEndpoint = None
 		for endpoint in endpoints:
 			distance = abs( self.point - endpoint.point )
@@ -2055,7 +2086,7 @@ class Endpoint:
 	def getNearestMiss( self, endpoints, path, pixelDictionary, width ):
 		'Get the nearest endpoint which the segment to that endpoint misses the other extrusions.'
 		pathMaskTable = {}
-		smallestDistance = 9999999999.0
+		smallestDistance = 987654321.0
 		penultimateMinusPoint = complex( 0.0, 0.0 )
 		if len(path) > 1:
 			penultimatePoint = path[ - 2 ]
@@ -2094,7 +2125,7 @@ class Endpoint:
 	def getNearestMissCheckEndpointPath( self, endpoints, path, pixelDictionary, width ):
 		'Get the nearest endpoint which the segment to that endpoint misses the other extrusions, also checking the path of the endpoint.'
 		pathMaskTable = {}
-		smallestDistance = 9999999999.0
+		smallestDistance = 987654321.0
 		penultimateMinusPoint = complex( 0.0, 0.0 )
 		if len(path) > 1:
 			penultimatePoint = path[ - 2 ]
@@ -2175,19 +2206,19 @@ class ProjectiveSpace:
 	def getByBasisXZ( self, basisX, basisZ ):
 		'Get by x basis x and y basis.'
 		self.basisX = basisX
+		self.basisZ = basisZ
 		self.basisX.normalize()
 		self.basisY = basisZ.cross(self.basisX)
 		self.basisY.normalize()
-		self.basisZ = basisZ
 		return self
 
 	def getByBasisZFirst(self, basisZ, firstVector3):
 		'Get by basisZ and first.'
+		self.basisZ = basisZ
 		self.basisY = basisZ.cross(firstVector3)
 		self.basisY.normalize()
 		self.basisX = self.basisY.cross(self.basisZ)
 		self.basisX.normalize()
-		self.basisZ = basisZ
 		return self
 
 	def getByBasisZTop(self, basisZ, top):
@@ -2334,14 +2365,14 @@ class SurroundingLoop:
 
 	def addToBoundary( self, vector3 ):
 		'Add vector3 to boundary.'
-		self.boundary.append( vector3.dropAxis(2) )
+		self.boundary.append( vector3.dropAxis() )
 		self.z = vector3.z
 
 	def addToLoop( self, vector3 ):
 		'Add vector3 to loop.'
 		if self.loop == None:
 			self.loop = []
-		self.loop.append( vector3.dropAxis(2) )
+		self.loop.append( vector3.dropAxis() )
 		self.z = vector3.z
 
 	def addPerimeterInner( self, oldOrderedLocation, skein ):
@@ -2436,7 +2467,7 @@ class XIntersectionIndex:
 
 	def __ne__(self, other):
 		'Determine whether this XIntersectionIndex is not identical to other one.'
-		return not self.__eq__( other )
+		return not self.__eq__(other)
 
 	def __repr__(self):
 		'Get the string representation of this x intersection.'

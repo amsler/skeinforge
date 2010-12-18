@@ -23,7 +23,8 @@
 <a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html">fabmetheus_utilities.geometry.geometry_utilities.evaluate</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.solids.group.html">fabmetheus_utilities.geometry.solids.group</a><br>
 <a href="math.html">math</a><br>
-</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.solids.trianglemesh.html">fabmetheus_utilities.geometry.solids.trianglemesh</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.manipulation_evaluator.matrix.html">fabmetheus_utilities.geometry.manipulation_evaluator.matrix</a><br>
+<a href="fabmetheus_utilities.geometry.solids.trianglemesh.html">fabmetheus_utilities.geometry.solids.trianglemesh</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -142,7 +143,11 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-processXMLElement"><strong>processXMLElement</strong></a>(xmlElement)</dt><dd><tt>Process&nbsp;the&nbsp;xml&nbsp;element.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-addBeveledCylinder"><strong>addBeveledCylinder</strong></a>(bevel, endZ, inradius, outputs, start, topOverBottom, xmlElement)</dt><dd><tt>Add&nbsp;beveled&nbsp;cylinder&nbsp;to&nbsp;outputs&nbsp;bevel,&nbsp;endZ,&nbsp;inradius&nbsp;and&nbsp;start.</tt></dd></dl>
+ <dl><dt><a name="-addCylinderByInradius"><strong>addCylinderByInradius</strong></a>(faces, inradius, topOverBottom, vertexes, xmlElement)</dt><dd><tt>Add&nbsp;cylinder&nbsp;by&nbsp;radius.</tt></dd></dl>
+ <dl><dt><a name="-getGeometryOutput"><strong>getGeometryOutput</strong></a>(inradius, topOverBottom, xmlElement)</dt><dd><tt>Get&nbsp;cylinder&nbsp;triangle&nbsp;mesh&nbsp;by&nbsp;inradius.</tt></dd></dl>
+ <dl><dt><a name="-getGeometryOutputByEndStart"><strong>getGeometryOutputByEndStart</strong></a>(endZ, inradiusComplex, start, topOverBottom, xmlElement)</dt><dd><tt>Get&nbsp;cylinder&nbsp;triangle&nbsp;mesh&nbsp;by&nbsp;endZ,&nbsp;inradius&nbsp;and&nbsp;start.</tt></dd></dl>
+ <dl><dt><a name="-processXMLElement"><strong>processXMLElement</strong></a>(xmlElement)</dt><dd><tt>Process&nbsp;the&nbsp;xml&nbsp;element.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

@@ -15,7 +15,7 @@ Default is empty.
 Defines the output name for sending to a file or pipe.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  With the empty default, nothing will be done.
 
 ===Comment Choice===
-Default is 'Delete Crafting Comments'.
+Default is 'Delete All Comments'.
 
 ====Do Not Delete Comments====
 When selected, export will not delete comments.  Crafting comments slow down the processing in many firmware types, which leads to segment pauses.
@@ -104,19 +104,19 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCraftedTextFromText( gcodeText, exportRepository = None ):
-	"Export a gcode linear move text."
+def getCraftedTextFromText(gcodeText, repository=None):
+	'Export a gcode linear move text.'
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'export'):
 		return gcodeText
-	if exportRepository == None:
-		exportRepository = settings.getReadRepository( ExportRepository() )
-	if not exportRepository.activateExport.value:
+	if repository == None:
+		repository = settings.getReadRepository(ExportRepository())
+	if not repository.activateExport.value:
 		return gcodeText
-	return ExportSkein().getCraftedGcode( exportRepository, gcodeText )
+	return ExportSkein().getCraftedGcode(repository, gcodeText)
 
-def getDistanceGcode( exportText ):
-	"Get gcode lines with distance variable added."
-	lines = archive.getTextLines( exportText )
+def getDistanceGcode(exportText):
+	'Get gcode lines with distance variable added.'
+	lines = archive.getTextLines(exportText)
 	oldLocation = None
 	for line in lines:
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
@@ -126,17 +126,17 @@ def getDistanceGcode( exportText ):
 		if firstWord == 'G1':
 			location = gcodec.getLocationFromSplitLine(oldLocation, splitLine)
 			if oldLocation != None:
-				distance = location.distance( oldLocation )
+				distance = location.distance(oldLocation)
 				print( distance )
 			oldLocation = location
 	return exportText
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get the repository constructor.'
 	return ExportRepository()
 
 def getReplaced(exportText):
-	"Get text with strings replaced according to replace.csv file."
+	'Get text with strings replaced according to replace.csv file.'
 	replaceText = settings.getFileInAlterationsOrGivenDirectory(os.path.dirname(__file__), 'Replace.csv')
 	lines = archive.getTextLines(replaceText)
 	for line in lines:
@@ -144,42 +144,42 @@ def getReplaced(exportText):
 	return exportText
 
 def getReplacedByLine(exportText, line):
-	"Get text with strings replaced according to line."
+	'Get text with strings replaced according to line.'
 	splitLine = line.replace('\\n', '\t').split('\t')
 	if len(splitLine) < 1:
 		return exportText
 	return exportText.replace(splitLine[0], '\n'.join(splitLine[1 :]))
 
 def getSelectedPluginModule( plugins ):
-	"Get the selected plugin module."
+	'Get the selected plugin module.'
 	for plugin in plugins:
 		if plugin.value:
 			return archive.getModuleWithDirectoryPath( plugin.directoryPath, plugin.name )
 	return None
 
 def writeOutput(fileName=''):
-	"Export a gcode linear move file."
+	'Export a gcode linear move file.'
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName == '':
 		return
-	exportRepository = ExportRepository()
-	settings.getReadRepository(exportRepository)
+	repository = ExportRepository()
+	settings.getReadRepository(repository)
 	startTime = time.time()
 	print('File ' + archive.getSummarizedFileName(fileName) + ' is being chain exported.')
-	suffixFileName = fileName[: fileName.rfind('.')] + '_export.' + exportRepository.fileExtension.value
+	suffixFileName = fileName[: fileName.rfind('.')] + '_export.' + repository.fileExtension.value
 	gcodeText = gcodec.getGcodeFileText(fileName, '')
 	procedures = skeinforge_craft.getProcedures('export', gcodeText)
 	gcodeText = skeinforge_craft.getChainTextFromProcedures(fileName, procedures[ : - 1 ], gcodeText)
 	if gcodeText == '':
 		return
 	window = skeinforge_analyze.writeOutput(fileName, suffixFileName, gcodeText)
-	if exportRepository.savePenultimateGcode.value:
+	if repository.savePenultimateGcode.value:
 		penultimateFileName = fileName[: fileName.rfind('.')] + '_penultimate.gcode'
 		archive.writeFileText(penultimateFileName, gcodeText)
 		print('The penultimate file is saved as ' + archive.getSummarizedFileName(penultimateFileName))
-	exportChainGcode = getCraftedTextFromText(gcodeText, exportRepository)
+	exportChainGcode = getCraftedTextFromText(gcodeText, repository)
 	replaceableExportChainGcode = None
-	selectedPluginModule = getSelectedPluginModule(exportRepository.exportPlugins)
+	selectedPluginModule = getSelectedPluginModule(repository.exportPlugins)
 	if selectedPluginModule == None:
 		replaceableExportChainGcode = exportChainGcode
 	else:
@@ -191,18 +191,18 @@ def writeOutput(fileName=''):
 		replaceableExportChainGcode = getReplaced(replaceableExportChainGcode)
 		archive.writeFileText( suffixFileName, replaceableExportChainGcode )
 		print('The exported file is saved as ' + archive.getSummarizedFileName(suffixFileName))
-	if exportRepository.alsoSendOutputTo.value != '':
+	if repository.alsoSendOutputTo.value != '':
 		if replaceableExportChainGcode == None:
 			replaceableExportChainGcode = selectedPluginModule.getOutput(exportChainGcode)
-		exec('print >> ' + exportRepository.alsoSendOutputTo.value + ', replaceableExportChainGcode')
+		exec('print >> ' + repository.alsoSendOutputTo.value + ', replaceableExportChainGcode')
 	print('It took %s to export the file.' % euclidean.getDurationString(time.time() - startTime))
 	return window
 
 
 class ExportRepository:
-	"A class to handle the export settings."
+	'A class to handle the export settings.'
 	def __init__(self):
-		"Set the default settings, execute title & settings fileName."
+		'Set the default settings, execute title & settings fileName.'
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Export', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Export')
@@ -210,8 +210,8 @@ class ExportRepository:
 		self.alsoSendOutputTo = settings.StringSetting().getFromValue('Also Send Output To:', self, '')
 		self.commentChoice = settings.MenuButtonDisplay().getFromName('Comment Choice:', self )
 		self.doNotDeleteComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Do Not Delete Comments', self, False)
-		self.deleteCraftingComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Delete Crafting Comments', self, True)
-		self.deleteAllComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Delete All Comments', self, False)
+		self.deleteCraftingComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Delete Crafting Comments', self, False)
+		self.deleteAllComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Delete All Comments', self, True)
 		exportPluginsFolderPath = archive.getAbsoluteFrozenFolderPath(__file__, 'export_plugins')
 		exportStaticDirectoryPath = os.path.join(exportPluginsFolderPath, 'static_plugins')
 		exportPluginFileNames = archive.getPluginFileNamesFromDirectoryPath(exportPluginsFolderPath)
@@ -237,29 +237,30 @@ class ExportRepository:
 		self.executeTitle = 'Export'
 
 	def execute(self):
-		"Export button has been clicked."
+		'Export button has been clicked.'
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
 
 class ExportSkein:
-	"A class to export a skein of extrusions."
+	'A class to export a skein of extrusions.'
 	def __init__(self):
 		self.crafting = False
 		self.decimalPlacesExported = 2
 		self.output = cStringIO.StringIO()
 
 	def addLine(self, line):
-		"Add a line of text and a newline to the output."
+		'Add a line of text and a newline to the output.'
 		if line != '':
 			self.output.write( line + '\n')
 
-	def getCraftedGcode( self, exportRepository, gcodeText ):
-		"Parse gcode text and store the export gcode."
+	def getCraftedGcode( self, repository, gcodeText ):
+		'Parse gcode text and store the export gcode.'
+		self.repository = repository
 		lines = archive.getTextLines(gcodeText)
 		for line in lines:
-			self.parseLine( exportRepository, line )
+			self.parseLine(line)
 		return self.output.getvalue()
 
 	def getLineWithTruncatedNumber(self, character, line, splitLine):
@@ -270,23 +271,23 @@ class ExportSkein:
 		roundedNumberString = euclidean.getRoundedToPlacesString(self.decimalPlacesExported, float(numberString))
 		return gcodec.getLineWithValueString(character, line, splitLine, roundedNumberString)
 
-	def parseLine(self, exportRepository, line):
-		"Parse a gcode line."
+	def parseLine(self, line):
+		'Parse a gcode line.'
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]
 		if firstWord == '(</crafting>)':
 			self.crafting = False
-		if firstWord[0] == '(':
-			if exportRepository.deleteAllComments.value:
+		if self.repository.deleteAllComments.value or (self.repository.deleteCraftingComments.value and self.crafting):
+			if firstWord[0] == '(':
 				return
-			if exportRepository.deleteCraftingComments.value and self.crafting:
-				return
+			else:
+				line = line.split(';')[0].split('(')[0].strip()
 		if firstWord == '(<crafting>)':
 			self.crafting = True
 		if firstWord == '(</extruderInitialization>)':
-			self.addLine('(<procedureDone> export </procedureDone>)')
+			self.addLine('(<procedureName> export </procedureName>)')
 		if firstWord != 'G1' and firstWord != 'G2' and firstWord != 'G3' :
 			self.addLine(line)
 			return
@@ -300,11 +301,11 @@ class ExportSkein:
 
 
 def main():
-	"Display the export dialog."
+	'Display the export dialog.'
 	if len(sys.argv) > 1:
 		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main()

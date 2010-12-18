@@ -6,7 +6,10 @@ Hidden scrollbar is in its own file so that even if Tkinter is not installed, se
 from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
-import Tkinter
+try:
+	import Tkinter
+except:
+	pass
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'

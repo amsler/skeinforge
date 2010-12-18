@@ -116,7 +116,7 @@ class Island:
 		"Add to the boundary if it is not complete."
 		if self.boundingLoop == None:
 			location = gcodec.getLocationFromSplitLine(None, splitLine)
-			self.boundary.append( location.dropAxis(2) )
+			self.boundary.append(location.dropAxis())
 			self.z = location.z
 
 	def createBoundingLoop(self):
@@ -191,9 +191,9 @@ class TowerSkein:
 		"Add thread with a high move if necessary to clear the previous extrusion."
 		if self.oldLocation != None:
 			if self.oldLocation.z + self.minimumBelow < self.highestZ:
-				self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, self.oldLocation.dropAxis(2), self.highestZ )
+				self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, self.oldLocation.dropAxis(), self.highestZ )
 		if location.z + self.minimumBelow < self.highestZ:
-			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, location.dropAxis(2), self.highestZ )
+			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, location.dropAxis(), self.highestZ )
 
 	def addThreadLayerIfNone(self):
 		"Add a thread layer if it is none."
@@ -277,7 +277,7 @@ class TowerSkein:
 		closestDistance = 999999999999999999.0
 		closestSurroundingLoop = None
 		for remainingSurroundingLoop in remainingSurroundingLoops:
-			distance = euclidean.getNearestDistanceIndex( oldOrderedLocation.dropAxis(2), remainingSurroundingLoop.boundary ).distance
+			distance = euclidean.getNearestDistanceIndex( oldOrderedLocation.dropAxis(), remainingSurroundingLoop.boundary ).distance
 			if distance < closestDistance:
 				closestDistance = distance
 				closestSurroundingLoop = remainingSurroundingLoop
@@ -320,7 +320,7 @@ class TowerSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> tower </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> tower </procedureName>)')
 			elif firstWord == '(<layer>':
 				return
 			elif firstWord == '(<layerThickness>':

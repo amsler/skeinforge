@@ -429,8 +429,8 @@ class SkeinisoSkein:
 		"Update the bounding corners."
 		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		if self.extruderActive or self.goAroundExtruderOffTravel:
-			self.cornerHigh = euclidean.getPointMaximum( self.cornerHigh, location )
-			self.cornerLow = euclidean.getPointMinimum( self.cornerLow, location )
+			self.cornerMaximum.maximize(location)
+			self.cornerMinimum.minimize(location)
 		self.oldLocation = location
 
 	def linearMove( self, line, location ):
@@ -498,8 +498,8 @@ class SkeinisoSkein:
 		self.fileName = fileName
 		self.gcodeText = gcodeText
 		self.initializeActiveLocation()
-		self.cornerHigh = Vector3(-999999999.0, -999999999.0, -999999999.0)
-		self.cornerLow = Vector3(999999999.0, 999999999.0, 999999999.0)
+		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, -999999999.0)
+		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
 		self.goAroundExtruderOffTravel = repository.goAroundExtruderOffTravel.value
 		self.lines = archive.getTextLines(gcodeText)
 		self.isThereALayerStartWord = gcodec.isThereAFirstWord('(<layer>', self.lines, 1 )
@@ -525,15 +525,15 @@ class SkeinisoSkein:
 		if len( self.layerTops ) > 1:
 			self.oneMinusBrightnessOverTopLayerIndex = ( 1.0 - repository.bottomLayerBrightness.value ) / float( len( self.layerTops ) - 1 )
 		self.firstTopLayer = len( self.layerTops ) - self.repository.numberOfFillTopLayers.value
-		self.centerComplex = 0.5 * ( self.cornerHigh.dropAxis(2) + self.cornerLow.dropAxis(2) )
-		self.centerBottom = Vector3( self.centerComplex.real, self.centerComplex.imag, self.cornerLow.z )
+		self.centerComplex = 0.5 * ( self.cornerMaximum.dropAxis() + self.cornerMinimum.dropAxis() )
+		self.centerBottom = Vector3( self.centerComplex.real, self.centerComplex.imag, self.cornerMinimum.z )
 		self.scale = repository.scale.value
 		self.scaleCenterBottom = self.scale * self.centerBottom
-		self.scaleCornerHigh = self.scale * self.cornerHigh.dropAxis(2)
-		self.scaleCornerLow = self.scale * self.cornerLow.dropAxis(2)
-		print( "The lower left corner of the skeiniso window is at %s, %s" % ( self.cornerLow.x, self.cornerLow.y ) )
-		print( "The upper right corner of the skeiniso window is at %s, %s" % ( self.cornerHigh.x, self.cornerHigh.y ) )
-		self.cornerImaginaryTotal = self.cornerHigh.y + self.cornerLow.y
+		self.scaleCornerHigh = self.scale * self.cornerMaximum.dropAxis()
+		self.scaleCornerLow = self.scale * self.cornerMinimum.dropAxis()
+		print("The lower left corner of the skeiniso window is at %s, %s" % (self.cornerMinimum.x, self.cornerMinimum.y))
+		print("The upper right corner of the skeiniso window is at %s, %s" % (self.cornerMaximum.x, self.cornerMaximum.y))
+		self.cornerImaginaryTotal = self.cornerMaximum.y + self.cornerMinimum.y
 		margin = complex( 5.0, 5.0 )
 		self.marginCornerLow = self.scaleCornerLow - margin
 		self.screenSize = margin + 2.0 * ( self.scaleCornerHigh - self.marginCornerLow )

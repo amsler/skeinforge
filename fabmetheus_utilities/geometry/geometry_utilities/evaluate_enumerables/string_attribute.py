@@ -20,7 +20,7 @@ def _getAccessibleAttribute(attributeName, stringObject):
 	'Get the accessible attribute.'
 	if attributeName in globalNativeFunctionSet:
 		return getattr(stringObject, attributeName, None)
-	if attributeName in globalAccessibleAttributeSet:
+	if attributeName in globalGetAccessibleAttributeSet:
 		stringAttribute = StringAttribute(stringObject)
 		return getattr(stringAttribute, attributeName, None)
 	return None
@@ -118,7 +118,7 @@ class StringAttribute:
 
 globalAccessibleAttributes = 'append copy delete get getIsIn getIsNotIn getLength getMax getMin'.split()
 globalAccessibleAttributes += 'insert keys length remove reverse set values'.split()
-globalAccessibleAttributeSet = set(globalAccessibleAttributes)
+globalGetAccessibleAttributeSet = set(globalAccessibleAttributes)
 globalNativeFunctions = 'capitalize center count decode encode endswith expandtabs find format index isalnum join'.split()
 globalNativeFunctions += 'isalpha isdigit islower isspace istitle isupper ljust lower lstrip partition replace rfind rindex'.split()
 globalNativeFunctions += 'rjust rpartition rsplit rstrip split splitlines startswith strip swapcase title translate upper zfill'.split()

@@ -17,7 +17,7 @@ Below are examples of Vector3 use.
 >>> triplePythagoras = pythagoras * 3.0
 >>> triplePythagoras
 9.0, 12.0, 0.0
->>> plane = pythagoras.dropAxis(2)
+>>> plane = pythagoras.dropAxis()
 >>> plane
 (3+4j)
 """
@@ -134,7 +134,7 @@ class Vector3:
 
 	def __ne__(self, other):
 		"Determine whether this vector is not identical to other one."
-		return not self.__eq__( other )
+		return not self.__eq__(other)
 
 	def __neg__(self):
 		return Vector3( - self.x, - self.y, - self.z )
@@ -176,7 +176,7 @@ class Vector3:
 
 	def distance(self, other):
 		"Get the Euclidean distance between this vector and other one."
-		return math.sqrt( self.distanceSquared( other ) )
+		return math.sqrt( self.distanceSquared(other) )
 
 	def distanceSquared(self, other):
 		"Get the square of the Euclidean distance between this vector and other one."

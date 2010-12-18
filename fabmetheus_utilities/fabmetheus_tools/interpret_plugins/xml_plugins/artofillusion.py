@@ -33,7 +33,7 @@ import __init__
 from fabmetheus_utilities.geometry.geometry_tools import face
 from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_geometry
-from fabmetheus_utilities.geometry.geometry_utilities import booleansolid
+from fabmetheus_utilities.geometry.geometry_utilities import boolean_solid
 from fabmetheus_utilities.geometry.solids import cube
 from fabmetheus_utilities.geometry.solids import cylinder
 from fabmetheus_utilities.geometry.solids import group
@@ -106,7 +106,7 @@ def removeListArtOfIllusionFromDictionary( dictionary, scrubKeys ):
 	euclidean.removeListFromDictionary( dictionary, scrubKeys )
 
 
-class BooleanSolid( booleansolid.BooleanSolid ):
+class BooleanSolid( boolean_solid.BooleanSolid ):
 	"An Art of Illusion CSG object info."
 	def setToObjectAttributeDictionary(self):
 		"Set the shape of this carvable object info."
@@ -145,7 +145,7 @@ class Cylinder(cylinder.Cylinder):
 		self.topOverBottom = float(self.xmlElement.attributeDictionary['ratio'])
 		self.xmlElement.attributeDictionary['radius.x'] = self.xmlElement.attributeDictionary['rx']
 		self.xmlElement.attributeDictionary['radius.y'] = self.xmlElement.attributeDictionary['rz']
-		self.xmlElement.attributeDictionary['topoverbottom'] = self.xmlElement.attributeDictionary['ratio']
+		self.xmlElement.attributeDictionary['topOverBottom'] = self.xmlElement.attributeDictionary['ratio']
 		object = self.xmlElement.object
 		object.matrix4X4 = object.matrix4X4.getOtherTimesSelf(matrix.getDiagonalSwitchedTetragrid(90.0, [0, 2]))
 		removeListArtOfIllusionFromDictionary(self.xmlElement.attributeDictionary, ['rx', 'rz', 'ratio'])

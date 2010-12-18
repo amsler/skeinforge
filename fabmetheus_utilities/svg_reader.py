@@ -857,7 +857,7 @@ class SVGReader:
 		for loop in rotatedLoopLayer.loops:
 			for pointIndex, point in enumerate(loop):
 				loop[pointIndex] = complex(point.real, -point.imag)
-		rotatedLoopLayer.loops = trianglemesh.getLoopsInOrderOfArea(trianglemesh.compareAreaDescending, rotatedLoopLayer.loops)
+		trianglemesh.sortLoopsInOrderOfArea(True, rotatedLoopLayer.loops)
 		for loopIndex, loop in enumerate(rotatedLoopLayer.loops):
 			isInsideLoops = euclidean.getIsInFilledRegion(rotatedLoopLayer.loops[: loopIndex], euclidean.getLeftPoint(loop))
 			intercircle.directLoop((not isInsideLoops), loop)
@@ -875,12 +875,12 @@ class SVGReader:
 		"Parse SVG text and store the layers."
 		self.fileName = fileName
 		xmlParser = XMLSimpleReader(fileName, None, svgText)
-		root = xmlParser.getRoot()
-		if root == None:
+		self.root = xmlParser.getRoot()
+		if self.root == None:
 			print('Warning, root was None in parseSVG in SVGReader, so nothing will be done for:')
 			print(fileName)
 			return
-		self.parseSVGByXMLElement(root)
+		self.parseSVGByXMLElement(self.root)
 
 	def parseSVGByXMLElement(self, xmlElement):
 		"Parse SVG by xmlElement."

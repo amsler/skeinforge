@@ -576,8 +576,8 @@ class RaftSkein:
 		interfaceExtrusionWidth = self.perimeterWidth * self.interfaceLayerThicknessOverLayerThickness
 		self.interfaceStep = interfaceExtrusionWidth / self.repository.interfaceInfillDensity.value
 		self.setCornersZ()
-		self.cornerLowComplex = self.cornerLow.dropAxis(2)
-		originalExtent = self.cornerHighComplex - self.cornerLowComplex
+		self.cornerMinimumComplex = self.cornerMinimum.dropAxis()
+		originalExtent = self.cornerMaximumComplex - self.cornerMinimumComplex
 		self.raftOutsetRadius = self.repository.raftMargin.value + self.repository.raftAdditionalMarginOverLengthPercent.value * 0.01 * max( originalExtent.real, originalExtent.imag )
 		self.setBoundaryLayers()
 		outsetSeparateLoops = intercircle.getInsetSeparateLoopsFromLoops( - self.raftOutsetRadius, self.boundaryLayers[0].loops, 0.8 )
@@ -589,9 +589,9 @@ class RaftSkein:
 		self.addInterfaceTables( baseStep, interfaceExtrusionWidth )
 		self.baseIntersectionsTable = {}
 		complexRadius = complex( self.raftOutsetRadius, self.raftOutsetRadius )
-		self.complexHigh = complexRadius + self.cornerHighComplex
-		self.complexLow = self.cornerLowComplex - complexRadius
-		self.beginLoop = euclidean.getSquareLoopWiddershins( self.cornerLowComplex, self.cornerHighComplex )
+		self.complexHigh = complexRadius + self.cornerMaximumComplex
+		self.complexLow = self.cornerMinimumComplex - complexRadius
+		self.beginLoop = euclidean.getSquareLoopWiddershins( self.cornerMinimumComplex, self.cornerMaximumComplex )
 		if not intercircle.orbitsAreLarge( self.beginLoop, self.temperatureChangeTimeBeforeRaft ):
 			self.beginLoop = None
 		if self.repository.baseLayers.value > 0:
@@ -804,7 +804,7 @@ class RaftSkein:
 		else:
 			self.addFlowRateValueIfDifferent(self.oldFlowRateInput)
 			self.addTemperatureLineIfDifferent(self.objectNextLayersTemperature)
-		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate(feedRateMinuteMultiplied, location.dropAxis(2), z)
+		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate(feedRateMinuteMultiplied, location.dropAxis(), z)
 
 	def getStepsUntilEnd( self, begin, end, stepSize ):
 		"Get steps from the beginning until the end."
@@ -873,7 +873,7 @@ class RaftSkein:
 			if firstWord == '(<coolingRate>':
 				self.coolingRate = float(splitLine[1])
 			elif firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> raft </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> raft </procedureName>)')
 			elif firstWord == '(<heatingRate>':
 				self.heatingRate = float(splitLine[1])
 			elif firstWord == '(<layer>':
@@ -1013,8 +1013,8 @@ class RaftSkein:
 		boundaryLoop = None
 		boundaryLayer = None
 		layerIndex = - 1
-		self.cornerHighComplex = complex(-999999999.0, -999999999.0)
-		self.cornerLow = Vector3(999999999.0, 999999999.0, 999999999.0)
+		self.cornerMaximumComplex = complex(-912345678.0, -912345678.0)
+		self.cornerMinimum = Vector3(912345678.0, 912345678.0, 912345678.0)
 		self.firstLayerLoops = []
 		for line in self.lines[self.lineIndex :]:
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
@@ -1025,14 +1025,14 @@ class RaftSkein:
 				location = gcodec.getLocationFromSplitLine(None, splitLine)
 				if boundaryLoop == None:
 					boundaryLoop = []
-					boundaryLayer.loops.append( boundaryLoop )
-				boundaryLoop.append( location.dropAxis(2) )
-				self.cornerHighComplex = euclidean.getMaximum( self.cornerHighComplex, location.dropAxis(2) )
-				self.cornerLow = euclidean.getPointMinimum( self.cornerLow, location )
+					boundaryLayer.loops.append(boundaryLoop)
+				boundaryLoop.append(location.dropAxis())
+				self.cornerMaximumComplex = euclidean.getMaximum(self.cornerMaximumComplex, location.dropAxis())
+				self.cornerMinimum.minimize(location)
 			elif firstWord == '(<layer>':
 				z = float(splitLine[1])
 				boundaryLayer = euclidean.LoopLayer(z)
-				self.boundaryLayers.append( boundaryLayer )
+				self.boundaryLayers.append(boundaryLayer)
 			elif firstWord == '(<layer>':
 				layerIndex += 1
 				if self.repository.supportChoiceNone.value:

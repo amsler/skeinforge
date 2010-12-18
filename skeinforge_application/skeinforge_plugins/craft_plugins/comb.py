@@ -190,7 +190,7 @@ class CombSkein:
 		if not self.isAlteration and not self.extruderActive and self.oldLocation != None:
 			if len( self.getBoundaries() ) > 0:
 				highestZ = max( location.z, self.oldLocation.z )
-				self.addGcodePathZ( self.travelFeedRatePerMinute, self.getPathsBetween( self.oldLocation.dropAxis(2), location.dropAxis(2) ), highestZ )
+				self.addGcodePathZ( self.travelFeedRatePerMinute, self.getPathsBetween( self.oldLocation.dropAxis(), location.dropAxis() ), highestZ )
 		self.oldLocation = location
 
 	def addToLoop(self, location):
@@ -203,7 +203,7 @@ class CombSkein:
 			self.boundaryLoop = [] #starting with an empty array because a closed loop does not have to restate its beginning
 			self.layer.append( self.boundaryLoop )
 		if self.boundaryLoop != None:
-			self.boundaryLoop.append( location.dropAxis(2) )
+			self.boundaryLoop.append(location.dropAxis())
 
 	def getBetweens(self):
 		"Set betweens for the layer."
@@ -395,7 +395,7 @@ class CombSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> comb </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> comb </procedureName>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				perimeterWidth = float(splitLine[1])

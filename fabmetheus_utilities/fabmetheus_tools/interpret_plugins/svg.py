@@ -96,24 +96,18 @@ class SVGCarving:
 		"Return the suffix for a carving."
 		return 'svg'
 
-	def parseInitialization(self):
-		'Parse gcode initialization and store the parameters.'
-		if self.svgReader.sliceDictionary == None:
-			return
-		self.layerThickness = euclidean.getFloatDefaultByDictionary( self.layerThickness, self.svgReader.sliceDictionary, 'layerThickness')
-		self.maximumZ = euclidean.getFloatDefaultByDictionary( self.maximumZ, self.svgReader.sliceDictionary, 'maxZ')
-		self.minimumZ = euclidean.getFloatDefaultByDictionary( self.minimumZ, self.svgReader.sliceDictionary, 'minZ')
-
 	def parseSVG( self, fileName, svgText ):
 		"Parse SVG text and store the layers."
 		if svgText == '':
 			return
 		self.fileName = fileName
 		self.svgReader.parseSVG(fileName, svgText)
-		self.parseInitialization()
+		self.layerThickness = euclidean.getFloatDefaultByDictionary(
+			self.layerThickness, self.svgReader.sliceDictionary, 'layerThickness')
 		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, self.maximumZ)
 		self.cornerMinimum = Vector3(999999999.0, 999999999.0, self.minimumZ)
-		svg_writer.setSVGCarvingCorners(self.svgReader.rotatedLoopLayers, self)
+		svg_writer.setSVGCarvingCorners(
+			self.cornerMaximum, self.cornerMinimum, self.layerThickness, self.svgReader.rotatedLoopLayers)
 
 	def setCarveBridgeLayerThickness( self, bridgeLayerThickness ):
 		"Set the bridge layer thickness.  If the infill is not in the direction of the bridge, the bridge layer thickness should be given as None or not set at all."

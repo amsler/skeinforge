@@ -491,9 +491,12 @@ def setRepositoryToLine(lineIndex, lines, shortDictionary):
 	if len(splitLine) < 2:
 		return
 	fileSettingName = splitLine[0]
-	for shortDictionaryKey in shortDictionary:
+	shortDictionaryKeys = shortDictionary.keys()
+	shortDictionaryKeys.sort(key=len, reverse=True) # so that a short word like fill is not overidden by a longer word like fillet
+	for shortDictionaryKey in shortDictionaryKeys:
 		if fileSettingName[: len(shortDictionaryKey)].lower() == shortDictionaryKey:
 			shortDictionary[shortDictionaryKey].setValueToSplitLine(lineIndex, lines, splitLine)
+			return
 
 def setSpinColor( setting ):
 	"Set the spin box color to the value, yellow if it is lower than the default and blue if it is higher."

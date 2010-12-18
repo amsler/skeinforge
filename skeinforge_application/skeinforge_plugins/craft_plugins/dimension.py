@@ -226,7 +226,7 @@ class DimensionSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> dimension </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> dimension </procedureName>)')
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
 				self.feedRateMinute = 60.0 * float(splitLine[1])
@@ -238,7 +238,7 @@ class DimensionSkein:
 	def parseLine( self, lineIndex ):
 		"Parse a gcode line and add it to the dimension skein."
 		line = self.lines[lineIndex].lstrip()
-		splitLine = line.split()
+		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len(splitLine) < 1:
 			return
 		firstWord = splitLine[0]

@@ -519,8 +519,8 @@ class BoundingLoop:
 	def getFromLoop( self, loop ):
 		"Get the bounding loop from a path."
 		self.loop = loop
-		self.maximum = euclidean.getMaximumByPathComplex(loop)
-		self.minimum = euclidean.getMinimumByPathComplex(loop)
+		self.maximum = euclidean.getMaximumByComplexPath(loop)
+		self.minimum = euclidean.getMinimumByComplexPath(loop)
 		return self
 
 	def getOutsetBoundingLoop( self, outsetDistance ):

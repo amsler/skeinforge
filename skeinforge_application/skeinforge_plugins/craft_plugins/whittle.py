@@ -143,7 +143,7 @@ class WhittleSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'whittle')
+				self.distanceFeedRate.addTagBracketedLine('procedureName', 'whittle')
 				return
 			elif firstWord == '(<layerThickness>':
 				self.setLayerThinknessVerticalDeltas(splitLine)
@@ -166,7 +166,7 @@ class WhittleSkein:
 		"Repeat the lines at decreasing altitude."
 		for layerDelta in self.layerDeltas[1 :]:
 			for movementLine in self.movementLines:
-				splitLine = movementLine.split()
+				splitLine = gcodec.getSplitLineBeforeBracketSemicolon(movementLine)
 				location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 				z = location.z + layerDelta
 				self.distanceFeedRate.addLine( self.distanceFeedRate.getLineWithZ( movementLine, splitLine, z ) )

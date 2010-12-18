@@ -261,7 +261,7 @@ class SpeedSkein:
 			if firstWord == '(<layerThickness>':
 				self.layerThickness = float(splitLine[1])
 			elif firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> speed </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> speed </procedureName>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.absolutePerimeterWidth = abs(float(splitLine[1]))

@@ -216,12 +216,12 @@ class JitterSkein:
 			if self.isNextExtruderOn():
 				self.loopPath = euclidean.PathZ(location.z)
 				if self.oldLocation != None:
-					self.beforeLoopLocation = self.oldLocation.dropAxis(2)
+					self.beforeLoopLocation = self.oldLocation.dropAxis()
 		self.oldLocation = location
 		if self.loopPath == None:
 			self.oldLoopLocationComplex = None
 			return line
-		self.loopPath.path.append( location.dropAxis(2) )
+		self.loopPath.path.append(location.dropAxis())
 		return ''
 
 	def isNextExtruderOn(self):
@@ -269,7 +269,7 @@ class JitterSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> jitter </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> jitter </procedureName>)')
 				return
 			elif firstWord == '(<operatingFeedRatePerSecond>':
 				self.operatingFeedRatePerMinute = 60.0 * float(splitLine[1])

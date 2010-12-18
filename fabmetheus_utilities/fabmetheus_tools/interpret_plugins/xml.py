@@ -29,7 +29,7 @@ An example of an xml boolean geometry format file follows below.
 		<matrix m14="-10.0" m24="20.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
-		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topOverBottom="1.0">
 			<matrix m14="5.0" m24="-5.0" />
 		</cylinder>
 	</difference>
@@ -43,7 +43,7 @@ In the 'fabmetheus' format, all class names are lower case.  The defined geometr
 		<matrix m14="-10.0" m24="20.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
-		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topOverBottom="1.0">
 			<matrix m14="5.0" m24="-5.0" />
 		</cylinder>
 	</difference>
@@ -51,7 +51,7 @@ In the 'fabmetheus' format, all class names are lower case.  The defined geometr
 		<matrix m14="-10.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
-		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topOverBottom="1.0">
 			<matrix m14="5.0" m24="-5.0" />
 		</cylinder>
 	</intersection>
@@ -59,7 +59,7 @@ In the 'fabmetheus' format, all class names are lower case.  The defined geometr
 		<matrix m14="-10.0" m24="-20.0" m34="5.0" />
 		<cube id="Cube 5" halfx="5.0" halfy="5.0" halfz="5.0">
 		</cube>
-		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topoverbottom="1.0">
+		<cylinder id="Cylinder 5" height="10.0" radiusx="5.0" radiusy="5.0" topOverBottom="1.0">
 			<matrix m14="5.0" m24="-5.0" />
 		</cylinder>
 	</union>

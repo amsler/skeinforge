@@ -47,7 +47,7 @@ __license__ = 'GPL 3.0'
 
 
 def addLineLoopsIntersections( loopLoopsIntersections, loops, pointBegin, pointEnd ):
-	"Add intersections of the line with the loops."
+	'Add intersections of the line with the loops.'
 	normalizedSegment = pointEnd - pointBegin
 	normalizedSegmentLength = abs( normalizedSegment )
 	if normalizedSegmentLength <= 0.0:
@@ -63,7 +63,7 @@ def addLineLoopsIntersections( loopLoopsIntersections, loops, pointBegin, pointE
 		loopLoopsIntersections.append(point)
 
 def addLineXSegmentIntersection( lineLoopsIntersections, segmentFirstX, segmentSecondX, vector3First, vector3Second, y ):
-	"Add intersections of the line with the x segment."
+	'Add intersections of the line with the x segment.'
 	xIntersection = euclidean.getXIntersectionIfExists( vector3First, vector3Second, y )
 	if xIntersection == None:
 		return
@@ -73,19 +73,19 @@ def addLineXSegmentIntersection( lineLoopsIntersections, segmentFirstX, segmentS
 		lineLoopsIntersections.append( xIntersection )
 
 def addLoopLoopsIntersections( loop, loopsLoopsIntersections, otherLoops ):
-	"Add intersections of the loop with the other loops."
+	'Add intersections of the loop with the other loops.'
 	for pointIndex in xrange(len(loop)):
 		pointBegin = loop[pointIndex]
 		pointEnd = loop[(pointIndex + 1) % len(loop)]
 		addLineLoopsIntersections( loopsLoopsIntersections, otherLoops, pointBegin, pointEnd )
 
 def addLoopsXSegmentIntersections( lineLoopsIntersections, loops, segmentFirstX, segmentSecondX, segmentYMirror, y ):
-	"Add intersections of the loops with the x segment."
+	'Add intersections of the loops with the x segment.'
 	for loop in loops:
 		addLoopXSegmentIntersections( lineLoopsIntersections, loop, segmentFirstX, segmentSecondX, segmentYMirror, y )
 
 def addLoopXSegmentIntersections( lineLoopsIntersections, loop, segmentFirstX, segmentSecondX, segmentYMirror, y ):
-	"Add intersections of the loop with the x segment."
+	'Add intersections of the loop with the x segment.'
 	rotatedLoop = euclidean.getPointsRoundZAxis( segmentYMirror, loop )
 	for pointIndex in xrange( len( rotatedLoop ) ):
 		pointFirst = rotatedLoop[ pointIndex ]
@@ -93,7 +93,7 @@ def addLoopXSegmentIntersections( lineLoopsIntersections, loop, segmentFirstX, s
 		addLineXSegmentIntersection( lineLoopsIntersections, segmentFirstX, segmentSecondX, pointFirst, pointSecond, y )
 
 def getInBetweenLoopsFromLoops(loops, radius):
-	"Get the in between loops from loops."
+	'Get the in between loops from loops.'
 	inBetweenLoops = []
 	for loop in loops:
 		inBetweenLoop = []
@@ -105,7 +105,7 @@ def getInBetweenLoopsFromLoops(loops, radius):
 	return inBetweenLoops
 
 def getInsetPointsByInsetLoop( insetLoop, inside, loops, radius ):
-	"Get the inset points of the inset loop inside the loops."
+	'Get the inset points of the inset loop inside the loops.'
 	insetPointsByInsetLoop = []
 	for pointIndex in xrange( len( insetLoop ) ):
 		pointBegin = insetLoop[ ( pointIndex + len( insetLoop ) - 1 ) % len( insetLoop ) ]
@@ -116,14 +116,14 @@ def getInsetPointsByInsetLoop( insetLoop, inside, loops, radius ):
 	return insetPointsByInsetLoop
 
 def getInsetPointsByInsetLoops( insetLoops, inside, loops, radius ):
-	"Get the inset points of the inset loops inside the loops."
+	'Get the inset points of the inset loops inside the loops.'
 	insetPointsByInsetLoops = []
 	for insetLoop in insetLoops:
 		insetPointsByInsetLoops += getInsetPointsByInsetLoop( insetLoop, inside, loops, radius )
 	return insetPointsByInsetLoops
 
 def getIsInsetPointInsideLoops( inside, loops, pointBegin, pointCenter, pointEnd, radius ):
-	"Determine if the inset point is inside the loops."
+	'Determine if the inset point is inside the loops.'
 	centerMinusBegin = euclidean.getNormalized( pointCenter - pointBegin )
 	centerMinusBeginWiddershins = complex( - centerMinusBegin.imag, centerMinusBegin.real )
 	endMinusCenter = euclidean.getNormalized( pointEnd - pointCenter )
@@ -132,45 +132,47 @@ def getIsInsetPointInsideLoops( inside, loops, pointBegin, pointCenter, pointEnd
 	return euclidean.getIsInFilledRegion( loops,  pointCenter + widdershinsNormalized ) == inside
 
 def getLoopsDifference(importRadius, loopLists):
-	"Get difference loops."
+	'Get difference loops.'
+	halfImportRadius = 0.5 * importRadius # so that there are no misses on shallow angles
+	radiusSide = 0.01 * importRadius
 	negativeLoops = getLoopsUnified(importRadius, loopLists[1 :])
 	intercircle.directLoops(False, negativeLoops)
 	positiveLoops = loopLists[0]
 	intercircle.directLoops(True, positiveLoops)
-	radiusSide = 0.01 * importRadius
-	corners = getLoopsListsIntersections(loopLists)
-	corners += getInsetPointsByInsetLoops(negativeLoops, True, positiveLoops, radiusSide)
+	corners = getInsetPointsByInsetLoops(negativeLoops, True, positiveLoops, radiusSide)
 	corners += getInsetPointsByInsetLoops(positiveLoops, False, negativeLoops, radiusSide)
 	allPoints = corners[:]
-	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(negativeLoops, importRadius), True, positiveLoops, radiusSide)
-	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(positiveLoops, importRadius), False, negativeLoops, radiusSide)
-	return trianglemesh.getDescendingAreaLoops( allPoints, corners, importRadius)
+	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(negativeLoops, halfImportRadius), True, positiveLoops, radiusSide)
+	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(positiveLoops, halfImportRadius), False, negativeLoops, radiusSide)
+	return trianglemesh.getDescendingAreaLoops(allPoints, corners, importRadius)
 
-def getLoopsIntersection( importRadius, loopLists ):
-	"Get intersection loops."
+def getLoopsIntersection(importRadius, loopLists):
+	'Get intersection loops.'
 	intercircle.directLoopLists( True, loopLists )
 	if len(loopLists) < 1:
 		return []
 	if len(loopLists) < 2:
 		return loopLists[0]
+	intercircle.directLoopLists(True, loopLists)
 	loopsIntersection = loopLists[0]
 	for loopList in loopLists[1 :]:
 		loopsIntersection = getLoopsIntersectionByPair( importRadius, loopsIntersection, loopList )
 	return loopsIntersection
 
-def getLoopsIntersectionByPair( importRadius, loopsFirst, loopsLast ):
-	"Get intersection loops for a pair of loop lists."
+def getLoopsIntersectionByPair(importRadius, loopsFirst, loopsLast):
+	'Get intersection loops for a pair of loop lists.'
+	halfImportRadius = 0.5 * importRadius # so that there are no misses on shallow angles
 	radiusSide = 0.01 * importRadius
-	corners = getLoopsListsIntersections( [ loopsFirst, loopsLast ] )
-	corners += getInsetPointsByInsetLoops( loopsFirst, True, loopsLast, radiusSide )
-	corners += getInsetPointsByInsetLoops( loopsLast, True, loopsFirst, radiusSide )
+	corners = []
+	corners += getInsetPointsByInsetLoops(loopsFirst, True, loopsLast, radiusSide)
+	corners += getInsetPointsByInsetLoops(loopsLast, True, loopsFirst, radiusSide)
 	allPoints = corners[:]
-	allPoints += getInsetPointsByInsetLoops( getInBetweenLoopsFromLoops(loopsFirst, importRadius), True, loopsLast, radiusSide )
-	allPoints += getInsetPointsByInsetLoops( getInBetweenLoopsFromLoops(loopsLast, importRadius), True, loopsFirst, radiusSide )
+	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(loopsFirst, halfImportRadius), True, loopsLast, radiusSide)
+	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(loopsLast, halfImportRadius), True, loopsFirst, radiusSide)
 	return trianglemesh.getDescendingAreaLoops(allPoints, corners, importRadius)
 
 def getLoopsListsIntersections( loopsList ):
-	"Get intersections betweens the loops lists."
+	'Get intersections betweens the loops lists.'
 	loopsListsIntersections = []
 	for loopsIndex in xrange( len( loopsList ) ):
 		loops = loopsList[ loopsIndex ]
@@ -179,14 +181,14 @@ def getLoopsListsIntersections( loopsList ):
 	return loopsListsIntersections
 
 def getLoopsLoopsIntersections( loops, otherLoops ):
-	"Get all the intersections of the loops with the other loops."
+	'Get all the intersections of the loops with the other loops.'
 	loopsLoopsIntersections = []
 	for loop in loops:
 		addLoopLoopsIntersections( loop, loopsLoopsIntersections, otherLoops )
 	return loopsLoopsIntersections
 
 def getLoopsUnified(importRadius, loopLists):
-	"Get joined loops sliced through shape."
+	'Get joined loops sliced through shape.'
 	allPoints = []
 	corners = getLoopsListsIntersections(loopLists)
 	radiusSide = 0.01 * importRadius
@@ -202,7 +204,7 @@ def getLoopsUnified(importRadius, loopLists):
 	return trianglemesh.getDescendingAreaLoops(allPoints, corners, importRadius)
 
 def getVisibleObjectLoopsList( importRadius, visibleObjects, z ):
-	"Get visible object loops list."
+	'Get visible object loops list.'
 	visibleObjectLoopsList = []
 	for visibleObject in visibleObjects:
 		visibleObjectLoops = visibleObject.getLoops(importRadius, z)
@@ -211,17 +213,17 @@ def getVisibleObjectLoopsList( importRadius, visibleObjects, z ):
 
 
 class BooleanSolid( group.Group ):
-	"A boolean solid object."
+	'A boolean solid object.'
 	def getDifference( self, importRadius, visibleObjectLoopsList ):
-		"Get subtracted loops sliced through shape."
+		'Get subtracted loops sliced through shape.'
 		return getLoopsDifference( importRadius, visibleObjectLoopsList )
 
 	def getIntersection( self, importRadius, visibleObjectLoopsList ):
-		"Get intersected loops sliced through shape."
+		'Get intersected loops sliced through shape.'
 		return getLoopsIntersection( importRadius, visibleObjectLoopsList )
 
 	def getLoops(self, importRadius, z):
-		"Get loops sliced through shape."
+		'Get loops sliced through shape.'
 		visibleObjects = evaluate.getVisibleObjects(self.archivableObjects)
 		if len( visibleObjects ) < 1:
 			return []
@@ -230,18 +232,18 @@ class BooleanSolid( group.Group ):
 		return euclidean.getSimplifiedLoops( loops, importRadius )
 
 	def getLoopsFromObjectLoopsList( self, importRadius, visibleObjectLoopsList ):
-		"Get loops from visible object loops list."
+		'Get loops from visible object loops list.'
 		return self.operationFunction( importRadius, visibleObjectLoopsList )
 
 	def getTransformedPaths(self):
-		"Get all transformed paths."
+		'Get all transformed paths.'
 		importRadius = self.xmlElement.getCascadeFloat(1.5 * evaluate.getLayerThickness(self.xmlElement), 'importRadius')
 		return euclidean.getVector3Paths(self.getLoopsFromObjectLoopsList(importRadius, self.getComplexTransformedPathLists()))
 
 	def getUnion( self, importRadius, visibleObjectLoopsList ):
-		"Get joined loops sliced through shape."
+		'Get joined loops sliced through shape.'
 		return getLoopsUnified( importRadius, visibleObjectLoopsList )
 
 	def getXMLClassName(self):
-		"Get xml class name."
+		'Get xml class name.'
 		return self.operationFunction.__name__.lower()[ len('get') : ]

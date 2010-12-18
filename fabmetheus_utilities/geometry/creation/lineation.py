@@ -285,7 +285,7 @@ class SideLoop:
 		loops = [self.loop]
 		for matchingPlugin in matchingPlugins:
 			matchingLoops = []
-			prefix = matchingPlugin.__name__ + '.'
+			prefix = matchingPlugin.__name__.replace('_', '') + '.'
 			for loop in loops:
 				matchingLoops += matchingPlugin.getManipulatedPaths(self.close, loop, prefix, self.sideLength, xmlElement)
 			loops = matchingLoops

@@ -23,6 +23,12 @@ def prepareWikify():
 	wikifier.main()
 	removeZip()
 
+def removeCSVFile(csvFilePath):
+	'Remove csv file.'
+	if 'alterations' in csvFilePath and 'example_' not in csvFilePath:
+		os.remove(csvFilePath)
+		print('removeGeneratedFiles deleted ' + csvFilePath)
+
 def removeGcodeFile(gcodeFilePath):
 	'Remove gcode file.'
 	if 'alterations' not in gcodeFilePath:
@@ -35,6 +41,9 @@ def removeGcodeFile(gcodeFilePath):
 
 def removeGeneratedFiles():
 	'Remove generated files.'
+	csvFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['csv'])
+	for csvFilePath in csvFilePaths:
+		removeCSVFile(csvFilePath)
 	gcodeFilePaths = archive.getFilesWithFileTypesWithoutWordsRecursively(['gcode'])
 	for gcodeFilePath in gcodeFilePaths:
 		removeGcodeFile(gcodeFilePath)
@@ -48,7 +57,7 @@ def removeGeneratedFiles():
 
 def removeSVGFile(svgFilePath):
 	'Remove svg file.'
-	if archive.getEndsWithList(svgFilePath, ['_bottom.svg', '_carve.svg', '_chop.svg', '_cleave.svg', '_scale.svg']):
+	if archive.getEndsWithList(svgFilePath, ['_bottom.svg', '_carve.svg', '_chop.svg', '_cleave.svg', '_scale.svg', '_vectorwrite.svg']):
 		os.remove(svgFilePath)
 		print('removeGeneratedFiles deleted ' + svgFilePath)
 

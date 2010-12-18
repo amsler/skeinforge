@@ -8,7 +8,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.geometry_utilities import booleansolid
+from fabmetheus_utilities.geometry.geometry_utilities import boolean_solid
 from fabmetheus_utilities.geometry.solids import group
 
 
@@ -27,7 +27,7 @@ def processXMLElement(xmlElement):
 	group.processShape(Difference, xmlElement)
 
 
-class Difference( booleansolid.BooleanSolid ):
+class Difference( boolean_solid.BooleanSolid ):
 	"A difference object."
 	def getLoopsFromObjectLoopsList( self, importRadius, visibleObjectLoopsList ):
 		"Get loops from visible object loops list."

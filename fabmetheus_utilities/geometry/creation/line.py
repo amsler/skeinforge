@@ -95,6 +95,7 @@ class LineDerivation:
 		self.start = evaluate.getVector3ByPrefix(Vector3(), 'start', xmlElement)
 		self.step = evaluate.getEvaluatedFloatDefault(None, 'step', xmlElement)
 		self.steps = evaluate.getEvaluatedFloatDefault(None, 'steps', xmlElement)
+		self.typeMenuRadioStrings = 'average maximum minimum'.split()
 		self.typeString = evaluate.getEvaluatedStringDefault('minimum', 'type', xmlElement)
 
 	def __repr__(self):

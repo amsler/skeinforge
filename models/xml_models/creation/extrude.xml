@@ -50,6 +50,6 @@
 		<qqqflip axis='[-1, 1]' origin='[]' reverse='f' target='=document.getElementByID($exseptagon)' />
 			<extrude id="extrude pentagon" segments="5" target="=document.getElementByID($ring)" tilttox_comment="2" twistpath_comment="[0,0],[1,30],[2,0]" x="40" />
 			<outline closed='f' target='=document.getElementByID($septagon)' strokeWidth='3.0' />
-				<extrude id="extrude hook" maximumunbuckling='3.0' path='[0],[20],[0,-10],[-5,-5]' segments="5" target="[0,0],[2,3],[0,3]" tilttopz="1" x="80" />
+				<extrude id="extrude hook" maximumunbuckling='3.0' path='[0],[20],[0,-10],[-5,-5]' segments="5" target="[0,0],[2,3],[0,3]" tiltTopz="1" x="80" />
 				-->
 			</fabmetheus>

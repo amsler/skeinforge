@@ -190,11 +190,11 @@ class PrefaceSkein:
 		self.distanceFeedRate.addTagBracketedLine('version', versionText) # GCode formatted comment
 		self.distanceFeedRate.addLine('(<extruderInitialization>)') # GCode formatted comment
 		if self.prefaceRepository.setPositioningToAbsolute.value:
-			self.distanceFeedRate.addLine('G90') # Set positioning to absolute.
+			self.distanceFeedRate.addLine('G90 ;set positioning to absolute') # Set positioning to absolute.
 		if self.prefaceRepository.setUnitsToMillimeters.value:
-			self.distanceFeedRate.addLine('G21') # Set units to millimeters.
+			self.distanceFeedRate.addLine('G21 ;set units to millimeters') # Set units to millimeters.
 		if self.prefaceRepository.startAtHome.value:
-			self.distanceFeedRate.addLine('G28') # Start at home.
+			self.distanceFeedRate.addLine('G28 ;start at home') # Start at home.
 		if self.prefaceRepository.turnExtruderOffAtStartUp.value:
 			self.distanceFeedRate.addLine('M103') # Turn extruder off.
 		craftTypeName = skeinforge_profile.getCraftTypeName()
@@ -207,20 +207,20 @@ class PrefaceSkein:
 		perimeterWidth = float(self.svgReader.sliceDictionary['perimeterWidth'])
 		self.distanceFeedRate.addTagBracketedLine('perimeterWidth', self.distanceFeedRate.getRounded(perimeterWidth))
 		self.distanceFeedRate.addTagBracketedLine('profileName', skeinforge_profile.getProfileName(craftTypeName))
-		procedures = self.svgReader.sliceDictionary['procedureDone'].replace(',', ' ').split()
-		for procedure in procedures:
-			self.distanceFeedRate.addTagBracketedLine('procedureDone', procedure)
-		self.distanceFeedRate.addTagBracketedLine('procedureDone', 'preface')
+		procedureNames = self.svgReader.sliceDictionary['procedureName'].replace(',', ' ').split()
+		for procedureName in procedureNames:
+			self.distanceFeedRate.addTagBracketedLine('procedureName', procedureName)
+		self.distanceFeedRate.addTagBracketedLine('procedureName', 'preface')
 		self.distanceFeedRate.addLine('(</extruderInitialization>)') # Initialization is finished, extrusion is starting.
 		self.distanceFeedRate.addLine('(<crafting>)') # Initialization is finished, crafting is starting.
 
-	def addPreface( self, rotatedBoundaryLayer ):
+	def addPreface( self, rotatedLoopLayer ):
 		"Add preface to the carve layer."
-		self.distanceFeedRate.addLine('(<layer> %s )' % rotatedBoundaryLayer.z ) # Indicate that a new layer is starting.
-		if rotatedBoundaryLayer.rotation != None:
-			self.distanceFeedRate.addTagBracketedLine('bridgeRotation', str( rotatedBoundaryLayer.rotation ) ) # Indicate the bridge rotation.
-		for loop in rotatedBoundaryLayer.loops:
-			self.distanceFeedRate.addGcodeFromLoop( loop, rotatedBoundaryLayer.z )
+		self.distanceFeedRate.addLine('(<layer> %s )' % rotatedLoopLayer.z ) # Indicate that a new layer is starting.
+		if rotatedLoopLayer.rotation != None:
+			self.distanceFeedRate.addTagBracketedLine('bridgeRotation', str( rotatedLoopLayer.rotation ) ) # Indicate the bridge rotation.
+		for loop in rotatedLoopLayer.loops:
+			self.distanceFeedRate.addGcodeFromLoop( loop, rotatedLoopLayer.z )
 		self.distanceFeedRate.addLine('(</layer>)')
 
 	def addShutdownToOutput(self):
@@ -239,9 +239,9 @@ class PrefaceSkein:
 			return ''
 		self.distanceFeedRate.decimalPlacesCarried = int(self.svgReader.sliceDictionary['decimalPlacesCarried'])
 		self.addInitializationToOutput()
-		for rotatedBoundaryLayerIndex, rotatedBoundaryLayer in enumerate(self.svgReader.rotatedLoopLayers):
-			settings.printProgressByNumber(rotatedBoundaryLayerIndex, len(self.svgReader.rotatedLoopLayers), 'preface')
-			self.addPreface( rotatedBoundaryLayer )
+		for rotatedLoopLayerIndex, rotatedLoopLayer in enumerate(self.svgReader.rotatedLoopLayers):
+			settings.printProgressByNumber(rotatedLoopLayerIndex, len(self.svgReader.rotatedLoopLayers), 'preface')
+			self.addPreface( rotatedLoopLayer )
 		self.addShutdownToOutput()
 		return self.distanceFeedRate.output.getvalue()
 

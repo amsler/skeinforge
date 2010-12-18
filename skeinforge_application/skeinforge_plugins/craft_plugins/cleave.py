@@ -195,14 +195,20 @@ class CleaveSkein:
 		importRadius = 0.5 * repository.importCoarseness.value * abs( perimeterWidth )
 		carving.setCarveImportRadius( max( importRadius, 0.01 * layerThickness ) )
 		carving.setCarveIsCorrectMesh( repository.correctMesh.value )
-		rotatedBoundaryLayers = carving.getCarveRotatedBoundaryLayers()
-		if len( rotatedBoundaryLayers ) < 1:
+		rotatedLoopLayers = carving.getCarveRotatedBoundaryLayers()
+		if len( rotatedLoopLayers ) < 1:
 			print('Warning, there are no slices for the model, this could be because the model is too small for the Layer Thickness.')
 			return ''
 		layerThickness = carving.getCarveLayerThickness()
 		decimalPlacesCarried = euclidean.getDecimalPlacesCarried(repository.extraDecimalPlaces.value, layerThickness)
-		svgWriter = svg_writer.SVGWriter(repository.addLayerTemplateToSVG.value, carving, decimalPlacesCarried, perimeterWidth)
-		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedBoundaryLayers)
+		svgWriter = svg_writer.SVGWriter(
+			repository.addLayerTemplateToSVG.value,
+			carving.getCarveCornerMaximum(),
+			carving.getCarveCornerMinimum(),
+			decimalPlacesCarried,
+			carving.getCarveLayerThickness(),
+			perimeterWidth)
+		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedLoopLayers)
 		return svgWriter.getReplacedSVGTemplate( fileName, 'cleave', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())
 
 

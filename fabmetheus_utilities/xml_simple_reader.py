@@ -151,8 +151,8 @@ class XMLElement:
 
 	def _getAccessibleAttribute(self, attributeName):
 		"Get the accessible attribute."
-		global globalAccessibleAttributeSet
-		if attributeName in globalAccessibleAttributeSet:
+		global globalGetAccessibleAttributeSet
+		if attributeName in globalGetAccessibleAttributeSet:
 			return getattr(self, attributeName, None)
 		return None
 
@@ -281,39 +281,39 @@ class XMLElement:
 			return ''
 		return self.importName + '.'
 
-	def getParentParseReplacedLine( self, line, lineStripped, parent ):
+	def getParentParseReplacedLine(self, line, lineStripped, parent):
 		"Parse replaced line and return the parent."
-		if lineStripped[ : len('<!--') ] == '<!--':
+		if lineStripped[: len('<!--')] == '<!--':
 			self.className = 'comment'
 			self.text = line + '\n'
-			self.setParentAddToChildren( parent )
+			self.setParentAddToChildren(parent)
 			return parent
-		if lineStripped[ : len('</') ] == '</':
+		if lineStripped[: len('</')] == '</':
 			if parent == None:
 				return parent
 			return parent.parent
-		self.setParentAddToChildren( parent )
+		self.setParentAddToChildren(parent)
 		cdataBeginIndex = lineStripped.find('<![CDATA[')
 		if cdataBeginIndex != - 1:
 			cdataEndIndex = lineStripped.rfind(']]>')
 			if cdataEndIndex != - 1:
 				cdataEndIndex += len(']]>')
-				self.text = lineStripped[ cdataBeginIndex : cdataEndIndex ]
-				lineStripped = lineStripped[ : cdataBeginIndex ] + lineStripped[ cdataEndIndex : ]
-		self.className = lineStripped[ 1 : lineStripped.replace('>', ' ').replace('\n', ' ').find(' ') ]
-		lastWord = lineStripped[ - 2 : ]
-		lineAfterClassName = lineStripped[ 2 + len( self.className ) : - 1 ]
+				self.text = lineStripped[cdataBeginIndex : cdataEndIndex]
+				lineStripped = lineStripped[: cdataBeginIndex] + lineStripped[cdataEndIndex :]
+		self.className = lineStripped[1 : lineStripped.replace('/>', ' ').replace('>', ' ').replace('\n', ' ').find(' ')]
+		lastWord = lineStripped[-2 :]
+		lineAfterClassName = lineStripped[2 + len(self.className) : -1]
 		beforeQuote = ''
 		lastQuoteCharacter = None
 		withinQuote = ''
-		for characterIndex in xrange( len( lineAfterClassName ) ):
+		for characterIndex in xrange(len(lineAfterClassName)):
 			character = lineAfterClassName[characterIndex]
 			if lastQuoteCharacter == None:
 				if character == '"' or character == "'":
 					lastQuoteCharacter = character
 					character = ''
 			if character == lastQuoteCharacter:
-				self.addAttribute( beforeQuote, withinQuote )
+				self.addAttribute(beforeQuote, withinQuote)
 				beforeQuote = ''
 				lastQuoteCharacter = None
 				withinQuote = ''
@@ -326,8 +326,8 @@ class XMLElement:
 		if lastWord == '/>':
 			return parent
 		tagEnd = '</%s>' % self.className
-		if lineStripped[ - len( tagEnd ) : ] == tagEnd:
-			untilTagEnd = lineStripped[ : - len( tagEnd ) ]
+		if lineStripped[-len(tagEnd) :] == tagEnd:
+			untilTagEnd = lineStripped[: -len(tagEnd)]
 			lastGreaterThanIndex = untilTagEnd.rfind('>')
 			self.text += untilTagEnd[ lastGreaterThanIndex + 1 : ]
 			return parent
@@ -506,4 +506,4 @@ class XMLSimpleReader:
 			self.beforeRoot += line + '\n'
 
 
-globalAccessibleAttributeSet = set('getPaths getPreviousVertex getPreviousXMLElement getVertexes parent'.split())
+globalGetAccessibleAttributeSet = set('getPaths getPreviousVertex getPreviousXMLElement getVertexes parent'.split())

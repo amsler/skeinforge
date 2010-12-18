@@ -220,7 +220,7 @@ class SplodgeSkein:
 			if firstWord == 'M101':
 				isActive = True
 			if firstWord == 'G1' and isActive:
-				return gcodec.getLocationFromSplitLine(self.oldLocation, splitLine).dropAxis(2)
+				return gcodec.getLocationFromSplitLine(self.oldLocation, splitLine).dropAxis()
 		return None
 
 	def getOperatingSplodgeLine( self, line, location ):
@@ -240,7 +240,7 @@ class SplodgeSkein:
 
 	def getSplodgeLineGivenDistance( self, feedRateMinute, line, liftOverExtraThickness, location, startupDistance ):
 		"Add the splodge line."
-		locationComplex = location.dropAxis(2)
+		locationComplex = location.dropAxis()
 		relativeStartComplex = None
 		nextLocationComplex = self.getNextActiveLocationComplex()
 		if nextLocationComplex != None:
@@ -249,7 +249,7 @@ class SplodgeSkein:
 		if relativeStartComplex == None:
 			relativeStartComplex = complex( 19.9, 9.9 )
 			if self.oldLocation != None:
-				oldLocationComplex = self.oldLocation.dropAxis(2)
+				oldLocationComplex = self.oldLocation.dropAxis()
 				if oldLocationComplex != locationComplex:
 					relativeStartComplex = oldLocationComplex - locationComplex
 		relativeStartComplex *= startupDistance / abs( relativeStartComplex )
@@ -299,7 +299,7 @@ class SplodgeSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.addLineUnlessIdenticalReactivate('(<procedureDone> splodge </procedureDone>)')
+				self.addLineUnlessIdenticalReactivate('(<procedureName> splodge </procedureName>)')
 				return
 			elif firstWord == '(<layerThickness>':
 				self.layerThickness = float(splitLine[1])

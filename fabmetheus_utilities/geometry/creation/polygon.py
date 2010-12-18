@@ -26,11 +26,12 @@ def getGeometryOutput(derivation, xmlElement):
 		derivation = PolygonDerivation(xmlElement)
 	loop = []
 	spiral = lineation.Spiral(derivation.spiral, 0.5 * derivation.sideAngle / math.pi)
-	for side in xrange(derivation.start, derivation.start + derivation.extent):
+	for side in xrange(derivation.start, derivation.start + derivation.extent + 1):
 		angle = float(side) * derivation.sideAngle
 		unitPolar = euclidean.getWiddershinsUnitPolar(angle)
 		vertex = spiral.getSpiralPoint(unitPolar, Vector3(unitPolar.real * derivation.radius.real, unitPolar.imag * derivation.radius.imag))
 		loop.append(vertex)
+	loop = euclidean.getLoopWithoutCloseEnds(0.000001 * max(derivation.radius.real, derivation.radius.imag), loop)
 	sideLength = derivation.sideAngle * lineation.getRadiusAverage(derivation.radius)
 	lineation.setClosedAttribute(derivation.revolutions, xmlElement)
 	return lineation.getGeometryOutputByLoop(lineation.SideLoop(loop, derivation.sideAngle, sideLength), xmlElement)

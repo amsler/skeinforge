@@ -24,7 +24,7 @@ globalExecutionOrder = 80
 
 
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
-	"Get path with overhangs removed or filled in."
+	"Get path with outline."
 	if len(loop) < 2:
 		return [loop]
 	isClosed = evaluate.getEvaluatedBooleanDefault(False, prefix + 'closed', xmlElement)

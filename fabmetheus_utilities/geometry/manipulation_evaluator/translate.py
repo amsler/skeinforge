@@ -34,16 +34,21 @@ def getManipulatedGeometryOutput(geometryOutput, xmlElement):
 
 def manipulateXMLElement(target, xmlElement):
 	"Manipulate the xml element."
-	translateMatrixTetragrid = matrix.getTranslateMatrixTetragrid('', xmlElement)
-	if translateMatrixTetragrid == None:
-		print('Warning, translateMatrixTetragrid was None in translate so nothing will be done for:')
+	translateTetragrid = matrix.getTranslateTetragrid('', xmlElement)
+	if translateTetragrid == None:
+		print('Warning, translateTetragrid was None in translate so nothing will be done for:')
 		print(xmlElement)
 		return
-	matrix.setAttributeDictionaryToMultipliedTetragrid(translateMatrixTetragrid, target)
+	matrix.setAttributeDictionaryToMultipliedTetragrid(translateTetragrid, target)
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	solid.processXMLElementByFunction(manipulateXMLElement, xmlElement)
+
+def translateNegativesPositives(negatives, positives, translation):
+	'Translate the negatives and postives.'
+	euclidean.translateVector3Path(matrix.getVertexes(negatives), translation)
+	euclidean.translateVector3Path(matrix.getVertexes(positives), translation)
 
 def translatePoints(points, prefix, xmlElement):
 	"Translate the points."

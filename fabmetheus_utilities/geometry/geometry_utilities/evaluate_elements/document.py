@@ -16,7 +16,7 @@ __license__ = 'GPL 3.0'
 
 def _getAccessibleAttribute(attributeName, xmlElement):
 	'Get the accessible attribute.'
-	if attributeName in globalAccessibleAttributeSet:
+	if attributeName in globalGetAccessibleAttributeSet:
 		documentObject = Document(xmlElement)
 		return getattr(documentObject, attributeName, None)
 	return None
@@ -102,4 +102,4 @@ class Document:
 globalAccessibleAttributes = 'getByID getByName getCascadeValue getElementByID getElementsByName getParent'.split()
 globalAccessibleAttributes += 'getParentElement getPrevious getPreviousElement getPreviousVertex getRoot'.split()
 globalAccessibleAttributes += 'getRootElement getSelf getSelfElement'.split()
-globalAccessibleAttributeSet = set(globalAccessibleAttributes)
+globalGetAccessibleAttributeSet = set(globalAccessibleAttributes)

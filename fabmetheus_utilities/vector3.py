@@ -17,7 +17,7 @@ Below are examples of Vector3 use.
 >>> triplePythagoras = pythagoras * 3.0
 >>> triplePythagoras
 9.0, 12.0, 0.0
->>> plane = pythagoras.dropAxis(2)
+>>> plane = pythagoras.dropAxis()
 >>> plane
 (3+4j)
 """
@@ -46,7 +46,7 @@ class Vector3:
 	"A three dimensional vector class."
 	__slots__ = ['x', 'y', 'z']
 
-	def __init__( self, x = 0.0, y = 0.0, z = 0.0 ):
+	def __init__(self, x=0.0, y=0.0, z=0.0):
 		self.x = x
 		self.y = y
 		self.z = z
@@ -87,8 +87,7 @@ class Vector3:
 
 	def _getAccessibleAttribute(self, attributeName):
 		"Get the accessible attribute."
-		global globalAccessibleAttributeSet
-		if attributeName in globalAccessibleAttributeSet:
+		if attributeName in globalGetAccessibleAttributeSet:
 			return getattr(self, attributeName, None)
 		return None
 
@@ -144,7 +143,7 @@ class Vector3:
 
 	def __ne__(self, other):
 		"Determine whether this vector is not identical to other one."
-		return not self.__eq__( other )
+		return not self.__eq__(other)
 
 	def __neg__(self):
 		return Vector3( - self.x, - self.y, - self.z )
@@ -172,6 +171,11 @@ class Vector3:
 		"Get a new Vector3 by true dividing each component of this one."
 		return Vector3( operator.truediv( other , self.x ), operator.truediv( other, self.y ), operator.truediv( other, self.z ) )
 
+	def _setAccessibleAttribute(self, attributeName, value):
+		"Set the accessible attribute."
+		if attributeName in globalSetAccessibleAttributeSet:
+			setattr(self, attributeName, value)
+
 	def __sub__(self, other):
 		"Get the difference between the Vector3 and other one."
 		return Vector3( self.x - other.x, self.y - other.y, self.z - other.z )
@@ -182,11 +186,11 @@ class Vector3:
 
 	def cross(self, other):
 		"Calculate the cross product of this vector with other one."
-		return Vector3( self.y * other.z - self.z * other.y, - self.x * other.z + self.z * other.x, self.x * other.y - self.y * other.x )
+		return Vector3(self.y * other.z - self.z * other.y, -self.x * other.z + self.z * other.x, self.x * other.y - self.y * other.x)
 
 	def distance(self, other):
 		"Get the Euclidean distance between this vector and other one."
-		return math.sqrt( self.distanceSquared( other ) )
+		return math.sqrt( self.distanceSquared(other) )
 
 	def distanceSquared(self, other):
 		"Get the square of the Euclidean distance between this vector and other one."
@@ -234,6 +238,18 @@ class Vector3:
 		"Get the square of the magnitude of the Vector3."
 		return self.x * self.x + self.y * self.y + self.z * self.z
 
+	def maximize(self, other):
+		"Maximize the Vector3."
+		self.x =max(other.x, self.x)
+		self.y =max(other.y, self.y)
+		self.z =max(other.z, self.z)
+
+	def minimize(self, other):
+		"Minimize the Vector3."
+		self.x =min(other.x, self.x)
+		self.y =min(other.y, self.y)
+		self.z =min(other.z, self.z)
+
 	def normalize(self):
 		"Scale each component of this Vector3 so that it has a magnitude of 1. If this Vector3 has a magnitude of 0, this method has no effect."
 		magnitude = abs(self)
@@ -258,7 +274,8 @@ class Vector3:
 		self.z = z
 
 
-globalAccessibleAttributeSet = 'x y z'.split()
+globalGetAccessibleAttributeSet = 'x y z'.split()
+globalSetAccessibleAttributeSet = globalGetAccessibleAttributeSet
 
 """
 class Vector3:

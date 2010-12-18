@@ -64,6 +64,8 @@ import __init__
 
 from datetime import date
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.svg_reader import SVGReader
+from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
@@ -95,36 +97,20 @@ def getCraftedTextFromText(fileName, svgText, repository=None):
 		return svgText
 	if repository == None:
 		repository = settings.getReadRepository(ScaleRepository())
-	if not repository.activateScale.value:
-		return svgText
-	return ScaleSkein().getCraftedGcode(fileName, repository, svgText)
+	if repository.activateScale.value:
+		return ScaleSkein().getCraftedGcode(fileName, repository, svgText)
+	return svgText
 
 def getNewRepository():
 	"Get the repository constructor."
 	return ScaleRepository()
 
-def setSliceXMLElementScale(decimalPlacesCarried, sliceXMLElement, sliceXMLElementIndex, xyPlaneScale, zAxisScale):
+def setLoopLayerScale(rotatedLoopLayer, xyPlaneScale, zAxisScale):
 	"Set the slice element scale."
-	idValue = sliceXMLElement.attributeDictionary['id'].strip()
-	z = float(idValue[len('z:') :].strip())
-	roundedZ = euclidean.getRoundedToPlacesString(decimalPlacesCarried, z * zAxisScale)
-	idValue = 'z:%s' % roundedZ
-	sliceXMLElement.attributeDictionary['id'] = idValue
-	textXMLElement = sliceXMLElement.getFirstChildWithClassName('text')
-	textXMLElement.text = 'Layer %s, %s' % (sliceXMLElementIndex, idValue)
-	pathXMLElement = sliceXMLElement.getFirstChildWithClassName('path')
-	pathDictionary = pathXMLElement.attributeDictionary
-	dataAttribute = pathDictionary['d']
-	dataSplitLine = dataAttribute.split()
-	scaledOutput = cStringIO.StringIO()
-	for dataWordIndex, dataWord in enumerate(dataSplitLine):
-		if dataWordIndex != 0:
-			scaledOutput.write(' ')
-		if dataWord.replace('.', '0').replace('-', '0').isdigit():
-			scaledOutput.write(euclidean.getRoundedToPlacesString(decimalPlacesCarried, xyPlaneScale * float(dataWord)))
-		else:
-			scaledOutput.write(dataWord)
-	pathDictionary['d'] = scaledOutput.getvalue()
+	for loop in rotatedLoopLayer.loops:
+		for pointIndex in xrange(len(loop)):
+			loop[pointIndex] *= xyPlaneScale
+	rotatedLoopLayer.z *= zAxisScale
 
 def writeOutput(fileName):
 	'Scale the carving.'
@@ -139,7 +125,7 @@ class ScaleRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName(fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Scale', self, '')
 		self.activateScale = settings.BooleanSetting().getFromValue('Activate Scale:', self, False)
 		self.xyPlaneScale = settings.FloatSpin().getFromValue(0.99, 'XY Plane Scale (ratio):', self, 1.03, 1.01)
-		self.zAxisScale = settings.FloatSpin().getFromValue(0.99, 'Z Axis Scale (ratio):', self, 1.02, 1.005)
+		self.zAxisScale = settings.FloatSpin().getFromValue(0.99, 'Z Axis Scale (ratio):', self, 1.02, 1.0)
 		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
 		self.executeTitle = 'Scale'
 
@@ -154,25 +140,32 @@ class ScaleSkein:
 	"A class to scale a skein of extrusions."
 	def getCraftedGcode(self, fileName, repository, svgText):
 		"Parse svgText and store the scale svgText."
-		xmlParser = XMLSimpleReader(fileName, None, svgText)
-		root = xmlParser.getRoot()
-		if root == None:
-			print('Warning, root was None in getCraftedGcode in ScaleSkein, so nothing will be done for:')
-			print(fileName)
+		svgReader = SVGReader()
+		svgReader.parseSVG('', svgText)
+		if svgReader.sliceDictionary == None:
+			print('Warning, nothing will be done because the sliceDictionary could not be found getCraftedGcode in preface.')
 			return ''
-		sliceXMLElements = svg_writer.getSliceXMLElements(root)
-		sliceDictionary = svg_writer.getSliceDictionary(root)
-		decimalPlacesCarried = int(sliceDictionary['decimalPlacesCarried'])
 		xyPlaneScale = repository.xyPlaneScale.value
 		zAxisScale = repository.zAxisScale.value
-		scaledLayerThickness = zAxisScale * float(sliceDictionary['layerThickness'])
-		sliceDictionary['layerThickness'] = euclidean.getRoundedToPlacesString(decimalPlacesCarried, scaledLayerThickness)
-		procedures = sliceDictionary['procedureDone'].split(',')
-		procedures.append('scale')
-		sliceDictionary['procedureDone'] = ','.join(procedures)
-		for sliceXMLElementIndex, sliceXMLElement in enumerate(sliceXMLElements):
-			setSliceXMLElementScale(decimalPlacesCarried, sliceXMLElement, sliceXMLElementIndex, xyPlaneScale, zAxisScale)
-		return xml_simple_writer.getBeforeRootOutput(xmlParser)
+		decimalPlacesCarried = int(svgReader.sliceDictionary['decimalPlacesCarried'])
+		layerThickness = zAxisScale * float(svgReader.sliceDictionary['layerThickness'])
+		perimeterWidth = float(svgReader.sliceDictionary['perimeterWidth'])
+		rotatedLoopLayers = svgReader.rotatedLoopLayers
+		for rotatedLoopLayer in rotatedLoopLayers:
+			setLoopLayerScale(rotatedLoopLayer, xyPlaneScale, zAxisScale)
+		cornerMaximum = Vector3(-912345678.0, -912345678.0, -912345678.0)
+		cornerMinimum = Vector3(912345678.0, 912345678.0, 912345678.0)
+		svg_writer.setSVGCarvingCorners(cornerMaximum, cornerMinimum, layerThickness, rotatedLoopLayers)
+		svgWriter = svg_writer.SVGWriter(
+			True,
+			cornerMaximum,
+			cornerMinimum,
+			decimalPlacesCarried,
+			layerThickness,
+			perimeterWidth)
+		commentElement = svg_writer.getCommentElement(svgReader.root)
+		procedureNameString = svgReader.sliceDictionary['procedureName'] + ',scale'
+		return svgWriter.getReplacedSVGTemplate(fileName, procedureNameString, rotatedLoopLayers, commentElement)
 
 
 def main():

@@ -133,12 +133,12 @@ class HomeSkein:
 		alongWay = self.absolutePerimeterWidth / beginEndDistance
 		closeToEnd = euclidean.getIntermediateLocation( alongWay, end, begin )
 		closeToEnd.z = self.highestZ
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.travelFeedRatePerMinute, closeToEnd.dropAxis(2), closeToEnd.z ) )
+		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.travelFeedRatePerMinute, closeToEnd.dropAxis(), closeToEnd.z ) )
 
 	def addHopUp(self, location):
 		"Add hop to highest point."
 		locationUp = Vector3( location.x, location.y, self.highestZ )
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.travelFeedRatePerMinute, locationUp.dropAxis(2), locationUp.z ) )
+		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.travelFeedRatePerMinute, locationUp.dropAxis(), locationUp.z ) )
 
 	def addHomeTravel( self, splitLine ):
 		"Add the home travel gcode."
@@ -180,7 +180,7 @@ class HomeSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> home </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> home </procedureName>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.absolutePerimeterWidth = abs(float(splitLine[1]))

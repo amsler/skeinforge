@@ -121,6 +121,8 @@ class HopRepository:
 class HopSkein:
 	"A class to hop a skein of extrusions."
 	def __init__(self):
+		'Initialize'
+		self.isAlteration = False
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.extruderActive = False
 		self.feedRateMinute = 961.0
@@ -145,16 +147,16 @@ class HopSkein:
 		"Get hopped gcode line."
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
-		if self.extruderActive:
+		if self.extruderActive or self.isAlteration:
 			return line
 		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		highestZ = location.z
 		if self.oldLocation != None:
 			highestZ = max( highestZ, self.oldLocation.z )
 		highestZHop = highestZ + self.hopHeight
-		locationComplex = location.dropAxis(2)
+		locationComplex = location.dropAxis()
 		if self.justDeactivated:
-			oldLocationComplex = self.oldLocation.dropAxis(2)
+			oldLocationComplex = self.oldLocation.dropAxis()
 			distance = abs( locationComplex - oldLocationComplex )
 			if distance < self.minimumDistance:
 				if self.isNextTravel():
@@ -199,7 +201,7 @@ class HopSkein:
 				self.hopDistance = self.hopHeight / self.minimumSlope
 				self.minimumDistance = 0.5 * layerThickness
 			elif firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> hop </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> hop </procedureName>)')
 				return
 			self.distanceFeedRate.addLine(line)
 
@@ -218,6 +220,10 @@ class HopSkein:
 		elif firstWord == 'M103':
 			self.extruderActive = False
 			self.justDeactivated = True
+		elif firstWord == '(<alteration>)':
+			self.isAlteration = True
+		elif firstWord == '(</alteration>)':
+			self.isAlteration = False
 		self.distanceFeedRate.addLine(line)
 
 

@@ -114,7 +114,7 @@ class OutsetSkein:
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.layerCount = settings.LayerCount()
 		self.lineIndex = 0
-		self.rotatedBoundaryLayer = None
+		self.rotatedLoopLayer = None
 
 	def addGcodeFromRemainingLoop( self, loop, radius, z ):
 		"Add the remainder of the loop."
@@ -124,12 +124,12 @@ class OutsetSkein:
 		self.distanceFeedRate.addLine('(</boundaryPerimeter>)')
 		self.distanceFeedRate.addLine('(</surroundingLoop>)')
 
-	def addOutset( self, rotatedBoundaryLayer ):
+	def addOutset(self, rotatedLoopLayer):
 		"Add outset to the layer."
-		extrudateLoops = intercircle.getInsetLoopsFromLoops( - self.absoluteHalfPerimeterWidth, rotatedBoundaryLayer.loops )
-		sortedLoops = trianglemesh.getLoopsInOrderOfArea( trianglemesh.compareAreaAscending, extrudateLoops )
+		extrudateLoops = intercircle.getInsetLoopsFromLoops(-self.absoluteHalfPerimeterWidth, rotatedLoopLayer.loops)
+		sortedLoops = trianglemesh.sortLoopsInOrderOfArea(False, extrudateLoops)
 		for sortedLoop in sortedLoops:
-			self.addGcodeFromRemainingLoop( sortedLoop, self.absoluteHalfPerimeterWidth, rotatedBoundaryLayer.z )
+			self.addGcodeFromRemainingLoop(sortedLoop, self.absoluteHalfPerimeterWidth, rotatedLoopLayer.z)
 
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the bevel gcode."
@@ -148,7 +148,7 @@ class OutsetSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'outset')
+				self.distanceFeedRate.addTagBracketedLine('procedureName', 'outset')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.absoluteHalfPerimeterWidth = 0.5 * abs(float(splitLine[1]))
@@ -163,18 +163,18 @@ class OutsetSkein:
 		firstWord = splitLine[0]
 		if firstWord == '(<boundaryPoint>':
 			location = gcodec.getLocationFromSplitLine(None, splitLine)
-			self.boundary.append( location.dropAxis(2) )
+			self.boundary.append(location.dropAxis())
 		elif firstWord == '(<layer>':
 			self.layerCount.printProgressIncrement('outset')
-			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer(float(splitLine[1]))
+			self.rotatedLoopLayer = euclidean.RotatedLoopLayer(float(splitLine[1]))
 			self.distanceFeedRate.addLine(line)
 		elif firstWord == '(</layer>)':
-			self.addOutset( self.rotatedBoundaryLayer )
-			self.rotatedBoundaryLayer = None
+			self.addOutset( self.rotatedLoopLayer )
+			self.rotatedLoopLayer = None
 		elif firstWord == '(<surroundingLoop>)':
 			self.boundary = []
-			self.rotatedBoundaryLayer.loops.append( self.boundary )
-		if self.rotatedBoundaryLayer == None:
+			self.rotatedLoopLayer.loops.append( self.boundary )
+		if self.rotatedLoopLayer == None:
 			self.distanceFeedRate.addLine(line)
 
 

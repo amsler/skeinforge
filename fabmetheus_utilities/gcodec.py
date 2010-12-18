@@ -45,7 +45,7 @@ def addLineAndNewlineIfNecessary(line, output):
 
 def getArcDistance(relativeLocation, splitLine):
 	'Get arc distance.'
-	halfPlaneLineDistance = 0.5 * abs(relativeLocation.dropAxis(2))
+	halfPlaneLineDistance = 0.5 * abs(relativeLocation.dropAxis())
 	radius = getDoubleFromCharacterSplitLine('R', splitLine)
 	if radius == None:
 		iFloat = getDoubleFromCharacterSplitLine('I', splitLine)
@@ -140,9 +140,7 @@ def getLocationFromSplitLine(oldLocation, splitLine):
 
 def getSplitLineBeforeBracketSemicolon(line):
 	'Get the split line before a bracket or semicolon.'
-	semicolonIndex = line.find(';')
-	if semicolonIndex >= 0:
-		line = line[ : semicolonIndex ]
+	line = line.split(';')[0]
 	bracketIndex = line.find('(')
 	if bracketIndex > 0:
 		return line[: bracketIndex].split()
@@ -171,15 +169,15 @@ def isProcedureDone(gcodeText, procedure):
 		withoutBracketsEqualTabQuotes = getWithoutBracketsEqualTab(line).replace('"', '').replace("'", '')
 		splitLine = getWithoutBracketsEqualTab( withoutBracketsEqualTabQuotes ).split()
 		firstWord = getFirstWord(splitLine)
-		if firstWord == 'procedureDone':
+		if firstWord == 'procedureName':
 			if splitLine[1].find(procedure) != -1:
 				return True
 		elif firstWord == 'extrusionStart':
 			return False
 		procedureIndex = line.find(procedure)
 		if procedureIndex != -1:
-			if 'procedureDone' in splitLine:
-				nextIndex = splitLine.index('procedureDone') + 1
+			if 'procedureName' in splitLine:
+				nextIndex = splitLine.index('procedureName') + 1
 				if nextIndex < len(splitLine):
 					nextWordSplit = splitLine[nextIndex].split(',')
 					if procedure in nextWordSplit:
@@ -223,12 +221,12 @@ class BoundingRectangle:
 		splitLine = getSplitLineBeforeBracketSemicolon(line)
 		firstWord = getFirstWord(splitLine)
 		if firstWord == '(<boundaryPoint>':
-			locationComplex = getLocationFromSplitLine(None, splitLine).dropAxis(2)
+			locationComplex = getLocationFromSplitLine(None, splitLine).dropAxis()
 			self.cornerMaximum = euclidean.getMaximum(self.cornerMaximum, locationComplex)
 			self.cornerMinimum = euclidean.getMinimum(self.cornerMinimum, locationComplex)
 		elif firstWord == 'G1':
 			location = getLocationFromSplitLine(self.oldLocation, splitLine)
-			locationComplex = location.dropAxis(2)
+			locationComplex = location.dropAxis()
 			self.cornerMaximum = euclidean.getMaximum(self.cornerMaximum, locationComplex + self.cornerRadius)
 			self.cornerMinimum = euclidean.getMinimum(self.cornerMinimum, locationComplex - self.cornerRadius)
 			self.oldLocation = location
@@ -305,7 +303,7 @@ class DistanceFeedRate:
 		absoluteDistanceMode = True
 		self.addLine('(<alteration>)')
 		for line in lines:
-			splitLine = line.split()
+			splitLine = getSplitLineBeforeBracketSemicolon(line)
 			firstWord = getFirstWord(splitLine)
 			if firstWord == 'G90':
 				absoluteDistanceMode = True

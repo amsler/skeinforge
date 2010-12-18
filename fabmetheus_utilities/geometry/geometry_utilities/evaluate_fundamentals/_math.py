@@ -44,10 +44,6 @@ def getAbs(value):
 	'Get the abs.'
 	return abs(value)
 
-def getComplex(x, y):
-	'Get the complex.'
-	return complex(x, y)
-
 def getDivmod(x, y):
 	'Get the divmod.'
 	return divmod(x, y)
@@ -83,7 +79,6 @@ def getRound(value):
 
 globalAccessibleAttributeDictionary = {
 	'abs' : getAbs,
-	'complex' : getComplex,
 	'divmod' : getDivmod,
 	'float' : getFloat,
 	'hex' : getHex,

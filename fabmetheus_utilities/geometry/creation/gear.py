@@ -11,8 +11,8 @@ from fabmetheus_utilities.geometry.creation import extrude
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.creation import shaft
 from fabmetheus_utilities.geometry.creation import teardrop
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
@@ -630,16 +630,19 @@ class GearDerivation:
 		self.collarWidthOverShaftRadius = evaluate.getEvaluatedFloatDefault(1.0, 'collarWidthOverShaftRadius', xmlElement)
 		self.copyShallow = xmlElement.getCopyShallow()
 		self.creationType = evaluate.getEvaluatedStringDefault('both', 'creationType', xmlElement)
+		self.creationTypeMenuRadioStrings = 'both first second'.split()
 		self.gearCollarThicknessOverThickness = evaluate.getEvaluatedFloatDefault(
 			0.0, 'gearCollarThicknessOverThickness', xmlElement)
 		self.helixAngle = evaluate.getEvaluatedFloatDefault(0.0, 'helixAngle', xmlElement)
 		self.helixType = evaluate.getEvaluatedStringDefault('basic', 'helixType', xmlElement)
+		self.helixTypeMenuRadioStrings = 'basic herringbone parabolic'.split()
 		self.keywayRadiusOverRadius = evaluate.getEvaluatedFloatDefault(0.5, 'keywayRadiusOverRadius', xmlElement)
 		self.lighteningHoleMarginOverRimWidth = evaluate.getEvaluatedFloatDefault(
 			1.0, 'lighteningHoleMarginOverRimWidth', xmlElement)
 		self.lighteningHoleMinimumRadius = evaluate.getEvaluatedFloatDefault(
 			1.0, 'lighteningHoleMinimumRadius', xmlElement)
 		self.moveType = evaluate.getEvaluatedStringDefault('separate', 'moveType', xmlElement)
+		self.moveTypeMenuRadioStrings = 'mesh none separate vertical'.split()
 		self.operatingAngle = evaluate.getEvaluatedFloatDefault(180.0, 'operatingAngle', xmlElement)
 		self.pinionCollarThicknessOverThickness = evaluate.getEvaluatedFloatDefault(
 			0.0, 'pinionCollarThicknessOverThickness', xmlElement)

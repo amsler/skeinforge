@@ -16,7 +16,7 @@ from fabmetheus_utilities import euclidean
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
+__date__ = '$Date: 2008/02/05 $'
 __license__ = 'GPL 3.0'
 
 
@@ -24,34 +24,34 @@ globalExecutionOrder = 360
 
 
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
-	"Get equated paths."
-	rotatePoints( loop, prefix, xmlElement )
+	'Get equated paths.'
+	rotatePoints(loop, prefix, xmlElement)
 	return [loop]
 
 def getManipulatedGeometryOutput(geometryOutput, xmlElement):
-	"Get equated geometryOutput."
-	rotatePoints( matrix.getConnectionVertexes(geometryOutput), 'rotate.', xmlElement )
+	'Get equated geometryOutput.'
+	rotatePoints(matrix.getConnectionVertexes(geometryOutput), 'rotate.', xmlElement)
 	return geometryOutput
 
 def manipulateXMLElement(target, xmlElement):
-	"Manipulate the xml element."
-	rotateMatrixTetragrid = matrix.getRotateMatrixTetragrid('', xmlElement)
-	if rotateMatrixTetragrid == None:
-		print('Warning, rotateMatrixTetragrid was None in rotate so nothing will be done for:')
+	'Manipulate the xml element.'
+	rotateTetragrid = matrix.getRotateTetragrid('', xmlElement)
+	if rotateTetragrid == None:
+		print('Warning, rotateTetragrid was None in rotate so nothing will be done for:')
 		print(xmlElement)
 		return
-	matrix.setAttributeDictionaryToMultipliedTetragrid(rotateMatrixTetragrid, target)
+	matrix.setAttributeDictionaryToMultipliedTetragrid(rotateTetragrid, target)
 
 def processXMLElement(xmlElement):
-	"Process the xml element."
-	solid.processXMLElementByFunction( manipulateXMLElement, xmlElement)
+	'Process the xml element.'
+	solid.processXMLElementByFunction(manipulateXMLElement, xmlElement)
 
-def rotatePoints( points, prefix, xmlElement ):
-	"Rotate the points."
-	rotateMatrixTetragrid = matrix.getRotateMatrixTetragrid(prefix, xmlElement)
-	if rotateMatrixTetragrid == None:
-		print('Warning, rotateMatrixTetragrid was None in rotate so nothing will be done for:')
+def rotatePoints(points, prefix, xmlElement):
+	'Rotate the points.'
+	rotateTetragrid = matrix.getRotateTetragrid(prefix, xmlElement)
+	if rotateTetragrid == None:
+		print('Warning, rotateTetragrid was None in rotate so nothing will be done for:')
 		print(xmlElement)
 		return
 	for point in points:
-		matrix.transformVector3ByMatrix( rotateMatrixTetragrid, point )
+		matrix.transformVector3ByMatrix(rotateTetragrid, point)

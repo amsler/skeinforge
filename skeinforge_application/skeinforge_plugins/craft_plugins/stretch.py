@@ -280,7 +280,7 @@ class StretchSkein:
 		except StopIteration:
 			return crossLimitedStretch
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-		pointComplex = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine).dropAxis(2)
+		pointComplex = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine).dropAxis()
 		pointMinusLocation = locationComplex - pointComplex
 		pointMinusLocationLength = abs( pointMinusLocation )
 		if pointMinusLocationLength <= self.crossLimitDistanceFraction:
@@ -311,7 +311,7 @@ class StretchSkein:
 				return complex()
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = splitLine[0]
-			pointComplex = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine).dropAxis(2)
+			pointComplex = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine).dropAxis()
 			locationMinusPoint = lastLocationComplex - pointComplex
 			locationMinusPointLength = abs( locationMinusPoint )
 			totalLength += locationMinusPointLength
@@ -340,7 +340,7 @@ class StretchSkein:
 		crossIteratorBackward = LineIteratorBackward( self.isLoop, indexPreviousStart, self.lines )
 		iteratorForward = LineIteratorForward( self.isLoop, indexNextStart, self.lines )
 		iteratorBackward = LineIteratorBackward( self.isLoop, indexPreviousStart, self.lines )
-		locationComplex = location.dropAxis(2)
+		locationComplex = location.dropAxis()
 		relativeStretch = self.getRelativeStretch( locationComplex, iteratorForward ) + self.getRelativeStretch( locationComplex, iteratorBackward )
 		relativeStretch *= 0.8
 #		print('relativeStretch')
@@ -352,7 +352,7 @@ class StretchSkein:
 		if relativeStretchLength > 1.0:
 			relativeStretch /= relativeStretchLength
 		absoluteStretch = relativeStretch * self.threadMaximumAbsoluteStretch
-		stretchedPoint = location.dropAxis(2) + absoluteStretch
+		stretchedPoint = location.dropAxis() + absoluteStretch
 		return self.distanceFeedRate.getLinearGcodeMovementWithFeedRate( self.feedRateMinute, stretchedPoint, location.z )
 
 	def isJustBeforeExtrusion(self):
@@ -376,7 +376,7 @@ class StretchSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> stretch </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> stretch </procedureName>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				perimeterWidth = float(splitLine[1])

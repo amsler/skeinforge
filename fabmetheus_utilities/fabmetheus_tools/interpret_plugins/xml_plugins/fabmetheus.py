@@ -76,6 +76,10 @@ class XMLBooleanGeometryProcessor():
 		archive.addToNamePathDictionary(archive.getGeometryPath('solids'), self.namePathDictionary)
 		archive.addToNamePathDictionary(archive.getGeometryPath('statements'), self.namePathDictionary)
 
+	def __repr__(self):
+		'Get the string representation of this XMLBooleanGeometryProcessor.'
+		return 'XMLBooleanGeometryProcessor with %s functions.' % len(self.functions)
+
 	def convertXMLElement( self, geometryOutput, xmlElement ):
 		"Convert the xml element."
 		geometryOutputKeys = geometryOutput.keys()

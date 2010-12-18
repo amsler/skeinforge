@@ -7,6 +7,11 @@ Bottom sets the bottom of the carving to the defined altitude.
 The default 'Activate Bottom' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
 ==Settings==
+===Additional Height over Layer Thickness===
+Default is half.
+
+The layers will start at the altitude plus the Additional Height over Layer Thickness times the layer thickness.  The default value of half means that the bottom layer is at the height of the bottom slice, because each slice is made through the middle of each layer.  Raft expects the layers to start at an additional half layer thickness.  You should only change Additional Height over Layer Thickness if you are manipulating the skeinforge output with your own program which does not use the raft tool.
+
 ===Altitude===
 Default is zero.
 
@@ -57,6 +62,8 @@ import __init__
 
 from datetime import date
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.svg_reader import SVGReader
+from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
@@ -96,19 +103,6 @@ def getNewRepository():
 	"Get the repository constructor."
 	return BottomRepository()
 
-def getSliceXMLElementZ(sliceXMLElement):
-	"Get the slice element z."
-	idValue = sliceXMLElement.attributeDictionary['id'].strip()
-	return float(idValue[len('z:') :].strip())
-
-def setSliceXMLElementZ(decimalPlacesCarried, sliceXMLElement, sliceXMLElementIndex, z):
-	"Set the slice element z."
-	roundedZ = euclidean.getRoundedToPlacesString(decimalPlacesCarried, z)
-	idValue = 'z:%s' % roundedZ
-	sliceXMLElement.attributeDictionary['id'] = idValue
-	textXMLElement = sliceXMLElement.getFirstChildWithClassName('text')
-	textXMLElement.text = 'Layer %s, %s' % (sliceXMLElementIndex, idValue)
-
 def writeOutput(fileName):
 	'Bottom the carving.'
 	skeinforge_craft.writeSVGTextWithNounMessage(fileName, BottomRepository())
@@ -118,9 +112,13 @@ class BottomRepository:
 	"A class to handle the bottom settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.bottom.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName(fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Bottom', self, '')
-		self.activateBottom = settings.BooleanSetting().getFromValue('Activate Bottom:', self, True )
+		skeinforge_profile.addListsToCraftTypeRepository(
+			'skeinforge_application.skeinforge_plugins.craft_plugins.bottom.html', self)
+		self.fileNameInput = settings.FileNameInput().getFromFileName(
+			fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Bottom', self, '')
+		self.activateBottom = settings.BooleanSetting().getFromValue('Activate Bottom', self, True)
+		self.additionalHeightOverLayerThickness = settings.FloatSpin().getFromValue(
+			0.0, 'Additional Height over Layer Thickness (ratio):', self, 1.0, 0.5)
 		self.altitude = settings.FloatSpin().getFromValue(-1.0, 'Altitude (mm):', self, 1.0, 0.0)
 		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
 		self.executeTitle = 'Bottom'
@@ -136,27 +134,34 @@ class BottomSkein:
 	"A class to bottom a skein of extrusions."
 	def getCraftedGcode(self, fileName, repository, svgText):
 		"Parse svgText and store the bottom svgText."
-		xmlParser = XMLSimpleReader(fileName, None, svgText)
-		root = xmlParser.getRoot()
-		if root == None:
-			print('Warning, root was None in getCraftedGcode in BottomSkein, so nothing will be done for:')
-			print(fileName)
+		svgReader = SVGReader()
+		svgReader.parseSVG('', svgText)
+		if svgReader.sliceDictionary == None:
+			print('Warning, nothing will be done because the sliceDictionary could not be found getCraftedGcode in preface.')
 			return ''
-		sliceXMLElements = svg_writer.getSliceXMLElements(root)
-		sliceDictionary = svg_writer.getSliceDictionary(root)
-		decimalPlacesCarried = int(sliceDictionary['decimalPlacesCarried'])
-		layerThickness = float(sliceDictionary['layerThickness'])
-		procedures = sliceDictionary['procedureDone'].split(',')
-		procedures.append('bottom')
-		sliceDictionary['procedureDone'] = ','.join(procedures)
+		decimalPlacesCarried = int(svgReader.sliceDictionary['decimalPlacesCarried'])
+		layerThickness = float(svgReader.sliceDictionary['layerThickness'])
+		perimeterWidth = float(svgReader.sliceDictionary['perimeterWidth'])
+		rotatedLoopLayers = svgReader.rotatedLoopLayers
 		zMinimum = 987654321.0
-		for sliceXMLElement in sliceXMLElements:
-			zMinimum = min(getSliceXMLElementZ(sliceXMLElement), zMinimum)
-		deltaZ = repository.altitude.value + 0.5 * layerThickness - zMinimum
-		for sliceXMLElementIndex, sliceXMLElement in enumerate(sliceXMLElements):
-			z = getSliceXMLElementZ(sliceXMLElement) + deltaZ
-			setSliceXMLElementZ(decimalPlacesCarried, sliceXMLElement, sliceXMLElementIndex, z)
-		return xml_simple_writer.getBeforeRootOutput(xmlParser)
+		for rotatedLoopLayer in rotatedLoopLayers:
+			zMinimum = min(rotatedLoopLayer.z, zMinimum)
+		deltaZ = repository.altitude.value + repository.additionalHeightOverLayerThickness.value * layerThickness - zMinimum
+		for rotatedLoopLayer in rotatedLoopLayers:
+			rotatedLoopLayer.z += deltaZ
+		cornerMaximum = Vector3(-912345678.0, -912345678.0, -912345678.0)
+		cornerMinimum = Vector3(912345678.0, 912345678.0, 912345678.0)
+		svg_writer.setSVGCarvingCorners(cornerMaximum, cornerMinimum, layerThickness, rotatedLoopLayers)
+		svgWriter = svg_writer.SVGWriter(
+			True,
+			cornerMaximum,
+			cornerMinimum,
+			decimalPlacesCarried,
+			layerThickness,
+			perimeterWidth)
+		commentElement = svg_writer.getCommentElement(svgReader.root)
+		procedureNameString = svgReader.sliceDictionary['procedureName'] + ',bottom'
+		return svgWriter.getReplacedSVGTemplate(fileName, procedureNameString, rotatedLoopLayers, commentElement)
 
 
 def main():

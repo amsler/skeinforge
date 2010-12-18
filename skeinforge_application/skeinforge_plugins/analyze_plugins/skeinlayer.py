@@ -255,8 +255,8 @@ class SkeinlayerSkein:
 		if self.oldLocation == None:
 			return
 		colorName = 'gray'
-		locationComplex = location.dropAxis(2)
-		oldLocationComplex = self.oldLocation.dropAxis(2)
+		locationComplex = location.dropAxis()
+		oldLocationComplex = self.oldLocation.dropAxis()
 		begin = self.getScreenCoordinates( oldLocationComplex )
 		end = self.getScreenCoordinates( locationComplex )
 		if self.extruderActive:
@@ -286,8 +286,8 @@ class SkeinlayerSkein:
 		"Update the bounding corners."
 		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 		if self.extruderActive or self.repository.goAroundExtruderOffTravel.value:
-			self.cornerHigh = euclidean.getPointMaximum( self.cornerHigh, location )
-			self.cornerLow = euclidean.getPointMinimum( self.cornerLow, location )
+			self.cornerMaximum.maximize(location)
+			self.cornerMinimum.minimize(location)
 		self.oldLocation = location
 
 	def linearMove( self, line, location ):
@@ -314,19 +314,19 @@ class SkeinlayerSkein:
 		self.gcodeText = gcodeText
 		self.repository = repository
 		self.initializeActiveLocation()
-		self.cornerHigh = Vector3(-999999999.0, -999999999.0, -999999999.0)
-		self.cornerLow = Vector3(999999999.0, 999999999.0, 999999999.0)
+		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, -999999999.0)
+		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
 		self.lines = archive.getTextLines(gcodeText)
 		self.isThereALayerStartWord = gcodec.isThereAFirstWord('(<layer>', self.lines, 1 )
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:
 			self.parseCorner(line)
-		self.cornerHighComplex = self.cornerHigh.dropAxis(2)
-		self.cornerLowComplex = self.cornerLow.dropAxis(2)
+		self.cornerMaximumComplex = self.cornerMaximum.dropAxis()
+		self.cornerMinimumComplex = self.cornerMinimum.dropAxis()
 		self.scale = repository.scale.value
-		self.scaleCornerHigh = self.scale * self.cornerHighComplex
-		self.scaleCornerLow = self.scale * self.cornerLowComplex
-		self.cornerImaginaryTotal = self.cornerHigh.y + self.cornerLow.y
+		self.scaleCornerHigh = self.scale * self.cornerMaximumComplex
+		self.scaleCornerLow = self.scale * self.cornerMinimumComplex
+		self.cornerImaginaryTotal = self.cornerMaximum.y + self.cornerMinimum.y
 		self.margin = complex( 10.0, 10.0 )
 		self.marginCornerHigh = self.scaleCornerHigh + self.margin
 		self.marginCornerLow = self.scaleCornerLow - self.margin
@@ -409,7 +409,7 @@ class SkeinWindow( tableau.TableauWindow ):
 		self.horizontalRulerCanvas.create_text( xPixel + 2, 0, anchor = settings.Tkinter.NW, text = self.getRoundedRulingText( 1, xMillimeters ) )
 		cumulativeDistance = xMillimeters
 		self.createVerticalLine( self.rulingExtentTiny, self.skein.getScreenCoordinates( complex( xMillimeters + self.separationWidthMillimetersTenth, 0.0 ) ).real )
-		for subRulingIndex in xrange( 4 ):
+		for subRulingIndex in xrange(4):
 			cumulativeDistance += self.separationWidthMillimetersFifth
 			self.createVerticalLine( self.rulingExtentShort, self.skein.getScreenCoordinates( complex( cumulativeDistance, 0.0 ) ).real )
 			self.createVerticalLine( self.rulingExtentTiny, self.skein.getScreenCoordinates( complex( cumulativeDistance + self.separationWidthMillimetersTenth, 0.0 ) ).real )
@@ -426,7 +426,7 @@ class SkeinWindow( tableau.TableauWindow ):
 			effectiveRulingTextLength -= 1
 		cumulativeDistance = yMillimeters
 		self.createHorizontalLine( self.rulingExtentTiny, self.skein.getScreenCoordinates( complex( 0.0, yMillimeters + self.separationWidthMillimetersTenth ) ).imag )
-		for subRulingIndex in xrange( 4 ):
+		for subRulingIndex in xrange(4):
 			cumulativeDistance += self.separationWidthMillimetersFifth
 			self.createHorizontalLine( self.rulingExtentShort, self.skein.getScreenCoordinates( complex( 0.0, cumulativeDistance ) ).imag )
 			self.createHorizontalLine( self.rulingExtentTiny, self.skein.getScreenCoordinates( complex( 0.0, cumulativeDistance + self.separationWidthMillimetersTenth ) ).imag )
@@ -455,14 +455,14 @@ class SkeinWindow( tableau.TableauWindow ):
 		self.separationWidthMillimetersTenth = 0.1 * self.rulingSeparationWidthMillimeters
 		rulingSeparationWidthPixels = self.getRulingSeparationWidthPixels( self.rank )
 		marginOverScale = self.skein.margin / self.skein.scale
-		cornerHighMargin = self.skein.cornerHighComplex + marginOverScale
-		cornerLowMargin = self.skein.cornerLowComplex - marginOverScale
-		xRankIndexHigh = getRankIndex( self.rulingSeparationWidthMillimeters, cornerHighMargin.real )
-		xRankIndexLow = getRankIndex( self.rulingSeparationWidthMillimeters, cornerLowMargin.real )
+		cornerMaximumMargin = self.skein.cornerMaximumComplex + marginOverScale
+		cornerMinimumMargin = self.skein.cornerMinimumComplex - marginOverScale
+		xRankIndexHigh = getRankIndex( self.rulingSeparationWidthMillimeters, cornerMaximumMargin.real )
+		xRankIndexLow = getRankIndex( self.rulingSeparationWidthMillimeters, cornerMinimumMargin.real )
 		for xRankIndex in xrange( xRankIndexLow - 2, xRankIndexHigh + 2 ): # 1 is enough, 2 is to be on the safe side
 			self.addHorizontalRulerRuling( xRankIndex * self.rulingSeparationWidthMillimeters )
-		yRankIndexHigh = getRankIndex( self.rulingSeparationWidthMillimeters, cornerHighMargin.imag )
-		yRankIndexLow = getRankIndex( self.rulingSeparationWidthMillimeters, cornerLowMargin.imag )
+		yRankIndexHigh = getRankIndex( self.rulingSeparationWidthMillimeters, cornerMaximumMargin.imag )
+		yRankIndexLow = getRankIndex( self.rulingSeparationWidthMillimeters, cornerMinimumMargin.imag )
 		for yRankIndex in xrange( yRankIndexLow - 2, yRankIndexHigh + 2 ): # 1 is enough, 2 is to be on the safe side
 			self.addVerticalRulerRuling( yRankIndex * self.rulingSeparationWidthMillimeters )
 

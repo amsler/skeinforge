@@ -12,6 +12,7 @@ from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.creation import teardrop
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -27,10 +28,9 @@ def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."
 	if derivation == None:
 		derivation = DrillDerivation(xmlElement)
-	extrudeDerivation = extrude.ExtrudeDerivation()
 	negatives = []
-	teardrop.addNegativesByDerivation(derivation.end, extrudeDerivation, negatives, derivation.radius, derivation.start, xmlElement)
-	return extrude.getGeometryOutputByNegativesPositives(extrudeDerivation, [], negatives, xmlElement)
+	teardrop.addNegativesByRadius(derivation.end, negatives, derivation.radius, derivation.start, xmlElement)
+	return solid.getGeometryOutputByManipulation(negatives[0], xmlElement)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
 	"Get vector3 vertexes from attribute dictionary by arguments."

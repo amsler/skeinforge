@@ -30,7 +30,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.geometry_utilities import booleansolid
+from fabmetheus_utilities.geometry.geometry_utilities import boolean_solid
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
@@ -54,7 +54,7 @@ class BooleanGeometry:
 		self.bridgeLayerThickness = None
 		self.importRadius = 0.3
 		self.layerThickness = 0.4
-		self.rotatedBoundaryLayers = []
+		self.rotatedLoopLayers = []
 
 	def __repr__(self):
 		"Get the string representation of this carving."
@@ -88,43 +88,47 @@ class BooleanGeometry:
 			vertexes += visibleObject.getTransformedVertexes()
 		if len(vertexes) < 1:
 			return []
-		self.cornerMaximum = Vector3(-999999999.0, - 999999999.0, - 9999999999.9)
-		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 9999999999.9)
+		self.maximumZ = -912345678.0
+		self.minimumZ = 912345678.0
 		for vertex in vertexes:
-			self.cornerMaximum.z = max(self.cornerMaximum.z, vertex.z)
-			self.cornerMinimum.z = min(self.cornerMinimum.z, vertex.z)
+			self.maximumZ = max(self.maximumZ, vertex.z)
+			self.minimumZ = min(self.minimumZ, vertex.z)
 		trianglemesh.initializeZoneIntervalTable(self, vertexes)
 		halfHeight = 0.5 * self.layerThickness
 		self.setActualMinimumZ(halfHeight)
-		z = self.cornerMinimum.z + halfHeight
-		while z < self.cornerMaximum.z:
+		z = self.minimumZ + halfHeight
+		while z < self.maximumZ:
 			z = self.getZAddExtruderPaths(z)
-		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
-			for loop in rotatedBoundaryLayer.loops:
+		self.cornerMaximum = Vector3(-912345678.0, -912345678.0, -912345678.0)
+		self.cornerMinimum = Vector3(912345678.0, 912345678.0, 912345678.0)
+		for rotatedLoopLayer in self.rotatedLoopLayers:
+			for loop in rotatedLoopLayer.loops:
 				for point in loop:
-					pointVector3 = Vector3(point.real, point.imag, rotatedBoundaryLayer.z)
-					self.cornerMaximum = euclidean.getPointMaximum(self.cornerMaximum, pointVector3)
-					self.cornerMinimum = euclidean.getPointMinimum(self.cornerMinimum, pointVector3)
-		for rotatedBoundaryLayerIndex in xrange(len(self.rotatedBoundaryLayers) -1, -1, -1):
-			rotatedBoundaryLayer = self.rotatedBoundaryLayers[rotatedBoundaryLayerIndex]
-			if len(rotatedBoundaryLayer.loops) > 0:
-				return self.rotatedBoundaryLayers[: rotatedBoundaryLayerIndex + 1]
+					pointVector3 = Vector3(point.real, point.imag, rotatedLoopLayer.z)
+					self.cornerMaximum.maximize(pointVector3)
+					self.cornerMinimum.minimize(pointVector3)
+		self.cornerMaximum.z += halfHeight
+		self.cornerMinimum.z -= halfHeight
+		for rotatedLoopLayerIndex in xrange(len(self.rotatedLoopLayers) -1, -1, -1):
+			rotatedLoopLayer = self.rotatedLoopLayers[rotatedLoopLayerIndex]
+			if len(rotatedLoopLayer.loops) > 0:
+				return self.rotatedLoopLayers[: rotatedLoopLayerIndex + 1]
 		return []
 
 	def getEmptyZExtruderPaths( self, shouldPrintWarning, z ):
 		"Get extruder loops."
 		z = trianglemesh.getEmptyZ(self, z)
-		rotatedBoundaryLayer = euclidean.RotatedLoopLayer(z)
-		visibleObjectLoopsList = booleansolid.getVisibleObjectLoopsList( self.importRadius, evaluate.getVisibleObjects(self.archivableObjects), z )
-		rotatedBoundaryLayer.loops = euclidean.getConcatenatedList( visibleObjectLoopsList )
-		if euclidean.isLoopListIntersecting(rotatedBoundaryLayer.loops):
-			rotatedBoundaryLayer.loops = booleansolid.getLoopsUnified(self.importRadius, visibleObjectLoopsList)
+		rotatedLoopLayer = euclidean.RotatedLoopLayer(z)
+		visibleObjectLoopsList = boolean_solid.getVisibleObjectLoopsList( self.importRadius, evaluate.getVisibleObjects(self.archivableObjects), z )
+		rotatedLoopLayer.loops = euclidean.getConcatenatedList( visibleObjectLoopsList )
+		if euclidean.isLoopListIntersecting(rotatedLoopLayer.loops):
+			rotatedLoopLayer.loops = boolean_solid.getLoopsUnified(self.importRadius, visibleObjectLoopsList)
 			if shouldPrintWarning:
 				print('Warning, the triangle mesh slice intersects itself in getExtruderPaths in boolean_geometry.')
 				print( "Something will still be printed, but there is no guarantee that it will be the correct shape." )
 				print('Once the gcode is saved, you should check over the layer with a z of:')
 				print(z)
-		return rotatedBoundaryLayer
+		return rotatedLoopLayer
 
 	def getFabmetheusXML(self):
 		"Return the fabmetheus XML."
@@ -142,17 +146,17 @@ class BooleanGeometry:
 
 	def getZAddExtruderPaths( self, z ):
 		"Get next z and add extruder loops."
-		settings.printProgress(len(self.rotatedBoundaryLayers), 'slice')
-		rotatedBoundaryLayer = self.getEmptyZExtruderPaths(True, z)
-		self.rotatedBoundaryLayers.append( rotatedBoundaryLayer )
+		settings.printProgress(len(self.rotatedLoopLayers), 'slice')
+		rotatedLoopLayer = self.getEmptyZExtruderPaths(True, z)
+		self.rotatedLoopLayers.append( rotatedLoopLayer )
 		if self.bridgeLayerThickness == None:
 			return z + self.layerThickness
 		allExtrudateLoops = []
-		for loop in rotatedBoundaryLayer.loops:
+		for loop in rotatedLoopLayer.loops:
 			allExtrudateLoops += trianglemesh.getBridgeLoops( self.layerThickness, loop )
-		rotatedBoundaryLayer.rotation = trianglemesh.getBridgeDirection( self.belowLoops, allExtrudateLoops, self.layerThickness )
+		rotatedLoopLayer.rotation = trianglemesh.getBridgeDirection( self.belowLoops, allExtrudateLoops, self.layerThickness )
 		self.belowLoops = allExtrudateLoops
-		if rotatedBoundaryLayer.rotation == None:
+		if rotatedLoopLayer.rotation == None:
 			return z + self.layerThickness
 		return z + self.bridgeLayerThickness
 
@@ -160,18 +164,18 @@ class BooleanGeometry:
 		"Get the actual minimum z at the lowest rotated boundary layer."
 		halfHeightOverMyriad = 0.0001 * halfHeight
 		halfHeightOverThousand = 0.001 * halfHeight
-		while self.cornerMinimum.z < self.cornerMaximum.z:
-			if len(self.getEmptyZExtruderPaths(False, self.cornerMinimum.z + halfHeightOverMyriad).loops) > 0:
+		while self.minimumZ < self.maximumZ:
+			if len(self.getEmptyZExtruderPaths(False, self.minimumZ + halfHeightOverMyriad).loops) > 0:
 				increment = - halfHeight
 				while abs(increment) > halfHeightOverThousand:
-					self.cornerMinimum.z += increment
+					self.minimumZ += increment
 					increment = 0.5 * abs(increment)
-					if len( self.getEmptyZExtruderPaths(False, self.cornerMinimum.z).loops ) > 0:
+					if len( self.getEmptyZExtruderPaths(False, self.minimumZ).loops ) > 0:
 						increment = - increment
-				if abs(self.cornerMinimum.z) < halfHeight:
-					self.cornerMinimum.z = 0.0
+				if abs(self.minimumZ) < halfHeight:
+					self.minimumZ = 0.0
 				return
-			self.cornerMinimum.z += self.layerThickness
+			self.minimumZ += self.layerThickness
 
 	def setCarveBridgeLayerThickness( self, bridgeLayerThickness ):
 		"Set the bridge layer thickness.  If the infill is not in the direction of the bridge, the bridge layer thickness should be given as None or not set at all."

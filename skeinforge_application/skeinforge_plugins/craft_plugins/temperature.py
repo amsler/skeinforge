@@ -195,7 +195,7 @@ class TemperatureSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> temperature </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> temperature </procedureName>)')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.distanceFeedRate.addTagBracketedLine('coolingRate', self.repository.coolingRate.value )

@@ -104,8 +104,8 @@ def compareYAscending( point, pointOther ):
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get path with overhangs removed or filled in."
 	if len(loop) < 3:
-		return [loop]
-	if not evaluate.getEvaluatedBooleanDefault( True, prefix + 'activate', xmlElement ):
+		print('Warning, loop has less than three sides in getManipulatedPaths in overhang for:')
+		print(xmlElement)
 		return [loop]
 	overhangAngle = evaluate.getOverhangSupportAngle(xmlElement)
 	overhangPlaneAngle = euclidean.getWiddershinsUnitPolar( 0.5 * math.pi - overhangAngle )

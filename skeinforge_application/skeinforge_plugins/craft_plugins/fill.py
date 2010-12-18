@@ -382,7 +382,7 @@ def createExtraFillLoops( radius, shouldExtraLoopsBeAdded, surroundingLoop ):
 	"Create extra fill loops."
 	for innerSurrounding in surroundingLoop.innerSurroundings:
 		createFillForSurroundings( radius, shouldExtraLoopsBeAdded, innerSurrounding.innerSurroundings )
-	allFillLoops = getExtraFillLoops( surroundingLoop.getFillLoops(), radius )
+	allFillLoops = getExtraFillLoops( surroundingLoop.getLoopsToBeFilled(), radius )
 	surroundingLoop.lastFillLoops = allFillLoops
 	if shouldExtraLoopsBeAdded:
 		surroundingLoop.extraLoops += allFillLoops
@@ -612,7 +612,7 @@ def isAddedPointOnPathIntersectingPath( begin, path, point, pointIndex ):
 
 def isIntersectingLoopsPaths( loops, paths, pointBegin, pointEnd ):
 	"Determine if the segment between the first and second point is intersecting the loop list."
-	normalizedSegment = pointEnd.dropAxis(2) - pointBegin.dropAxis(2)
+	normalizedSegment = pointEnd.dropAxis() - pointBegin.dropAxis()
 	normalizedSegmentLength = abs( normalizedSegment )
 	if normalizedSegmentLength == 0.0:
 		return False
@@ -1118,9 +1118,9 @@ class FillSkein:
 			self.surroundingLoop.addToLoop( location )
 			return
 		elif self.thread == None:
-			self.thread = [ self.oldLocation.dropAxis(2) ]
-			self.surroundingLoop.perimeterPaths.append( self.thread )
-		self.thread.append( location.dropAxis(2) )
+			self.thread = [ self.oldLocation.dropAxis() ]
+			self.surroundingLoop.perimeterPaths.append(self.thread)
+		self.thread.append(location.dropAxis())
 
 	def getAreaChange( self, area, layerIndex ):
 		"Get the difference between the area of the carve at the layer index and the given area."
@@ -1181,8 +1181,9 @@ class FillSkein:
 		gridRotationAngle = reverseRotation * rotationBaseAngle
 		slightlyGreaterThanFill = 1.01 * self.gridInset
 		rotatedLoops = []
-		for loop in trianglemesh.getLoopsInOrderOfArea(trianglemesh.compareAreaDescending, fillLoops):
-			rotatedLoops.append(euclidean.getPointsRoundZAxis(reverseRotationBaseAngle, loop))
+		trianglemesh.sortLoopsInOrderOfArea(True, fillLoops)
+		for fillLoop in fillLoops:
+			rotatedLoops.append(euclidean.getPointsRoundZAxis(reverseRotationBaseAngle, fillLoop))
 		if self.repository.infillPatternGridCircular.value:
 			return self.getGridPointsByLoops(
 				gridRotationAngle, intercircle.getInsetSeparateLoopsFromLoops(-self.gridCircleRadius, rotatedLoops))
@@ -1281,7 +1282,7 @@ class FillSkein:
 				threadSequenceString = ' '.join( self.threadSequence )
 				self.distanceFeedRate.addTagBracketedLine('threadSequenceString', threadSequenceString )
 			elif firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> fill </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> fill </procedureName>)')
 			elif firstWord == '(<crafting>)':
 				self.distanceFeedRate.addLine(line)
 				return

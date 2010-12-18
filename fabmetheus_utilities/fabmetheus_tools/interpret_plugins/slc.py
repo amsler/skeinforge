@@ -54,11 +54,11 @@ def getCarving(fileName=''):
 
 def getLittleEndianFloatGivenFile( file ):
 	"Get little endian float given a file."
-	return unpack('<f', file.read( 4 ) )[0]
+	return unpack('<f', file.read(4) )[0]
 
 def getLittleEndianUnsignedLongGivenFile( file ):
 	"Get little endian float given a file."
-	return unpack('<L', file.read( 4 ) )[0]
+	return unpack('<L', file.read(4) )[0]
 
 def getPointsFromFile( numPoints, file ):
 	"Process the vertice points for a given boundary."
@@ -96,7 +96,7 @@ class SLCCarving:
 		self.maximumZ = - 999999999.0
 		self.minimumZ = 999999999.0
 		self.layerThickness = None
-		self.rotatedBoundaryLayers = []
+		self.rotatedLoopLayers = []
 	
 	def __repr__(self):
 		"Get the string representation of this carving."
@@ -104,7 +104,7 @@ class SLCCarving:
 
 	def addXML(self, depth, output):
 		"Add xml for this object."
-		xml_simple_writer.addXMLFromObjects(depth, self.rotatedBoundaryLayers, output)
+		xml_simple_writer.addXMLFromObjects(depth, self.rotatedLoopLayers, output)
 
 	def getCarveCornerMaximum(self):
 		"Get the corner maximum of the vertexes."
@@ -116,11 +116,11 @@ class SLCCarving:
 
 	def getCarvedSVG(self):
 		"Get the carved svg text."
-		if len(self.rotatedBoundaryLayers) < 1:
+		if len(self.rotatedLoopLayers) < 1:
 			return ''
 		decimalPlaces = max(0, 2 - int(math.floor(math.log10(self.layerThickness))))
-		self.svgWriter = svg_writer.SVGWriter(True, self, decimalPlaces)
-		return self.svgWriter.getReplacedSVGTemplate(self.fileName, 'basic', self.rotatedBoundaryLayers)
+		self.svgWriter = svg_writer.SVGWriter(True, self.cornerMaximum, self.cornerMinimum, decimalPlaces, self.layerThickness)
+		return self.svgWriter.getReplacedSVGTemplate(self.fileName, 'basic', self.rotatedLoopLayers)
 
 	def getCarveLayerThickness(self):
 		"Get the layer thickness."
@@ -128,7 +128,7 @@ class SLCCarving:
 
 	def getCarveRotatedBoundaryLayers(self):
 		"Get the rotated boundary layers."
-		return self.rotatedBoundaryLayers
+		return self.rotatedLoopLayers
 
 	def getFabmetheusXML(self):
 		"Return the fabmetheus XML."
@@ -145,13 +145,13 @@ class SLCCarving:
 			numContours = getLittleEndianUnsignedLongGivenFile( file )
 			if numContours == 0xFFFFFFFF:
 				return
-			rotatedBoundaryLayer = euclidean.RotatedLoopLayer( minLayer )
-			self.rotatedBoundaryLayers.append( rotatedBoundaryLayer )
+			rotatedLoopLayer = euclidean.RotatedLoopLayer( minLayer )
+			self.rotatedLoopLayers.append( rotatedLoopLayer )
 			for contourIndex in xrange( numContours ):
 				numPoints = getLittleEndianUnsignedLongGivenFile( file )
 				numGaps = getLittleEndianUnsignedLongGivenFile( file )
 				if numPoints > 2:
-					rotatedBoundaryLayer.loops.append( getPointsFromFile( numPoints, file ) )
+					rotatedLoopLayer.loops.append( getPointsFromFile( numPoints, file ) )
 
 	def readFile( self, fileName ):
 		"Read SLC and store the layers."
@@ -164,12 +164,12 @@ class SLCCarving:
 		pslcfile.close()
 		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, self.maximumZ)
 		self.cornerMinimum = Vector3(999999999.0, 999999999.0, self.minimumZ)
-		for rotatedBoundaryLayer in self.rotatedBoundaryLayers:
-			for loop in rotatedBoundaryLayer.loops:
+		for rotatedLoopLayer in self.rotatedLoopLayers:
+			for loop in rotatedLoopLayer.loops:
 				for point in loop:
-					pointVector3 = Vector3(point.real, point.imag, rotatedBoundaryLayer.z)
-					self.cornerMaximum = euclidean.getPointMaximum(self.cornerMaximum, pointVector3)
-					self.cornerMinimum = euclidean.getPointMinimum(self.cornerMinimum, pointVector3)
+					pointVector3 = Vector3(point.real, point.imag, rotatedLoopLayer.z)
+					self.cornerMaximum.maximize(pointVector3)
+					self.cornerMinimum.minimize(pointVector3)
 		halfLayerThickness = 0.5 * self.layerThickness
 		self.cornerMaximum.z += halfLayerThickness
 		self.cornerMinimum.z -= halfLayerThickness

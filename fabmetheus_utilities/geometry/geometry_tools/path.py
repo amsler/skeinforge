@@ -80,7 +80,7 @@ class Path(dictionary.Dictionary):
 
 	def getMatrixChainTetragrid(self):
 		"Get the matrix chain tetragrid."
-		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).matrixTetragrid
+		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).tetragrid
 
 	def getPaths(self):
 		"Get all paths."
@@ -163,10 +163,7 @@ class SVGFabricationCarving:
 			rotatedLoopLayer.loops.append(euclidean.getComplexPath(path))
 		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, -999999999.0)
 		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
-		svg_writer.setSVGCarvingCorners(self.rotatedLoopLayers, self)
-		halfLayerThickness = 0.5 * self.layerThickness
-		self.cornerMaximum.z += halfLayerThickness
-		self.cornerMinimum.z -= halfLayerThickness
+		svg_writer.setSVGCarvingCorners(self.cornerMaximum, self.cornerMinimum, self.layerThickness, self.rotatedLoopLayers)
 
 	def setCarveBridgeLayerThickness( self, bridgeLayerThickness ):
 		"Set the bridge layer thickness.  If the infill is not in the direction of the bridge, the bridge layer thickness should be given as None or not set at all."

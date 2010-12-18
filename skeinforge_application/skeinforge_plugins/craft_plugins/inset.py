@@ -280,7 +280,7 @@ class InsetSkein:
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.layerCount = settings.LayerCount()
 		self.lineIndex = 0
-		self.rotatedBoundaryLayer = None
+		self.rotatedLoopLayer = None
 
 	def addGcodeFromPerimeterPaths( self, isIntersectingSelf, loop, loopLists, radius, z ):
 		"Add the perimeter paths to the output."
@@ -357,20 +357,17 @@ class InsetSkein:
 		if self.repository.addCustomCodeForTemperatureReading.value:
 			self.distanceFeedRate.addLine('M105') # Custom code for temperature reading.
 
-	def addInset( self, rotatedBoundaryLayer ):
+	def addInset( self, rotatedLoopLayer ):
 		"Add inset to the layer."
 		alreadyFilledArounds = []
 		halfWidth = self.halfPerimeterWidth
-		if rotatedBoundaryLayer.rotation != None:
+		if rotatedLoopLayer.rotation != None:
 			halfWidth *= self.repository.bridgeWidthMultiplier.value
-			self.distanceFeedRate.addTagBracketedLine('bridgeRotation', rotatedBoundaryLayer.rotation )
-		extrudateLoops = intercircle.getInsetLoopsFromLoops( halfWidth, rotatedBoundaryLayer.loops )
-		if self.repository.loopOrderAscendingArea.value:
-			extrudateLoops = trianglemesh.getLoopsInOrderOfArea( trianglemesh.compareAreaAscending, extrudateLoops )
-		else:
-			extrudateLoops = trianglemesh.getLoopsInOrderOfArea( trianglemesh.compareAreaDescending, extrudateLoops )
+			self.distanceFeedRate.addTagBracketedLine('bridgeRotation', rotatedLoopLayer.rotation )
+		extrudateLoops = intercircle.getInsetLoopsFromLoops( halfWidth, rotatedLoopLayer.loops )
+		trianglemesh.sortLoopsInOrderOfArea(not self.repository.loopOrderAscendingArea.value, extrudateLoops)
 		for extrudateLoop in extrudateLoops:
-			self.addGcodeFromRemainingLoop( extrudateLoop, alreadyFilledArounds, halfWidth, rotatedBoundaryLayer.z )
+			self.addGcodeFromRemainingLoop( extrudateLoop, alreadyFilledArounds, halfWidth, rotatedLoopLayer.z )
 
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the bevel gcode."
@@ -392,7 +389,7 @@ class InsetSkein:
 				self.addInitializationToOutput()
 				self.distanceFeedRate.addTagBracketedLine('bridgeWidthMultiplier', self.distanceFeedRate.getRounded( self.repository.bridgeWidthMultiplier.value ) )
 			elif firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addTagBracketedLine('procedureDone', 'inset')
+				self.distanceFeedRate.addTagBracketedLine('procedureName', 'inset')
 				return
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float(splitLine[1])
@@ -408,10 +405,10 @@ class InsetSkein:
 		firstWord = splitLine[0]
 		if firstWord == '(<boundaryPoint>':
 			location = gcodec.getLocationFromSplitLine(None, splitLine)
-			self.boundary.append( location.dropAxis(2) )
+			self.boundary.append(location.dropAxis())
 		elif ( firstWord == '(<bridgeRotation>' or firstWord == '<!--bridgeRotation-->'):
 			secondWordWithoutBrackets = splitLine[1].replace('(', '').replace(')', '')
-			self.rotatedBoundaryLayer.rotation = complex( secondWordWithoutBrackets )
+			self.rotatedLoopLayer.rotation = complex( secondWordWithoutBrackets )
 		elif firstWord == '(</crafting>)':
 				self.distanceFeedRate.addLine(line)
 				if self.repository.turnExtruderHeaterOffAtShutDown.value:
@@ -419,15 +416,15 @@ class InsetSkein:
 				return
 		elif firstWord == '(<layer>':
 			self.layerCount.printProgressIncrement('inset')
-			self.rotatedBoundaryLayer = euclidean.RotatedLoopLayer(float(splitLine[1]))
+			self.rotatedLoopLayer = euclidean.RotatedLoopLayer(float(splitLine[1]))
 			self.distanceFeedRate.addLine(line)
 		elif firstWord == '(</layer>)':
-			self.addInset( self.rotatedBoundaryLayer )
-			self.rotatedBoundaryLayer = None
+			self.addInset( self.rotatedLoopLayer )
+			self.rotatedLoopLayer = None
 		elif firstWord == '(<surroundingLoop>)':
 			self.boundary = []
-			self.rotatedBoundaryLayer.loops.append( self.boundary )
-		if self.rotatedBoundaryLayer == None:
+			self.rotatedLoopLayer.loops.append( self.boundary )
+		if self.rotatedLoopLayer == None:
 			self.distanceFeedRate.addLine(line)
 
 

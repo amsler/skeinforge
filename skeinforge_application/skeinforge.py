@@ -43,6 +43,9 @@ There is also documentation is in the documentation folder, in the doc strings f
 A list of other tutorials is at:
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge#Tutorials
 
+Skeinforge tagged pages on thingiverse can be searched for at:
+http://www.thingiverse.com/search?cx=015525747728168968820%3Arqnsgx1xxcw&cof=FORID%3A9&ie=UTF-8&q=skeinforge&sa=Search&siteurl=www.thingiverse.com%2F#944
+
 ===Fabrication===
 To fabricate a model with gcode and the Arduino you can use the send.py in the fabricate folder.  The documentation for it is in the folder as send.html and at:
 http://reprap.org/bin/view/Main/ArduinoSend
@@ -146,13 +149,15 @@ Or you can turn files into gcode by adding the file name, for example:
 I may be slow, but I get there in the end.
 
 ===Troubleshooting===
-If there's a bug, try downloading the very latest version because skeinforge is often updated without an announcement.
+If there's a bug, try downloading the very latest version because skeinforge is often updated without an announcement.  The very latest version is at:
+http://members.axion.net/~enrique/reprap_python_beanshell.zip
 
 If there is still a bug, then first prepare the following files:
 
 1. stl file
 2. pictures explaining the problem
 3. your settings (pack the whole .skeinforge directory with all your settings) 
+4. alterations folder, if you have any active alterations files
 
 Then zip all the files.
 
@@ -162,10 +167,15 @@ If the dialog window is too big for the screen, on most Linux window managers yo
 
 If you can't use the graphical interface, you can change the settings for skeinforge by using a text editor or spreadsheet to change the settings in the profiles folder in the .skeinforge folder in your home directory.
 
-Comments and suggestions are welcome, however, I won't reply unless you are a contributor because developing takes all my time and as of the time of this writing I have at least three years of features to implement.
-
-I will only answer your questions if you contribute to skeinforge in some way.  Some ways of contributing to skeinforge are in the contributions thread at:
+Comments and suggestions are welcome, however, I won't reply unless you are a contributor.  Likewise, I will only answer your questions if you contribute to skeinforge in some way.  Some ways of contributing to skeinforge are in the contributions thread at:
 http://dev.forums.reprap.org/read.php?12,27562
+
+You could also contribute articles to demozendium on any topic:
+http://fabmetheus.crsndoo.com/wiki/index.php/Main_Page
+
+If you contribute in a significant way to another open source project, I will consider that also.
+
+When I answered everyone's questions, eventually I received more questions than I had time to answer, so now I only answer questions from contributors.
 
 I reserve the right to make any correspondence public.  Do not send me any correspondence marked confidential.  If you do I will delete it.
 
@@ -215,31 +225,28 @@ import os
 import sys
 
 
-# 
-# update
-# bottom and scale read / write
-# demozendium EnriquePerez, privacy policy, maybe thumbnail logo
-# check out intersection algorithm
-# maybe have circle end at 0 instead of 360.0
-# MenuRadioStrings
-# class, pymethe
-# linear bearing cage
-# mirror axis center & origin, concatenate
-# matrixTetragrid to tetragrid, matrix.transform, target
-# maybe matrix array form a00 a01.. also
-# matrix rotate around axis http://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
-# lathe, transform normal in getRemaining, getConnection
+# round sphere
+# mirror axis center & origin, concatenate, voronoi
+# import module, overwriteRoot
+# writeTagged, tags, creationTags, writeMatrix='true'
+# fast extruder travel for support
+# add overview link to crnsdoo index and svg page
+# linearbearingexample 15 x 1 x 2
+# gear examples
+# make more getGeometryOutputByNegativesPositivesOnly in gear
+# document gear script
+# change global attributes to local
+# eliminate variable bridge height, maybe add bridge cooling
+# announcement
+#
+# array paths, follow paths, later maybe targetequation radius xyz give index
+# look over copy module, make copy solid like copy lineation
 # grate separate
 # xml_creation
-# fill rename shortenedSegmentList gridSegmentList and delete comments
-# array paths, follow paths, later maybe targetequation radius xyz give index
-# writeTagged, tags, creationTags, writeMatrix='true'
 # connectionfrom, to, connect, xaxis
-# add overview link to crnsdoo index and svg page
 # bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
-# look over copy module, make copy solid like copy lineation
-# document gear script
-# eliminate variable bridge height
+# lathe, transform normal in getRemaining, getConnection
+# mechaslab
 # stretch add back addAlong
 # multiply to table + boundary bedBound bedWidth bedHeight bedFile.csv
 #
@@ -257,7 +264,6 @@ import sys
 # write svg for visible paths???
 # combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
 # getConnection of some kind like getConnectionVertexes, getConnection
-# import module, overwriteRoot
 # pixel, voxel, surfaxel/boxel, lattice, mesh
 # probably not replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
 # probably not speed up CircleIntersection by performing isWithinCircles before creation
@@ -266,8 +272,10 @@ import sys
 # probably not move alterations and profiles
 # tube
 # rotor
+# demozendium privacy policy, maybe thumbnail logo
+# pymethe
 # test translate
-# lathe
+# full lathe
 # think about setActualMinimumZ in boolean_geometry
 # pyramid
 # round extrusion ?, fillet
@@ -329,7 +337,7 @@ import sys
 # help primary menu item refresh
 # add plugin help menu, add craft below menu
 # give option of saving when switching profiles
-# xml & svg more forgiving, svg make defaults for layerThickness, maxZ, minZ, add layer z to svg_template, make the slider on the template track even when mouse is outside
+# xml & svg more forgiving, svg make defaults for layerThickness
 # option of surrounding lines in display
 # maybe add connecting line in display line
 # maybe check inset loops to see if they are smaller, but this would be slow
@@ -401,7 +409,8 @@ import sys
 #8 22270, 2625
 #9 24895, 2967, 98
 #10 27862, 3433, 110
-#11 31295
+#11 31295, 3327
+#12 34622 
 #85 jan7, 86jan11, 87 jan13, 88 jan15, 91 jan21, 92 jan23, 95 jan30, 98 feb6
 #make one piece electromagnet spool
 #stepper rotor with ceramic disk magnet in middle, electromagnet with long thin spool line?
@@ -430,7 +439,7 @@ import sys
 # third, a routine to detect the largest face and orient the part accordingly. Mat http://reprap.kumy.net/
 # concept, three perpendicular slices to get display spheres
 # extend lines around short segment after cross hatched boolean
-# concept, teslocracy or citizendium; donation, postponement, rotate ad network, cached search options
+# concept, donation, postponement, rotate ad network, cached search options
 # concept, local ad server, every time the program runs it changes the iamge which all the documentation points to from a pool of ads
 # concept, join cross slices, go from vertex to two orthogonal edges, then from edges to each other, if not to a common point, then simplify polygons by removing points which do not change the area much
 # concept, each node is fourfold, use sorted intersectionindexes to find close, connect each double sided edge, don't overlap more than two triangles on an edge

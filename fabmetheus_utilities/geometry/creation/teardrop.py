@@ -21,18 +21,12 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = 'GPL 3.0'
 
 
-def addNegativesByDerivation(end, extrudeDerivation, negatives, radius, start, xmlElement):
-	"Add teardrop drill hole to negatives."
-	extrudeDerivation.offsetAlongDefault = [start, end]
-	extrudeDerivation.tiltFollow = True
-	extrudeDerivation.tiltTop = Vector3(0.0, 0.0, 1.0)
-	extrudeDerivation.setToXMLElement(xmlElement.getCopyShallow())
-	extrude.addNegatives(extrudeDerivation, negatives, [getTeardropPathByEndStart(end, radius, start, xmlElement)])
-
 def addNegativesByRadius(end, negatives, radius, start, xmlElement):
 	"Add teardrop drill hole to negatives."
-	extrudeDerivation = extrude.ExtrudeDerivation()
-	addNegativesByDerivation(end, extrudeDerivation, negatives, radius, start, xmlElement)
+	copyShallow = xmlElement.getCopyShallow()
+	extrude.setXMLElementToEndStart(end, start, copyShallow)
+	extrudeDerivation = extrude.ExtrudeDerivation(copyShallow)
+	extrude.addNegatives(extrudeDerivation, negatives, [getTeardropPathByEndStart(end, radius, start, xmlElement)])
 
 def getGeometryOutput(derivation, xmlElement):
 	"Get vector3 vertexes from attribute dictionary."

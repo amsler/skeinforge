@@ -166,7 +166,7 @@ class MultiplySkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'G1':
 				movedLocation = self.getMovedLocationSetOldLocation( offset, splitLine )
-				line = self.distanceFeedRate.getLinearGcodeMovement( movedLocation.dropAxis(2), movedLocation.z )
+				line = self.distanceFeedRate.getLinearGcodeMovement( movedLocation.dropAxis(), movedLocation.z )
 			elif firstWord == '(<boundaryPoint>':
 				movedLocation = self.getMovedLocationSetOldLocation( offset, splitLine )
 				line = self.distanceFeedRate.getBoundaryLine( movedLocation )
@@ -230,7 +230,7 @@ class MultiplySkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> multiply </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> multiply </procedureName>)')
 				self.distanceFeedRate.addLine(line)
 				self.lineIndex += 1
 				return
@@ -257,8 +257,8 @@ class MultiplySkein:
 
 	def setCorners(self):
 		"Set maximum and minimum corners and z."
-		cornerHighComplex = complex(-987654321.0, -987654321.0)
-		cornerLowComplex = -cornerHighComplex
+		cornerMaximumComplex = complex(-987654321.0, -987654321.0)
+		cornerMinimumComplex = -cornerMaximumComplex
 		for line in self.lines[self.lineIndex :]:
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -266,15 +266,15 @@ class MultiplySkein:
 				location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 				if self.isExtrusionActive:
 					locationComplex = location.dropAxis()
-					cornerHighComplex = euclidean.getMaximum(locationComplex,  cornerHighComplex)
-					cornerLowComplex = euclidean.getMinimum(locationComplex,  cornerLowComplex)
+					cornerMaximumComplex = euclidean.getMaximum(locationComplex,  cornerMaximumComplex)
+					cornerMinimumComplex = euclidean.getMinimum(locationComplex,  cornerMinimumComplex)
 				self.oldLocation = location
 			elif firstWord == 'M101':
 				self.isExtrusionActive = True
 			elif firstWord == 'M103':
 				self.isExtrusionActive = False
-		self.extent = cornerHighComplex - cornerLowComplex
-		self.shapeCenter = 0.5 * ( cornerHighComplex + cornerLowComplex )
+		self.extent = cornerMaximumComplex - cornerMinimumComplex
+		self.shapeCenter = 0.5 * ( cornerMaximumComplex + cornerMinimumComplex )
 		self.separation = self.multiplyRepository.separationOverPerimeterWidth.value * self.absolutePerimeterWidth
 		self.extentPlusSeparation = self.extent + complex( self.separation, self.separation )
 		columnsMinusOne = self.numberOfColumns - 1

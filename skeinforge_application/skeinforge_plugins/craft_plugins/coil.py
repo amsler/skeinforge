@@ -185,7 +185,7 @@ class CoilSkein:
 		"Add a thread to the output."
 		if len(thread) > 0:
 			firstLocation = thread[0]
-			self.distanceFeedRate.addGcodeMovementZ( firstLocation.dropAxis(2), firstLocation.z )
+			self.distanceFeedRate.addGcodeMovementZ( firstLocation.dropAxis(), firstLocation.z )
 		else:
 			print( "zero length vertex positions array which was skipped over, this should never happen" )
 		if len(thread) < 2:
@@ -194,7 +194,7 @@ class CoilSkein:
 			return
 		self.distanceFeedRate.addLine('M101') # Turn extruder on.
 		for location in thread[1 :]:
-			self.distanceFeedRate.addGcodeMovementZ( location.dropAxis(2), location.z )
+			self.distanceFeedRate.addGcodeMovementZ( location.dropAxis(), location.z )
 		self.distanceFeedRate.addLine('M103') # Turn extruder off.
 
 	def getCraftedGcode(self, gcodeText, repository):
@@ -223,11 +223,11 @@ class CoilSkein:
 				location = gcodec.getLocationFromSplitLine(None, splitLine)
 				if boundaryLoop == None:
 					boundaryLoop = []
-					boundaryLayer.loops.append( boundaryLoop )
-				boundaryLoop.append( location.dropAxis(2) )
+					boundaryLayer.loops.append(boundaryLoop)
+				boundaryLoop.append(location.dropAxis())
 			elif firstWord == '(<layer>':
 				boundaryLayer = euclidean.LoopLayer(float(splitLine[1]))
-				self.boundaryLayers.append( boundaryLayer )
+				self.boundaryLayers.append(boundaryLayer)
 			elif firstWord == '(</crafting>)':
 				self.shutdownLines = [ line ]
 		for boundaryLayer in self.boundaryLayers:
@@ -244,7 +244,7 @@ class CoilSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> coil </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> coil </procedureName>)')
 				return
 			elif firstWord == '(<layerThickness>':
 				self.layerThickness = float(splitLine[1])

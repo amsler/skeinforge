@@ -20,7 +20,7 @@ def _getAccessibleAttribute(attributeName, listObject):
 	'Get the accessible attribute.'
 	if attributeName in globalNativeFunctionSet:
 		return getattr(listObject, attributeName, None)
-	if attributeName in globalAccessibleAttributeSet:
+	if attributeName in globalGetAccessibleAttributeSet:
 		stringAttribute = ListAttribute(listObject)
 		return getattr(stringAttribute, attributeName, None)
 	return None
@@ -107,6 +107,6 @@ class ListAttribute:
 
 globalAccessibleAttributes = 'copy count delete get getIsIn getIsNotIn getLength getMax getMin'.split()
 globalAccessibleAttributes += 'insert keys length rindex set values'.split()
-globalAccessibleAttributeSet = set(globalAccessibleAttributes)
+globalGetAccessibleAttributeSet = set(globalAccessibleAttributes)
 globalNativeFunctions = 'append extend index pop remove reverse sort'.split()
 globalNativeFunctionSet = set(globalNativeFunctions)

@@ -29,11 +29,12 @@ def getGeometryOutput(derivation, xmlElement):
 	sidesCeiling = int(math.ceil(abs(derivation.sides) * derivation.extent / 360.0))
 	sideAngle = math.radians(derivation.extent) / sidesCeiling
 	spiral = lineation.Spiral(derivation.spiral, 0.5 * sideAngle / math.pi)
-	for side in xrange(sidesCeiling + (derivation.extent != 360.0)):
+	for side in xrange(sidesCeiling + 1):
 		unitPolar = euclidean.getWiddershinsUnitPolar(angleTotal)
 		vertex = spiral.getSpiralPoint(unitPolar, Vector3(unitPolar.real * derivation.radius.real, unitPolar.imag * derivation.radius.imag))
 		angleTotal += sideAngle
 		loop.append(vertex)
+	loop = euclidean.getLoopWithoutCloseEnds(0.000001 * max(derivation.radius.real, derivation.radius.imag), loop)
 	sideLength = sideAngle * lineation.getRadiusAverage(derivation.radius)
 	lineation.setClosedAttribute(derivation.revolutions, xmlElement)
 	return lineation.getGeometryOutputByLoop(lineation.SideLoop(loop, sideAngle, sideLength), xmlElement)

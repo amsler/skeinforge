@@ -221,7 +221,7 @@ class DrillSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> drill </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> drill </procedureName>)')
 				return
 			elif firstWord == '(<layerThickness>':
 				self.halfLayerThickness = 0.5 * float(splitLine[1])
@@ -256,7 +256,7 @@ class DrillSkein:
 			location = gcodec.getLocationFromSplitLine(None, splitLine)
 			if self.boundary == None:
 				self.boundary = []
-			self.boundary.append( location.dropAxis(2) )
+			self.boundary.append(location.dropAxis())
 		elif firstWord == '(<layer>':
 			self.layerZ = float(splitLine[1])
 			self.threadLayer = None

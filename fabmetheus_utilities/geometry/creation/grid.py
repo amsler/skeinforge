@@ -45,8 +45,8 @@ def getGeometryOutput(derivation, xmlElement):
 	loopsComplex = [euclidean.getSquareLoopWiddershins(bottomLeft, topRight)]
 	if len(derivation.target) > 0:
 		loopsComplex = euclidean.getComplexPaths(derivation.target)
-	maximumComplex = euclidean.getMaximumByPathsComplex(loopsComplex)
-	minimumComplex = euclidean.getMinimumByPathsComplex(loopsComplex)
+	maximumComplex = euclidean.getMaximumByComplexPaths(loopsComplex)
+	minimumComplex = euclidean.getMinimumByComplexPaths(loopsComplex)
 	gridPath = None
 	if typeStringTwoCharacters == 'he':
 		gridPath = getHexagonalGrid(diameter, loopsComplex, maximumComplex, minimumComplex, derivation.zigzag)
@@ -159,6 +159,7 @@ class GridDerivation:
 		self.radius = lineation.getComplexByPrefixBeginEnd('radius', 'diameter', self.radius, xmlElement)
 		self.seed = evaluate.getEvaluatedIntDefault(None, 'seed', xmlElement)
 		self.target = evaluate.getTransformedPathsByKey([], 'target', xmlElement)
+		self.typeMenuRadioStrings = 'hexagonal random rectangular'.split()
 		self.typeString = evaluate.getEvaluatedStringDefault('rectangular', 'type', xmlElement)
 		self.zigzag = evaluate.getEvaluatedBooleanDefault(True, 'zigzag', xmlElement)
 

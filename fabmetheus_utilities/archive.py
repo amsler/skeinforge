@@ -22,7 +22,7 @@ def addToNamePathDictionary(directoryPath, namePathDictionary):
 	'Add to the name path dictionary.'
 	pluginFileNames = getPluginFileNamesFromDirectoryPath(directoryPath)
 	for pluginFileName in pluginFileNames:
-		namePathDictionary[pluginFileName.lstrip('_')] = os.path.join(directoryPath, pluginFileName)
+		namePathDictionary[pluginFileName.replace('_', '')] = os.path.join(directoryPath, pluginFileName)
 	return getAbsoluteFrozenFolderPath( __file__, 'skeinforge_plugins')
 
 def getAbsoluteFolderPath(filePath, folderName=''):

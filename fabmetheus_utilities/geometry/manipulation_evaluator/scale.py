@@ -34,12 +34,12 @@ def getManipulatedGeometryOutput(geometryOutput, xmlElement):
 
 def manipulateXMLElement(target, xmlElement):
 	"Manipulate the xml element."
-	scaleMatrixTetragrid = matrix.getScaleMatrixTetragrid('', xmlElement)
-	if scaleMatrixTetragrid == None:
-		print('Warning, scaleMatrixTetragrid was None in scale so nothing will be done for:')
+	scaleTetragrid = matrix.getScaleTetragrid('', xmlElement)
+	if scaleTetragrid == None:
+		print('Warning, scaleTetragrid was None in scale so nothing will be done for:')
 		print(xmlElement)
 		return
-	matrix.setAttributeDictionaryToMultipliedTetragrid(scaleMatrixTetragrid, target)
+	matrix.setAttributeDictionaryToMultipliedTetragrid(scaleTetragrid, target)
 
 def processXMLElement(xmlElement):
 	"Process the xml element."

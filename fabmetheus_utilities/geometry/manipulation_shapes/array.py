@@ -68,7 +68,7 @@ def processXMLElement(xmlElement):
 	xmlElement.className = 'group'
 	for vector3Index in xrange(len(vertexes)):
 		vector3 = vertexes[vector3Index]
-		vector3Matrix = matrix.Matrix(targetMatrixCopy.matrixTetragrid)
+		vector3Matrix = matrix.Matrix(targetMatrixCopy.tetragrid)
 		lastChild = target.getCopy(xmlElement.getIDSuffix(vector3Index), xmlElement)
 		euclidean.overwriteDictionary(xmlElement.attributeDictionary, ['id'], ['visible'], lastChild.attributeDictionary)
 		vertexElement = vertex.getUnboundVertexElement(vector3)

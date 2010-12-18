@@ -65,7 +65,7 @@ def getRoundPath( begin, center, close, end, radius, sidesPerRadian ):
 	circleCenter = Vector3( circleCenterComplex.real, circleCenterComplex.imag, center.z )
 	endMinusCircleCenterComplex = endBevelComplex - circleCenterComplex
 	beginMinusCircleCenter = beginBevel - circleCenter
-	beginMinusCircleCenterComplex = beginMinusCircleCenter.dropAxis(2)
+	beginMinusCircleCenterComplex = beginMinusCircleCenter.dropAxis()
 	angleDifference = euclidean.getAngleDifferenceByComplex( endMinusCircleCenterComplex, beginMinusCircleCenterComplex )
 	steps = int( math.ceil( abs( angleDifference ) * sidesPerRadian ) )
 	stepPlaneAngle = euclidean.getWiddershinsUnitPolar( angleDifference / float( steps ) )

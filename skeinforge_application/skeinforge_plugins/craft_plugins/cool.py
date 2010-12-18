@@ -189,7 +189,7 @@ class CoolSkein:
 		largestLoop = euclidean.getLargestLoop( insetBoundaryLoops )
 		loopArea = abs( euclidean.getAreaLoop( largestLoop ) )
 		if loopArea < self.minimumArea:
-			center = 0.5 * ( euclidean.getMaximumByPathComplex( largestLoop ) + euclidean.getMinimumByPathComplex( largestLoop ) )
+			center = 0.5 * ( euclidean.getMaximumByComplexPath( largestLoop ) + euclidean.getMinimumByComplexPath( largestLoop ) )
 			centerXBounded = max( center.real, self.boundingRectangle.cornerMinimum.real )
 			centerXBounded = min( centerXBounded, self.boundingRectangle.cornerMaximum.real )
 			centerYBounded = max( center.imag, self.boundingRectangle.cornerMinimum.imag )
@@ -301,7 +301,7 @@ class CoolSkein:
 				if self.coolRepository.turnFanOnAtBeginning.value:
 					self.distanceFeedRate.addLine('M106')
 			elif firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addLine('(<procedureDone> cool </procedureDone>)')
+				self.distanceFeedRate.addLine('(<procedureName> cool </procedureName>)')
 				return
 			elif firstWord == '(<orbitalFeedRatePerSecond>':
 				self.orbitalFeedRatePerSecond = float(splitLine[1])
@@ -318,7 +318,7 @@ class CoolSkein:
 			line = self.getCoolMove(line, location, splitLine)
 			self.oldLocation = location
 		elif firstWord == '(<boundaryPoint>':
-			self.boundaryLoop.append(gcodec.getLocationFromSplitLine(None, splitLine).dropAxis(2))
+			self.boundaryLoop.append(gcodec.getLocationFromSplitLine(None, splitLine).dropAxis())
 		elif firstWord == '(<layer>':
 			self.layerCount.printProgressIncrement('cool')
 			self.distanceFeedRate.addLine(line)

@@ -63,7 +63,7 @@ class Group(dictionary.Dictionary):
 
 	def getMatrixChainTetragrid(self):
 		"Get the matrix chain tetragrid."
-		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).matrixTetragrid
+		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).tetragrid
 
 	def getVisible(self):
 		"Get visible."
