@@ -43,7 +43,7 @@ When selected, export will save the gcode file with the suffix '_penultimate.gco
 Export looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Export does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the skeinforge_plugins folder.
 
 ===replace.csv===
-When export is exporting the code, if there is a tab separated file replace.csv, it will replace the string in the first column by its replacement in the second column.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.
+When export is exporting the code, if there is a tab separated file replace.csv, it will replace the string in the first column by its replacement in the second column.  If there is nothing in the second column, the first column string will be deleted, if this leads to an empty line, the line will be deleted.  If there are replacement columns after the second, they will be added as extra lines of text.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.
 
 ==Examples==
 The following examples export the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and export.py.
@@ -138,17 +138,16 @@ def getNewRepository():
 def getReplaced(exportText):
 	'Get text with strings replaced according to replace.csv file.'
 	replaceText = settings.getFileInAlterationsOrGivenDirectory(os.path.dirname(__file__), 'Replace.csv')
-	lines = archive.getTextLines(replaceText)
-	for line in lines:
-		exportText = getReplacedByLine(exportText, line)
-	return exportText
-
-def getReplacedByLine(exportText, line):
-	'Get text with strings replaced according to line.'
-	splitLine = line.replace('\\n', '\t').split('\t')
-	if len(splitLine) < 1:
+	replaceLines = archive.getTextLines(replaceText)
+	if len(replaceLines) < 1:
 		return exportText
-	return exportText.replace(splitLine[0], '\n'.join(splitLine[1 :]))
+	for replaceLine in replaceLines:
+		splitLine = replaceLine.replace('\\n', '\t').split('\t')
+		if len(splitLine) > 0:
+			exportText = exportText.replace(splitLine[0], '\n'.join(splitLine[1 :]))
+	output = cStringIO.StringIO()
+	gcodec.addLinesToCString(output, archive.getTextLines(exportText))
+	return output.getvalue()
 
 def getSelectedPluginModule( plugins ):
 	'Get the selected plugin module.'
@@ -166,7 +165,10 @@ def writeOutput(fileName=''):
 	settings.getReadRepository(repository)
 	startTime = time.time()
 	print('File ' + archive.getSummarizedFileName(fileName) + ' is being chain exported.')
-	suffixFileName = fileName[: fileName.rfind('.')] + '_export.' + repository.fileExtension.value
+	suffixFileName = fileName[: fileName.rfind('.')]
+	if repository.addExportSuffix.value:
+		suffixFileName += '_export.'
+	suffixFileName += repository.fileExtension.value
 	gcodeText = gcodec.getGcodeFileText(fileName, '')
 	procedures = skeinforge_craft.getProcedures('export', gcodeText)
 	gcodeText = skeinforge_craft.getChainTextFromProcedures(fileName, procedures[ : - 1 ], gcodeText)
@@ -203,12 +205,13 @@ class ExportRepository:
 	'A class to handle the export settings.'
 	def __init__(self):
 		'Set the default settings, execute title & settings fileName.'
-		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export.html', self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.export.html', self)
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Export', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Export')
-		self.activateExport = settings.BooleanSetting().getFromValue('Activate Export', self, True )
+		self.activateExport = settings.BooleanSetting().getFromValue('Activate Export', self, True)
+		self.addExportSuffix = settings.BooleanSetting().getFromValue('Add Export Suffix', self, True)
 		self.alsoSendOutputTo = settings.StringSetting().getFromValue('Also Send Output To:', self, '')
-		self.commentChoice = settings.MenuButtonDisplay().getFromName('Comment Choice:', self )
+		self.commentChoice = settings.MenuButtonDisplay().getFromName('Comment Choice:', self)
 		self.doNotDeleteComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Do Not Delete Comments', self, False)
 		self.deleteCraftingComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Delete Crafting Comments', self, False)
 		self.deleteAllComments = settings.MenuRadio().getFromMenuButtonDisplay(self.commentChoice, 'Delete All Comments', self, True)
@@ -253,7 +256,7 @@ class ExportSkein:
 	def addLine(self, line):
 		'Add a line of text and a newline to the output.'
 		if line != '':
-			self.output.write( line + '\n')
+			self.output.write(line + '\n')
 
 	def getCraftedGcode( self, repository, gcodeText ):
 		'Parse gcode text and store the export gcode.'

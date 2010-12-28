@@ -21,9 +21,24 @@ The interpret tool accesses and displays the import plugins.
 
 The default settings are similar to those on Nophead's machine.  A setting which is often different is the 'Layer Thickness' in carve.
 
-===Alternative===
-Another way to make gcode for a model is to use the Java RepRap host program, described at:
-http://reprap.org/wiki/Installing_RepRap_on_your_computer
+===Command Line Interface===
+To bring up the skeinforge dialog without a file name, type:
+python skeinforge_application/skeinforge.py
+
+Slicing a file from skeinforge_utilities/skeinforge_craft.py, for example:
+python skeinforge_application/skeinforge_utilities/skeinforge_craft.py test.stl
+
+will slice the file and exit. This is the correct option for programs which use skeinforge to only generate a gcode file.
+
+Slicing a file from skeinforge.py, for example:
+python skeinforge_application/skeinforge.py test.stl
+
+will slice the file and bring up the skeinforge window and the analyze windows and then skeinforge will wait for user input.
+
+Slicing a file from skeinforge_plugins/craft.py, for example:
+python skeinforge_application/skeinforge_plugins/craft.py test.stl
+
+will slice the file and bring up the analyze windows only and then skeinforge will wait for user input.
 
 ===Contribute===
 You can contribute by helping develop the manual at:
@@ -218,6 +233,7 @@ from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
+from optparse import OptionParser
 from skeinforge_application.skeinforge_utilities import skeinforge_craft
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
 from skeinforge_application.skeinforge_utilities import skeinforge_profile
@@ -225,24 +241,33 @@ import os
 import sys
 
 
-# round sphere
-# mirror axis center & origin, concatenate, voronoi
+# rename trianglemesh triangle_mesh
+# look over lineation manipulation functions
+# maybe rename man..E man..Matrixes maybe join
+# maybe rename manipulation meta
+# look over copy module, make copy solid like copy lineation, copy geometry path
 # import module, overwriteRoot
 # writeTagged, tags, creationTags, writeMatrix='true'
-# fast extruder travel for support
-# add overview link to crnsdoo index and svg page
 # linearbearingexample 15 x 1 x 2
-# gear examples
+# fix support bug http://hydraraptor.blogspot.com/2010/12/crackers.html
 # make more getGeometryOutputByNegativesPositivesOnly in gear
-# document gear script
+# replace processXMLElementByGeometry with path.convertXMLElement(, replace convertProcessXMLElementRenameByPaths
+# document export replace blank
+# add gear to demozendium
 # change global attributes to local
 # eliminate variable bridge height, maybe add bridge cooling
 # announcement
 #
 # array paths, follow paths, later maybe targetequation radius xyz give index
-# look over copy module, make copy solid like copy lineation
+# peg
+# voronoi
+# look at height in boolean_geometry
 # grate separate
+# add overview link to crnsdoo index and svg page
+# return gcodeString ='Gcode: ' + coloredLines[self.repository.line.value].displayString
 # xml_creation
+# add E Step Length to Gcode Step
+# check large thickness bug, layerThickness 2.8
 # connectionfrom, to, connect, xaxis
 # bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
 # lathe, transform normal in getRemaining, getConnection
@@ -255,7 +280,7 @@ import sys
 # unimportant
 # minor outline problem when an end path goes through a path, like in the letter A
 # view profile 1 mm thickness
-# only parse svg once, do not parse again if yAxisPointingUpward="true"
+# only parse svg once, do not parse again if yAxisPointingUpward='true'
 #
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # del previous, add begin & end if far  get actual path
@@ -481,47 +506,47 @@ Zach Hoeken <http://blog.zachhoeken.com/>
 
 Organizations:
 Art of Illusion <http://www.artofillusion.org/>"""
-__date__ = "$Date: 2008/21/11 $"
+__date__ = '$Date: 2008/21/11 $'
 __license__ = 'GPL 3.0'
 
 
-def addToProfileMenu( profileSelection, profileType, repository ):
-	"Add a profile menu."
+def addToProfileMenu(profileSelection, profileType, repository):
+	'Add a profile menu.'
 	pluginFileNames = skeinforge_profile.getPluginFileNames()
 	craftTypeName = skeinforge_profile.getCraftTypeName()
 	pluginModule = skeinforge_profile.getCraftTypePluginModule()
-	profilePluginSettings = settings.getReadRepository( pluginModule.getNewRepository() )
+	profilePluginSettings = settings.getReadRepository(pluginModule.getNewRepository())
 	for pluginFileName in pluginFileNames:
-		skeinforge_profile.ProfileTypeMenuRadio().getFromMenuButtonDisplay( profileType, pluginFileName, repository, craftTypeName == pluginFileName )
+		skeinforge_profile.ProfileTypeMenuRadio().getFromMenuButtonDisplay(profileType, pluginFileName, repository, craftTypeName == pluginFileName)
 	for profileName in profilePluginSettings.profileList.value:
-		skeinforge_profile.ProfileSelectionMenuRadio().getFromMenuButtonDisplay( profileSelection, profileName, repository, profileName == profilePluginSettings.profileListbox.value )
+		skeinforge_profile.ProfileSelectionMenuRadio().getFromMenuButtonDisplay(profileSelection, profileName, repository, profileName == profilePluginSettings.profileListbox.value)
 
 def getPluginsDirectoryPath():
-	"Get the plugins directory path."
-	return archive.getAbsoluteFrozenFolderPath( __file__, 'skeinforge_plugins')
+	'Get the plugins directory path.'
+	return archive.getAbsoluteFrozenFolderPath(__file__, 'skeinforge_plugins')
 
 def getPluginFileNames():
-	"Get analyze plugin fileNames."
-	return archive.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
+	'Get analyze plugin fileNames.'
+	return archive.getPluginFileNamesFromDirectoryPath(getPluginsDirectoryPath())
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get the repository constructor.'
 	return SkeinforgeRepository()
 
-def getRadioPluginsAddPluginGroupFrame( directoryPath, importantFileNames, names, repository ):
-	"Get the radio plugins and add the plugin frame."
+def getRadioPluginsAddPluginGroupFrame(directoryPath, importantFileNames, names, repository):
+	'Get the radio plugins and add the plugin frame.'
 	repository.pluginGroupFrame = settings.PluginGroupFrame()
 	radioPlugins = []
 	for name in names:
-		radioPlugin = settings.RadioPlugin().getFromRadio( name in importantFileNames, repository.pluginGroupFrame.latentStringVar, name, repository, name == importantFileNames[0] )
+		radioPlugin = settings.RadioPlugin().getFromRadio(name in importantFileNames, repository.pluginGroupFrame.latentStringVar, name, repository, name == importantFileNames[0])
 		radioPlugin.updateFunction = repository.pluginGroupFrame.update
 		radioPlugins.append( radioPlugin )
-	defaultRadioButton = settings.getSelectedRadioPlugin( importantFileNames + [ radioPlugins[0].name ], radioPlugins )
-	repository.pluginGroupFrame.getFromPath( defaultRadioButton, directoryPath, repository )
+	defaultRadioButton = settings.getSelectedRadioPlugin(importantFileNames + [radioPlugins[0].name], radioPlugins)
+	repository.pluginGroupFrame.getFromPath(defaultRadioButton, directoryPath, repository)
 	return radioPlugins
 
 def writeOutput(fileName):
-	"Craft a file, display dialog."
+	'Craft a file, display dialog.'
 	repository = getNewRepository()
 	repository.fileNameInput.value = fileName
 	repository.execute()
@@ -529,48 +554,67 @@ def writeOutput(fileName):
 
 
 class SkeinforgeRepository:
-	"A class to handle the skeinforge settings."
+	'A class to handle the skeinforge settings.'
 	def __init__(self):
-		"Set the default settings, execute title & settings fileName."
+		'Set the default settings, execute title & settings fileName.'
 		settings.addListsToRepository('skeinforge_application.skeinforge.html', None, self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '')
 		self.profileType = settings.MenuButtonDisplay().getFromName('Profile Type: ', self )
-		self.profileSelection = settings.MenuButtonDisplay().getFromName('Profile Selection: ', self )
+		self.profileSelection = settings.MenuButtonDisplay().getFromName('Profile Selection: ', self)
 		addToProfileMenu( self.profileSelection, self.profileType, self )
 		settings.LabelDisplay().getFromName('Search:', self )
-		reprapSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_reprap.html', 'Reprap', self )
+		reprapSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_reprap.html', 'Reprap', self)
 		skeinforgeSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_skeinforge.html', 'Skeinforge', self )
 		skeinforgeSearch.column += 2
-		webSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_web.html', 'Web', self )
+		webSearch = settings.HelpPage().getFromNameAfterHTTP('members.axion.net/~enrique/search_web.html', 'Web', self)
 		webSearch.column += 4
 		versionText = archive.getFileText( archive.getVersionFileName() )
-		self.version = settings.LabelDisplay().getFromName('Version: ' + versionText, self )
-		settings.LabelDisplay().getFromName('', self )
+		self.version = settings.LabelDisplay().getFromName('Version: ' + versionText, self)
+		settings.LabelDisplay().getFromName('', self)
 		importantFileNames = ['craft', 'profile']
-		getRadioPluginsAddPluginGroupFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
+		getRadioPluginsAddPluginGroupFrame(getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self)
 		self.executeTitle = 'Skeinforge'
 
 	def execute(self):
-		"Skeinforge button has been clicked."
+		'Skeinforge button has been clicked.'
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			skeinforge_craft.writeOutput(fileName)
 
 	def save(self):
-		"Profile has been saved and profile menu should be updated."
+		'Profile has been saved and profile menu should be updated.'
 		self.profileType.removeMenus()
 		self.profileSelection.removeMenus()
-		addToProfileMenu( self.profileSelection, self.profileType, self )
-		self.profileType.addRadiosToDialog( self.repositoryDialog )
-		self.profileSelection.addRadiosToDialog( self.repositoryDialog )
+		addToProfileMenu(self.profileSelection, self.profileType, self)
+		self.profileType.addRadiosToDialog(self.repositoryDialog)
+		self.profileSelection.addRadiosToDialog(self.repositoryDialog)
 
 
 def main():
-	"Display the skeinforge dialog."
-	if len(sys.argv) > 1:
-		writeOutput(' '.join(sys.argv[1 :]))
+	'Display the skeinforge dialog.'
+	parser = OptionParser()
+	parser.add_option(
+		'-p', '--prefdir', help='set path to preference directory', action='store', type='string', dest='preferencesDirectory')
+	parser.add_option(
+		'-s', '--start', help='set start file to use', action='store', type='string', dest='startFile')
+	parser.add_option(
+		'-e', '--end', help='set end file to use',	action='store', type='string', dest='endFile')
+	parser.add_option(
+		'-o', '--option', help='set an individual option in the format "module:preference=value"',
+		action='append', type='string', dest='preferences')
+	(options, args) = parser.parse_args()
+	if options.preferencesDirectory:
+		archive.globalTemporarySettingsPath = options.preferencesDirectory
+	if options.preferences:
+		for prefSpec in options.preferences:
+			(moduleName, prefSpec) = prefSpec.split(':', 1)
+			(prefName, valueName) = prefSpec.split('=', 1)
+			settings.addPreferenceOverride(moduleName, prefName, valueName)
+	sys.argv = [sys.argv[0]] + args
+	if len( args ) > 0:
+		writeOutput( ' '.join(args) )
 	else:
-		settings.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor(getNewRepository())
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main()

@@ -144,10 +144,8 @@ class StartEnd:
 	def __init__(self, modulo, prefix, xmlElement):
 		"Initialize."
 		self.start = evaluate.getEvaluatedIntDefault(0, prefix + 'start', xmlElement)
-		self.start = lineation.getWrappedInteger(self.start, modulo)
 		self.extent = evaluate.getEvaluatedIntDefault(modulo - self.start, prefix + 'extent', xmlElement)
 		self.end = evaluate.getEvaluatedIntDefault(self.start + self.extent, prefix + 'end', xmlElement)
-		self.end = lineation.getWrappedInteger(self.end, modulo)
 		self.revolutions = evaluate.getEvaluatedIntDefault(1, prefix + 'revolutions', xmlElement)
 		if self.revolutions > 1:
 			self.end += modulo * (self.revolutions - 1)

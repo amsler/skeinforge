@@ -15,7 +15,7 @@ from fabmetheus_utilities.vector3 import Vector3
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
+__date__ = '$Date: 2008/02/05 $'
 __license__ = 'GPL 3.0'
 
 
@@ -50,51 +50,33 @@ globalExecutionOrder = 200
 # M[:3, 3] = (2.0 * numpy.dot(point[:3], normal)) * normal
 # return M
 def flipPoints(points, prefix, xmlElement):
-	"Flip the points."
+	'Flip the points.'
 	origin = evaluate.getVector3ByPrefix(Vector3(), prefix + 'origin', xmlElement)
 	axis = evaluate.getVector3ByPrefix(Vector3(1.0, 0.0, 0.0), prefix + 'axis', xmlElement).getNormalized()
 	for point in points:
 		point.setToVector3(point - 2.0 * axis.dot(point - origin) * axis)
 
-def getShouldReverse(xmlElement):
-	"Determine if the loop should be reversed."
-	return evaluate.getEvaluatedBooleanDefault(True, 'reverse', xmlElement)
-
-def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
-	"Get flipped loop."
+def getFlippedLoop(loop, prefix, xmlElement):
+	'Get flipped loop.'
 	flipPoints(loop, prefix, xmlElement)
-	if getShouldReverse(xmlElement):
+	if getShouldReverse(prefix, xmlElement):
 		loop.reverse()
-	return [loop]
+	return loop
 
-def getManipulatedGeometryOutput(geometryOutput, xmlElement):
-	"Get equated geometryOutput."
+def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
+	'Get equated geometryOutput.'
 	flipPoints(matrix.getConnectionVertexes(geometryOutput), prefix, xmlElement)
 	return geometryOutput
 
-def manipulateXMLElement(target, xmlElement):
-	"Manipulate the xml element."
-	if target.object == None:
-		return
-	for path in target.object.getPaths():
-		flipPoints(path, '', xmlElement)
-	flipPoints(target.object.getVertexes(), '', xmlElement)
-	if getShouldReverse(xmlElement):
-		for path in target.object.getPaths():
-			path.reverse()
-		for triangleMesh in target.object.getTriangleMeshes():
-			for face in triangleMesh.faces:
-				face.edgeIndexes = []
-				face.vertexIndexes.reverse()
-			triangleMesh.edges = []
-			triangleMesh.setEdgesForAllFaces()
-#	for connectionAxisKey in ['connectionStart', 'connectionEnd', 'xAxis']:
-#		connectionAxisValue = evaluate.getVector3ByPrefix(Vector3(), connectionAxisKey, target)
-#		if not connectionAxisValue.getIsDefault():
-#			flipPoints([connectionAxisValue], '', xmlElement)
-#			target.attributeDictionary[connectionAxisKey] = str(connectionAxisValue)
+def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
+	'Get flipped paths.'
+	return [getFlippedLoop(loop, prefix, xmlElement)]
+
+def getShouldReverse(prefix, xmlElement):
+	'Determine if the loop should be reversed.'
+	return evaluate.getEvaluatedBooleanDefault(True, prefix + 'reverse', xmlElement)
 
 
 def processXMLElement(xmlElement):
-	"Process the xml element."
-	solid.processXMLElementByFunction(manipulateXMLElement, xmlElement)
+	'Process the xml element.'
+	solid.processXMLElementByFunctions(getManipulatedGeometryOutput, getManipulatedPaths, xmlElement)

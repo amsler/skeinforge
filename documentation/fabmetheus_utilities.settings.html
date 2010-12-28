@@ -1687,6 +1687,8 @@ Methods inherited from <a href="fabmetheus_utilities.settings.html#StringSetting
  <dl><dt><a name="-setSpinColor"><strong>setSpinColor</strong></a>(setting)</dt><dd><tt>Set&nbsp;the&nbsp;spin&nbsp;box&nbsp;color&nbsp;to&nbsp;the&nbsp;value,&nbsp;yellow&nbsp;if&nbsp;it&nbsp;is&nbsp;lower&nbsp;than&nbsp;the&nbsp;default&nbsp;and&nbsp;blue&nbsp;if&nbsp;it&nbsp;is&nbsp;higher.</tt></dd></dl>
  <dl><dt><a name="-startMainLoopFromConstructor"><strong>startMainLoopFromConstructor</strong></a>(repository)</dt><dd><tt>Display&nbsp;the&nbsp;repository&nbsp;dialog&nbsp;and&nbsp;start&nbsp;the&nbsp;main&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-startMainLoopFromWindow"><strong>startMainLoopFromWindow</strong></a>(window)</dt><dd><tt>Display&nbsp;the&nbsp;tableau&nbsp;window&nbsp;and&nbsp;start&nbsp;the&nbsp;main&nbsp;loop.</tt></dd></dl>
+ <dl><dt><a name="-temporaryAddPreferenceOverride"><strong>temporaryAddPreferenceOverride</strong></a>(module, name, value)</dt></dl>
+ <dl><dt><a name="-temporaryApplyOverrides"><strong>temporaryApplyOverrides</strong></a>(repository)</dt><dd><tt>Apply&nbsp;any&nbsp;overrides&nbsp;that&nbsp;have&nbsp;been&nbsp;set&nbsp;at&nbsp;the&nbsp;command&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-writeSettings"><strong>writeSettings</strong></a>(repository)</dt><dd><tt>Write&nbsp;the&nbsp;settings&nbsp;to&nbsp;a&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-writeSettingsPrintMessage"><strong>writeSettingsPrintMessage</strong></a>(repository)</dt><dd><tt>Set&nbsp;the&nbsp;settings&nbsp;to&nbsp;the&nbsp;dialog&nbsp;then&nbsp;write&nbsp;them.</tt></dd></dl>
  <dl><dt><a name="-writeValueListToRepositoryWriter"><strong>writeValueListToRepositoryWriter</strong></a>(repositoryWriter, setting)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;list&nbsp;to&nbsp;the&nbsp;repository&nbsp;writer.</tt></dd></dl>
@@ -1704,7 +1706,8 @@ Methods inherited from <a href="fabmetheus_utilities.settings.html#StringSetting
 <strong>globalCloseListTables</strong> = [{}, {}]<br>
 <strong>globalProfileSaveListenerListTable</strong> = {}<br>
 <strong>globalRepositoryDialogListTable</strong> = {}<br>
-<strong>globalSpreadsheetSeparator</strong> = '<font color="#c040c0">\t</font>'</td></tr></table><p>
+<strong>globalSpreadsheetSeparator</strong> = '<font color="#c040c0">\t</font>'<br>
+<strong>globalTemporaryOverrides</strong> = {}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

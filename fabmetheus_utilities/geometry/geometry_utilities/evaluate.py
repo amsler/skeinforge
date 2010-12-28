@@ -127,12 +127,9 @@ def executePairOperations(evaluators, operationLevel):
 
 def getArchivableObjectAddToParent( archivableClass, xmlElement ):
 	'Get the archivable object and add it to the parent object.'
-	archivableObject = archivableClass()
-	archivableObject.xmlElement = xmlElement
-	xmlElement.object = archivableObject
-	archivableObject.setToObjectAttributeDictionary()
-	xmlElement.parent.object.archivableObjects.append(archivableObject)
-	return archivableObject
+	xmlElement.linkObject(archivableClass())
+	xmlElement.object.setToObjectAttributeDictionary()
+	return xmlElement.object
 
 def getBracketEvaluators(bracketBeginIndex, bracketEndIndex, evaluators):
 	'Get the bracket evaluators.'
@@ -343,7 +340,7 @@ def getEvaluatedIntDefault(defaultInt, key, xmlElement=None):
 def getEvaluatedLinkValue(word, xmlElement):
 	'Get the evaluated link value.'
 	if word == '':
-		return None
+		return ''
 	if getStartsWithCurlyEqualRoundSquare(word):
 		return getEvaluatedExpressionValue(word, xmlElement)
 	return word

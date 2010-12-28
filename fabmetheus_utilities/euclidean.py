@@ -582,6 +582,13 @@ def getComplexPath(vector3Path):
 		complexPath.append(point.dropAxis())
 	return complexPath
 
+def getComplexPathByMultiplier(multiplier, path):
+	'Get the multiplied complex path.'
+	complexPath = []
+	for point in path:
+		complexPath.append(multiplier * point)
+	return complexPath
+
 def getComplexPaths( vector3Paths ):
 	'Get the complex paths from the vector3 paths.'
 	complexPaths = []
@@ -596,6 +603,16 @@ def getComplexPolygon(center, radius, sides, startAngle=0.0):
 	for side in xrange(abs(sides)):
 		unitPolar = getWiddershinsUnitPolar(startAngle)
 		complexPolygon.append(unitPolar * radius + center)
+		startAngle += sideAngle
+	return complexPolygon
+
+def getComplexPolygonByComplexRadius(radius, sides, startAngle=0.0):
+	'Get the complex polygon.'
+	complexPolygon = []
+	sideAngle = 2.0 * math.pi / float(sides)
+	for side in xrange(abs(sides)):
+		unitPolar = getWiddershinsUnitPolar(startAngle)
+		complexPolygon.append(complex(unitPolar.real * radius.real, unitPolar.imag * radius.imag))
 		startAngle += sideAngle
 	return complexPolygon
 
@@ -1295,6 +1312,13 @@ def getOrderedSurroundingLoops( perimeterWidth, surroundingLoops ):
 	for outside in orderedSurroundingLoops:
 		outside.getFromInsideSurroundings( insides, perimeterWidth )
 	return orderedSurroundingLoops
+
+def getPathCopy(path):
+	'Get path copy.'
+	pathCopy = []
+	for point in path:
+		pathCopy.append(point.copy())
+	return pathCopy
 
 def getPathLength(path):
 	'Get the length of a path ( an open polyline ).'

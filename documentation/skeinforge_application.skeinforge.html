@@ -16,7 +16,7 @@
 <br />
 <a href="#Overview">Overview</a><br />
 &nbsp;&nbsp;<a href="#Introduction">Introduction</a><br />
-&nbsp;&nbsp;<a href="#Alternative">Alternative</a><br />
+&nbsp;&nbsp;<a href="#Command Line Interface">Command Line Interface</a><br />
 &nbsp;&nbsp;<a href="#Contribute">Contribute</a><br />
 &nbsp;&nbsp;<a href="#Documentation">Documentation</a><br />
 &nbsp;&nbsp;<a href="#Fabrication">Fabrication</a><br />
@@ -50,10 +50,25 @@ The interpret tool accesses and displays the import plugins.<br>
  <br>
 The default settings are similar to those on Nophead's machine.  A setting which is often different is the 'Layer Thickness' in carve.<br>
  <br>
-<a name="Alternative" id="Alternative"></a><h3>Alternative</h3>
+<a name="Command Line Interface" id="Command Line Interface"></a><h3>Command Line Interface</h3>
 
-Another way to make gcode for a model is to use the Java RepRap host program, described at:<br>
-<a href="http://reprap.org/wiki/Installing_RepRap_on_your_computer">http://reprap.org/wiki/Installing_RepRap_on_your_computer</a><br>
+To bring up the skeinforge dialog without a file name, type:<br>
+python skeinforge_application/skeinforge.py<br>
+ <br>
+Slicing a file from skeinforge_utilities/skeinforge_craft.py, for example:<br>
+python skeinforge_application/skeinforge_utilities/skeinforge_craft.py test.stl<br>
+ <br>
+will slice the file and exit. This is the correct option for programs which use skeinforge to only generate a gcode file.<br>
+ <br>
+Slicing a file from skeinforge.py, for example:<br>
+python skeinforge_application/skeinforge.py test.stl<br>
+ <br>
+will slice the file and bring up the skeinforge window and the analyze windows and then skeinforge will wait for user input.<br>
+ <br>
+Slicing a file from skeinforge_plugins/craft.py, for example:<br>
+python skeinforge_application/skeinforge_plugins/craft.py test.stl<br>
+ <br>
+will slice the file and bring up the analyze windows only and then skeinforge will wait for user input.<br>
  <br>
 <a name="Contribute" id="Contribute"></a><h3>Contribute</h3>
 

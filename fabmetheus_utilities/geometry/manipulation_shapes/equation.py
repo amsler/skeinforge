@@ -146,25 +146,26 @@ def equateVertexesByFunction( equationFunction, points, prefix, revolutions, xml
 			print(xmlElement)
 		else:
 			equationFunction( point, returnValue )
-	equationResult.function.reset()
+#	equationResult.function.reset() #removeLater
+
+def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
+	"Get equated geometryOutput."
+	equatePoints( matrix.getConnectionVertexes(geometryOutput), prefix, None, xmlElement )
+	return geometryOutput
 
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get equated paths."
 	equatePoints( loop, prefix, 0.0, xmlElement )
 	return [loop]
 
-def getManipulatedGeometryOutput(geometryOutput, xmlElement):
-	"Get equated geometryOutput."
-	equatePoints( matrix.getConnectionVertexes(geometryOutput), 'equation.', None, xmlElement )
-	return geometryOutput
-
 
 class EquationResult:
 	"Class to get equation results."
-	def __init__( self, key, revolutions, xmlElement ):
+	def __init__(self, key, revolutions, xmlElement):
 		"Initialize."
 		self.distance = 0.0
-		self.function = evaluate.Function( evaluate.getEvaluatorSplitWords(xmlElement.attributeDictionary[key]), xmlElement )
+		xmlElement.object = evaluate.getEvaluatorSplitWords(xmlElement.attributeDictionary[key])
+		self.function = evaluate.Function(xmlElement)
 		self.points = []
 		self.revolutions = revolutions
 

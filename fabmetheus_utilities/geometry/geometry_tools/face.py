@@ -27,6 +27,22 @@ __date__ = "$Date: 2008/02/05 $"
 __license__ = 'GPL 3.0'
 
 
+def addFaces(geometryOutput, faces):
+	'Add the faces.'
+	if geometryOutput.__class__ == list:
+		for element in geometryOutput:
+			addFaces(element, faces)
+		return
+	if geometryOutput.__class__ != dict:
+		return
+	for geometryOutputKey in geometryOutput.keys():
+		geometryOutputValue = geometryOutput[geometryOutputKey]
+		if geometryOutputKey == 'face':
+			for face in geometryOutputValue:
+				faces.append(face)
+		else:
+			addFaces(geometryOutputValue, faces)
+
 def addGeometryList( faces, xmlElement ):
 	"Add vertex elements to an xml element."
 	for face in faces:
@@ -45,6 +61,12 @@ def getCommonVertexIndex( edgeFirst, edgeSecond ):
 	print( edgeFirst )
 	print( edgeSecond )
 	return 0
+
+def getFaces(geometryOutput):
+	'Get the faces.'
+	faces = []
+	addFaces(geometryOutput, faces)
+	return faces
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
@@ -105,6 +127,14 @@ class Face:
 		attributeDictionary = {}
 		self.addToAttributeDictionary(attributeDictionary)
 		xml_simple_writer.addClosedXMLTag( attributeDictionary, 'face', depth, output )
+
+	def copy(self):
+		'Get the copy of this face.'
+		faceCopy = Face()
+		faceCopy.edgeIndexes = self.edgeIndexes[:]
+		faceCopy.index = self.index
+		faceCopy.vertexIndexes = self.vertexIndexes[:]
+		return faceCopy
 
 	def getFromEdgeIndexes( self, edgeIndexes, edges, faceIndex ):
 		"Initialize from edge indices."

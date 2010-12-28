@@ -33,6 +33,7 @@ globalRepositoryDialogListTable = {}
 globalProfileSaveListenerListTable = {}
 globalCloseListTables = [ globalRepositoryDialogListTable, globalProfileSaveListenerListTable ]
 globalSpreadsheetSeparator = '\t'
+globalTemporaryOverrides = {}
 
 
 def addAcceleratorCommand( acceleratorBinding, commandFunction, master, menu, text ):
@@ -272,8 +273,10 @@ def getReadRepository(repository):
 		if text != '':
 			readSettingsFromText( repository, text )
 		writeSettings(repository)
+		temporaryApplyOverrides(repository)
 		return repository
 	readSettingsFromText( repository, text )
+	temporaryApplyOverrides(repository)
 	return repository
 
 def getRepositoryText(repository):
@@ -538,6 +541,29 @@ def startMainLoopFromWindow(window):
 		print('Warning, window.root in startMainLoopFromWindow in settings is none, so the window will not be displayed.')
 		return
 	window.root.mainloop()
+
+def temporaryAddPreferenceOverride(module, name, value):
+	global globalTemporaryOverrides
+	if not module in globalTemporaryOverrides:
+		globalTemporaryOverrides[module] = {}
+	globalTemporaryOverrides[module][name] = value
+	print('OVERRIDE %s %s %s' % (module,name,value))
+	print(globalTemporaryOverrides[module])
+
+def temporaryApplyOverrides(repository):
+	'Apply any overrides that have been set at the command line.'
+	# The override dictionary is a mapping of repository names to
+	# key-value mappings. 
+	global globalTemporaryOverrides
+	if repository.baseName in globalTemporaryOverrides:
+		settingTable = {}
+		for setting in repository.preferences:
+			settingTable[ setting.name ] = setting
+		for (name, value) in overrides[repository.baseName].items():
+			if name in settingTable:
+				settingTable[name].setValueToString(value)
+			else:
+				print('Override not applied for: %s, %s' % (name,value))
 
 def writeValueListToRepositoryWriter( repositoryWriter, setting ):
 	"Write tab separated name and list to the repository writer."

@@ -172,7 +172,7 @@ class GcodeStepSkein:
 
 	def addLine(self, line):
 		"Add a line of text and a newline to the output."
-		self.output.write( line + '\n')
+		self.output.write(line + '\n')
 
 	def addStringToLine( self, lineStringIO, wordString ):
 		"Add a character and integer to line string."

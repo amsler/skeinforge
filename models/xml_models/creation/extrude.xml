@@ -1,8 +1,8 @@
 <?xml version='1.0' ?>
-<fabmetheus twistprecision="10" step='.2' >
-	<circle id='circle' name='pillar' radius='9' />
-	<square name='pillar' size='[5,5]' translate.rectangular.y='=20' />
-	<extrude target='=document.getElementsByName(pillar)' pathEnd.z='4' />
+<fabmetheus twistprecision="10" step='.2'>
+	<circle id='circle' name='pillar' radius='9'/>
+	<square name='pillar' size='[5,5]' translate.rectangular.y='=20'/>
+	<extrude target='=document.getElementsByName(pillar)' pathEnd.z='4'/>
 
 	<!--
 	<path id="vertex_holder">
@@ -13,11 +13,6 @@
 		<vertex />
 		<arc x='40' y='40' radius='60' xAxisRotation='20' largeArcFlag='f' sweepFlag='f' />
 	</path>
-	<outline id='curve_outline' copy='true' name='write_test' target='=document.getElementByID(spiral)' radius='1' />
-	<outset id='inset_outline' copy='true' name='write_test' target='=document.getElementByID(curve_outline)' radius='3' />
-	<extrude id='inset_extrude' name='write_test' radius='8' />
-	<outline id='curve_outline' copy='true' target='=document.getElementByID($curve)' radius='5' />
-	<outset id='inset_outline' copy='true' target='=document.getElementByID(curve_outline)' radius='2' />
 		
 		
 			<ellipse cx="74.285713" cy="200" rx="30" ry="10">

@@ -9,8 +9,8 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import dictionary
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities import euclidean
 from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities import euclidean
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
@@ -21,13 +21,19 @@ __license__ = 'GPL 3.0'
 
 def convertXMLElement(geometryOutput, xmlElement):
 	"Convert the xml element to a group xml element."
+	convertContainerXMLElement(geometryOutput, Group(), xmlElement)
+
+def convertContainerXMLElement(geometryOutput, object, xmlElement):
+	"Convert the xml element to a group xml element."
+	xmlElement.linkObject(object)
+	matrix.setXMLElementDictionaryToOtherElementDictionary(xmlElement, xmlElement.object.matrix4X4, 'matrix.', xmlElement)
 	xmlElement.getXMLProcessor().createChildren(geometryOutput['shapes'], xmlElement)
 
 def processShape(archivableClass, xmlElement):
 	"Get any new elements and process the shape."
 	if xmlElement == None:
 		return
-	archivableObject = evaluate.getArchivableObjectAddToParent(archivableClass, xmlElement)
+	evaluate.getArchivableObjectAddToParent(archivableClass, xmlElement)
 	matrix.setXMLElementDictionaryToOtherElementDictionary(xmlElement, xmlElement.object.matrix4X4, 'matrix.', xmlElement)
 	xmlElement.getXMLProcessor().processChildren(xmlElement)
 

@@ -20,7 +20,7 @@ __license__ = 'GPL 3.0'
 
 def convertXMLElement(geometryOutput, xmlElement):
 	"Convert the xml element to a difference xml element."
-	xmlElement.getXMLProcessor().createChildren(geometryOutput['shapes'], xmlElement)
+	group.convertContainerXMLElement(geometryOutput, Difference(), xmlElement)
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
@@ -29,9 +29,9 @@ def processXMLElement(xmlElement):
 
 class Difference( boolean_solid.BooleanSolid ):
 	"A difference object."
-	def getLoopsFromObjectLoopsList( self, importRadius, visibleObjectLoopsList ):
+	def getLoopsFromObjectLoopsList(self, importRadius, visibleObjectLoopsList):
 		"Get loops from visible object loops list."
-		return self.getDifference( importRadius, visibleObjectLoopsList )
+		return self.getDifference(importRadius, visibleObjectLoopsList)
 
 	def getXMLClassName(self):
 		"Get xml class name."

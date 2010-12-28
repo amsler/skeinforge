@@ -20,15 +20,15 @@ __license__ = 'GPL 3.0'
 
 def convertXMLElement(geometryOutput, xmlElement):
 	"Convert the xml element to an intersection xml element."
-	xmlElement.getXMLProcessor().createChildren(geometryOutput['shapes'], xmlElement)
+	group.convertContainerXMLElement(geometryOutput, Intersection(), xmlElement)
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	group.processShape( Intersection, xmlElement)
 
 
-class Intersection( difference.Difference ):
+class Intersection(difference.Difference):
 	"An intersection object."
-	def getLoopsFromObjectLoopsList( self, importRadius, visibleObjectLoopsList ):
+	def getLoopsFromObjectLoopsList(self, importRadius, visibleObjectLoopsList):
 		"Get loops from visible object loops list."
-		return self.getIntersection( importRadius, visibleObjectLoopsList )
+		return self.getIntersection(importRadius, visibleObjectLoopsList)

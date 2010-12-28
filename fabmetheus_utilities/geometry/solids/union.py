@@ -19,16 +19,16 @@ __license__ = 'GPL 3.0'
 
 
 def convertXMLElement(geometryOutput, xmlElement):
-	"Convert the xml element to a union xml element."
-	xmlElement.getXMLProcessor().createChildren(geometryOutput['shapes'], xmlElement)
+	'Convert the xml element to a union xml element.'
+	group.convertContainerXMLElement(geometryOutput, Union(), xmlElement)
 
 def processXMLElement(xmlElement):
-	"Process the xml element."
-	group.processShape( Union, xmlElement)
+	'Process the xml element.'
+	group.processShape(Union, xmlElement)
 
 
-class Union( difference.Difference ):
-	"A difference object."
-	def getLoopsFromObjectLoopsList( self, importRadius, visibleObjectLoopsList ):
-		"Get loops from visible object loops list."
-		return self.getUnion( importRadius, visibleObjectLoopsList )
+class Union(difference.Difference):
+	'A difference object.'
+	def getLoopsFromObjectLoopsList(self, importRadius, visibleObjectLoopsList):
+		'Get loops from visible object loops list.'
+		return self.getUnion(importRadius, visibleObjectLoopsList)

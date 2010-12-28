@@ -22,15 +22,15 @@ __license__ = 'GPL 3.0'
 globalExecutionOrder = 340
 
 
+def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
+	"Get equated geometryOutput."
+	scalePoints( matrix.getConnectionVertexes(geometryOutput), prefix, xmlElement )
+	return geometryOutput
+
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get equated paths."
 	scalePoints( loop, prefix, xmlElement )
 	return [loop]
-
-def getManipulatedGeometryOutput(geometryOutput, xmlElement):
-	"Get equated geometryOutput."
-	scalePoints( matrix.getConnectionVertexes(geometryOutput), 'scale.', xmlElement )
-	return geometryOutput
 
 def manipulateXMLElement(target, xmlElement):
 	"Manipulate the xml element."

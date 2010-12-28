@@ -214,13 +214,13 @@ def getVisibleObjectLoopsList( importRadius, visibleObjects, z ):
 
 class BooleanSolid( group.Group ):
 	'A boolean solid object.'
-	def getDifference( self, importRadius, visibleObjectLoopsList ):
+	def getDifference(self, importRadius, visibleObjectLoopsList):
 		'Get subtracted loops sliced through shape.'
-		return getLoopsDifference( importRadius, visibleObjectLoopsList )
+		return getLoopsDifference(importRadius, visibleObjectLoopsList)
 
-	def getIntersection( self, importRadius, visibleObjectLoopsList ):
+	def getIntersection(self, importRadius, visibleObjectLoopsList):
 		'Get intersected loops sliced through shape.'
-		return getLoopsIntersection( importRadius, visibleObjectLoopsList )
+		return getLoopsIntersection(importRadius, visibleObjectLoopsList)
 
 	def getLoops(self, importRadius, z):
 		'Get loops sliced through shape.'
@@ -228,21 +228,21 @@ class BooleanSolid( group.Group ):
 		if len( visibleObjects ) < 1:
 			return []
 		visibleObjectLoopsList = getVisibleObjectLoopsList( importRadius, visibleObjects, z )
-		loops = self.getLoopsFromObjectLoopsList( importRadius, visibleObjectLoopsList )
+		loops = self.getLoopsFromObjectLoopsList(importRadius, visibleObjectLoopsList)
 		return euclidean.getSimplifiedLoops( loops, importRadius )
 
-	def getLoopsFromObjectLoopsList( self, importRadius, visibleObjectLoopsList ):
+	def getLoopsFromObjectLoopsList(self, importRadius, visibleObjectLoopsList):
 		'Get loops from visible object loops list.'
-		return self.operationFunction( importRadius, visibleObjectLoopsList )
+		return self.operationFunction(importRadius, visibleObjectLoopsList)
 
 	def getTransformedPaths(self):
 		'Get all transformed paths.'
 		importRadius = self.xmlElement.getCascadeFloat(1.5 * evaluate.getLayerThickness(self.xmlElement), 'importRadius')
 		return euclidean.getVector3Paths(self.getLoopsFromObjectLoopsList(importRadius, self.getComplexTransformedPathLists()))
 
-	def getUnion( self, importRadius, visibleObjectLoopsList ):
+	def getUnion(self, importRadius, visibleObjectLoopsList):
 		'Get joined loops sliced through shape.'
-		return getLoopsUnified( importRadius, visibleObjectLoopsList )
+		return getLoopsUnified(importRadius, visibleObjectLoopsList)
 
 	def getXMLClassName(self):
 		'Get xml class name.'

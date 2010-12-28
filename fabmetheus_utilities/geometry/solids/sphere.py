@@ -13,7 +13,8 @@ from fabmetheus_utilities.geometry.solids import cube
 from fabmetheus_utilities.geometry.solids import group
 from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
-
+from fabmetheus_utilities import euclidean
+import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
@@ -23,39 +24,20 @@ __license__ = 'GPL 3.0'
 
 def addSphereByRadius(faces, radius, vertexes, xmlElement):
 	'Add sphere by radius.'
-	maximumRadius = max(radius.x, radius.y, radius.z)
-	numberOfInBetweens = max(int(0.25 * evaluate.getSidesBasedOnPrecision(maximumRadius, xmlElement)), 1)
-	numberOfDivisions = numberOfInBetweens + 1
-	bottomLeft = complex(-1.0, -1.0)
-	topRight = complex(1.0, 1.0)
-	extent = topRight - bottomLeft
-	elementExtent = extent / numberOfDivisions
-	grid = []
-	for rowIndex in xrange(numberOfDivisions + 1):
-		row = []
-		grid.append(row)
-		for columnIndex in xrange(numberOfDivisions + 1):
-			point = complex(elementExtent.real * float(columnIndex), elementExtent.real * float(rowIndex)) + bottomLeft
-			row.append(point)
-	indexedGridBottom = trianglemesh.getAddIndexedGrid(grid, vertexes, -1.0)
-	indexedGridBottomLoop = trianglemesh.getIndexedLoopFromIndexedGrid(indexedGridBottom)
-	indexedLoops = [indexedGridBottomLoop]
-	zList = []
-	for zIndex in xrange(1, numberOfDivisions):
-		z = elementExtent.real * float(zIndex) + bottomLeft.real
-		zList.append(z)
-	gridLoop = []
-	for vertex in indexedGridBottomLoop:
-		gridLoop.append( vertex.dropAxis() )
-	indexedLoops += trianglemesh.getAddIndexedLoops(gridLoop, vertexes, zList)
-	indexedGridTop = trianglemesh.getAddIndexedGrid(grid, vertexes, 1.0)
-	indexedLoops.append(trianglemesh.getIndexedLoopFromIndexedGrid(indexedGridTop))
-	trianglemesh.addPillarFromConvexLoopsGrids(faces, [indexedGridBottom, indexedGridTop], indexedLoops)
-	for vertex in vertexes:
-		vertex.normalize()
-		vertex.x *= radius.x
-		vertex.y *= radius.y
-		vertex.z *= radius.z
+	bottom = -radius.z
+	sides = evaluate.getSidesMinimumThreeBasedOnPrecision(max(radius.x, radius.y, radius.z), xmlElement )
+	sphereSlices = max(sides / 2, 2)
+	equator = euclidean.getComplexPolygonByComplexRadius(complex(radius.x, radius.y), sides)
+	polygons = [trianglemesh.getAddIndexedLoop([complex()], vertexes, bottom)]
+	zIncrement = (radius.z + radius.z) / float(sphereSlices)
+	z = bottom
+	for sphereSlice in xrange(1, sphereSlices):
+		z += zIncrement
+		zPortion = abs(z) / radius.z
+		multipliedPath = euclidean.getComplexPathByMultiplier(math.sqrt(1.0 - zPortion * zPortion), equator)
+		polygons.append(trianglemesh.getAddIndexedLoop(multipliedPath, vertexes, z))
+	polygons.append(trianglemesh.getAddIndexedLoop([complex()], vertexes, radius.z))
+	trianglemesh.addPillarByLoops(faces, polygons)
 
 def getGeometryOutput(radius, xmlElement):
 	'Get triangle mesh from attribute dictionary.'

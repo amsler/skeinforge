@@ -60,7 +60,7 @@ class ScalableVectorGraphicsRepository:
 		color = self.canvas.itemcget( objectIDNumber, 'fill')
 		width = self.canvas.itemcget( objectIDNumber, 'width')
 		line = '<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-width="%spx"/>\n' % ( xBegin, yBegin, xEnd, yEnd, color, width )
-		canvasLinesOutput.write( line + '\n')
+		canvasLinesOutput.write(line + '\n')
 
 	def execute(self):
 		"Export the canvas as an svg file."

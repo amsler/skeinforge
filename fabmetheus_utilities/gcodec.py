@@ -43,6 +43,12 @@ def addLineAndNewlineIfNecessary(line, output):
 	if not line.endswith('\n'):
 		output.write('\n')
 
+def addLinesToCString(cString, lines):
+	'Add lines which have something to cStringIO.'
+	for line in lines:
+		if line != '':
+			cString.write(line + '\n')
+
 def getArcDistance(relativeLocation, splitLine):
 	'Get arc distance.'
 	halfPlaneLineDistance = 0.5 * abs(relativeLocation.dropAxis())
@@ -239,10 +245,10 @@ class DistanceFeedRate:
 		self.decimalPlacesCarried = 3
 		self.output = cStringIO.StringIO()
 
-	def addGcodeFromFeedRateThreadZ(self, feedRateMinute, thread, z):
+	def addGcodeFromFeedRateThreadZ(self, feedRateMinute, thread, travelFeedRatePerMinute, z):
 		'Add a thread to the output.'
 		if len(thread) > 0:
-			self.addGcodeMovementZWithFeedRate(feedRateMinute, thread[0], z)
+			self.addGcodeMovementZWithFeedRate(travelFeedRatePerMinute, thread[0], z)
 		else:
 			print('zero length vertex positions array which was skipped over, this should never happen.')
 		if len(thread) < 2:
@@ -291,8 +297,7 @@ class DistanceFeedRate:
 
 	def addLines(self, lines):
 		'Add lines of text to the output.'
-		for line in lines:
-			self.addLine(line)
+		addLinesToCString(self.output, lines)
 
 	def addLinesSetAbsoluteDistanceMode(self, lines):
 		'Add lines of text to the output and ensure the absolute mode is set.'

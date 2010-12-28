@@ -23,6 +23,8 @@ __license__ = 'GPL 3.0'
 
 def addNegativesByRadius(end, negatives, radius, start, xmlElement):
 	"Add teardrop drill hole to negatives."
+	if radius <= 0.0:
+		return
 	copyShallow = xmlElement.getCopyShallow()
 	extrude.setXMLElementToEndStart(end, start, copyShallow)
 	extrudeDerivation = extrude.ExtrudeDerivation(copyShallow)

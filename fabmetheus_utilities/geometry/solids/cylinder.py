@@ -41,19 +41,11 @@ def addBeveledCylinder(bevel, endZ, inradius, outputs, start, topOverBottom, xml
 
 def addCylinderByInradius(faces, inradius, topOverBottom, vertexes, xmlElement):
 	'Add cylinder by radius.'
-	polygonBottom = []
-	polygonTop = []
 	sides = evaluate.getSidesMinimumThreeBasedOnPrecision(max(inradius.x, inradius.y), xmlElement )
-	sideAngle = 2.0 * math.pi / sides
-	for side in xrange(int(sides)):
-		angle = float(side) * sideAngle
-		unitComplex = euclidean.getWiddershinsUnitPolar(angle)
-		pointBottom = complex(unitComplex.real * inradius.x, unitComplex.imag * inradius.y)
-		polygonBottom.append(pointBottom)
-		if topOverBottom > 0.0:
-			polygonTop.append(pointBottom * topOverBottom)
+	polygonBottom = euclidean.getComplexPolygonByComplexRadius(complex(inradius.x, inradius.y), sides)
+	polygonTop = polygonBottom
 	if topOverBottom <= 0.0:
-		polygonTop.append(complex())
+		polygonTop = [complex()]
 	bottomTopPolygon = [
 		trianglemesh.getAddIndexedLoop(polygonBottom, vertexes, -inradius.z),
 		trianglemesh.getAddIndexedLoop(polygonTop, vertexes, inradius.z)]

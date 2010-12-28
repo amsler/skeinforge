@@ -121,10 +121,10 @@ def addFacesByLoopReversed(faces, indexedLoop):
 	'Add faces from a reversed convex polygon.'
 	addFacesByLoop(faces, indexedLoop[: : -1])
 
-def addLoopToPointTable( loop, pointTable ):
+def addLoopToPointTable(loop, pointTable):
 	'Add the points in the loop to the point table.'
 	for point in loop:
-		pointTable[ point ] = loop
+		pointTable[point] = None
 
 def addPillarByLoops(faces, indexedLoops):
 	'Add pillar by loops which may be concave.'
@@ -147,11 +147,12 @@ def addPillarFromConvexLoopsGrids( faces, grids, indexedLoops ):
 	for cellTopLoop in cellTopLoops:
 		addFacesByConvex( faces, cellTopLoop )
 
-def addPointsAtZ( edgePair, points, radius, vertexes, z ):
+def addPointsAtZ(edgePair, points, radius, vertexes, z):
 	'Add point complexes on the segment between the edge intersections with z.'
-	carveIntersectionFirst = getCarveIntersectionFromEdge( edgePair.edges[0], vertexes, z )
-	carveIntersectionSecond = getCarveIntersectionFromEdge( edgePair.edges[1], vertexes, z )
-	intercircle.addPointsFromSegment( carveIntersectionFirst, carveIntersectionSecond, points, radius, 0.3 )
+	carveIntersectionFirst = getCarveIntersectionFromEdge(edgePair.edges[0], vertexes, z)
+	carveIntersectionSecond = getCarveIntersectionFromEdge(edgePair.edges[1], vertexes, z)
+	# threshold radius above 0.8 can create extra holes on Screw Holder, 0.7 should be safe for everything
+	intercircle.addPointsFromSegment(carveIntersectionFirst, carveIntersectionSecond, points, radius, 0.7)
 
 def addToZoneTable( point, shape ):
 	'Add point to the zone table.'
@@ -159,32 +160,31 @@ def addToZoneTable( point, shape ):
 	shape.zZoneTable[ math.floor( zoneIndexFloat ) ] = None
 	shape.zZoneTable[ math.ceil( zoneIndexFloat ) ] = None
 
-def addWithLeastLength( loops, point, shortestAdditionalLength ):
+def addWithLeastLength(importRadius, loops, point):
 	'Insert a point into a loop, at the index at which the loop would be shortest.'
+	close = importRadius + importRadius
+	shortestAdditionalLength = close
 	shortestLoop = None
 	shortestPointIndex = None
 	for loop in loops:
-		if len(loop) > 2:
+		if len(loop) > 3:
 			for pointIndex in xrange(len(loop)):
-				additionalLength = getAdditionalLoopLength( loop, point, pointIndex )
-				if additionalLength < shortestAdditionalLength:
-					shortestAdditionalLength = additionalLength
-					shortestLoop = loop
-					shortestPointIndex = pointIndex
+				additionalLoopLength = getAdditionalLoopLength(loop, point, pointIndex)
+				if additionalLoopLength < shortestAdditionalLength:
+					if getIsPointCloseInline(close, loop, point, pointIndex):
+						shortestAdditionalLength = additionalLoopLength
+						shortestLoop = loop
+						shortestPointIndex = pointIndex
 	if shortestPointIndex != None:
-		afterCenterComplex = shortestLoop[ shortestPointIndex ]
-		afterEndComplex = shortestLoop[ ( shortestPointIndex + 1 ) % len( shortestLoop ) ]
-		isInlineAfter = isInline( point, afterCenterComplex, afterEndComplex )
-		beforeCenterComplex = shortestLoop[ ( shortestPointIndex + len( shortestLoop ) - 1 ) % len( shortestLoop ) ]
-		beforeEndComplex = shortestLoop[ ( shortestPointIndex + len( shortestLoop ) - 2 ) % len( shortestLoop ) ]
-		isInlineBefore = isInline( point, beforeCenterComplex, beforeEndComplex )
-		if isInlineAfter or isInlineBefore:
-			shortestLoop.insert( shortestPointIndex, point )
+		shortestLoop.insert( shortestPointIndex, point )
 
 def convertXMLElement(geometryOutput, xmlElement):
 	'Convert the xml element to a trianglemesh xml element.'
-	vertex.addGeometryList( geometryOutput['vertex'], xmlElement )
-	face.addGeometryList( geometryOutput['face'], xmlElement )
+	xmlElement.linkObject(TriangleMesh())
+	matrix.setXMLElementDictionaryToOtherElementDictionary(xmlElement, xmlElement.object.matrix4X4, 'matrix.', xmlElement)
+	vertex.addGeometryList(geometryOutput['vertex'], xmlElement)
+	face.addGeometryList(geometryOutput['face'], xmlElement)
+	xmlElement.getXMLProcessor().processChildren(xmlElement)
 
 def getAddIndexedGrid( grid, vertexes, z ):
 	'Get and add an indexed grid.'
@@ -216,11 +216,11 @@ def getAddIndexedLoops( loop, vertexes, zList ):
 		indexedLoops.append(indexedLoop)
 	return indexedLoops
 
-def getAdditionalLoopLength( loop, point, pointIndex ):
+def getAdditionalLoopLength(loop, point, pointIndex):
 	'Get the additional length added by inserting a point into a loop.'
 	afterPoint = loop[pointIndex]
 	beforePoint = loop[(pointIndex + len(loop) - 1) % len(loop)]
-	return abs( point - beforePoint ) + abs( point - afterPoint ) - abs( afterPoint - beforePoint )
+	return abs(point - beforePoint) + abs(point - afterPoint) - abs(afterPoint - beforePoint)
 
 def getBridgeDirection( belowLoops, layerLoops, layerThickness ):
 	'Get span direction for the majority of the overhanging extrusion perimeter, if any.'
@@ -311,6 +311,23 @@ def getEmptyZ( shape, z ):
 			return zoneUp * shape.zoneInterval
 		zoneAround += 1
 
+def getGeometryOutputCopy(object):
+	'Get the geometry output copy.'
+	objectClass = object.__class__
+	if objectClass == dict:
+		objectCopy = {}
+		for key in object:
+			objectCopy[key] = getGeometryOutputCopy(object[key])
+		return objectCopy
+	if objectClass == list:
+		objectCopy = []
+		for value in object:
+			objectCopy.append(getGeometryOutputCopy(value))
+		return objectCopy
+	if objectClass == face.Face or objectClass == Vector3 or objectClass == Vector3Index:
+		return object.copy()
+	return object
+
 def getIndexedCellLoopsFromIndexedGrid( grid ):
 	'Get indexed cell loops from an indexed grid.'
 	indexedCellLoops = []
@@ -350,6 +367,20 @@ def getInsetPoint( loop, tinyRadius ):
 	midpoint = afterClockwise + beforeWiddershins
 	midpointNormalized = midpoint / abs( midpoint )
 	return point + midpointNormalized * tinyRadius
+
+def getIsPointCloseInline(close, loop, point, pointIndex):
+	'Insert a point into a loop, at the index at which the loop would be shortest.'
+	afterCenterComplex = loop[pointIndex]
+	if abs(afterCenterComplex - point) > close:
+		return False
+	afterEndComplex = loop[(pointIndex + 1) % len(loop)]
+	if not isInline( point, afterCenterComplex, afterEndComplex ):
+		return False
+	beforeCenterComplex = loop[(pointIndex + len(loop) - 1) % len(loop)]
+	if abs(beforeCenterComplex - point) > close:
+		return False
+	beforeEndComplex = loop[(pointIndex + len(loop) - 2) % len(loop)]
+	return isInline(point, beforeCenterComplex, beforeEndComplex)
 
 def getIsPathEntirelyOutsideTriangle(begin, center, end, vector3Path):
 	'Determine if a path is entirely outside another loop.'
@@ -415,12 +446,12 @@ def getLoopsFromUnprovenMesh(edges, faces, importRadius, vertexes, z):
 	pointTable = {}
 	return getDescendingAreaLoops(allPoints, corners, importRadius)
 
-def getLoopsWithCorners( corners, importRadius, loops, pointTable ):
+def getLoopsWithCorners(corners, importRadius, loops, pointTable):
 	'Add corners to the loops.'
-	shortestAdditionalLength = 0.85 * importRadius
 	for corner in corners:
 		if corner not in pointTable:
-			addWithLeastLength( loops, corner, shortestAdditionalLength )
+			addWithLeastLength(importRadius, loops, corner)
+			pointTable[corner] = None
 	return euclidean.getSimplifiedLoops(loops, importRadius)
 
 def getNextEdgeIndexAroundZ( edge, faces, remainingEdgeTable ):
@@ -499,15 +530,14 @@ def getPillarsOutput(loopLists):
 def getRemainingEdgeTable(edges, vertexes, z):
 	'Get the remaining edge hashtable.'
 	remainingEdgeTable = {}
-	if len( edges ) > 0:
+	if len(edges) > 0:
 		if edges[0].zMinimum == None:
 			for edge in edges:
-				edge.zMinimum = min( vertexes[ edge.vertexIndexes[0] ].z, vertexes[ edge.vertexIndexes[1] ].z )
-				edge.zMaximum = max( vertexes[ edge.vertexIndexes[0] ].z, vertexes[ edge.vertexIndexes[1] ].z )
-	for edgeIndex in xrange( len( edges ) ):
-		edge = edges[ edgeIndex ]
-		if ( edge.zMinimum < z ) and ( edge.zMaximum > z ):
-			remainingEdgeTable[ edgeIndex ] = edge
+				setEdgeMaximumMinimum(edge, vertexes)
+	for edgeIndex in xrange(len(edges)):
+		edge = edges[edgeIndex]
+		if (edge.zMinimum < z) and (edge.zMaximum > z):
+			remainingEdgeTable[edgeIndex] = edge
 	return remainingEdgeTable
 
 def getRemainingLoopAddFace(faces, remainingLoop):
@@ -581,7 +611,7 @@ def isInline( beginComplex, centerComplex, endComplex ):
 		return False
 	centerBeginComplex /= centerBeginLength
 	centerEndComplex /= centerEndLength
-	return euclidean.getDotProduct( centerBeginComplex, centerEndComplex ) < - 0.999
+	return euclidean.getDotProduct( centerBeginComplex, centerEndComplex ) < -0.999
 
 def isPathAdded( edges, faces, loops, remainingEdgeTable, vertexes, z ):
 	'Get the path indexes around a triangle mesh carve and add the path to the flat loops.'
@@ -606,6 +636,21 @@ def isPathAdded( edges, faces, loops, remainingEdgeTable, vertexes, z ):
 def processXMLElement(xmlElement):
 	'Process the xml element.'
 	group.processShape( TriangleMesh, xmlElement)
+
+def setEdgeMaximumMinimum(edge, vertexes):
+	'Set the edge maximum and minimum.'
+	beginIndex = edge.vertexIndexes[0]
+	endIndex = edge.vertexIndexes[1]
+	if beginIndex >= len(vertexes) or endIndex >= len(vertexes):
+		print('Warning, there are duplicate vertexes in setEdgeMaximumMinimum in trianglemesh.')
+		print('Something might still be printed, but there is no guarantee that it will be the correct shape.' )
+		edge.zMaximum = -987654321.0
+		edge.zMinimum = -987654321.0
+		return
+	beginZ = vertexes[beginIndex].z
+	endZ = vertexes[endIndex].z
+	edge.zMinimum = min(beginZ, endZ)
+	edge.zMaximum = max(beginZ, endZ)
 
 def sortLoopsInOrderOfArea(isDescending, loops):
 	'Sort the loops in the order of area according isDescending.'
@@ -682,6 +727,10 @@ class TriangleMesh( group.Group ):
 	def getFabmetheusXML(self):
 		'Return the fabmetheus XML.'
 		return None
+
+	def getGeometryOutput(self):
+		'Get geometry output dictionary.'
+		return {'trianglemesh' : {'vertex' : self.getTransformedVertexes(), 'face' : self.faces}}
 
 	def getInterpretationSuffix(self):
 		'Return the suffix for a triangle mesh.'

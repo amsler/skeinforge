@@ -18,6 +18,9 @@ __date__ = '$Date: 2008/02/05 $'
 __license__ = 'GPL 3.0'
 
 
+globalTemporarySettingsPath = os.path.join(os.path.expanduser('~'), '.skeinforge')
+
+
 def addToNamePathDictionary(directoryPath, namePathDictionary):
 	'Add to the name path dictionary.'
 	pluginFileNames = getPluginFileNamesFromDirectoryPath(directoryPath)
@@ -258,7 +261,9 @@ def getPythonFileNamesExceptInitRecursively(directoryName=''):
 
 def getSettingsPath(subName=''):
 	'Get the settings directory path, which is the home directory joined with .skeinforge.'
-	return getJoinedPath(os.path.join(os.path.expanduser('~'), '.skeinforge'), subName)
+	global globalTemporarySettingsPath
+	return getJoinedPath(globalTemporarySettingsPath, subName)
+#	return getJoinedPath(os.path.join(os.path.expanduser('~'), '.skeinforge'), subName)
 
 def getSummarizedFileName(fileName):
 	'Get the fileName basename if the file is in the current working directory, otherwise return the original full name.'

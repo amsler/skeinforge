@@ -88,7 +88,7 @@ many lines of text<br>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="DistanceFeedRate-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize.</tt></dd></dl>
 
-<dl><dt><a name="DistanceFeedRate-addGcodeFromFeedRateThreadZ"><strong>addGcodeFromFeedRateThreadZ</strong></a>(self, feedRateMinute, thread, z)</dt><dd><tt>Add&nbsp;a&nbsp;thread&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
+<dl><dt><a name="DistanceFeedRate-addGcodeFromFeedRateThreadZ"><strong>addGcodeFromFeedRateThreadZ</strong></a>(self, feedRateMinute, thread, travelFeedRatePerMinute, z)</dt><dd><tt>Add&nbsp;a&nbsp;thread&nbsp;to&nbsp;the&nbsp;output.</tt></dd></dl>
 
 <dl><dt><a name="DistanceFeedRate-addGcodeFromLoop"><strong>addGcodeFromLoop</strong></a>(self, loop, z)</dt><dd><tt>Add&nbsp;the&nbsp;gcode&nbsp;loop.</tt></dd></dl>
 
@@ -138,6 +138,7 @@ many lines of text<br>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-addLineAndNewlineIfNecessary"><strong>addLineAndNewlineIfNecessary</strong></a>(line, output)</dt><dd><tt>Add&nbsp;the&nbsp;line&nbsp;and&nbsp;if&nbsp;the&nbsp;line&nbsp;does&nbsp;not&nbsp;end&nbsp;with&nbsp;a&nbsp;newline&nbsp;add&nbsp;a&nbsp;newline.</tt></dd></dl>
+ <dl><dt><a name="-addLinesToCString"><strong>addLinesToCString</strong></a>(cString, lines)</dt><dd><tt>Add&nbsp;lines&nbsp;which&nbsp;have&nbsp;something&nbsp;to&nbsp;cStringIO.</tt></dd></dl>
  <dl><dt><a name="-getArcDistance"><strong>getArcDistance</strong></a>(relativeLocation, splitLine)</dt><dd><tt>Get&nbsp;arc&nbsp;distance.</tt></dd></dl>
  <dl><dt><a name="-getDoubleAfterFirstLetter"><strong>getDoubleAfterFirstLetter</strong></a>(word)</dt><dd><tt>Get&nbsp;the&nbsp;double&nbsp;value&nbsp;of&nbsp;the&nbsp;word&nbsp;after&nbsp;the&nbsp;first&nbsp;letter.</tt></dd></dl>
  <dl><dt><a name="-getDoubleForLetter"><strong>getDoubleForLetter</strong></a>(letter, splitLine)</dt><dd><tt>Get&nbsp;the&nbsp;double&nbsp;value&nbsp;of&nbsp;the&nbsp;word&nbsp;after&nbsp;the&nbsp;first&nbsp;occurence&nbsp;of&nbsp;the&nbsp;letter&nbsp;in&nbsp;the&nbsp;split&nbsp;line.</tt></dd></dl>

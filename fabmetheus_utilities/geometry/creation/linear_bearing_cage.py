@@ -53,7 +53,7 @@ def addCage(derivation, height, negatives, positives):
 	extrudeDerivation = extrude.ExtrudeDerivation(copyShallow)
 	roundedExtendedRectangle = getRoundedExtendedRectangle(derivation.demiwidth, derivation.rectangleCenterX, 14)
 	outsidePath = euclidean.getVector3Path(roundedExtendedRectangle)
-	extrude.addPositives(extrudeDerivation, positives, [outsidePath])
+	extrude.addPositives(extrudeDerivation, [outsidePath], positives)
 	for bearingCenterX in derivation.bearingCenterXs:
 		addNegativeSphere(derivation, negatives, bearingCenterX)
 
@@ -80,7 +80,7 @@ def addGroove(derivation, negatives):
 		complex(outside, bottom)]
 	groovesComplex = [leftGroove, rightGroove]
 	groovesVector3 = euclidean.getVector3Paths(groovesComplex)
-	extrude.addPositives(extrudeDerivation, negatives, groovesVector3)
+	extrude.addPositives(extrudeDerivation, groovesVector3, negatives)
 
 def addNegativePeg(derivation, negatives, x, y):
 	'Add negative cylinder at x and y.'

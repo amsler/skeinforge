@@ -62,7 +62,7 @@ def addOffsetAddToLists( loop, offset, vector3Index, vertexes ):
 	loop.append( vector3Index )
 	vertexes.append( vector3Index )
 
-def addPositives(derivation, positives, paths):
+def addPositives(derivation, paths, positives):
 	"Add pillars output to positives."
 	for path in paths:
 		loopListsByPath = getLoopListsByPath(derivation, None, path)

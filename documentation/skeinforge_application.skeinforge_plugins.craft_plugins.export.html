@@ -86,7 +86,7 @@ Export looks for alteration files in the alterations folder in the .skeinforge f
  <br>
 <a name="replace.csv" id="replace.csv"></a><h3>replace.csv</h3>
 
-When export is exporting the code, if there is a tab separated file replace.csv, it will replace the string in the first column by its replacement in the second column.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.<br>
+When export is exporting the code, if there is a tab separated file replace.csv, it will replace the string in the first column by its replacement in the second column.  If there is nothing in the second column, the first column string will be deleted, if this leads to an empty line, the line will be deleted.  If there are replacement columns after the second, they will be added as extra lines of text.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.<br>
  <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
@@ -206,7 +206,6 @@ The export tool has created the file:<br>
  <dl><dt><a name="-getDistanceGcode"><strong>getDistanceGcode</strong></a>(exportText)</dt><dd><tt>Get&nbsp;gcode&nbsp;lines&nbsp;with&nbsp;distance&nbsp;variable&nbsp;added.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getReplaced"><strong>getReplaced</strong></a>(exportText)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;strings&nbsp;replaced&nbsp;according&nbsp;to&nbsp;replace.csv&nbsp;file.</tt></dd></dl>
- <dl><dt><a name="-getReplacedByLine"><strong>getReplacedByLine</strong></a>(exportText, line)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;strings&nbsp;replaced&nbsp;according&nbsp;to&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-getSelectedPluginModule"><strong>getSelectedPluginModule</strong></a>(plugins)</dt><dd><tt>Get&nbsp;the&nbsp;selected&nbsp;plugin&nbsp;module.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;export&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>

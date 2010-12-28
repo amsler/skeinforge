@@ -75,6 +75,8 @@
 
 <dl><dt><a name="Face-addXML"><strong>addXML</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;the&nbsp;xml&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
 
+<dl><dt><a name="Face-copy"><strong>copy</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;copy&nbsp;of&nbsp;this&nbsp;face.</tt></dd></dl>
+
 <dl><dt><a name="Face-getFromEdgeIndexes"><strong>getFromEdgeIndexes</strong></a>(self, edgeIndexes, edges, faceIndex)</dt><dd><tt>Initialize&nbsp;from&nbsp;edge&nbsp;indices.</tt></dd></dl>
 
 <dl><dt><a name="Face-setEdgeIndexesToVertexIndexes"><strong>setEdgeIndexesToVertexIndexes</strong></a>(self, edges, edgeTable)</dt><dd><tt>Set&nbsp;the&nbsp;edge&nbsp;indexes&nbsp;to&nbsp;the&nbsp;vertex&nbsp;indexes.</tt></dd></dl>
@@ -86,8 +88,10 @@
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-addGeometryList"><strong>addGeometryList</strong></a>(faces, xmlElement)</dt><dd><tt>Add&nbsp;vertex&nbsp;elements&nbsp;to&nbsp;an&nbsp;xml&nbsp;element.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-addFaces"><strong>addFaces</strong></a>(geometryOutput, faces)</dt><dd><tt>Add&nbsp;the&nbsp;faces.</tt></dd></dl>
+ <dl><dt><a name="-addGeometryList"><strong>addGeometryList</strong></a>(faces, xmlElement)</dt><dd><tt>Add&nbsp;vertex&nbsp;elements&nbsp;to&nbsp;an&nbsp;xml&nbsp;element.</tt></dd></dl>
  <dl><dt><a name="-getCommonVertexIndex"><strong>getCommonVertexIndex</strong></a>(edgeFirst, edgeSecond)</dt><dd><tt>Get&nbsp;the&nbsp;vertex&nbsp;index&nbsp;that&nbsp;both&nbsp;edges&nbsp;have&nbsp;in&nbsp;common.</tt></dd></dl>
+ <dl><dt><a name="-getFaces"><strong>getFaces</strong></a>(geometryOutput)</dt><dd><tt>Get&nbsp;the&nbsp;faces.</tt></dd></dl>
  <dl><dt><a name="-processXMLElement"><strong>processXMLElement</strong></a>(xmlElement)</dt><dd><tt>Process&nbsp;the&nbsp;xml&nbsp;element.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

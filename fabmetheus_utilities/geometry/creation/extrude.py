@@ -94,7 +94,7 @@ def addOffsetAddToLists( loop, offset, vector3Index, vertexes ):
 	loop.append( vector3Index )
 	vertexes.append( vector3Index )
 
-def addPositives(derivation, positives, paths):
+def addPositives(derivation, paths, positives):
 	'Add pillars output to positives.'
 	portionDirections = getSpacedPortionDirections(derivation.interpolationDictionary)
 	for path in paths:
@@ -321,15 +321,16 @@ class Interpolation:
 		'Get by distances.'
 		beginDistance = self.distances[0]
 		self.interpolationLength = self.distances[-1] - beginDistance
-		self.close = abs( 0.000001 * self.interpolationLength )
+		self.close = abs(0.000001 * self.interpolationLength)
 		self.portionDirections = []
-		oldDistance = beginDistance - self.interpolationLength
+		oldDistance = -self.interpolationLength # so the difference should not be close
 		for distance in self.distances:
-			portionDirection = PortionDirection( distance / self.interpolationLength )
-			if abs( distance - oldDistance ) < self.close:
+			deltaDistance = distance - beginDistance
+			portionDirection = PortionDirection(deltaDistance / self.interpolationLength)
+			if abs(deltaDistance - oldDistance) < self.close:
 				portionDirection.directionReversed = True
-			self.portionDirections.append( portionDirection )
-			oldDistance = distance
+			self.portionDirections.append(portionDirection)
+			oldDistance = deltaDistance
 		return self
 
 	def getByPrefixAlong(self, path, prefix, xmlElement):

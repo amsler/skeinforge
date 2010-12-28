@@ -134,15 +134,15 @@ def getKeysM(prefix=''):
 			keysM.append(key)
 	return keysM
 
+def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
+	'Get equated geometryOutput.'
+	matrixPoints(getConnectionVertexes(geometryOutput), prefix, xmlElement)
+	return geometryOutput
+
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	'Get equated paths.'
 	matrixPoints(loop, prefix, xmlElement)
 	return [loop]
-
-def getManipulatedGeometryOutput(geometryOutput, xmlElement):
-	'Get equated geometryOutput.'
-	matrixPoints(getConnectionVertexes(geometryOutput), 'scale.', xmlElement)
-	return geometryOutput
 
 def getRemovedFloat(defaultFloat, key, prefix, xmlElement):
 	'Get the float by the key and the prefix.'
@@ -232,7 +232,6 @@ def getTetragridA(prefix, tetragrid, xmlElement):
 	for row in xrange(4):
 		for column in xrange(4):
 			key = getKeyA(row, column, prefix)
-			print(  key)
 			if key in evaluatedDictionary:
 				value = evaluatedDictionary[key]
 				if value == None or value == 'None':

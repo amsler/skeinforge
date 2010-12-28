@@ -44,14 +44,6 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	evaluate.setAttributeDictionaryByArguments(['radius', 'start', 'end', 'revolutions'], arguments, xmlElement)
 	return getGeometryOutput(None, xmlElement)
 
-def getWrappedFloat(floatValue, modulo):
-	"Get wrapped float."
-	if floatValue >= modulo:
-		return modulo
-	if floatValue >= 0:
-		return floatValue
-	return floatValue % modulo
-
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	lineation.processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
@@ -67,9 +59,7 @@ class CircleDerivation:
 			radiusMaximum = max(self.radius.real, self.radius.imag)
 			self.sides = evaluate.getSidesMinimumThreeBasedOnPrecisionSides(radiusMaximum, xmlElement)
 		self.start = evaluate.getEvaluatedFloatDefault(0.0, 'start', xmlElement)
-		self.start = getWrappedFloat(self.start, 360.0)
 		end = evaluate.getEvaluatedFloatDefault(360.0, 'end', xmlElement)
-		end = getWrappedFloat(end, 360.0)
 		self.revolutions = evaluate.getEvaluatedFloatDefault(1.0, 'revolutions', xmlElement)
 		self.extent = evaluate.getEvaluatedFloatDefault(end - self.start, 'extent', xmlElement)
 		self.extent += 360.0 * (self.revolutions - 1.0)
