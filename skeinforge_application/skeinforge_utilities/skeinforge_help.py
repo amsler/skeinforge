@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities import settings
+from skeinforge_application.skeinforge_utilities import skeinforge_profile
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
@@ -24,7 +25,7 @@ class HelpRepository:
 	"A class to handle the help settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_help.html', None, self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_utilities.skeinforge_help.html', self)
 		settings.LabelDisplay().getFromName('- Announcements -', self )
 		settings.LabelDisplay().getFromName('Fabmetheus Blog, Announcements & Questions:', self )
 		settings.HelpPage().getFromNameAfterHTTP('fabmetheus.blogspot.com/', 'Fabmetheus Blog', self )

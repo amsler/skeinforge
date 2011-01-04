@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.creation import solid
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 
@@ -24,7 +24,7 @@ globalExecutionOrder = 340
 
 def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
 	"Get equated geometryOutput."
-	scalePoints( matrix.getConnectionVertexes(geometryOutput), prefix, xmlElement )
+	scalePoints( matrix.getVertexes(geometryOutput), prefix, xmlElement )
 	return geometryOutput
 
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):

@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.creation import lineation
+from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import euclidean
 import math
@@ -57,7 +58,7 @@ def getShaftPath(depthBottom, depthTop, radius, sides):
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	lineation.processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
+	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
 
 
 class ShaftDerivation:

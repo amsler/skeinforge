@@ -9,6 +9,7 @@ import __init__
 
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
+from skeinforge_application.skeinforge_utilities import skeinforge_profile
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
@@ -62,7 +63,7 @@ class PolyfileRepository:
 	"A class to handle the polyfile settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_plugins.polyfile.html', None, self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_utilities.skeinforge_plugins.polyfile.html', self)
 		self.directoryOrFileChoiceLabel = settings.LabelDisplay().getFromName('Directory or File Choice: ', self )
 		directoryLatentStringVar = settings.LatentStringVar()
 		self.directorySetting = settings.Radio().getFromRadio( directoryLatentStringVar, 'Execute All Unmodified Files in a Directory', self, False )

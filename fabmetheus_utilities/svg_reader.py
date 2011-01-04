@@ -8,7 +8,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
@@ -857,7 +857,7 @@ class SVGReader:
 		for loop in rotatedLoopLayer.loops:
 			for pointIndex, point in enumerate(loop):
 				loop[pointIndex] = complex(point.real, -point.imag)
-		trianglemesh.sortLoopsInOrderOfArea(True, rotatedLoopLayer.loops)
+		triangle_mesh.sortLoopsInOrderOfArea(True, rotatedLoopLayer.loops)
 		for loopIndex, loop in enumerate(rotatedLoopLayer.loops):
 			isInsideLoops = euclidean.getIsInFilledRegion(rotatedLoopLayer.loops[: loopIndex], euclidean.getLeftPoint(loop))
 			intercircle.directLoop((not isInsideLoops), loop)
@@ -885,7 +885,7 @@ class SVGReader:
 	def parseSVGByXMLElement(self, xmlElement):
 		"Parse SVG by xmlElement."
 		self.sliceDictionary = svg_writer.getSliceDictionary(xmlElement)
-		self.yAxisPointingUpward = euclidean.getBooleanFromDictionaryDefault(False, self.sliceDictionary, 'yAxisPointingUpward')
+		self.yAxisPointingUpward = euclidean.getBooleanFromDictionary(False, self.sliceDictionary, 'yAxisPointingUpward')
 		self.processXMLElement(xmlElement)
 		if not self.yAxisPointingUpward:
 			for rotatedLoopLayer in self.rotatedLoopLayers:

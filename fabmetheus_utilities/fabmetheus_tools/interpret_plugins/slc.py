@@ -184,8 +184,8 @@ class SLCCarving:
 			sampleTableEntry = SampleTableEntry( file )
 			self.layerThickness = sampleTableEntry.layer_thickness
 
-	def setCarveBridgeLayerThickness( self, bridgeLayerThickness ):
-		"Set the bridge layer thickness.  If the infill is not in the direction of the bridge, the bridge layer thickness should be given as None or not set at all."
+	def setCarveInfillInDirectionOfBridge( self, infillInDirectionOfBridge ):
+		'Set the infill in direction of bridge.'
 		pass
 
 	def setCarveLayerThickness( self, layerThickness ):

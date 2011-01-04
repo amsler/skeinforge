@@ -31,14 +31,14 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import face
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_geometry
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_solid
 from fabmetheus_utilities.geometry.solids import cube
 from fabmetheus_utilities.geometry.solids import cylinder
 from fabmetheus_utilities.geometry.solids import group
 from fabmetheus_utilities.geometry.solids import sphere
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 
@@ -54,7 +54,7 @@ def getCarvingFromParser( xmlParser ):
 	booleanGeometry = boolean_geometry.BooleanGeometry()
 	artOfIllusionElement = xmlParser.getRoot()
 	artOfIllusionElement.object = booleanGeometry
-	euclidean.removeListFromDictionary( artOfIllusionElement.attributeDictionary, ['fileversion', 'xmlns:bf'] )
+	euclidean.removeElementsFromDictionary( artOfIllusionElement.attributeDictionary, ['fileversion', 'xmlns:bf'] )
 	sceneElement = artOfIllusionElement.getFirstChildWithClassName('Scene')
 	xmlElements = sceneElement.getFirstChildWithClassName('objects').getChildrenWithClassName('bf:Elem')
 	for xmlElement in xmlElements:
@@ -102,8 +102,8 @@ def processXMLElement( archivableObjects, parent, xmlElement ):
 
 def removeListArtOfIllusionFromDictionary( dictionary, scrubKeys ):
 	"Remove the list and art of illusion keys from the dictionary."
-	euclidean.removeListFromDictionary( dictionary, ['bf:id', 'bf:type'] )
-	euclidean.removeListFromDictionary( dictionary, scrubKeys )
+	euclidean.removeElementsFromDictionary( dictionary, ['bf:id', 'bf:type'] )
+	euclidean.removeElementsFromDictionary( dictionary, scrubKeys )
 
 
 class BooleanSolid( boolean_solid.BooleanSolid ):
@@ -178,7 +178,7 @@ class Sphere( sphere.Sphere ):
 		self.createShape()
 
 
-class TriangleMesh( trianglemesh.TriangleMesh ):
+class TriangleMesh( triangle_mesh.TriangleMesh ):
 	"An Art of Illusion triangle mesh object."
 	def setToObjectAttributeDictionary(self):
 		"Set the shape of this carvable object info."

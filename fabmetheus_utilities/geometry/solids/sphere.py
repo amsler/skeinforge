@@ -11,7 +11,7 @@ import __init__
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.geometry.solids import cube
 from fabmetheus_utilities.geometry.solids import group
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -28,16 +28,16 @@ def addSphereByRadius(faces, radius, vertexes, xmlElement):
 	sides = evaluate.getSidesMinimumThreeBasedOnPrecision(max(radius.x, radius.y, radius.z), xmlElement )
 	sphereSlices = max(sides / 2, 2)
 	equator = euclidean.getComplexPolygonByComplexRadius(complex(radius.x, radius.y), sides)
-	polygons = [trianglemesh.getAddIndexedLoop([complex()], vertexes, bottom)]
+	polygons = [triangle_mesh.getAddIndexedLoop([complex()], vertexes, bottom)]
 	zIncrement = (radius.z + radius.z) / float(sphereSlices)
 	z = bottom
 	for sphereSlice in xrange(1, sphereSlices):
 		z += zIncrement
 		zPortion = abs(z) / radius.z
 		multipliedPath = euclidean.getComplexPathByMultiplier(math.sqrt(1.0 - zPortion * zPortion), equator)
-		polygons.append(trianglemesh.getAddIndexedLoop(multipliedPath, vertexes, z))
-	polygons.append(trianglemesh.getAddIndexedLoop([complex()], vertexes, radius.z))
-	trianglemesh.addPillarByLoops(faces, polygons)
+		polygons.append(triangle_mesh.getAddIndexedLoop(multipliedPath, vertexes, z))
+	polygons.append(triangle_mesh.getAddIndexedLoop([complex()], vertexes, radius.z))
+	triangle_mesh.addPillarByLoops(faces, polygons)
 
 def getGeometryOutput(radius, xmlElement):
 	'Get triangle mesh from attribute dictionary.'

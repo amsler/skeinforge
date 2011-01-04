@@ -9,7 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.vector3 import Vector3
 
 
@@ -65,7 +65,7 @@ def getFlippedLoop(loop, prefix, xmlElement):
 
 def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
 	'Get equated geometryOutput.'
-	flipPoints(matrix.getConnectionVertexes(geometryOutput), prefix, xmlElement)
+	flipPoints(matrix.getVertexes(geometryOutput), prefix, xmlElement)
 	return geometryOutput
 
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):

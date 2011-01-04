@@ -8,7 +8,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import xml_simple_writer
@@ -68,7 +68,7 @@ class Dictionary:
 		attributeCopy = {}
 		if self.xmlElement != None:
 			attributeCopy = evaluate.getEvaluatedDictionary([], self.xmlElement)
-		euclidean.removeListFromDictionary(attributeCopy, matrix.getKeysM())
+		euclidean.removeElementsFromDictionary(attributeCopy, matrix.getKeysM())
 		euclidean.removeTrueFromDictionary(attributeCopy, 'visible')
 		innerOutput = cStringIO.StringIO()
 		self.addXMLInnerSection(depth + 1, innerOutput)
@@ -119,6 +119,10 @@ class Dictionary:
 		if len(shapeOutput) < 1:
 			return None
 		return {self.getXMLClassName() : {'shapes' : shapeOutput}}
+
+	def getMatrix4X4(self):
+		"Get the matrix4X4."
+		return None
 
 	def getMatrixChainTetragrid(self):
 		'Get the matrix chain tetragrid.'

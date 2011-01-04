@@ -425,6 +425,37 @@ class XMLElement:
 		self.object.xmlElement = self
 		self.parent.object.archivableObjects.append(self.object)
 
+	def printAllVariables(self):
+		'Print all variables.'
+		print('attributeDictionary')
+		print(self.attributeDictionary)
+		print('children')
+		print(self.children)
+		print('className')
+		print(self.className)
+		print('idDictionary')
+		print(self.idDictionary)
+		print('importName')
+		print(self.importName)
+		print('nameDictionary')
+		print(self.nameDictionary)
+		print('object')
+		print(self.object)
+		print('parent')
+		print(self.parent)
+		print('text')
+		print(self.text)
+		print('')
+
+	def printAllVariablesRoot(self):
+		'Print all variables and the root variables.'
+		self.printAllVariables()
+		root = self.getRoot()
+		if root != None and root != self:
+			print('')
+			print('Root variables:')
+			root.printAllVariables()
+
 	def removeChildrenFromIDNameParent(self):
 		'Remove the children from the id and name dictionaries and the children list.'
 		childrenCopy = self.children[:]

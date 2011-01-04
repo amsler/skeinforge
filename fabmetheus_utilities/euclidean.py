@@ -212,10 +212,8 @@ def addToThreadsFromLoop( extrusionHalfWidth, gcodeType, loop, oldOrderedLocatio
 
 def addToThreadsRemoveFromSurroundings( oldOrderedLocation, surroundingLoops, skein ):
 	'Add to threads from the last location from surrounding loops.'
-	if len( surroundingLoops ) < 1:
-		return
-	while len( surroundingLoops ) > 0:
-		getTransferClosestSurroundingLoop( oldOrderedLocation, surroundingLoops, skein )
+	while len(surroundingLoops) > 0:
+		getTransferClosestSurroundingLoop(oldOrderedLocation, surroundingLoops, skein)
 
 def addValueSegmentToPixelTable( beginComplex, endComplex, pixelDictionary, value, width ):
 	'Add line segment to the pixel table.'
@@ -437,18 +435,18 @@ def getAroundLoop(begin, end, loop):
 		aroundLoop.append(loop[pointIndex % len(loop)])
 	return aroundLoop
 
-def getAwayPoints( points, radius ):
+def getAwayPoints(points, radius):
 	'Get a path with only the points that are far enough away from each other.'
 	away = []
-	oneOverOverlapDistance = 100.0 / radius
+	oneOverOverlapDistance = 1000.0 / radius
 	pixelDictionary = {}
 	for point in points:
-		x = int( point.real * oneOverOverlapDistance )
-		y = int( point.imag * oneOverOverlapDistance )
-		if not getSquareIsOccupied( pixelDictionary, x, y ):
+		x = int(point.real * oneOverOverlapDistance)
+		y = int(point.imag * oneOverOverlapDistance)
+		if not getSquareIsOccupied(pixelDictionary, x, y):
 			away.append(point)
 			stepKey = getStepKey(x, y)
-			pixelDictionary[ stepKey ] = None
+			pixelDictionary[stepKey] = None
 	return away
 
 def getBackOfLoops(loops):
@@ -462,11 +460,7 @@ def getBackOfLoops(loops):
 		print('This should never happen, there are no loops for getBackOfLoops in euclidean')
 	return back
 
-def getBooleanFromDictionary( dictionary, key ):
-	'Get boolean from the dictionary and key.'
-	return getBooleanFromDictionaryDefault( True, dictionary, key )
-
-def getBooleanFromDictionaryDefault( defaultBoolean, dictionary, key ):
+def getBooleanFromDictionary(defaultBoolean, dictionary, key):
 	'Get boolean from the dictionary and key.'
 	if key not in dictionary:
 		return defaultBoolean
@@ -795,11 +789,11 @@ def getEnumeratorKeysExceptForOneArgument(enumerator, keys):
 		endIndex = endIndexDefault
 	return range(beginIndex, endIndex, step)
 
-def getFillOfSurroundings( surroundingLoops ):
+def getFillOfSurroundings(penultimateFillLoops, surroundingLoops):
 	'Get extra fill loops of surrounding loops.'
 	fillOfSurroundings = []
 	for surroundingLoop in surroundingLoops:
-		fillOfSurroundings += surroundingLoop.getFillLoops()
+		fillOfSurroundings += surroundingLoop.getFillLoops(penultimateFillLoops)
 	return fillOfSurroundings
 
 def getFloatDefaultByDictionary( defaultFloat, dictionary, key ):
@@ -854,7 +848,7 @@ def getFrontOverWidthAddYList( front, numberOfLines, xIntersectionIndexLists, wi
 	frontOverWidth = front / width
 	for fillLine in xrange( numberOfLines ):
 		yList.append( front + float( fillLine ) * width )
-		xIntersectionIndexLists.append( [] )
+		xIntersectionIndexLists.append([])
 	return frontOverWidth
 
 def getHalfSimplifiedLoop( loop, radius, remainder ):
@@ -977,8 +971,16 @@ def getIntFromValue(value):
 	return None
 
 def getIsInFilledRegion(loops, point):
-	'Determine if the left point is in the filled region of the loops.'
+	'Determine if the point is in the filled region of the loops.'
 	return getNumberOfIntersectionsToLeftOfLoops(loops, point) % 2 == 1
+
+def getIsInFilledRegionByPaths(loops, paths):
+	'Determine if the point of any path is in the filled region of the loops.'
+	for path in paths:
+		if len(path) > 0:
+			if getIsInFilledRegion(loops, path[0]):
+				return True
+	return False
 
 def getIsRadianClose(firstRadian, secondRadian):
 	'Determine if the firstRadian is close to the secondRadian.'
@@ -1561,7 +1563,7 @@ def getSquareValues( pixelDictionary, x, y ):
 
 def getSquareValuesFromPoint( pixelDictionary, point ):
 	'Get a list of the values in a square around the point.'
-	return getSquareValues( pixelDictionary, int( round( point.real ) ), int( round( point.imag ) ) )
+	return getSquareValues(pixelDictionary, int(round(point.real)), int(round(point.imag)))
 
 def getStepKey(x, y):
 	'Get step key for x and y.'
@@ -1569,7 +1571,7 @@ def getStepKey(x, y):
 
 def getStepKeyFromPoint(point):
 	'Get step key for the point.'
-	return ( int( round( point.real ) ), int( round( point.imag ) ) )
+	return (int(round(point.real)), int(round(point.imag)))
 
 def getThreeSignificantFigures(number):
 	'Get number rounded to three significant figures as a string.'
@@ -1595,19 +1597,19 @@ def getTopPaths(paths):
 			top = max(top, point.z)
 	return top
 
-def getTransferClosestSurroundingLoop( oldOrderedLocation, remainingSurroundingLoops, skein ):
+def getTransferClosestSurroundingLoop(oldOrderedLocation, remainingSurroundingLoops, skein):
 	'Get and transfer the closest remaining surrounding loop.'
-	if len( remainingSurroundingLoops ) > 0:
+	if len(remainingSurroundingLoops) > 0:
 		oldOrderedLocation.z = remainingSurroundingLoops[0].z
 	closestDistance = 987654321987654321.0
 	closestSurroundingLoop = None
 	for remainingSurroundingLoop in remainingSurroundingLoops:
-		distance = getNearestDistanceIndex( oldOrderedLocation.dropAxis(), remainingSurroundingLoop.boundary ).distance
+		distance = getNearestDistanceIndex(oldOrderedLocation.dropAxis(), remainingSurroundingLoop.boundary).distance
 		if distance < closestDistance:
 			closestDistance = distance
 			closestSurroundingLoop = remainingSurroundingLoop
-	remainingSurroundingLoops.remove( closestSurroundingLoop )
-	closestSurroundingLoop.addToThreads( oldOrderedLocation, skein )
+	remainingSurroundingLoops.remove(closestSurroundingLoop)
+	closestSurroundingLoop.addToThreads(oldOrderedLocation, skein)
 	return closestSurroundingLoop
 
 def getTransferredPaths( insides, loop ):
@@ -1905,17 +1907,17 @@ def joinXIntersectionsTables( fromTable, intoTable ):
 		else:
 			print('This should never happen, there are no line segments in joinSegments in euclidean')
 
-def overwriteDictionary( fromDictionary, exceptions, positives, toDictionary ):
+def overwriteDictionary(fromDictionary, exceptions, positives, toDictionary):
 	'Overwrite the dictionary and remove any silent positives.'
 	for fromDictionaryKey in fromDictionary.keys():
 		if fromDictionaryKey not in exceptions:
-			toDictionary[ fromDictionaryKey ] = fromDictionary[ fromDictionaryKey ]
+			toDictionary[fromDictionaryKey] = fromDictionary[fromDictionaryKey]
 	for positive in positives:
 		if positive in toDictionary:
-			if getBooleanFromDictionary( fromDictionary, positive ):
-				del toDictionary[ positive ]
+			if getBooleanFromDictionary(True, fromDictionary, positive):
+				del toDictionary[positive]
 
-def removeElementFromDictionary( dictionary, key ):
+def removeElementFromDictionary(dictionary, key):
 	'Remove element from the dictionary.'
 	if key in dictionary:
 		del dictionary[key]
@@ -1936,10 +1938,10 @@ def removeElementFromPixelListFromPoint( element, pixelDictionary, point ):
 	stepKey = getStepKeyFromPoint(point)
 	removeElementFromListTable( element, stepKey, pixelDictionary )
 
-def removeListFromDictionary( dictionary, keys ):
+def removeElementsFromDictionary(dictionary, keys):
 	'Remove list from the dictionary.'
 	for key in keys:
-		removeElementFromDictionary( dictionary, key )
+		removeElementFromDictionary(dictionary, key)
 
 def removePrefixFromDictionary( dictionary, prefix ):
 	'Remove the attributes starting with the prefix from the dictionary.'
@@ -1949,9 +1951,9 @@ def removePrefixFromDictionary( dictionary, prefix ):
 
 def removePixelTableFromPixelTable( pixelDictionaryToBeRemoved, pixelDictionaryToBeRemovedFrom ):
 	'Remove pixel from the pixel table.'
-	removeListFromDictionary( pixelDictionaryToBeRemovedFrom, pixelDictionaryToBeRemoved.keys() )
+	removeElementsFromDictionary( pixelDictionaryToBeRemovedFrom, pixelDictionaryToBeRemoved.keys() )
 
-def removeTrueFromDictionary( dictionary, key ):
+def removeTrueFromDictionary(dictionary, key):
 	'Remove key from the dictionary in the value is true.'
 	if key in dictionary:
 		if getBooleanFromValue(dictionary[key]):
@@ -2368,6 +2370,7 @@ class SurroundingLoop:
 #		self.lastExistingFillLoops = None
 		self.lastFillLoops = None
 		self.loop = None
+		self.penultimateFillLoops = []
 		self.perimeterPaths = []
 		self.z = None
 		threadFunctionTable = { 'infill' : self.transferInfillPaths, 'loops' : self.transferClosestFillLoops, 'perimeter' : self.addPerimeterInner }
@@ -2415,11 +2418,21 @@ class SurroundingLoop:
 			addToThreadsFunction( oldOrderedLocation, skein )
 		skein.distanceFeedRate.addLine('(</surroundingLoop>)')
 
-	def getFillLoops(self):
+	def getFillLoops(self, penultimateFillLoops):
 		'Get last fill loops from the outside loop and the loops inside the inside loops.'
 		fillLoops = self.getLoopsToBeFilled()[:]
+		surroundingBoundaries = self.getSurroundingBoundaries()
+		withinLoops = []
+		if penultimateFillLoops == None:
+			penultimateFillLoops = self.penultimateFillLoops
+		for penultimateFillLoop in penultimateFillLoops:
+			if len(penultimateFillLoop) > 2:
+				if getIsInFilledRegion(surroundingBoundaries, penultimateFillLoop[0]):
+					withinLoops.append(penultimateFillLoop)
+		if not getIsInFilledRegionByPaths(self.penultimateFillLoops, fillLoops):
+			fillLoops += self.penultimateFillLoops
 		for surroundingLoop in self.innerSurroundings:
-			fillLoops += getFillOfSurroundings( surroundingLoop.innerSurroundings )
+			fillLoops += getFillOfSurroundings(penultimateFillLoops, surroundingLoop.innerSurroundings)
 		return fillLoops
 
 	def getFromInsideSurroundings( self, inputSurroundingInsides, perimeterWidth ):
@@ -2439,15 +2452,16 @@ class SurroundingLoop:
 
 	def getLoopsToBeFilled(self):
 		'Get last fill loops from the outside loop and the loops inside the inside loops.'
-		if self.lastFillLoops != None:
-			return self.lastFillLoops
-#		return [ self.boundary ]
-		loopsToBeFilled = [ self.boundary ]
-#		loopsToBeFilled = self.fillBoundaries
+		if self.lastFillLoops == None:
+			return self.getSurroundingBoundaries()
+		return self.lastFillLoops
+
+	def getSurroundingBoundaries(self):
+		'Get the boundary of the surronding loop plus any boundaries of the innerSurroundings.'
+		surroundingBoundaries = [self.boundary]
 		for surroundingLoop in self.innerSurroundings:
-			loopsToBeFilled.append( surroundingLoop.boundary )
-#			loopsToBeFilled += surroundingLoop.fillBoundaries
-		return loopsToBeFilled
+			surroundingBoundaries.append(surroundingLoop.boundary)
+		return surroundingBoundaries
 
 	def transferClosestFillLoops( self, oldOrderedLocation, skein ):
 		'Transfer closest fill loops.'

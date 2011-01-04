@@ -34,7 +34,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import face
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
@@ -78,7 +78,7 @@ def getCarving(fileName=''):
 	stlData = archive.getFileText( fileName, 'rb')
 	if stlData == '':
 		return None
-	triangleMesh = trianglemesh.TriangleMesh()
+	triangleMesh = triangle_mesh.TriangleMesh()
 	vertexIndexTable = {}
 	numberOfVertexStrings = stlData.count('vertex')
 	requiredVertexStringsForText = max( 2, len( stlData ) / 8000 )

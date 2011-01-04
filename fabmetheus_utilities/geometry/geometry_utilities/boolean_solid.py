@@ -32,7 +32,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.geometry.solids import group
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
@@ -144,7 +144,7 @@ def getLoopsDifference(importRadius, loopLists):
 	allPoints = corners[:]
 	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(negativeLoops, halfImportRadius), True, positiveLoops, radiusSide)
 	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(positiveLoops, halfImportRadius), False, negativeLoops, radiusSide)
-	return trianglemesh.getDescendingAreaLoops(allPoints, corners, importRadius)
+	return triangle_mesh.getDescendingAreaLoops(allPoints, corners, importRadius)
 
 def getLoopsIntersection(importRadius, loopLists):
 	'Get intersection loops.'
@@ -169,7 +169,7 @@ def getLoopsIntersectionByPair(importRadius, loopsFirst, loopsLast):
 	allPoints = corners[:]
 	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(loopsFirst, halfImportRadius), True, loopsLast, radiusSide)
 	allPoints += getInsetPointsByInsetLoops(getInBetweenLoopsFromLoops(loopsLast, halfImportRadius), True, loopsFirst, radiusSide)
-	return trianglemesh.getDescendingAreaLoops(allPoints, corners, importRadius)
+	return triangle_mesh.getDescendingAreaLoops(allPoints, corners, importRadius)
 
 def getLoopsListsIntersections( loopsList ):
 	'Get intersections betweens the loops lists.'
@@ -201,7 +201,7 @@ def getLoopsUnified(importRadius, loopLists):
 		corners += getInsetPointsByInsetLoops(insetLoops, False, otherLoops, radiusSide)
 		allPoints += getInsetPointsByInsetLoops(inBetweenInsetLoops, False, otherLoops, radiusSideNegative)
 	allPoints += corners[:]
-	return trianglemesh.getDescendingAreaLoops(allPoints, corners, importRadius)
+	return triangle_mesh.getDescendingAreaLoops(allPoints, corners, importRadius)
 
 def getVisibleObjectLoopsList( importRadius, visibleObjects, z ):
 	'Get visible object loops list.'

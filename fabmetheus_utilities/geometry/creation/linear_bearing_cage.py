@@ -8,16 +8,14 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.creation import extrude
-from fabmetheus_utilities.geometry.creation import lathe
 from fabmetheus_utilities.geometry.creation import lineation
+from fabmetheus_utilities.geometry.creation import peg
 from fabmetheus_utilities.geometry.creation import solid
-from fabmetheus_utilities.geometry.creation import teardrop
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
-from fabmetheus_utilities.geometry.manipulation_evaluator import translate
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import translate
 from fabmetheus_utilities.geometry.solids import cylinder
 from fabmetheus_utilities.geometry.solids import sphere
-from fabmetheus_utilities.geometry.solids import trianglemesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -88,7 +86,8 @@ def addNegativePeg(derivation, negatives, x, y):
 	inradius = complex(negativePegRadius, negativePegRadius)
 	copyShallow = derivation.xmlElement.getCopyShallow()
 	start = Vector3(x, y, derivation.height)
-	cylinderOutput = cylinder.getGeometryOutputByEndStart(0.0, inradius, start, derivation.topOverBottom, copyShallow)
+	sides = evaluate.getSidesMinimumThreeBasedOnPrecision(negativePegRadius, copyShallow )
+	cylinderOutput = cylinder.getGeometryOutputByEndStart(0.0, inradius, sides, start, derivation.topOverBottom, copyShallow)
 	negatives.append(cylinderOutput)
 
 def addNegativeSphere(derivation, negatives, x):
@@ -101,11 +100,11 @@ def addNegativeSphere(derivation, negatives, x):
 def addPositivePeg(derivation, positives, x, y):
 	'Add positive cylinder at x and y.'
 	positivePegRadius = derivation.pegRadius - derivation.halfPegClearance
-	inradius = complex(positivePegRadius, positivePegRadius)
+	radius = complex(positivePegRadius, positivePegRadius)
 	copyShallow = derivation.xmlElement.getCopyShallow()
 	start = Vector3(x, y, derivation.demiheight)
 	endZ = derivation.height
-	cylinder.addBeveledCylinder(derivation.pegBevel, endZ, inradius, positives, start, derivation.topOverBottom, copyShallow)
+	peg.addPeg(derivation.pegBevel, endZ, positives, radius, start, derivation.topOverBottom, copyShallow)
 
 def getBearingCenterXs(bearingCenterX, numberOfSteps, stepX):
 	'Get the bearing center x list.'
@@ -114,14 +113,6 @@ def getBearingCenterXs(bearingCenterX, numberOfSteps, stepX):
 		bearingCenterXs.append(bearingCenterX)
 		bearingCenterX += stepX
 	return bearingCenterXs
-
-def getPegCenterXs(numberOfSteps, pegCenterX, stepX):
-	'Get the peg center x list.'
-	pegCenterXs = []
-	for stepIndex in xrange(numberOfSteps):
-		pegCenterXs.append(pegCenterX)
-		pegCenterX += stepX
-	return pegCenterXs
 
 def getGeometryOutput(derivation, xmlElement):
 	'Get vector3 vertexes from attribute dictionary.'
@@ -139,6 +130,14 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	'Get vector3 vertexes from attribute dictionary by arguments.'
 	evaluate.setAttributeDictionaryByArguments(['length', 'radius'], arguments, xmlElement)
 	return getGeometryOutput(None, xmlElement)
+
+def getPegCenterXs(numberOfSteps, pegCenterX, stepX):
+	'Get the peg center x list.'
+	pegCenterXs = []
+	for stepIndex in xrange(numberOfSteps):
+		pegCenterXs.append(pegCenterX)
+		pegCenterX += stepX
+	return pegCenterXs
 
 def getRoundedExtendedRectangle(radius, rectangleCenterX, sides):
 	'Get the rounded extended rectangle.'

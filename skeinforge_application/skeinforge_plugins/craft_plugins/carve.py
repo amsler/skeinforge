@@ -16,11 +16,6 @@ When selected, the layer template will be added to the svg output, which adds ja
 
 When off, no controls will be added, the svg output will only include the fabrication paths.  So 'Add Layer Template to SVG' should be deselected when the svg will be used by other software, like Inkscape.
 
-===Bridge Thickness Multiplier===
-Default is one.
-
-Defines the the ratio of the thickness on the bridge layers over the thickness of the typical non bridge layers.
-
 ===Extra Decimal Places===
 Default is two.
 
@@ -31,10 +26,10 @@ Default is one.
 
 When a triangle mesh has holes in it, the triangle mesh slicer switches over to a slow algorithm that spans gaps in the mesh.  The higher the 'Import Coarseness' setting, the wider the gaps in the mesh it will span.  An import coarseness of one means it will span gaps of the perimeter width.
 
-===Infill in Direction of Bridges===
+===Infill in Direction of Bridge===
 Default is on.
 
-When selected, the infill will be in the direction of bridges across gaps, so that the fill will be able to span a bridge easier.
+When selected, the infill will be in the direction of any bridge across a gap, so that the fill will be able to span a bridge easier.
 
 ===Layer Thickness===
 Default is 0.4 mm.
@@ -177,10 +172,9 @@ class CarveRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Carve')
 		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
-		self.bridgeThicknessMultiplier = settings.FloatSpin().getFromValue( 0.8, 'Bridge Thickness Multiplier (ratio):', self, 1.2, 1.0 )
 		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 3.0, 2.0)
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
-		self.infillDirectionBridge = settings.BooleanSetting().getFromValue('Infill in Direction of Bridges', self, True )
+		self.infillInDirectionOfBridge = settings.BooleanSetting().getFromValue('Infill in Direction of Bridge', self, True )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Layers -', self )
@@ -209,10 +203,8 @@ class CarveSkein:
 	def getCarvedSVG(self, carving, fileName, repository):
 		"Parse gnu triangulated surface text and store the carved gcode."
 		layerThickness = repository.layerThickness.value
-		bridgeLayerThickness = layerThickness * repository.bridgeThicknessMultiplier.value
 		perimeterWidth = repository.perimeterWidthOverThickness.value * layerThickness
-		if repository.infillDirectionBridge.value:
-			carving.setCarveBridgeLayerThickness(bridgeLayerThickness)
+		carving.setCarveInfillInDirectionOfBridge(repository.infillInDirectionOfBridge.value)
 		carving.setCarveLayerThickness(layerThickness)
 		importRadius = 0.5 * repository.importCoarseness.value * abs(perimeterWidth)
 		carving.setCarveImportRadius(max(importRadius, 0.01 * layerThickness))
@@ -232,7 +224,8 @@ class CarveSkein:
 			carving.getCarveLayerThickness(),
 			perimeterWidth)
 		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedLoopLayers)
-		return svgWriter.getReplacedSVGTemplate(fileName, 'carve', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())
+		return svgWriter.getReplacedSVGTemplate(
+			fileName, 'carve', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())
 
 
 def main():

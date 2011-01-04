@@ -195,7 +195,7 @@ class CraftRepository:
 	"A class to handle the craft settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_craft.html', None, self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_utilities.skeinforge_craft.html', self)
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Craft', self, '')
 		self.importantFileNames = ['carve', 'chop', 'feed', 'flow', 'lift', 'raft', 'speed']
 		allCraftNames = archive.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )

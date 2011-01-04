@@ -18,6 +18,7 @@ import __init__
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
 from fabmetheus_utilities import settings
+from skeinforge_application.skeinforge_utilities import skeinforge_profile
 import cStringIO
 import os
 import sys
@@ -44,8 +45,8 @@ class ScalableVectorGraphicsRepository:
 	"A class to handle the export settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository(
-			'skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', None, self )
+		skeinforge_profile.addListsToCraftTypeRepository(
+			'skeinforge_application.skeinforge_plugins.analyze_plugins.export_canvas_plugins.scalable_vector_graphics.html', self)
 		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, '')
 		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
 

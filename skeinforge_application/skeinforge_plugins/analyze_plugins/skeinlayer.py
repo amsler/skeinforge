@@ -156,6 +156,7 @@ from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities
 from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import tableau
 from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_move
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
+from skeinforge_application.skeinforge_utilities import skeinforge_profile
 import os
 import sys
 
@@ -205,7 +206,7 @@ class SkeinlayerRepository( tableau.TableauRepository ):
 	"A class to handle the skeinlayer settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.skeinlayer.html', None, self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.skeinlayer.html', self)
 		self.baseNameSynonym = 'skeinview.csv'
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Skeinlayer', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Skeinlayer')

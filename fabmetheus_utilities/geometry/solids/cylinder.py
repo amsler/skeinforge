@@ -9,10 +9,10 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.solids import cube
 from fabmetheus_utilities.geometry.solids import group
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -23,45 +23,30 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def addBeveledCylinder(bevel, endZ, inradius, outputs, start, topOverBottom, xmlElement):
-	'Add beveled cylinder to outputs bevel, endZ, inradius and start.'
-	height = abs(start.z - endZ)
-	bevelStartRatio = max(1.0 - bevel / height, 0.5)
-	oneMinusBevelStartRatio = 1.0 - bevelStartRatio
-	trunkEndZ = bevelStartRatio * endZ + oneMinusBevelStartRatio * start.z
-	trunkTopOverBottom = bevelStartRatio * topOverBottom + oneMinusBevelStartRatio
-	outputs.append(getGeometryOutputByEndStart(trunkEndZ, inradius, start, trunkTopOverBottom, xmlElement))
-	capInradius = inradius * trunkTopOverBottom
-	capStart = bevelStartRatio * Vector3(start.x, start.y, endZ) + oneMinusBevelStartRatio * start
-	inradiusMaximum = max(inradius.real, inradius.imag)
-	endInradiusMaximum = inradiusMaximum * topOverBottom - bevel
-	trunkInradiusMaximum = inradiusMaximum * trunkTopOverBottom
-	capTopOverBottom = endInradiusMaximum / trunkInradiusMaximum
-	outputs.append(getGeometryOutputByEndStart(endZ, capInradius, capStart, capTopOverBottom, xmlElement))
-
-def addCylinderByInradius(faces, inradius, topOverBottom, vertexes, xmlElement):
+def addCylinderByInradius(faces, inradius, sides, topOverBottom, vertexes, xmlElement):
 	'Add cylinder by radius.'
-	sides = evaluate.getSidesMinimumThreeBasedOnPrecision(max(inradius.x, inradius.y), xmlElement )
 	polygonBottom = euclidean.getComplexPolygonByComplexRadius(complex(inradius.x, inradius.y), sides)
 	polygonTop = polygonBottom
 	if topOverBottom <= 0.0:
 		polygonTop = [complex()]
+	elif topOverBottom != 1.0:
+		polygonTop = euclidean.getComplexPathByMultiplier(topOverBottom, polygonTop)
 	bottomTopPolygon = [
-		trianglemesh.getAddIndexedLoop(polygonBottom, vertexes, -inradius.z),
-		trianglemesh.getAddIndexedLoop(polygonTop, vertexes, inradius.z)]
-	trianglemesh.addPillarByLoops(faces, bottomTopPolygon)
+		triangle_mesh.getAddIndexedLoop(polygonBottom, vertexes, -inradius.z),
+		triangle_mesh.getAddIndexedLoop(polygonTop, vertexes, inradius.z)]
+	triangle_mesh.addPillarByLoops(faces, bottomTopPolygon)
 
-def getGeometryOutput(inradius, topOverBottom, xmlElement):
+def getGeometryOutput(inradius, sides, topOverBottom, xmlElement):
 	'Get cylinder triangle mesh by inradius.'
 	faces = []
 	vertexes = []
-	addCylinderByInradius(faces, inradius, topOverBottom, vertexes, xmlElement)
+	addCylinderByInradius(faces, inradius, sides, topOverBottom, vertexes, xmlElement)
 	return {'trianglemesh' : {'vertex' : vertexes, 'face' : faces}}
 
-def getGeometryOutputByEndStart(endZ, inradiusComplex, start, topOverBottom, xmlElement):
+def getGeometryOutputByEndStart(endZ, inradiusComplex, sides, start, topOverBottom, xmlElement):
 	'Get cylinder triangle mesh by endZ, inradius and start.'
 	inradius = Vector3(inradiusComplex.real, inradiusComplex.imag, 0.5 * abs(endZ - start.z))
-	cylinderOutput = getGeometryOutput(inradius, topOverBottom, xmlElement)
+	cylinderOutput = getGeometryOutput(inradius, sides, topOverBottom, xmlElement)
 	vertexes = matrix.getVertexes(cylinderOutput)
 	if endZ < start.z:
 		for vertex in vertexes:
@@ -79,12 +64,12 @@ class Cylinder( cube.Cube ):
 	'A cylinder object.'
 	def __init__(self):
 		'Add empty lists.'
-		self.radiusZ = None
 		cube.Cube.__init__(self)
 
 	def createShape(self):
 		'Create the shape.'
-		addCylinderByInradius(self.faces, self.inradius, self.topOverBottom, self.vertexes, self.xmlElement)
+		sides = evaluate.getSidesMinimumThreeBasedOnPrecision(max(self.inradius.x, self.inradius.y), self.xmlElement )
+		addCylinderByInradius(self.faces, self.inradius, sides, self.topOverBottom, self.vertexes, self.xmlElement)
 
 	def setToObjectAttributeDictionary(self):
 		'Set the shape of this carvable object info.'

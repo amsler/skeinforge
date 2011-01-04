@@ -316,6 +316,8 @@ def makeDirectory(directory):
 	if os.path.isdir(directory):
 		return
 	try:
+		print('The following directory was made:')
+		print(os.path.abspath(directory))
 		os.makedirs(directory)
 	except OSError:
 		print('Skeinforge can not make the directory %s so give it read/write permission for that directory and the containing directory.' % directory)

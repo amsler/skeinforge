@@ -32,7 +32,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.geometry.solids import group
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 
 
@@ -47,7 +47,7 @@ def processXMLElement(xmlElement):
 	group.processShape( Cube, xmlElement)
 
 
-class Cube( trianglemesh.TriangleMesh ):
+class Cube( triangle_mesh.TriangleMesh ):
 	"A cube object."
 	def addXMLSection(self, depth, output):
 		"Add the xml section for this object."
@@ -60,8 +60,8 @@ class Cube( trianglemesh.TriangleMesh ):
 			complex( self.inradius.x, - self.inradius.y ),
 			complex( self.inradius.x, self.inradius.y ),
 			complex( - self.inradius.x, self.inradius.y ) ]
-		bottomTopSquare = trianglemesh.getAddIndexedLoops( square, self.vertexes, [ - self.inradius.z, self.inradius.z ] )
-		trianglemesh.addPillarByLoops( self.faces, bottomTopSquare )
+		bottomTopSquare = triangle_mesh.getAddIndexedLoops( square, self.vertexes, [ - self.inradius.z, self.inradius.z ] )
+		triangle_mesh.addPillarByLoops( self.faces, bottomTopSquare )
 
 	def setToObjectAttributeDictionary(self):
 		"Set the shape of this carvable object info."

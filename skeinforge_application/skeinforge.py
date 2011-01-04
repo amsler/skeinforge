@@ -241,37 +241,28 @@ import os
 import sys
 
 
-# rename trianglemesh triangle_mesh
-# look over lineation manipulation functions
-# maybe rename man..E man..Matrixes maybe join
-# maybe rename manipulation meta
-# look over copy module, make copy solid like copy lineation, copy geometry path
-# import module, overwriteRoot
-# writeTagged, tags, creationTags, writeMatrix='true'
-# linearbearingexample 15 x 1 x 2
-# fix support bug http://hydraraptor.blogspot.com/2010/12/crackers.html
-# make more getGeometryOutputByNegativesPositivesOnly in gear
-# replace processXMLElementByGeometry with path.convertXMLElement(, replace convertProcessXMLElementRenameByPaths
-# document export replace blank
-# add gear to demozendium
-# change global attributes to local
-# eliminate variable bridge height, maybe add bridge cooling
-# announcement
+# http://hydraraptor.blogspot.com/2008/08/bearing-fruit.html
+# On the other hand: use cone
+# http://hydraraptor.blogspot.com/2010/12/tip-top-top-layer-tip.html
 #
-# array paths, follow paths, later maybe targetequation radius xyz give index
-# peg
-# voronoi
-# look at height in boolean_geometry
+# array paths, follow paths, later maybe targetequation radius xyz give index equation given parameters
+# unify doubly_hollow square
+# inset stretch corner bug in fill getting inset loop
+# equation rippled circle example
+# equation for vertexes if not already
+# voronoi average location intersection looped inset intercircles
 # grate separate
 # add overview link to crnsdoo index and svg page
-# return gcodeString ='Gcode: ' + coloredLines[self.repository.line.value].displayString
 # xml_creation
-# add E Step Length to Gcode Step
-# check large thickness bug, layerThickness 2.8
-# connectionfrom, to, connect, xaxis
+# linearbearingexample 15 x 1 x 2
+# look at height in boolean_geometry
+# commandLineInterface
 # bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
+# connectionfrom, to, connect, xaxis
 # lathe, transform normal in getRemaining, getConnection
+# getConnection of some kind like getConnectionVertexes, getConnection
 # mechaslab
+# import, write, copy examples
 # stretch add back addAlong
 # multiply to table + boundary bedBound bedWidth bedHeight bedFile.csv
 #
@@ -280,21 +271,19 @@ import sys
 # unimportant
 # minor outline problem when an end path goes through a path, like in the letter A
 # view profile 1 mm thickness
-# only parse svg once, do not parse again if yAxisPointingUpward='true'
 #
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # del previous, add begin & end if far  get actual path
+# clairvoyance
 # polling
 # getNormal, getIsFlat?
+# getElementsByTags, removeIdentifiers
 # write svg for visible paths???
 # combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
-# getConnection of some kind like getConnectionVertexes, getConnection
 # pixel, voxel, surfaxel/boxel, lattice, mesh
 # probably not replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
 # probably not speed up CircleIntersection by performing isWithinCircles before creation
-# equation for vertexes if not already
 # mesh. for cube, then cyliner, then sphere after lathe
-# probably not move alterations and profiles
 # tube
 # rotor
 # demozendium privacy policy, maybe thumbnail logo
@@ -308,11 +297,9 @@ import sys
 # hollow top
 # boolean loop corner outset
 # dovetail
-# creationID, addObject, getTarget, copyXMLElement?
 # maybe not getNewObject, getNew, addToBoolean
 # work out close and radius
 # maybe try to get rid of comment if possible
-# voronoi average location intersection looped inset intercircles
 # maybe move and give geometryOutput to cube, cylinder, sphere
 #
 # comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
@@ -322,7 +309,6 @@ import sys
 # maybe move widen before bottom
 # maybe save all generated_files option
 # maybe meta overhang
-# convert global repository settings to local settings
 # table to dictionary
 # check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # remove cool set at end of layer
@@ -335,8 +321,12 @@ import sys
 # http://wiki.makerbot.com/configuring-skeinforge
 #
 #
+# remove index from CircleIntersection _speed
+# cache surroundingCarves _speed
+#
+#
 # add hook _extrusion
-# smooth _extrusion
+# smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
 # implement acceleration & collinear removal in penultimate viewers _extrusion
 # integral thin width _extrusion
 # layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
@@ -345,6 +335,7 @@ import sys
 # apron _extrusion
 # somehow, add pattern to outside, http://blog.makerbot.com/2010/09/03/lampshades/
 #
+# rename skeinforge_profile.addListsToCraftTypeRepository to skeinforge_profile.addToCraftTypeRepository after apron
 # arch, ceiling
 # add polish, has perimeter, has cut first layer (False)
 # probably not set addedLocation in distanceFeedRate after arc move
@@ -557,7 +548,7 @@ class SkeinforgeRepository:
 	'A class to handle the skeinforge settings.'
 	def __init__(self):
 		'Set the default settings, execute title & settings fileName.'
-		settings.addListsToRepository('skeinforge_application.skeinforge.html', None, self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge.html', self)
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '')
 		self.profileType = settings.MenuButtonDisplay().getFromName('Profile Type: ', self )
 		self.profileSelection = settings.MenuButtonDisplay().getFromName('Profile Selection: ', self)

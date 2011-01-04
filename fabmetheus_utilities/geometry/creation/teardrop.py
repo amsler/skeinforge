@@ -9,6 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import extrude
 from fabmetheus_utilities.geometry.creation import lineation
+from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -86,7 +87,7 @@ def getTeardropPathByEndStart(end, radius, start, xmlElement):
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	lineation.processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
+	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
 
 
 class TeardropDerivation:

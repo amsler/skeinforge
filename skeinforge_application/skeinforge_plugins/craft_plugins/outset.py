@@ -49,7 +49,7 @@ except:
 import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
@@ -127,7 +127,7 @@ class OutsetSkein:
 	def addOutset(self, rotatedLoopLayer):
 		"Add outset to the layer."
 		extrudateLoops = intercircle.getInsetLoopsFromLoops(-self.absoluteHalfPerimeterWidth, rotatedLoopLayer.loops)
-		sortedLoops = trianglemesh.sortLoopsInOrderOfArea(False, extrudateLoops)
+		sortedLoops = triangle_mesh.sortLoopsInOrderOfArea(False, extrudateLoops)
 		for sortedLoop in sortedLoops:
 			self.addGcodeFromRemainingLoop(sortedLoop, self.absoluteHalfPerimeterWidth, rotatedLoopLayer.z)
 

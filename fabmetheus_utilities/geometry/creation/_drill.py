@@ -12,7 +12,7 @@ from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.creation import teardrop
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math

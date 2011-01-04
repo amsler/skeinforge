@@ -9,7 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import dictionary
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities import euclidean
 
 
@@ -67,10 +67,14 @@ class Group(dictionary.Dictionary):
 			loops += visibleObject.getLoops(importRadius, z)
 		return loops
 
+	def getMatrix4X4(self):
+		"Get the matrix4X4."
+		return self.matrix4X4
+
 	def getMatrixChainTetragrid(self):
 		"Get the matrix chain tetragrid."
 		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).tetragrid
 
 	def getVisible(self):
 		"Get visible."
-		return euclidean.getBooleanFromDictionary(self.getAttributeDictionary(), 'visible')
+		return euclidean.getBooleanFromDictionary(True, self.getAttributeDictionary(), 'visible')

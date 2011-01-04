@@ -251,6 +251,7 @@ from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities
 from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_move
 from skeinforge_application.skeinforge_plugins.analyze_plugins.analyze_utilities import view_rotate
 from skeinforge_application.skeinforge_utilities import skeinforge_polyfile
+from skeinforge_application.skeinforge_utilities import skeinforge_profile
 import math
 import sys
 
@@ -307,7 +308,7 @@ class SkeinisoRepository( tableau.TableauRepository ):
 	"A class to handle the skeiniso settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.skeiniso.html', None, self )
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.analyze_plugins.skeiniso.html', self)
 		self.baseNameSynonym = 'behold.csv'
 		self.fileNameInput = settings.FileNameInput().getFromFileName( [ ('Gcode text files', '*.gcode') ], 'Open File for Skeiniso', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Skeiniso')

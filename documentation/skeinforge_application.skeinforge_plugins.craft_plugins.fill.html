@@ -48,9 +48,11 @@ Allan Ecker aka The Masked Retriever has written the "Skeinforge Quicktip: Fill"
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Begin Rotation Repeat">Infill Begin Rotation Repeat</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Perimeter Overlap">Infill Perimeter Overlap</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Solidity">Infill Solidity</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interior Infill Density over Exterior Density">Interior Infill Density over Exterior Density</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill Width over Thickness">Infill Width over Thickness</a><br />
 &nbsp;&nbsp;<a href="#Solid Surface Thickness">Solid Surface Thickness</a><br />
+&nbsp;&nbsp;<a href="#Start From Choice">Start From Choice</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Lower Left">Lower Left</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Nearest">Nearest</a><br />
 &nbsp;&nbsp;<a href="#Thread Sequence Choice">Thread Sequence Choice</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill &gt; Loops &gt; Perimeter">Infill &gt; Loops &gt; Perimeter</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Infill &gt; Perimeter &gt; Loops">Infill &gt; Perimeter &gt; Loops</a><br />
@@ -192,13 +194,6 @@ Default is 0.2.<br>
  <br>
 Defines the solidity of the infill, this is the most important setting in fill.  A value of one means the infill lines will be right beside each other, resulting in a solid, strong, heavy shape which takes a long time to extrude.  A low value means the infill will be sparse, the interior will be mosty empty space, the object will be weak, light and quick to build.<br>
  <br>
-<a name="Interior Infill Density over Exterior Density" id="Interior Infill Density over Exterior Density"></a><h4>Interior Infill Density over Exterior Density</h4>
-
-Default is 0.9.<br>
- <br>
-Defines the ratio of the infill density of the interior over the infill density of the exterior surfaces.  The exterior should have a high infill density, so that the surface will be strong and watertight.  With the interior infill density a bit lower than the exterior, the plastic will not fill up higher than the extruder nozzle.  If the interior density is too high that could happen, as Nophead described in the Hydraraptor "Bearing Fruit" post at:<br>
-<a href="http://hydraraptor.blogspot.com/2008/08/bearing-fruit.html">http://hydraraptor.blogspot.com/2008/08/bearing-fruit.html</a><br>
- <br>
 <a name="Infill Width over Thickness" id="Infill Width over Thickness"></a><h4>Infill Width over Thickness</h4>
 
 Default is 1.5.<br>
@@ -210,6 +205,21 @@ Defines the ratio of the infill width over the layer thickness.  The higher the 
 Default is three.<br>
  <br>
 Defines the number of solid layers that are at the bottom, top, plateaus and overhang.  With a value of zero, the entire object will be composed of a sparse infill, and water could flow right through it.  With a value of one, water will leak slowly through the surface and with a value of three, the object could be watertight.  The higher the solid surface thickness, the stronger and heavier the object will be.<br>
+ <br>
+<a name="Start From Choice" id="Start From Choice"></a><h3>Start From Choice</h3>
+
+Default is 'Lower Left'.<br>
+ <br>
+Defines where each layer starts from.<br>
+ <br>
+<a name="Lower Left" id="Lower Left"></a><h4>Lower Left</h4>
+
+When selected the layer will start from the lower left corner.  This is to extrude in round robin fashion so that the first extrusion will be deposited on the coolest part of the last layer.  The reason for this is described at:<br>
+<a href="http://hydraraptor.blogspot.com/2010/12/round-robin.html">http://hydraraptor.blogspot.com/2010/12/round-robin.html</a><br>
+ <br>
+<a name="Nearest" id="Nearest"></a><h4>Nearest</h4>
+
+When selected the layer will start from the nearest point to the end of the last layer.  This leads to less stringing, but the first extrusion will be deposited on the hottest part of the last layer which leads to melting problems.  So this option is deprecated, eventually this option will be removed and the layers will always start from the lower left.<br>
  <br>
 <a name="Thread Sequence Choice" id="Thread Sequence Choice"></a><h3>Thread Sequence Choice</h3>
 
@@ -289,7 +299,7 @@ The fill tool has created the file:<br>
 <a href="skeinforge_application.skeinforge_utilities.skeinforge_polyfile.html">skeinforge_application.skeinforge_utilities.skeinforge_polyfile</a><br>
 <a href="skeinforge_application.skeinforge_utilities.skeinforge_profile.html">skeinforge_application.skeinforge_utilities.skeinforge_profile</a><br>
 <a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.solids.trianglemesh.html">fabmetheus_utilities.geometry.solids.trianglemesh</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html">fabmetheus_utilities.geometry.solids.triangle_mesh</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -341,23 +351,17 @@ The fill tool has created the file:<br>
 
 <dl><dt><a name="FillSkein-addRemainingGridPoints"><strong>addRemainingGridPoints</strong></a>(self, arounds, gridPointInsetX, gridPointInsetY, gridPoints, isBothOrNone, paths, pixelTable, width)</dt><dd><tt>Add&nbsp;the&nbsp;remaining&nbsp;grid&nbsp;points&nbsp;to&nbsp;the&nbsp;grid&nbsp;point&nbsp;list.</tt></dd></dl>
 
-<dl><dt><a name="FillSkein-addRotatedCarve"><strong>addRotatedCarve</strong></a>(self, layerIndex, reverseRotation, surroundingCarves)</dt><dd><tt>Add&nbsp;a&nbsp;rotated&nbsp;carve&nbsp;to&nbsp;the&nbsp;surrounding&nbsp;carves.</tt></dd></dl>
+<dl><dt><a name="FillSkein-addRotatedCarve"><strong>addRotatedCarve</strong></a>(self, currentLayer, layerDelta, reverseRotation, surroundingCarves)</dt><dd><tt>Add&nbsp;a&nbsp;rotated&nbsp;carve&nbsp;to&nbsp;the&nbsp;surrounding&nbsp;carves.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-addThreadsBridgeLayer"><strong>addThreadsBridgeLayer</strong></a>(self, rotatedLayer, surroundingLoops)</dt><dd><tt>Add&nbsp;the&nbsp;threads,&nbsp;add&nbsp;the&nbsp;bridge&nbsp;end&nbsp;&amp;&nbsp;the&nbsp;layer&nbsp;end&nbsp;tag.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-addToThread"><strong>addToThread</strong></a>(self, location)</dt><dd><tt>Add&nbsp;a&nbsp;location&nbsp;to&nbsp;thread.</tt></dd></dl>
-
-<dl><dt><a name="FillSkein-getAreaChange"><strong>getAreaChange</strong></a>(self, area, layerIndex)</dt><dd><tt>Get&nbsp;the&nbsp;difference&nbsp;between&nbsp;the&nbsp;area&nbsp;of&nbsp;the&nbsp;carve&nbsp;at&nbsp;the&nbsp;layer&nbsp;index&nbsp;and&nbsp;the&nbsp;given&nbsp;area.</tt></dd></dl>
-
-<dl><dt><a name="FillSkein-getCarveArea"><strong>getCarveArea</strong></a>(self, layerIndex)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;of&nbsp;the&nbsp;carve.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;bevel&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-getGridPoints"><strong>getGridPoints</strong></a>(self, fillLoops, reverseRotation)</dt><dd><tt>Get&nbsp;the&nbsp;grid&nbsp;points.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-getGridPointsByLoops"><strong>getGridPointsByLoops</strong></a>(self, gridRotationAngle, loops)</dt><dd><tt>Get&nbsp;the&nbsp;grid&nbsp;points&nbsp;by&nbsp;loops.</tt></dd></dl>
-
-<dl><dt><a name="FillSkein-getIsDensitySolidityPositive"><strong>getIsDensitySolidityPositive</strong></a>(self)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;infillSolidity&nbsp;and&nbsp;infillInteriorDensityOverExteriorDensity&nbsp;are&nbsp;both&nbsp;positive.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-getLayerRotation"><strong>getLayerRotation</strong></a>(self, layerIndex)</dt><dd><tt>Get&nbsp;the&nbsp;layer&nbsp;rotation.</tt></dd></dl>
 
@@ -434,6 +438,7 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;gcode&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getExtraFillLoops"><strong>getExtraFillLoops</strong></a>(loops, radius)</dt><dd><tt>Get&nbsp;extra&nbsp;loops&nbsp;between&nbsp;inside&nbsp;and&nbsp;outside&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getKeyIsInPixelTableAddValue"><strong>getKeyIsInPixelTableAddValue</strong></a>(key, pathIndexTable, pixelTable)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;key&nbsp;is&nbsp;in&nbsp;the&nbsp;pixel&nbsp;table,&nbsp;and&nbsp;if&nbsp;it&nbsp;is&nbsp;and&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;None&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;path&nbsp;index&nbsp;table.</tt></dd></dl>
+ <dl><dt><a name="-getLowerLeftCorner"><strong>getLowerLeftCorner</strong></a>(surroundingLoops)</dt><dd><tt>Get&nbsp;the&nbsp;lower&nbsp;left&nbsp;corner&nbsp;from&nbsp;the&nbsp;surroundingLoops.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-getNonIntersectingGridPointLine"><strong>getNonIntersectingGridPointLine</strong></a>(gridPointInsetX, isJunctionWide, paths, pixelTable, yIntersectionPath, width)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;around&nbsp;the&nbsp;grid&nbsp;point&nbsp;that&nbsp;is&nbsp;junction&nbsp;wide&nbsp;that&nbsp;do&nbsp;not&nbsp;intersect.</tt></dd></dl>
  <dl><dt><a name="-getPlusMinusSign"><strong>getPlusMinusSign</strong></a>(number)</dt><dd><tt>Get&nbsp;one&nbsp;if&nbsp;the&nbsp;number&nbsp;is&nbsp;zero&nbsp;or&nbsp;positive&nbsp;else&nbsp;negative&nbsp;one.</tt></dd></dl>

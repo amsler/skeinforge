@@ -3,5 +3,5 @@
 	<function id="triple" parameters='vector3'>
 		<return return='vector3.x*3'/>
 	</function>
-	<dictionary tripleSeven='=triple(euclid.Vector3(1,2,3))'/>
+	<dictionary tripleOne='=triple(euclid.Vector3(1,2,3))'/>
 </fabmetheus>

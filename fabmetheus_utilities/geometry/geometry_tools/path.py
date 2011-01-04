@@ -9,7 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import dictionary
 from fabmetheus_utilities.geometry.geometry_tools import vertex
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -98,6 +98,10 @@ class Path(dictionary.Dictionary):
 		carving.processSVGElement(self.xmlElement.getRoot().parser.fileName)
 		return str(carving)
 
+	def getMatrix4X4(self):
+		"Get the matrix4X4."
+		return self.matrix4X4
+
 	def getMatrixChainTetragrid(self):
 		'Get the matrix chain tetragrid.'
 		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).tetragrid
@@ -185,8 +189,8 @@ class SVGFabricationCarving:
 		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
 		svg_writer.setSVGCarvingCorners(self.cornerMaximum, self.cornerMinimum, self.layerThickness, self.rotatedLoopLayers)
 
-	def setCarveBridgeLayerThickness( self, bridgeLayerThickness ):
-		'Set the bridge layer thickness.  If the infill is not in the direction of the bridge, the bridge layer thickness should be given as None or not set at all.'
+	def setCarveInfillInDirectionOfBridge( self, infillInDirectionOfBridge ):
+		'Set the infill in direction of bridge.'
 		pass
 
 	def setCarveLayerThickness( self, layerThickness ):

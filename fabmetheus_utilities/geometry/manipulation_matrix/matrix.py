@@ -24,24 +24,6 @@ __license__ = 'GPL 3.0'
 globalExecutionOrder = 300
 
 
-def addConnectionVertexes(connectionVertexes, geometryOutput):
-	'Add the connections and vertexes.'
-	if geometryOutput.__class__ == list:
-		for element in geometryOutput:
-			addConnectionVertexes(connectionVertexes, element)
-		return
-	if geometryOutput.__class__ != dict:
-		return
-	for geometryOutputKey in geometryOutput.keys():
-		geometryOutputValue = geometryOutput[geometryOutputKey]
-		if geometryOutputKey == 'connectionStart' or geometryOutputKey == 'connectionEnd':
-			connectionVertexes.append(geometryOutputValue)
-		elif geometryOutputKey == 'vertex':
-			for vertex in geometryOutputValue:
-				connectionVertexes.append(vertex)
-		else:
-			addConnectionVertexes(connectionVertexes, geometryOutputValue)
-
 def addVertexes(geometryOutput, vertexes):
 	'Add the vertexes.'
 	if geometryOutput.__class__ == list:
@@ -57,12 +39,6 @@ def addVertexes(geometryOutput, vertexes):
 				vertexes.append(vertex)
 		else:
 			addVertexes(geometryOutputValue, vertexes)
-
-def getConnectionVertexes(geometryOutput):
-	'Get the connections and vertexes.'
-	connectionVertexes = []
-	addConnectionVertexes(connectionVertexes, geometryOutput)
-	return connectionVertexes
 
 def getCumulativeVector3Remove(prefix, vector3, xmlElement):
 	'Get cumulative vector3 and delete the prefixed attributes.'
@@ -97,7 +73,9 @@ def getFromObjectOrXMLElement(xmlElement):
 	'Get matrix starting from the object if it exists, otherwise get a matrix starting from stratch.'
 	xmlElementMatrix = None
 	if xmlElement.object != None:
-		xmlElementMatrix = xmlElement.object.matrix4X4
+		xmlElementMatrix = xmlElement.object.getMatrix4X4()
+		if xmlElementMatrix == None:
+			return None
 	else:
 		xmlElementMatrix = Matrix()
 	return xmlElementMatrix.getFromXMLElement('matrix.', xmlElement)
@@ -136,7 +114,7 @@ def getKeysM(prefix=''):
 
 def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
 	'Get equated geometryOutput.'
-	matrixPoints(getConnectionVertexes(geometryOutput), prefix, xmlElement)
+	matrixPoints(getVertexes(geometryOutput), prefix, xmlElement)
 	return geometryOutput
 
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
@@ -241,7 +219,7 @@ def getTetragridA(prefix, tetragrid, xmlElement):
 				else:
 					tetragrid = getIdentityTetragrid(tetragrid)
 					tetragrid[row][column] = float(value)
-	euclidean.removeListFromDictionary(xmlElement.attributeDictionary, keysA)
+	euclidean.removeElementsFromDictionary(xmlElement.attributeDictionary, keysA)
 	return tetragrid
 
 def getTetragridC(prefix, tetragrid, xmlElement):
@@ -261,7 +239,7 @@ def getTetragridC(prefix, tetragrid, xmlElement):
 				tetragrid = getIdentityTetragrid(tetragrid)
 				for elementIndex, element in enumerate(value):
 					tetragrid[elementIndex][columnKeyIndex] = element
-	euclidean.removeListFromDictionary(xmlElement.attributeDictionary, columnKeys)
+	euclidean.removeElementsFromDictionary(xmlElement.attributeDictionary, columnKeys)
 	return tetragrid
 
 def getTetragridCopy(tetragrid):
@@ -289,7 +267,7 @@ def getTetragridM(prefix, tetragrid, xmlElement):
 				else:
 					tetragrid = getIdentityTetragrid(tetragrid)
 					tetragrid[row][column] = float(value)
-	euclidean.removeListFromDictionary(xmlElement.attributeDictionary, keysM)
+	euclidean.removeElementsFromDictionary(xmlElement.attributeDictionary, keysM)
 	return tetragrid
 
 def getTetragridMatrix(prefix, tetragrid, xmlElement):
@@ -308,7 +286,7 @@ def getTetragridMatrix(prefix, tetragrid, xmlElement):
 		for rowIndex, row in enumerate(value):
 			for elementIndex, element in enumerate(row):
 				tetragrid[rowIndex][elementIndex] = element
-	euclidean.removeListFromDictionary(xmlElement.attributeDictionary, [matrixKey])
+	euclidean.removeElementsFromDictionary(xmlElement.attributeDictionary, [matrixKey])
 	return tetragrid
 
 def getTetragridR(prefix, tetragrid, xmlElement):
@@ -328,7 +306,7 @@ def getTetragridR(prefix, tetragrid, xmlElement):
 				tetragrid = getIdentityTetragrid(tetragrid)
 				for elementIndex, element in enumerate(value):
 					tetragrid[rowKeyIndex][elementIndex] = element
-	euclidean.removeListFromDictionary(xmlElement.attributeDictionary, rowKeys)
+	euclidean.removeElementsFromDictionary(xmlElement.attributeDictionary, rowKeys)
 	return tetragrid
 
 def getTetragridTimesOther(firstTetragrid, otherTetragrid ):
@@ -405,6 +383,8 @@ def processXMLElement(xmlElement):
 
 def setAttributeDictionaryToMatrix(attributeDictionary, matrix4X4):
 	'Set the attribute dictionary to the matrix.'
+	if matrix4X4 == None:
+		return
 	tetragrid = getIdentityTetragrid(matrix4X4.tetragrid)
 	for row in xrange(4):
 		for column in xrange(4):
@@ -424,6 +404,8 @@ def setAttributeDictionaryToMultipliedTetragrid(tetragrid, xmlElement):
 
 def setXMLElementDictionaryToOtherElementDictionary(fromXMLElement, matrix4X4, prefix, xmlElement):
 	'Set the xml element to the matrix attribute dictionary.'
+	if matrix4X4 == None:
+		return
 	matrix4X4.getFromXMLElement(prefix, fromXMLElement)
 	setAttributeDictionaryToMatrix(xmlElement.attributeDictionary, matrix4X4)
 

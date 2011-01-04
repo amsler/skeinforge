@@ -57,7 +57,7 @@ import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_solid
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
@@ -71,16 +71,16 @@ import sys
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/28/04 $"
+__date__ = '$Date: 2008/28/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, text = '', repository=None):
-	"Widen the preface file or text."
+def getCraftedText(fileName, text='', repository=None):
+	'Widen the preface file or text.'
 	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
 
 def getCraftedTextFromText(gcodeText, repository=None):
-	"Widen the preface gcode text."
+	'Widen the preface gcode text.'
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'widen'):
 		return gcodeText
 	if repository == None:
@@ -90,7 +90,7 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return WidenSkein().getCraftedGcode(gcodeText, repository)
 
 def getIntersectingWithinLoops(loop, loopList, outsetLoop):
-	"Get the loops which are intersecting or which it is within."
+	'Get the loops which are intersecting or which it is within.'
 	intersectingWithinLoops = []
 	for otherLoop in loopList:
 		if getIsIntersectingWithinLoop(loop, otherLoop, outsetLoop):
@@ -98,24 +98,24 @@ def getIntersectingWithinLoops(loop, loopList, outsetLoop):
 	return intersectingWithinLoops
 
 def getIsIntersectingWithinLoop(loop, otherLoop, outsetLoop):
-	"Determine if the loop is intersecting or is within the other loop."
+	'Determine if the loop is intersecting or is within the other loop.'
 	if euclidean.isLoopIntersectingLoop(loop, otherLoop):
 		return True
 	return euclidean.isPathInsideLoop(otherLoop, loop) != euclidean.isPathInsideLoop(otherLoop, outsetLoop)
 
 def getIsPointInsideALoop(loops, point):
-	"Determine if a point is inside a loop of a loop list."
+	'Determine if a point is inside a loop of a loop list.'
 	for loop in loops:
 		if euclidean.isPointInsideLoop(loop, point):
 			return True
 	return False
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get the repository constructor.'
 	return WidenRepository()
 
 def getWidenedLoop(loop, loopList, outsetLoop, radius):
-	"Get the widened loop."
+	'Get the widened loop.'
 	intersectingWithinLoops = getIntersectingWithinLoops(loop, loopList, outsetLoop)
 	if len(intersectingWithinLoops) < 1:
 		return loop
@@ -125,31 +125,34 @@ def getWidenedLoop(loop, loopList, outsetLoop, radius):
 	return euclidean.getLargestLoop(loopsUnified)
 
 def writeOutput(fileName=''):
-	"Widen the carving of a gcode file."
+	'Widen the carving of a gcode file.'
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
 		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'widen')
 
 
 class WidenRepository:
-	"A class to handle the widen settings."
+	'A class to handle the widen settings.'
 	def __init__(self):
-		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.widen.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Widen', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Widen')
-		self.activateWiden = settings.BooleanSetting().getFromValue('Activate Widen:', self, False )
+		'Set the default settings, execute title & settings fileName.'
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.widen.html', self)
+		self.fileNameInput = settings.FileNameInput().getFromFileName(
+			fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Widen', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute(
+			'http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Widen')
+		self.activateWiden = settings.BooleanSetting().getFromValue('Activate Widen:', self, False)
 		self.executeTitle = 'Widen'
 
 	def execute(self):
-		"Widen button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
+		'Widen button has been clicked.'
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(
+			self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
 
 class WidenSkein:
-	"A class to widen a skein of extrusions."
+	'A class to widen a skein of extrusions.'
 	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
@@ -158,8 +161,8 @@ class WidenSkein:
 		self.rotatedLoopLayer = None
 
 	def addWiden(self, rotatedLoopLayer):
-		"Add widen to the layer."
-		trianglemesh.sortLoopsInOrderOfArea(False, rotatedLoopLayer.loops)
+		'Add widen to the layer.'
+		triangle_mesh.sortLoopsInOrderOfArea(False, rotatedLoopLayer.loops)
 		widdershinsLoops = []
 		clockwiseInsetLoops = []
 		for loopIndex in xrange(len(rotatedLoopLayer.loops)):
@@ -183,7 +186,7 @@ class WidenSkein:
 			self.distanceFeedRate.addGcodeFromLoop(widenedLoop, rotatedLoopLayer.z)
 
 	def getCraftedGcode(self, gcodeText, repository):
-		"Parse gcode text and store the widen gcode."
+		'Parse gcode text and store the widen gcode.'
 		self.repository = repository
 		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
@@ -209,7 +212,7 @@ class WidenSkein:
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine(self, line):
-		"Parse a gcode line and add it to the widen skein."
+		'Parse a gcode line and add it to the widen skein.'
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len(splitLine) < 1:
 			return
@@ -227,16 +230,16 @@ class WidenSkein:
 		elif firstWord == '(<surroundingLoop>)':
 			self.boundary = []
 			self.rotatedLoopLayer.loops.append( self.boundary )
-		if self.rotatedLoopLayer == None:
+		if self.rotatedLoopLayer == None or firstWord == '(<bridgeRotation>':
 			self.distanceFeedRate.addLine(line)
 
 
 def main():
-	"Display the widen dialog."
+	'Display the widen dialog.'
 	if len(sys.argv) > 1:
 		writeOutput(' '.join(sys.argv[1 :]))
 	else:
-		settings.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor(getNewRepository())
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main()

@@ -79,7 +79,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
@@ -252,7 +252,7 @@ class MillSkein:
 		boundaryLayer.innerLoops = []
 		boundaryLayer.outerLoops = []
 		millRadius = 0.75 * self.millWidth
-		loops = trianglemesh.getDescendingAreaLoops(betweenPoints, betweenPoints, millRadius)
+		loops = triangle_mesh.getDescendingAreaLoops(betweenPoints, betweenPoints, millRadius)
 		for loop in loops:
 			if isPointOfTableInLoop( loop, innerPointTable ):
 				boundaryLayer.innerLoops.append(loop)
@@ -322,7 +322,7 @@ class MillSkein:
 			elif firstWord == '(<layer>':
 				boundaryLayer = euclidean.LoopLayer(float(splitLine[1]))
 				self.boundaryLayers.append(boundaryLayer)
-		if len( self.boundaryLayers ) < 2:
+		if len(self.boundaryLayers) < 2:
 			return
 		for boundaryLayer in self.boundaryLayers:
 			boundaryLayer.innerOutsetLoops = intercircle.getInsetSeparateLoopsFromLoops( - self.loopInnerOutset, boundaryLayer.loops )
@@ -331,18 +331,18 @@ class MillSkein:
 			boundaryLayer.outerHorizontalTable = self.getHorizontalXIntersectionsTable( boundaryLayer.outerOutsetLoops )
 			boundaryLayer.innerVerticalTable = self.getHorizontalXIntersectionsTable( euclidean.getDiagonalFlippedLoops( boundaryLayer.innerOutsetLoops ) )
 			boundaryLayer.outerVerticalTable = self.getHorizontalXIntersectionsTable( euclidean.getDiagonalFlippedLoops( boundaryLayer.outerOutsetLoops ) )
-		for boundaryLayerIndex in xrange( len( self.boundaryLayers ) - 2, - 1, - 1 ):
+		for boundaryLayerIndex in xrange( len(self.boundaryLayers) - 2, - 1, - 1 ):
 			boundaryLayer = self.boundaryLayers[ boundaryLayerIndex ]
 			boundaryLayerBelow = self.boundaryLayers[ boundaryLayerIndex + 1 ]
 			euclidean.joinXIntersectionsTables( boundaryLayerBelow.outerHorizontalTable, boundaryLayer.outerHorizontalTable )
 			euclidean.joinXIntersectionsTables( boundaryLayerBelow.outerVerticalTable, boundaryLayer.outerVerticalTable )
-		for boundaryLayerIndex in xrange( 1, len( self.boundaryLayers ) ):
+		for boundaryLayerIndex in xrange( 1, len(self.boundaryLayers) ):
 			boundaryLayer = self.boundaryLayers[ boundaryLayerIndex ]
 			boundaryLayerAbove = self.boundaryLayers[ boundaryLayerIndex - 1 ]
 			euclidean.joinXIntersectionsTables( boundaryLayerAbove.innerHorizontalTable, boundaryLayer.innerHorizontalTable )
 			euclidean.joinXIntersectionsTables( boundaryLayerAbove.innerVerticalTable, boundaryLayer.innerVerticalTable )
-		for boundaryLayerIndex in xrange( len( self.boundaryLayers ) ):
-			self.addSegmentTableLoops( boundaryLayerIndex )
+		for boundaryLayerIndex in xrange( len(self.boundaryLayers) ):
+			self.addSegmentTableLoops(boundaryLayerIndex)
 
 	def parseInitialization(self):
 		'Parse gcode initialization and store the parameters.'
@@ -385,7 +385,7 @@ class MillSkein:
 			self.aroundPixelTable = {}
 			self.average.reset()
 		elif firstWord == '(</layer>)':
-			if len( self.boundaryLayers ) > self.layerIndex:
+			if len(self.boundaryLayers) > self.layerIndex:
 				self.addMillThreads()
 			self.layerIndex += 1
 		self.distanceFeedRate.addLine(line)

@@ -60,8 +60,8 @@ def getGeometryOutputByFunction(geometryFunction, xmlElement):
 def getGeometryOutputByManipulation(geometryOutput, xmlElement):
 	'Get geometryOutput manipulated by the plugins in the manipulation shapes & solids folders.'
 	xmlProcessor = xmlElement.getXMLProcessor()
-#	matchingPlugins = evaluate.getFromCreationEvaluatorPlugins(xmlProcessor.manipulationEvaluatorDictionary, xmlElement)
-	matchingPlugins = evaluate.getMatchingPlugins(xmlProcessor.manipulationEvaluatorDictionary, xmlElement)
+#	matchingPlugins = evaluate.getFromCreationEvaluatorPlugins(xmlProcessor.manipulationMatrixDictionary, xmlElement)
+	matchingPlugins = evaluate.getMatchingPlugins(xmlProcessor.manipulationMatrixDictionary, xmlElement)
 	matchingPlugins += evaluate.getMatchingPlugins(xmlProcessor.manipulationShapeDictionary, xmlElement)
 	matchingPlugins.sort(evaluate.compareExecutionOrderAscending)
 	for matchingPlugin in matchingPlugins:
@@ -91,7 +91,7 @@ def processXMLElementByFunction(manipulationFunction, xmlElement):
 	if target.__class__.__name__ == 'XMLElement':
 		manipulationFunction(target, xmlElement)
 		return
-	lineation.processXMLElementByGeometry(target, xmlElement)
+	path.convertXMLElement(target, xmlElement)
 	manipulationFunction(xmlElement, xmlElement)
 
 def processXMLElementByFunctions(geometryFunction, pathFunction, xmlElement):

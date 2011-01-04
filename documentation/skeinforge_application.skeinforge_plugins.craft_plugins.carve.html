@@ -24,10 +24,9 @@ On the Arcol Blog a method of deriving the layer thickness is posted.  That arti
 <br />
 <a href="#Settings">Settings</a><br />
 &nbsp;&nbsp;<a href="#Add Layer Template to SVG">Add Layer Template to SVG</a><br />
-&nbsp;&nbsp;<a href="#Bridge Thickness Multiplier">Bridge Thickness Multiplier</a><br />
 &nbsp;&nbsp;<a href="#Extra Decimal Places">Extra Decimal Places</a><br />
 &nbsp;&nbsp;<a href="#Import Coarseness">Import Coarseness</a><br />
-&nbsp;&nbsp;<a href="#Infill in Direction of Bridges">Infill in Direction of Bridges</a><br />
+&nbsp;&nbsp;<a href="#Infill in Direction of Bridge">Infill in Direction of Bridge</a><br />
 &nbsp;&nbsp;<a href="#Layer Thickness">Layer Thickness</a><br />
 &nbsp;&nbsp;<a href="#Layers">Layers</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Layers From">Layers From</a><br />
@@ -50,12 +49,6 @@ When selected, the layer template will be added to the svg output, which adds ja
  <br>
 When off, no controls will be added, the svg output will only include the fabrication paths.  So 'Add Layer Template to SVG' should be deselected when the svg will be used by other software, like Inkscape.<br>
  <br>
-<a name="Bridge Thickness Multiplier" id="Bridge Thickness Multiplier"></a><h3>Bridge Thickness Multiplier</h3>
-
-Default is one.<br>
- <br>
-Defines the the ratio of the thickness on the bridge layers over the thickness of the typical non bridge layers.<br>
- <br>
 <a name="Extra Decimal Places" id="Extra Decimal Places"></a><h3>Extra Decimal Places</h3>
 
 Default is two.<br>
@@ -68,11 +61,11 @@ Default is one.<br>
  <br>
 When a triangle mesh has holes in it, the triangle mesh slicer switches over to a slow algorithm that spans gaps in the mesh.  The higher the 'Import Coarseness' setting, the wider the gaps in the mesh it will span.  An import coarseness of one means it will span gaps of the perimeter width.<br>
  <br>
-<a name="Infill in Direction of Bridges" id="Infill in Direction of Bridges"></a><h3>Infill in Direction of Bridges</h3>
+<a name="Infill in Direction of Bridge" id="Infill in Direction of Bridge"></a><h3>Infill in Direction of Bridge</h3>
 
 Default is on.<br>
  <br>
-When selected, the infill will be in the direction of bridges across gaps, so that the fill will be able to span a bridge easier.<br>
+When selected, the infill will be in the direction of any bridge across a gap, so that the fill will be able to span a bridge easier.<br>
  <br>
 <a name="Layer Thickness" id="Layer Thickness"></a><h3>Layer Thickness</h3>
 

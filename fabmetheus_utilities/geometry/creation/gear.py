@@ -407,10 +407,12 @@ import __init__
 from fabmetheus_utilities.geometry.creation import extrude
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.creation import shaft
+from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.creation import teardrop
+from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
@@ -463,7 +465,7 @@ def addBevelGear(derivation, extrudeDerivation, pitchRadius, positives, teeth, v
 	firstLoopList.append(topAddition)
 	translation = Vector3(0.0, 0.0, -euclidean.getBottomPaths(firstLoopList))
 	euclidean.translateVector3Paths(firstLoopList, translation)
-	geometryOutput = trianglemesh.getPillarsOutput(loopLists)
+	geometryOutput = triangle_mesh.getPillarsOutput(loopLists)
 	positives.append(geometryOutput)
 
 def addBottomLoop(deltaZ, loops):
@@ -669,10 +671,10 @@ def getGeometryOutput(derivation, xmlElement):
 			xmlElement)
 	if creationFirst == 'c':
 		return extrudeOutputSecond
-	gearVertexes = matrix.getConnectionVertexes(extrudeOutputSecond)
+	gearVertexes = matrix.getVertexes(extrudeOutputSecond)
 	if moveFirst == 'v':
 		translation = Vector3(0.0, 0.0, euclidean.getTopPath(gearVertexes))
-		euclidean.translateVector3Path(matrix.getConnectionVertexes(extrudeOutputPinion), translation)
+		euclidean.translateVector3Path(matrix.getVertexes(extrudeOutputPinion), translation)
 	else:
 		euclidean.translateVector3Path(gearVertexes, translation)
 	return {'group' : {'shapes' : [extrudeOutputPinion, extrudeOutputSecond]}}
@@ -712,7 +714,7 @@ def getLiftedOutput(derivation, geometryOutput, xmlElement):
 	"Get extrude output for a rack."
 	if derivation.moveType.lower()[: 1] == 'm':
 		return geometryOutput
-	geometryOutputVertexes = matrix.getConnectionVertexes(geometryOutput)
+	geometryOutputVertexes = matrix.getVertexes(geometryOutput)
 	translation = Vector3(0.0, 0.0, -euclidean.getBottomPath(geometryOutputVertexes))
 	euclidean.translateVector3Path(geometryOutputVertexes, translation)
 	return geometryOutput
@@ -771,24 +773,24 @@ def getOutputCylinder(
 	if derivation.operatingAngle != 180.0:
 		addBevelGear(derivation, extrudeDerivation, pitchRadius, positives, teeth, vector3GearProfile)
 		addCollarShaft(collarThickness, derivation, negatives, positives, xmlElement)
-		return extrude.getGeometryOutputByNegativesPositives(extrudeDerivation, negatives, positives, xmlElement)
+		return extrude.getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement)
 	if pitchRadius > 0:
 		extrude.addNegativesPositives(extrudeDerivation, negatives, vector3GearProfile, positives)
 		addLighteningHoles(derivation, gearHolePaths, negatives, pitchRadius, positives)
 		addCollarShaft(collarThickness, derivation, negatives, positives, xmlElement)
-		return extrude.getGeometryOutputByNegativesPositives(extrudeDerivation, negatives, positives, xmlElement)
+		return extrude.getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement)
 	if derivation.plateThickness <= 0.0:
 		extrude.addNegativesPositives(extrudeDerivation, negatives, vector3GearProfile, positives)
-		return extrude.getGeometryOutputByNegativesPositives(extrudeDerivation, negatives, positives, xmlElement)
+		return extrude.getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement)
 	portionDirections = extrude.getSpacedPortionDirections(extrudeDerivation.interpolationDictionary)
 	outerGearProfile = vector3GearProfile[0]
 	outerLoopLists = extrude.getLoopListsByPath(extrudeDerivation, None, outerGearProfile, portionDirections)
 	addBottomLoop(-derivation.plateClearance, outerLoopLists[0])
-	geometryOutput = trianglemesh.getPillarsOutput(outerLoopLists)
+	geometryOutput = triangle_mesh.getPillarsOutput(outerLoopLists)
 	positives.append(geometryOutput)
 	innerLoopLists = extrude.getLoopListsByPath(extrudeDerivation, None, vector3GearProfile[1], portionDirections)
 	addBottomLoop(-derivation.plateClearance, innerLoopLists[0])
-	geometryOutput = trianglemesh.getPillarsOutput(innerLoopLists)
+	geometryOutput = triangle_mesh.getPillarsOutput(innerLoopLists)
 	negatives.append(geometryOutput)
 	connectionStart = Vector3(0.0, 0.0, -derivation.plateThickness)
 	copyShallow = derivation.xmlElement.getCopyShallow()
@@ -798,11 +800,10 @@ def getOutputCylinder(
 	vector3LighteningHoles = getLighteningHoles(derivation, gearHolePaths, pitchRadius)
 	extrude.addNegativesPositives(plateDerivation, negatives, vector3LighteningHoles, positives)
 	addShaft(derivation, negatives, positives)
-	connectionEnd = Vector3(0.0, 0.0, derivation.thickness)
-	positiveOutput = trianglemesh.getUnifiedOutput(positives)
+	positiveOutput = triangle_mesh.getUnifiedOutput(positives)
 	annulusPlateOutput = {'difference' : {'shapes' : [positiveOutput] + negatives}}
 	if collarThickness <= 0.0:
-		outputCylinder = extrude.getGeometryOutputByConnection(connectionEnd, connectionStart, annulusPlateOutput, xmlElement)
+		outputCylinder = solid.getGeometryOutputByManipulation(annulusPlateOutput, xmlElement)
 		return getLiftedOutput(derivation, outputCylinder, xmlElement)
 	negatives = []
 	positives = []
@@ -813,7 +814,7 @@ def getOutputCylinder(
 	addCollarShaftSetDerivation(collarDerivation, collarThickness, derivation, negatives, positives, xmlElement)
 	collarOutput = {'difference' : {'shapes' : positives + negatives}}
 	cylinderOutput = {'union' : {'shapes' : [annulusPlateOutput, collarOutput]}}
-	outputCylinder = extrude.getGeometryOutputByConnection(connectionEnd, connectionStart, cylinderOutput, xmlElement)
+	outputCylinder = solid.getGeometryOutputByManipulation(cylinderOutput, xmlElement)
 	return getLiftedOutput(derivation, outputCylinder, xmlElement)
 
 def getOutputRack(derivation, vector3GearProfile, xmlElement):
@@ -853,7 +854,7 @@ def getOutputRack(derivation, vector3GearProfile, xmlElement):
 		vector3RackProfiles.append(rightNegative)
 	addRackHoles(derivation, vector3RackProfiles, xmlElement)
 	extrude.addNegativesPositives(extrudeDerivation, negatives, vector3RackProfiles, positives)
-	return extrude.getGeometryOutputByNegativesPositives(extrudeDerivation, negatives, positives, xmlElement)
+	return extrude.getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement)
 
 def getPathOutput(creationFirst, derivation, translation, vector3ComplementPaths, vector3PinionProfile, xmlElement):
 	"Get gear path output."
@@ -1018,10 +1019,9 @@ def processXMLElement(xmlElement):
 	"Process the xml element."
 	geometryOutput = getGeometryOutput(None, xmlElement)
 	if geometryOutput.__class__ == list:
-		lineation.processXMLElementByGeometry(geometryOutput, xmlElement)
+		path.convertXMLElement(geometryOutput, xmlElement)
 	else:
-		xmlElement.getXMLProcessor().convertXMLElement(geometryOutput, xmlElement)
-		xmlElement.getXMLProcessor().processXMLElement(xmlElement)
+		solid.processXMLElementByGeometry(geometryOutput, xmlElement)
 
 
 class GearDerivation:
@@ -1073,7 +1073,7 @@ class GearDerivation:
 		self.thickness = evaluate.getEvaluatedFloatDefault(10.0, 'thickness', xmlElement)
 		# tooth multiplied by 0.99999 to avoid an intersection
 		self.toothWidthMultiplier = evaluate.getEvaluatedFloatDefault(0.99999, 'toothWidthMultiplier', xmlElement)
-		# Set absolute variables.
+		# Set derived variables.
 		self.wavelength = self.pitchRadius * 2.0 * math.pi / float(self.teethPinion)
 		self.clearance = self.wavelength * self.clearanceOverWavelength
 		self.clearance = evaluate.getEvaluatedFloatDefault(self.clearance, 'clearance', xmlElement)

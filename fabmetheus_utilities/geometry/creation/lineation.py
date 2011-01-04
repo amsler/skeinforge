@@ -7,7 +7,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
@@ -126,28 +126,10 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	'Get vector3 vertexes from attribute dictionary by arguments.'
 	return getGeometryOutput(None, xmlElement)
 
-def getGeometryOutputByFunction(manipulationFunction, xmlElement):
-	'Get geometry output by manipulationFunction.'
-	if xmlElement.object == None:
-		print('Warning, there is no object in getGeometryOutputByFunction in lineation for:')
-		print(xmlElement)
-		return
-	geometryOutput = []
-	transformedPaths = xmlElement.object.getTransformedPaths()
-	for transformedPath in transformedPaths:
-		geometryOutput += getGeometryOutputByLoopFunction(manipulationFunction, SideLoop(transformedPath), xmlElement)
-	return geometryOutput
-
 def getGeometryOutputByLoop( sideLoop, xmlElement ):
 	'Get geometry output by side loop.'
 	sideLoop.rotate(xmlElement)
 	return getGeometryOutputByManipulation( sideLoop, xmlElement )
-
-def getGeometryOutputByLoopFunction( manipulationFunction, sideLoop, xmlElement ):
-	'Get geometry output by side loop.'
-	sideLoop.rotate(xmlElement)
-	sideLoop.loop = euclidean.getLoopWithoutCloseSequentialPoints( sideLoop.close, sideLoop.loop )
-	return manipulationFunction( sideLoop.close, sideLoop.loop, '', sideLoop.sideLength, xmlElement )
 
 def getGeometryOutputByManipulation( sideLoop, xmlElement ):
 	'Get geometry output by manipulation.'
@@ -192,7 +174,21 @@ def getStrokeRadiusByPrefix(prefix, xmlElement):
 
 def processTargetByFunction(manipulationFunction, target):
 	'Process the target by the manipulationFunction.'
-	geometryOutput = getGeometryOutputByFunction(manipulationFunction, target)
+	if target.object == None:
+		print('Warning, there is no object in processTargetByFunction in lineation for:')
+		print(target)
+		return
+	geometryOutput = []
+	transformedPaths = target.object.getTransformedPaths()
+	for transformedPath in transformedPaths:
+		sideLoop = SideLoop(transformedPath)
+		sideLoop.rotate(target)
+		sideLoop.loop = euclidean.getLoopWithoutCloseSequentialPoints( sideLoop.close, sideLoop.loop )
+		geometryOutput += manipulationFunction( sideLoop.close, sideLoop.loop, '', sideLoop.sideLength, target )
+	if len(geometryOutput) < 1:
+		print('Warning, there is no geometryOutput in processTargetByFunction in lineation for:')
+		print(target)
+		return
 	removeChildrenFromElementObject(target)
 	path.convertXMLElement(geometryOutput, target)
 
@@ -205,10 +201,6 @@ def processXMLElementByFunction(manipulationFunction, xmlElement):
 	targets = evaluate.getXMLElementsByKey('target', xmlElement)
 	for target in targets:
 		processTargetByFunction(manipulationFunction, target)
-
-def processXMLElementByGeometry(geometryOutput, xmlElement):
-	'Process the xml element by geometryOutput.'
-	path.convertXMLElement(geometryOutput, xmlElement)
 
 def removeChildrenFromElementObject(xmlElement):
 	'Process the xml element by manipulationFunction.'
@@ -259,8 +251,8 @@ class SideLoop:
 	def getManipulationPluginLoops(self, xmlElement):
 		'Get loop manipulated by the plugins in the manipulation paths folder.'
 		xmlProcessor = xmlElement.getXMLProcessor()
-#		matchingPlugins = evaluate.getFromCreationEvaluatorPlugins(xmlProcessor.manipulationEvaluatorDictionary, xmlElement)
-		matchingPlugins = evaluate.getMatchingPlugins(xmlProcessor.manipulationEvaluatorDictionary, xmlElement)
+#		matchingPlugins = evaluate.getFromCreationEvaluatorPlugins(xmlProcessor.manipulationMatrixDictionary, xmlElement)
+		matchingPlugins = evaluate.getMatchingPlugins(xmlProcessor.manipulationMatrixDictionary, xmlElement)
 		matchingPlugins += evaluate.getMatchingPlugins(xmlProcessor.manipulationPathDictionary, xmlElement)
 		matchingPlugins += evaluate.getMatchingPlugins(xmlProcessor.manipulationShapeDictionary, xmlElement)
 		matchingPlugins.sort(evaluate.compareExecutionOrderAscending)

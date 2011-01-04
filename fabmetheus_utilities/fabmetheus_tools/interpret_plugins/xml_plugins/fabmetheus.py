@@ -62,13 +62,13 @@ class XMLBooleanGeometryProcessor():
 	def __init__(self):
 		"Initialize processor."
 		self.functions = []
-		self.manipulationEvaluatorDictionary = archive.getGeometryDictionary('manipulation_evaluator')
+		self.manipulationMatrixDictionary = archive.getGeometryDictionary('manipulation_matrix')
 		self.manipulationPathDictionary = archive.getGeometryDictionary('manipulation_paths')
 		self.manipulationShapeDictionary = archive.getGeometryDictionary('manipulation_shapes')
 		self.namePathDictionary = {}
 		self.namePathDictionary.update(evaluate.globalCreationDictionary)
-		self.namePathDictionary.update(archive.getGeometryDictionary('manipulation'))
-		self.namePathDictionary.update(self.manipulationEvaluatorDictionary)
+		self.namePathDictionary.update(archive.getGeometryDictionary('manipulation_meta'))
+		self.namePathDictionary.update(self.manipulationMatrixDictionary)
 		self.namePathDictionary.update(self.manipulationPathDictionary)
 		self.namePathDictionary.update(self.manipulationShapeDictionary)
 		archive.addToNamePathDictionary(archive.getGeometryToolsPath(), self.namePathDictionary)

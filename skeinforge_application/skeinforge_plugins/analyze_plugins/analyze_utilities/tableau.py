@@ -708,8 +708,7 @@ class TableauWindow:
 		self.repository.line.value = min(self.repository.line.value, len(coloredLines) - 1)
 		gcodeString = ''
 		if self.repository.showGcode.value:
-			gcodeString = coloredLines[self.repository.line.value].displayString
-#			gcodeString ='Gcode: ' + coloredLines[self.repository.line.value].displayString
+			gcodeString = coloredLines[self.repository.line.value].displayString.replace(' G', ': G')
 		self.gcodeStringVar.set(gcodeString)
 		self.canvas.delete('selection_line')
 		self.getDrawnSelectedColoredLine(coloredLines[self.repository.line.value])

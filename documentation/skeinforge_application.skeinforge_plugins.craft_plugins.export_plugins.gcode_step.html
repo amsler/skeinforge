@@ -29,8 +29,9 @@ The getOutput function of this script takes a gcode text and returns it with the
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#X Offset">X Offset</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Y Offset">Y Offset</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Z Offset">Z Offset</a><br />
-&nbsp;&nbsp;<a href="#Radius Rate Step Length">Radius Rate Step Length</a><br />
 &nbsp;&nbsp;<a href="#Step Length">Step Length</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#E Step Length">E Step Length</a><br />
+&nbsp;&nbsp;<a href="#Radius Rate Step Length">Radius Rate Step Length</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#X Step Length">X Step Length</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Y Step Length">Y Step Length</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Z Step Length">Z Step Length</a><br />
@@ -82,14 +83,20 @@ Default is zero.<br>
  <br>
 Defines the Z Offset.<br>
  <br>
+<a name="Step Length" id="Step Length"></a><h3>Step Length</h3>
+
+<a name="E Step Length" id="E Step Length"></a><h4>E Step Length</h4>
+
+Default is 0.1 millimeters.<br>
+ <br>
+Defines the E extrusion distance step length.<br>
+ <br>
 <a name="Radius Rate Step Length" id="Radius Rate Step Length"></a><h3>Radius Rate Step Length</h3>
 
 Default is 0.1 millimeters/second.<br>
  <br>
 Defines the radius step length.<br>
  <br>
-<a name="Step Length" id="Step Length"></a><h3>Step Length</h3>
-
 <a name="X Step Length" id="X Step Length"></a><h4>X Step Length</h4>
 
 Default is 0.1 millimeters.<br>
@@ -129,8 +136,9 @@ Defines the Z axis step length.</tt>
 <a href="os.html">os</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.settings.html">fabmetheus_utilities.settings</a><br>
 <a href="skeinforge_application.skeinforge_utilities.skeinforge_polyfile.html">skeinforge_application.skeinforge_utilities.skeinforge_polyfile</a><br>
-<a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<a href="skeinforge_application.skeinforge_utilities.skeinforge_profile.html">skeinforge_application.skeinforge_utilities.skeinforge_profile</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -173,7 +181,7 @@ Defines the Z axis step length.</tt>
 
 <dl><dt><a name="GcodeStepSkein-addStringToLine"><strong>addStringToLine</strong></a>(self, lineStringIO, wordString)</dt><dd><tt>Add&nbsp;a&nbsp;character&nbsp;and&nbsp;integer&nbsp;to&nbsp;line&nbsp;string.</tt></dd></dl>
 
-<dl><dt><a name="GcodeStepSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeStepRepository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="GcodeStepSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, repository, gcodeText)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="GcodeStepSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line.</tt></dd></dl>
 
@@ -187,7 +195,7 @@ Defines the Z axis step length.</tt>
 <td width="100%"><dl><dt><a name="-getCharacterIntegerString"><strong>getCharacterIntegerString</strong></a>(character, offset, splitLine, stepLength)</dt><dd><tt>Get&nbsp;a&nbsp;character&nbsp;and&nbsp;integer&nbsp;string.</tt></dd></dl>
  <dl><dt><a name="-getFloatFromCharacterSplitLine"><strong>getFloatFromCharacterSplitLine</strong></a>(character, splitLine)</dt><dd><tt>Get&nbsp;the&nbsp;float&nbsp;after&nbsp;the&nbsp;first&nbsp;occurence&nbsp;of&nbsp;the&nbsp;character&nbsp;in&nbsp;the&nbsp;split&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
- <dl><dt><a name="-getOutput"><strong>getOutput</strong></a>(gcodeText, gcodeStepRepository<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;exported&nbsp;version&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-getOutput"><strong>getOutput</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;exported&nbsp;version&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;export&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, gcodeText<font color="#909090">=''</font>)</dt><dd><tt>Write&nbsp;the&nbsp;exported&nbsp;version&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>

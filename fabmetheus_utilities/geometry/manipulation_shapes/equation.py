@@ -9,7 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -150,7 +150,7 @@ def equateVertexesByFunction( equationFunction, points, prefix, revolutions, xml
 
 def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
 	"Get equated geometryOutput."
-	equatePoints( matrix.getConnectionVertexes(geometryOutput), prefix, None, xmlElement )
+	equatePoints( matrix.getVertexes(geometryOutput), prefix, None, xmlElement )
 	return geometryOutput
 
 def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):

@@ -97,8 +97,10 @@ function displayIso(latitude, longitude) {
 	centerY = (-0.5 * globalDimensionY - globalSliceMinY).toString();
 	scaleRotateCenterString += ' translate(' + centerX + ', ' + centerY + ')';
 	x = 0.5 * globalDimensionMagnitude * globalScale + globalXOffset;
+	halfLengthMinusOne = 0.5 * (globalLayers.length - 1);
 	for (var i in globalLayers) {
-		y = globalScale * (0.5 * globalDimensionMagnitude - Math.sin(latitudeRadians) * i * latitudeOverLayers) + globalYOffset;
+		latitudeZSin = Math.sin(latitudeRadians) * (i - halfLengthMinusOne) * latitudeOverLayers
+		y = globalScale * (0.5 * globalDimensionMagnitude - latitudeZSin) + globalYOffset;
 //		y = globalDimensionY * globalScale + globalYOffset - i * unitY * latitudeOverLayers;
 		transformString = ' translate(' + x + ', ' + y + ')';
 		globalLayers[i].setAttributeNS(null, 'transform', transformString + scaleRotateCenterString);
@@ -119,6 +121,26 @@ function displayIsoByLongitude(longitude) {
 }
 
 function displayLayer(layerNum) {
+	if (globalLayers.length <= 1) {
+		document.getElementById('maxIndexLayer').setAttributeNS(null, 'visibility', 'hidden');
+		document.getElementById('minIndexLayer').setAttributeNS(null, 'visibility', 'hidden');
+		globalSlider.setAttributeNS(null, 'visibility', 'hidden');
+		globalThumb.setAttributeNS(null, 'visibility', 'hidden');
+	}
+	decreaseLayerIndexButton = document.getElementById('decreaseLayerIndex')
+	if (layerNum <= 0) {
+		decreaseLayerIndexButton.setAttributeNS(null, 'visibility', 'hidden');
+	}
+	else {
+		decreaseLayerIndexButton.setAttributeNS(null, 'visibility', 'visible');
+	}
+	increaseLayerIndexButton = document.getElementById('increaseLayerIndex')
+	if (layerNum >= globalLayers.length - 1) {
+		increaseLayerIndexButton.setAttributeNS(null, 'visibility', 'hidden');
+	}
+	else {
+		increaseLayerIndexButton.setAttributeNS(null, 'visibility', 'visible');
+	}
 	if (layerNum < 0 || layerNum >= globalLayers.length) {
 		return
 	}
@@ -226,7 +248,9 @@ function observerUp(event) {
 }
 
 function placeThumb(value) {
-	globalThumb.setAttribute('cx', globalSliderX + value);
+	if (globalLayers.length > 1) {
+		globalThumb.setAttribute('cx', globalSliderX + value);
+	}
 }
 
 function setScaleText(scaleID) {
@@ -357,7 +381,7 @@ function viewScroll() {
 	<title>replaceWith_Title</title>
 
 	<!--Begin Layer Data   -->
-	<g id='layerData' fill='#556B2F' font-weight='bold' font-family='Arial' font-size='15px' inkscape:groupmode='layer' inkscape:label='Slice Layers' stroke='#00F' stroke-width='0.54px'>
+	<g id='layerData' fill='#556B2F' fill-rule='evenodd' font-weight='bold' font-family='Arial' font-size='15px' inkscape:groupmode='layer' inkscape:label='Slice Layers' stroke='#00F' stroke-width='0.54px'>
 		<!--id='sliceElementTemplate' must be there or else the slice template will not be found-->
 		<g id='sliceElementTemplate' transform='translate(20, 242)'>
 			<!--id='layerTextTemplate' must be there so that the text could be removed if necessary-->
@@ -416,13 +440,13 @@ function viewScroll() {
 			<!--<path stroke='#000' stroke-width='3' d='M 20 20 h5 l-5 -10 l-5 10 h5 v35 h35 v-5 l10 5 l-10 5 v-5 h-35 z'/>-->
 			<text x='68' y='64' text-anchor='middle'>Y</text>
 			<text x='165' y='166'>X</text>
-			<text x='20' y='245'>0</text>
+			<text x='20' y='245' id='minIndexLayer'>0</text>
 			<rect id='slider' x='32' y='230' width='170' height='24' fill='gray'/>
 			<circle id='thumb' cx='42' cy='242' r='12' fill='darkslateblue'/>
-			<text x='203' y='245' id='maxIndexLayer' >1</text>
+			<text x='203' y='245' id='maxIndexLayer'>1</text>
 			<text x='20' y='280' id='currentIndexLayer'>Layer</text>
-			<text x='198' y='280' onclick='displayLayer(globalLayerIndex-1)' fill='darkslateblue'>&lt;</text>
-			<text x='213' y='280' onclick='displayLayer(globalLayerIndex+1)' fill='darkslateblue'>&gt;</text>
+			<text x='198' y='280' id='decreaseLayerIndex' onclick='displayLayer(globalLayerIndex-1)' fill='darkslateblue'>&lt;</text>
+			<text x='213' y='280' id='increaseLayerIndex' onclick='displayLayer(globalLayerIndex+1)' fill='darkslateblue'>&gt;</text>
 			<text x='20' y='300'>Scale</text>
 			<text x='65' y='300' id='scaleLayer'>1</text>
 			<text x='198' y='300' onclick='changeScaleLayer(globalZoomScale/2)' fill='darkslateblue'>&lt;</text>

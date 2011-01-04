@@ -12,6 +12,11 @@ http://blog.thingiverse.com/2009/07/28/skeinforge-quicktip-cool/
 The default 'Activate Cool' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 
 ==Settings==
+===Bridge Cool===
+Default is one degree Celcius.
+
+If the layer is a bridge layer, then cool will lower the temperature by 'Bridge Cool' degrees Celcius.
+
 ===Cool Type===
 Default is 'Orbit', because many extruders do not operate properly at very slow flow rates.
 
@@ -22,7 +27,7 @@ When selected, cool will add orbits with the extruder off to give the layer time
 When selected, cool will slow down the extruder so that it will take the minimum layer time to extrude the layer.
 
 ===Maximum Cool===
-Default is 2 Celcius.
+Default is 2 degrees Celcius.
 
 If it takes less time to extrude the layer than the minimum layer time, then cool will lower the temperature by the 'Maximum Cool' setting times the layer time over the minimum layer time.
 
@@ -112,64 +117,70 @@ __date__ = '$Date: 2008/21/04 $'
 __license__ = 'GPL 3.0'
 
 
-def getCraftedText( fileName, text, coolRepository = None ):
-	"Cool a gcode linear move text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), coolRepository )
+def getCraftedText(fileName, text, repository=None):
+	'Cool a gcode linear move text.'
+	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
-def getCraftedTextFromText( gcodeText, coolRepository = None ):
-	"Cool a gcode linear move text."
-	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'cool'):
+def getCraftedTextFromText(gcodeText, repository=None):
+	'Cool a gcode linear move text.'
+	if gcodec.isProcedureDoneOrFileIsEmpty(gcodeText, 'cool'):
 		return gcodeText
-	if coolRepository == None:
-		coolRepository = settings.getReadRepository( CoolRepository() )
-	if not coolRepository.activateCool.value:
+	if repository == None:
+		repository = settings.getReadRepository(CoolRepository())
+	if not repository.activateCool.value:
 		return gcodeText
-	return CoolSkein().getCraftedGcode( gcodeText, coolRepository )
+	return CoolSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get the repository constructor.'
 	return CoolRepository()
 
 def writeOutput(fileName=''):
-	"Cool a gcode linear move file.  Chain cool the gcode if it is not already cooled. If no fileName is specified, cool the first unmodified gcode file in this folder."
+	'Cool a gcode linear move file.  Chain cool the gcode if it is not already cooled.'
 	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
 	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'cool')
+		skeinforge_craft.writeChainTextWithNounMessage(fileName, 'cool')
 
 
 class CoolRepository:
-	"A class to handle the cool settings."
+	'A class to handle the cool settings.'
 	def __init__(self):
-		"Set the default settings, execute title & settings fileName."
+		'Set the default settings, execute title & settings fileName.'
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.cool.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Cool', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Cool')
-		self.activateCool = settings.BooleanSetting().getFromValue('Activate Cool', self, True )
-		self.coolType = settings.MenuButtonDisplay().getFromName('Cool Type:', self )
-		self.orbit = settings.MenuRadio().getFromMenuButtonDisplay( self.coolType, 'Orbit', self, True )
-		self.slowDown = settings.MenuRadio().getFromMenuButtonDisplay( self.coolType, 'Slow Down', self, False )
-		self.maximumCool = settings.FloatSpin().getFromValue( 0.0, 'Maximum Cool (Celcius):', self, 10.0, 2.0 )
-		self.minimumLayerTime = settings.FloatSpin().getFromValue( 0.0, 'Minimum Layer Time (seconds):', self, 120.0, 60.0 )
-		self.minimumOrbitalRadius = settings.FloatSpin().getFromValue( 0.0, 'Minimum Orbital Radius (millimeters):', self, 20.0, 10.0 )
-		self.turnFanOnAtBeginning = settings.BooleanSetting().getFromValue('Turn Fan On at Beginning', self, True )
-		self.turnFanOffAtEnding = settings.BooleanSetting().getFromValue('Turn Fan Off at Ending', self, True )
+		self.fileNameInput = settings.FileNameInput().getFromFileName(
+			fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Cool', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute(
+			'http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Cool')
+		self.activateCool = settings.BooleanSetting().getFromValue('Activate Cool', self, True)
+		self.bridgeCool = settings.FloatSpin().getFromValue(0.0, 'Bridge Cool (Celcius):', self, 10.0, 1.0)
+		self.coolType = settings.MenuButtonDisplay().getFromName('Cool Type:', self)
+		self.orbit = settings.MenuRadio().getFromMenuButtonDisplay(self.coolType, 'Orbit', self, True)
+		self.slowDown = settings.MenuRadio().getFromMenuButtonDisplay(self.coolType, 'Slow Down', self, False)
+		self.maximumCool = settings.FloatSpin().getFromValue(0.0, 'Maximum Cool (Celcius):', self, 10.0, 2.0)
+		self.minimumLayerTime = settings.FloatSpin().getFromValue(0.0, 'Minimum Layer Time (seconds):', self, 120.0, 60.0)
+		self.minimumOrbitalRadius = settings.FloatSpin().getFromValue(
+			0.0, 'Minimum Orbital Radius (millimeters):', self, 20.0, 10.0)
+		self.turnFanOnAtBeginning = settings.BooleanSetting().getFromValue('Turn Fan On at Beginning', self, True)
+		self.turnFanOffAtEnding = settings.BooleanSetting().getFromValue('Turn Fan Off at Ending', self, True)
 		self.executeTitle = 'Cool'
 
 	def execute(self):
-		"Cool button has been clicked."
-		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
+		'Cool button has been clicked.'
+		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(
+			self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
 
 class CoolSkein:
-	"A class to cool a skein of extrusions."
+	'A class to cool a skein of extrusions.'
 	def __init__(self):
 		self.boundaryLayer = None
 		self.coolTemperature = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.feedRateMinute = 960.0
 		self.highestZ = 1.0
+		self.isBridgeLayer = False
 		self.layerCount = settings.LayerCount()
 		self.lineIndex = 0
 		self.lines = None
@@ -179,110 +190,116 @@ class CoolSkein:
 		self.oldLocation = None
 		self.oldTemperature = None
 
-	def addCoolOrbits( self, remainingOrbitTime ):
-		"Add the minimum radius cool orbits."
-		if len( self.boundaryLayer.loops ) < 1:
+	def addCoolOrbits(self, remainingOrbitTime):
+		'Add the minimum radius cool orbits.'
+		if len(self.boundaryLayer.loops) < 1:
 			return
-		insetBoundaryLoops = intercircle.getInsetLoopsFromLoops( self.perimeterWidth, self.boundaryLayer.loops )
-		if len( insetBoundaryLoops ) < 1:
+		insetBoundaryLoops = intercircle.getInsetLoopsFromLoops(self.perimeterWidth, self.boundaryLayer.loops)
+		if len(insetBoundaryLoops) < 1:
 			insetBoundaryLoops = self.boundaryLayer.loops
-		largestLoop = euclidean.getLargestLoop( insetBoundaryLoops )
-		loopArea = abs( euclidean.getAreaLoop( largestLoop ) )
+		largestLoop = euclidean.getLargestLoop(insetBoundaryLoops)
+		loopArea = euclidean.getAreaLoopAbsolute(largestLoop)
 		if loopArea < self.minimumArea:
-			center = 0.5 * ( euclidean.getMaximumByComplexPath( largestLoop ) + euclidean.getMinimumByComplexPath( largestLoop ) )
-			centerXBounded = max( center.real, self.boundingRectangle.cornerMinimum.real )
-			centerXBounded = min( centerXBounded, self.boundingRectangle.cornerMaximum.real )
-			centerYBounded = max( center.imag, self.boundingRectangle.cornerMinimum.imag )
-			centerYBounded = min( centerYBounded, self.boundingRectangle.cornerMaximum.imag )
-			center = complex( centerXBounded, centerYBounded )
+			center = 0.5 * (euclidean.getMaximumByComplexPath(largestLoop) + euclidean.getMinimumByComplexPath(largestLoop))
+			centerXBounded = max(center.real, self.boundingRectangle.cornerMinimum.real)
+			centerXBounded = min(centerXBounded, self.boundingRectangle.cornerMaximum.real)
+			centerYBounded = max(center.imag, self.boundingRectangle.cornerMinimum.imag)
+			centerYBounded = min(centerYBounded, self.boundingRectangle.cornerMaximum.imag)
+			center = complex(centerXBounded, centerYBounded)
 			maximumCorner = center + self.halfCorner
 			minimumCorner = center - self.halfCorner
-			largestLoop = euclidean.getSquareLoopWiddershins( minimumCorner, maximumCorner )
-		pointComplex = euclidean.getXYComplexFromVector3( self.oldLocation )
+			largestLoop = euclidean.getSquareLoopWiddershins(minimumCorner, maximumCorner)
+		pointComplex = euclidean.getXYComplexFromVector3(self.oldLocation)
 		if pointComplex != None:
-			largestLoop = euclidean.getLoopStartingNearest( self.perimeterWidth, pointComplex, largestLoop )
-		intercircle.addOrbitsIfLarge( self.distanceFeedRate, largestLoop, self.orbitalFeedRatePerSecond, remainingOrbitTime, self.highestZ )
+			largestLoop = euclidean.getLoopStartingNearest(self.perimeterWidth, pointComplex, largestLoop)
+		intercircle.addOrbitsIfLarge(
+			self.distanceFeedRate, largestLoop, self.orbitalFeedRatePerSecond, remainingOrbitTime, self.highestZ)
 
-	def addCoolTemperature( self, remainingOrbitTime ):
-		"Parse a gcode line and add it to the cool skein."
-		layerCool = self.coolRepository.maximumCool.value * remainingOrbitTime / self.coolRepository.minimumLayerTime.value
+	def addCoolTemperature(self, remainingOrbitTime):
+		'Parse a gcode line and add it to the cool skein.'
+		layerCool = self.repository.maximumCool.value * remainingOrbitTime / self.repository.minimumLayerTime.value
+		if self.isBridgeLayer:
+			layerCool = max(self.repository.bridgeCool.value, layerCool)
 		if self.oldTemperature != None and layerCool != 0.0:
 			self.coolTemperature = self.oldTemperature - layerCool
-			self.addTemperature( self.coolTemperature )
+			self.addTemperature(self.coolTemperature)
 
-	def addFlowRateLineIfNecessary( self, flowRate ):
-		"Add a line of flow rate if different."
-		flowRateString = euclidean.getFourSignificantFigures( flowRate )
+	def addFlowRateLineIfNecessary(self, flowRate):
+		'Add a line of flow rate if different.'
+		flowRateString = euclidean.getFourSignificantFigures(flowRate)
 		if flowRateString == self.oldFlowRateString:
 			return
 		if flowRateString != None:
-			self.distanceFeedRate.addLine('M108 S' + flowRateString )
+			self.distanceFeedRate.addLine('M108 S' + flowRateString)
 		self.oldFlowRateString = flowRateString
 
-	def addFlowRateMultipliedLineIfNecessary( self, flowRate ):
-		"Add a multipled line of flow rate if different."
+	def addFlowRateMultipliedLineIfNecessary(self, flowRate):
+		'Add a multipled line of flow rate if different.'
 		if flowRate != None:
-			self.addFlowRateLineIfNecessary( self.multiplier * flowRate )
+			self.addFlowRateLineIfNecessary(self.multiplier * flowRate)
 
 	def addGcodeFromFeedRateMovementZ(self, feedRateMinute, point, z):
-		"Add a movement to the output."
-		self.distanceFeedRate.addLine( self.distanceFeedRate.getLinearGcodeMovementWithFeedRate(feedRateMinute, point, z) )
+		'Add a movement to the output.'
+		self.distanceFeedRate.addLine(self.distanceFeedRate.getLinearGcodeMovementWithFeedRate(feedRateMinute, point, z))
 
-	def addOrbitsIfNecessary( self, remainingOrbitTime ):
-		"Parse a gcode line and add it to the cool skein."
+	def addOrbitsIfNecessary(self, remainingOrbitTime):
+		'Parse a gcode line and add it to the cool skein.'
 		if remainingOrbitTime > 0.0 and self.boundaryLayer != None:
-			self.addCoolOrbits( remainingOrbitTime )
+			self.addCoolOrbits(remainingOrbitTime)
 
-	def addTemperature( self, temperature ):
-		"Add a line of temperature."
-		self.distanceFeedRate.addLine('M104 S' + euclidean.getRoundedToThreePlaces( temperature ) ) 
+	def addTemperature(self, temperature):
+		'Add a line of temperature.'
+		self.distanceFeedRate.addLine('M104 S' + euclidean.getRoundedToThreePlaces(temperature))
 
 	def getCoolMove(self, line, location, splitLine):
-		"Add line to time spent on layer."
+		'Add line to time spent on layer.'
 		self.feedRateMinute = gcodec.getFeedRateMinute(self.feedRateMinute, splitLine)
 		self.highestZ = max(location.z, self.highestZ)
 		self.addFlowRateMultipliedLineIfNecessary(self.oldFlowRate)
 		return self.distanceFeedRate.getLineWithFeedRate(self.multiplier * self.feedRateMinute, line, splitLine)
 
-	def getCraftedGcode( self, gcodeText, coolRepository ):
-		"Parse gcode text and store the cool gcode."
-		self.coolRepository = coolRepository
-		self.coolEndText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), 'Cool_End.gcode')
-		self.coolEndLines = archive.getTextLines( self.coolEndText )
+	def getCraftedGcode(self, gcodeText, repository):
+		'Parse gcode text and store the cool gcode.'
+		self.repository = repository
+		self.coolEndText = settings.getFileInAlterationsOrGivenDirectory(os.path.dirname(__file__), 'Cool_End.gcode')
+		self.coolEndLines = archive.getTextLines(self.coolEndText)
 		self.coolStartText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), 'Cool_Start.gcode')
-		self.coolStartLines = archive.getTextLines( self.coolStartText )
-		self.halfCorner = complex( coolRepository.minimumOrbitalRadius.value, coolRepository.minimumOrbitalRadius.value )
+		self.coolStartLines = archive.getTextLines(self.coolStartText)
+		self.halfCorner = complex(repository.minimumOrbitalRadius.value, repository.minimumOrbitalRadius.value)
 		self.lines = archive.getTextLines(gcodeText)
-		self.minimumArea = 4.0 * coolRepository.minimumOrbitalRadius.value * coolRepository.minimumOrbitalRadius.value
+		self.minimumArea = 4.0 * repository.minimumOrbitalRadius.value * repository.minimumOrbitalRadius.value
 		self.parseInitialization()
-		self.boundingRectangle = gcodec.BoundingRectangle().getFromGcodeLines( self.lines[self.lineIndex :], 0.5 * self.perimeterWidth )
+		self.boundingRectangle = gcodec.BoundingRectangle().getFromGcodeLines(
+			self.lines[self.lineIndex :], 0.5 * self.perimeterWidth)
 		margin = 0.2 * self.perimeterWidth
-		halfCornerMargin = self.halfCorner + complex( margin, margin )
+		halfCornerMargin = self.halfCorner + complex(margin, margin)
 		self.boundingRectangle.cornerMaximum -= halfCornerMargin
 		self.boundingRectangle.cornerMinimum += halfCornerMargin
-		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
+		for self.lineIndex in xrange(self.lineIndex, len(self.lines)):
 			line = self.lines[self.lineIndex]
 			self.parseLine(line)
-		if coolRepository.turnFanOffAtEnding.value:
+		if repository.turnFanOffAtEnding.value:
 			self.distanceFeedRate.addLine('M107')
 		return self.distanceFeedRate.output.getvalue()
 
 	def getLayerTime(self):
-		"Get the time the extruder spends on the layer."
+		'Get the time the extruder spends on the layer.'
 		feedRateMinute = self.feedRateMinute
 		layerTime = 0.0
 		lastThreadLocation = self.oldLocation
-		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
+		for lineIndex in xrange(self.lineIndex, len(self.lines)):
 			line = self.lines[lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'G1':
-				location = gcodec.getLocationFromSplitLine( lastThreadLocation, splitLine )
-				feedRateMinute = gcodec.getFeedRateMinute( feedRateMinute, splitLine )
+				location = gcodec.getLocationFromSplitLine(lastThreadLocation, splitLine)
+				feedRateMinute = gcodec.getFeedRateMinute(feedRateMinute, splitLine)
 				if lastThreadLocation != None:
 					feedRateSecond = feedRateMinute / 60.0
-					layerTime += location.distance( lastThreadLocation ) / feedRateSecond
+					layerTime += location.distance(lastThreadLocation) / feedRateSecond
 				lastThreadLocation = location
+			elif firstWord == '(<bridgeRotation>':
+				self.isBridgeLayer = True
 			elif firstWord == '(</layer>)':
 				return layerTime
 		return layerTime
@@ -298,7 +315,7 @@ class CoolSkein:
 				self.setOperatingFlowString(splitLine)
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float(splitLine[1])
-				if self.coolRepository.turnFanOnAtBeginning.value:
+				if self.repository.turnFanOnAtBeginning.value:
 					self.distanceFeedRate.addLine('M106')
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addLine('(<procedureName> cool </procedureName>)')
@@ -308,7 +325,7 @@ class CoolSkein:
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine(self, line):
-		"Parse a gcode line and add it to the cool skein."
+		'Parse a gcode line and add it to the cool skein.'
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len(splitLine) < 1:
 			return
@@ -324,9 +341,9 @@ class CoolSkein:
 			self.distanceFeedRate.addLine(line)
 			self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(self.coolStartLines)
 			layerTime = self.getLayerTime()
-			remainingOrbitTime = max(self.coolRepository.minimumLayerTime.value - layerTime, 0.0)
+			remainingOrbitTime = max(self.repository.minimumLayerTime.value - layerTime, 0.0)
 			self.addCoolTemperature(remainingOrbitTime)
-			if self.coolRepository.orbit.value:
+			if self.repository.orbit.value:
 				self.addOrbitsIfNecessary(remainingOrbitTime)
 			else:
 				self.setMultiplier(layerTime)
@@ -336,6 +353,7 @@ class CoolSkein:
 			self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(self.coolEndLines)
 			return
 		elif firstWord == '(</layer>)':
+			self.isBridgeLayer = False
 			self.multiplier = 1.0
 			if self.coolTemperature != None:
 				self.addTemperature(self.oldTemperature)
@@ -352,21 +370,21 @@ class CoolSkein:
 			self.boundaryLayer.loops.append(self.boundaryLoop)
 		self.distanceFeedRate.addLine(line)
 
-	def setMultiplier( self, layerTime ):
-		"Set the feed and flow rate multiplier."
-		self.multiplier = min( 1.0, layerTime / self.coolRepository.minimumLayerTime.value )
+	def setMultiplier(self, layerTime):
+		'Set the feed and flow rate multiplier.'
+		self.multiplier = min(1.0, layerTime / self.repository.minimumLayerTime.value)
 
-	def setOperatingFlowString( self, splitLine ):
-		"Set the operating flow string from the split line."
-		self.oldFlowRate = float( splitLine[1][1 :] )
+	def setOperatingFlowString(self, splitLine):
+		'Set the operating flow string from the split line.'
+		self.oldFlowRate = float(splitLine[1][1 :])
 
 
 def main():
-	"Display the cool dialog."
+	'Display the cool dialog.'
 	if len(sys.argv) > 1:
 		writeOutput(' '.join(sys.argv[1 :]))
 	else:
-		settings.startMainLoopFromConstructor( getNewRepository() )
+		settings.startMainLoopFromConstructor(getNewRepository())
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main()

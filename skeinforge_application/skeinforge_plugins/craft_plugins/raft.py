@@ -459,14 +459,14 @@ class RaftSkein:
 
 	def addEmptyLayerSupport( self, boundaryLayerIndex ):
 		'Add support material to a layer if it is empty.'
-		supportLayer = SupportLayer( [] )
-		self.supportLayers.append( supportLayer )
+		supportLayer = SupportLayer([])
+		self.supportLayers.append(supportLayer)
 		if len( self.boundaryLayers[ boundaryLayerIndex ].loops ) > 0:
 			return
 		aboveXIntersectionsTable = {}
-		euclidean.addXIntersectionsFromLoopsForTable( self.getInsetLoopsAbove( boundaryLayerIndex ), aboveXIntersectionsTable, self.interfaceStep )
+		euclidean.addXIntersectionsFromLoopsForTable( self.getInsetLoopsAbove(boundaryLayerIndex), aboveXIntersectionsTable, self.interfaceStep )
 		belowXIntersectionsTable = {}
-		euclidean.addXIntersectionsFromLoopsForTable( self.getInsetLoopsBelow( boundaryLayerIndex ), belowXIntersectionsTable, self.interfaceStep )
+		euclidean.addXIntersectionsFromLoopsForTable( self.getInsetLoopsBelow(boundaryLayerIndex), belowXIntersectionsTable, self.interfaceStep )
 		supportLayer.xIntersectionsTable = euclidean.getIntersectionOfXIntersectionsTables( [ aboveXIntersectionsTable, belowXIntersectionsTable ] )
 
 	def addFlowRateLineIfDifferent( self, flowRateOutputString ):
@@ -566,7 +566,7 @@ class RaftSkein:
 
 	def addRaft(self):
 		'Add the raft.'
-		if len( self.boundaryLayers ) < 0:
+		if len(self.boundaryLayers) < 0:
 			print('this should never happen, there are no boundary layers in addRaft')
 			return
 		self.baseLayerThicknessOverLayerThickness = self.repository.baseLayerThicknessOverLayerThickness.value
@@ -583,7 +583,7 @@ class RaftSkein:
 		outsetSeparateLoops = intercircle.getInsetSeparateLoopsFromLoops( - self.raftOutsetRadius, self.boundaryLayers[0].loops, 0.8 )
 		self.interfaceIntersectionsTable = {}
 		euclidean.addXIntersectionsFromLoopsForTable( outsetSeparateLoops, self.interfaceIntersectionsTable, self.interfaceStep )
-		if len( self.supportLayers ) > 0:
+		if len(self.supportLayers) > 0:
 			supportIntersectionsTable = self.supportLayers[0].xIntersectionsTable
 			euclidean.joinXIntersectionsTables( supportIntersectionsTable, self.interfaceIntersectionsTable )
 		self.addInterfaceTables( baseStep, interfaceExtrusionWidth )
@@ -712,7 +712,7 @@ class RaftSkein:
 		'Add fill segments from the boundary layers.'
 		supportLoops = supportLayer.supportLoops
 		supportLayer.fillXIntersectionsTable = {}
-		if len( supportLoops ) < 1:
+		if len(supportLoops) < 1:
 			return
 		euclidean.addXIntersectionsFromLoopsForTable( supportLoops, supportLayer.fillXIntersectionsTable, self.interfaceStep )
 
@@ -772,7 +772,7 @@ class RaftSkein:
 
 	def getInsetLoopsAbove( self, boundaryLayerIndex ):
 		'Get the inset loops above the boundary layer index.'
-		for aboveLayerIndex in xrange( boundaryLayerIndex + 1, len( self.boundaryLayers ) ):
+		for aboveLayerIndex in xrange( boundaryLayerIndex + 1, len(self.boundaryLayers) ):
 			if len( self.boundaryLayers[ aboveLayerIndex ].loops ) > 0:
 				return self.getInsetLoops( aboveLayerIndex )
 		return []
@@ -817,7 +817,7 @@ class RaftSkein:
 
 	def getSupportEndpoints(self):
 		'Get the support layer segments.'
-		if len( self.supportLayers ) <= self.layerIndex:
+		if len(self.supportLayers) <= self.layerIndex:
 			return []
 		supportSegmentTable = self.supportLayers[ self.layerIndex ].supportSegmentTable
 		endpoints = euclidean.getEndpointsFromSegmentTable( supportSegmentTable )
@@ -939,7 +939,7 @@ class RaftSkein:
 			self.layerIndex += 1
 			boundaryLayer = None
 			layerZ = self.extrusionTop + float(splitLine[1])
-			if len( self.boundaryLayers ) > 0:
+			if len(self.boundaryLayers) > 0:
 				boundaryLayer = self.boundaryLayers[ self.layerIndex ]
 				layerZ = boundaryLayer.z
 			if self.operatingJump != None:
@@ -947,7 +947,7 @@ class RaftSkein:
 			if self.layerStarted and self.addLineLayerStart:
 				self.distanceFeedRate.addLine('(</layer>)')
 			self.layerStarted = False
-			if self.layerIndex > len( self.supportLayers ) + 1:
+			if self.layerIndex > len(self.supportLayers) + 1:
 				self.distanceFeedRate.addLine( self.operatingLayerEndLine )
 				self.operatingLayerEndLine = ''
 			if self.addLineLayerStart:
@@ -971,41 +971,43 @@ class RaftSkein:
 		'Set the boundary layers.'
 		if self.repository.supportChoiceNone.value:
 			return
-		if len( self.boundaryLayers ) < 2:
+		if len(self.boundaryLayers) < 2:
 			return
 		if self.repository.supportChoiceEmptyLayersOnly.value:
-			supportLayer = SupportLayer( [] )
-			self.supportLayers.append( supportLayer )
-			for boundaryLayerIndex in xrange( 1, len( self.boundaryLayers ) - 1 ):
-				self.addEmptyLayerSupport( boundaryLayerIndex )
+			supportLayer = SupportLayer([])
+			self.supportLayers.append(supportLayer)
+			for boundaryLayerIndex in xrange(1, len(self.boundaryLayers) -1):
+				self.addEmptyLayerSupport(boundaryLayerIndex)
 			self.truncateSupportSegmentTables()
 			self.addSegmentTablesToSupportLayers()
 			return
 		for boundaryLayer in self.boundaryLayers:
-			supportLoops = intercircle.getInsetSeparateLoopsFromLoops( - self.supportOutset, boundaryLayer.loops )
-			supportLayer = SupportLayer( supportLoops )
-			self.supportLayers.append( supportLayer )
-		for supportLayerIndex in xrange( len( self.supportLayers ) - 1 ):
-			self.addSupportSegmentTable( supportLayerIndex )
+			# thresholdRadius of 0.8 is needed to avoid the ripple inset bug http://hydraraptor.blogspot.com/2010/12/crackers.html
+			supportLoops = intercircle.getInsetSeparateLoopsFromLoops(-self.supportOutset, boundaryLayer.loops, 0.8)
+			supportLayer = SupportLayer(supportLoops)
+			self.supportLayers.append(supportLayer)
+		for supportLayerIndex in xrange(len(self.supportLayers) - 1):
+			self.addSupportSegmentTable(supportLayerIndex)
 		self.truncateSupportSegmentTables()
-		for supportLayerIndex in xrange( len( self.supportLayers ) - 1 ):
-			self.extendXIntersections( self.boundaryLayers[ supportLayerIndex ].loops, self.supportOutset, self.supportLayers[ supportLayerIndex ].xIntersectionsTable )
+		for supportLayerIndex in xrange(len(self.supportLayers) - 1):
+			boundaryLoops = self.boundaryLayers[supportLayerIndex].loops
+			self.extendXIntersections( boundaryLoops, self.supportOutset, self.supportLayers[supportLayerIndex].xIntersectionsTable)
 		for supportLayer in self.supportLayers:
-			self.addToFillXIntersectionIndexTables( supportLayer )
+			self.addToFillXIntersectionIndexTables(supportLayer)
 		if self.repository.supportChoiceExteriorOnly.value:
-			for supportLayerIndex in xrange( 1, len( self.supportLayers ) ):
-				self.subtractJoinedFill( supportLayerIndex )
+			for supportLayerIndex in xrange(1, len(self.supportLayers)):
+				self.subtractJoinedFill(supportLayerIndex)
 		for supportLayer in self.supportLayers:
-			euclidean.subtractXIntersectionsTable( supportLayer.xIntersectionsTable, supportLayer.fillXIntersectionsTable )
-		for supportLayerIndex in xrange( len( self.supportLayers ) - 2, - 1, - 1 ):
-			xIntersectionsTable = self.supportLayers[ supportLayerIndex ].xIntersectionsTable
-			aboveXIntersectionsTable = self.supportLayers[ supportLayerIndex + 1 ].xIntersectionsTable
-			euclidean.joinXIntersectionsTables( aboveXIntersectionsTable, xIntersectionsTable )
-		for supportLayerIndex in xrange( len( self.supportLayers ) ):
-			supportLayer = self.supportLayers[ supportLayerIndex ]
-			self.extendXIntersections( supportLayer.supportLoops, self.raftOutsetRadius, supportLayer.xIntersectionsTable )
+			euclidean.subtractXIntersectionsTable(supportLayer.xIntersectionsTable, supportLayer.fillXIntersectionsTable)
+		for supportLayerIndex in xrange(len(self.supportLayers) - 2, -1, -1):
+			xIntersectionsTable = self.supportLayers[supportLayerIndex].xIntersectionsTable
+			aboveXIntersectionsTable = self.supportLayers[supportLayerIndex + 1].xIntersectionsTable
+			euclidean.joinXIntersectionsTables(aboveXIntersectionsTable, xIntersectionsTable)
+		for supportLayerIndex in xrange(len(self.supportLayers)):
+			supportLayer = self.supportLayers[supportLayerIndex]
+			self.extendXIntersections(supportLayer.supportLoops, self.raftOutsetRadius, supportLayer.xIntersectionsTable)
 		for supportLayer in self.supportLayers:
-			euclidean.subtractXIntersectionsTable( supportLayer.xIntersectionsTable, supportLayer.fillXIntersectionsTable )
+			euclidean.subtractXIntersectionsTable(supportLayer.xIntersectionsTable, supportLayer.fillXIntersectionsTable)
 		self.addSegmentTablesToSupportLayers()
 
 	def setCornersZ(self):
@@ -1041,7 +1043,7 @@ class RaftSkein:
 
 	def subtractJoinedFill( self, supportLayerIndex ):
 		'Join the fill then subtract it from the support layer table.'
-		supportLayer = self.supportLayers[ supportLayerIndex ]
+		supportLayer = self.supportLayers[supportLayerIndex]
 		fillXIntersectionsTable = supportLayer.fillXIntersectionsTable
 		belowFillXIntersectionsTable = self.supportLayers[ supportLayerIndex - 1 ].fillXIntersectionsTable
 		euclidean.joinXIntersectionsTables( belowFillXIntersectionsTable, supportLayer.fillXIntersectionsTable )
@@ -1049,8 +1051,8 @@ class RaftSkein:
 
 	def truncateSupportSegmentTables(self):
 		'Truncate the support segments after the last support segment which contains elements.'
-		for supportLayerIndex in xrange( len( self.supportLayers ) - 1, - 1, - 1 ):
-			if len( self.supportLayers[ supportLayerIndex ].xIntersectionsTable ) > 0:
+		for supportLayerIndex in xrange( len(self.supportLayers) - 1, - 1, - 1 ):
+			if len( self.supportLayers[supportLayerIndex].xIntersectionsTable ) > 0:
 				self.supportLayers = self.supportLayers[ : supportLayerIndex + 1 ]
 				return
 		self.supportLayers = []

@@ -57,9 +57,9 @@ An xml file can be exported from Art of Illusion by going to the "File" menu, th
 <a href="fabmetheus_utilities.euclidean.html">fabmetheus_utilities.euclidean</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.geometry_tools.face.html">fabmetheus_utilities.geometry.geometry_tools.face</a><br>
 <a href="fabmetheus_utilities.geometry.solids.group.html">fabmetheus_utilities.geometry.solids.group</a><br>
-<a href="fabmetheus_utilities.geometry.manipulation_evaluator.matrix.html">fabmetheus_utilities.geometry.manipulation_evaluator.matrix</a><br>
+<a href="fabmetheus_utilities.geometry.manipulation_matrix.matrix.html">fabmetheus_utilities.geometry.manipulation_matrix.matrix</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.solids.sphere.html">fabmetheus_utilities.geometry.solids.sphere</a><br>
-<a href="fabmetheus_utilities.geometry.solids.trianglemesh.html">fabmetheus_utilities.geometry.solids.trianglemesh</a><br>
+<a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html">fabmetheus_utilities.geometry.solids.triangle_mesh</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -74,7 +74,7 @@ An xml file can be exported from Art of Illusion by going to the "File" menu, th
 <dt><font face="helvetica, arial"><a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml_plugins.artofillusion.html#BooleanSolid">BooleanSolid</a>
 </font></dt></dl>
 </dd>
-<dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.solids.cube.html#Cube">fabmetheus_utilities.geometry.solids.cube.Cube</a>(<a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a>)
+<dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.solids.cube.html#Cube">fabmetheus_utilities.geometry.solids.cube.Cube</a>(<a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml_plugins.artofillusion.html#Cube">Cube</a>
@@ -98,7 +98,7 @@ An xml file can be exported from Art of Illusion by going to the "File" menu, th
 <dt><font face="helvetica, arial"><a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml_plugins.artofillusion.html#Sphere">Sphere</a>
 </font></dt></dl>
 </dd>
-<dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a>(<a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a>)
+<dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>(<a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml_plugins.artofillusion.html#TriangleMesh">TriangleMesh</a>
@@ -148,6 +148,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#
 
 <dl><dt><a name="BooleanSolid-addXMLSection"><strong>addXMLSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;the&nbsp;xml&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
 
+<dl><dt><a name="BooleanSolid-getMatrix4X4"><strong>getMatrix4X4</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix4X4.</tt></dd></dl>
+
 <dl><dt><a name="BooleanSolid-getMatrixChainTetragrid"><strong>getMatrixChainTetragrid</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix&nbsp;chain&nbsp;tetragrid.</tt></dd></dl>
 
 <dl><dt><a name="BooleanSolid-getVisible"><strong>getVisible</strong></a>(self)</dt><dd><tt>Get&nbsp;visible.</tt></dd></dl>
@@ -194,7 +196,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml_plugins.artofillusion.html#Cube">Cube</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.cube.html#Cube">fabmetheus_utilities.geometry.solids.cube.Cube</a></dd>
-<dd><a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a></dd>
+<dd><a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.geometry_tools.dictionary.html#Dictionary">fabmetheus_utilities.geometry.geometry_tools.dictionary.Dictionary</a></dd>
 </dl>
@@ -209,7 +211,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.cube.html#C
 <dl><dt><a name="Cube-createShape"><strong>createShape</strong></a>(self)</dt><dd><tt>Create&nbsp;the&nbsp;shape.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a>:<br>
+Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>:<br>
 <dl><dt><a name="Cube-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Add&nbsp;empty&nbsp;lists.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
@@ -238,9 +240,9 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 
 <dl><dt><a name="Cube-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
 
-<dl><dt><a name="Cube-setCarveBridgeLayerThickness"><strong>setCarveBridgeLayerThickness</strong></a>(self, bridgeLayerThickness)</dt><dd><tt>Set&nbsp;the&nbsp;bridge&nbsp;layer&nbsp;thickness.&nbsp;&nbsp;If&nbsp;the&nbsp;infill&nbsp;is&nbsp;not&nbsp;in&nbsp;the&nbsp;direction&nbsp;of&nbsp;the&nbsp;bridge,&nbsp;the&nbsp;bridge&nbsp;layer&nbsp;thickness&nbsp;should&nbsp;be&nbsp;given&nbsp;as&nbsp;None&nbsp;or&nbsp;not&nbsp;set&nbsp;at&nbsp;all.</tt></dd></dl>
-
 <dl><dt><a name="Cube-setCarveImportRadius"><strong>setCarveImportRadius</strong></a>(self, importRadius)</dt><dd><tt>Set&nbsp;the&nbsp;import&nbsp;radius.</tt></dd></dl>
+
+<dl><dt><a name="Cube-setCarveInfillInDirectionOfBridge"><strong>setCarveInfillInDirectionOfBridge</strong></a>(self, infillInDirectionOfBridge)</dt><dd><tt>Set&nbsp;the&nbsp;infill&nbsp;in&nbsp;direction&nbsp;of&nbsp;bridge.</tt></dd></dl>
 
 <dl><dt><a name="Cube-setCarveIsCorrectMesh"><strong>setCarveIsCorrectMesh</strong></a>(self, isCorrectMesh)</dt><dd><tt>Set&nbsp;the&nbsp;is&nbsp;correct&nbsp;mesh&nbsp;flag.</tt></dd></dl>
 
@@ -251,6 +253,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a>:<br>
 <dl><dt><a name="Cube-addXMLInnerSection"><strong>addXMLInnerSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;xml&nbsp;inner&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="Cube-getMatrix4X4"><strong>getMatrix4X4</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix4X4.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getMatrixChainTetragrid"><strong>getMatrixChainTetragrid</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix&nbsp;chain&nbsp;tetragrid.</tt></dd></dl>
 
@@ -293,7 +297,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 <dd><a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml_plugins.artofillusion.html#Cylinder">Cylinder</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.cylinder.html#Cylinder">fabmetheus_utilities.geometry.solids.cylinder.Cylinder</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.cube.html#Cube">fabmetheus_utilities.geometry.solids.cube.Cube</a></dd>
-<dd><a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a></dd>
+<dd><a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.geometry_tools.dictionary.html#Dictionary">fabmetheus_utilities.geometry.geometry_tools.dictionary.Dictionary</a></dd>
 </dl>
@@ -312,7 +316,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.cube.html#C
 <dl><dt><a name="Cylinder-addXMLSection"><strong>addXMLSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;the&nbsp;xml&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a>:<br>
+Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>:<br>
 <dl><dt><a name="Cylinder-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Cylinder-getCarveCornerMinimum"><strong>getCarveCornerMinimum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;minimum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
@@ -339,9 +343,9 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 
 <dl><dt><a name="Cylinder-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
 
-<dl><dt><a name="Cylinder-setCarveBridgeLayerThickness"><strong>setCarveBridgeLayerThickness</strong></a>(self, bridgeLayerThickness)</dt><dd><tt>Set&nbsp;the&nbsp;bridge&nbsp;layer&nbsp;thickness.&nbsp;&nbsp;If&nbsp;the&nbsp;infill&nbsp;is&nbsp;not&nbsp;in&nbsp;the&nbsp;direction&nbsp;of&nbsp;the&nbsp;bridge,&nbsp;the&nbsp;bridge&nbsp;layer&nbsp;thickness&nbsp;should&nbsp;be&nbsp;given&nbsp;as&nbsp;None&nbsp;or&nbsp;not&nbsp;set&nbsp;at&nbsp;all.</tt></dd></dl>
-
 <dl><dt><a name="Cylinder-setCarveImportRadius"><strong>setCarveImportRadius</strong></a>(self, importRadius)</dt><dd><tt>Set&nbsp;the&nbsp;import&nbsp;radius.</tt></dd></dl>
+
+<dl><dt><a name="Cylinder-setCarveInfillInDirectionOfBridge"><strong>setCarveInfillInDirectionOfBridge</strong></a>(self, infillInDirectionOfBridge)</dt><dd><tt>Set&nbsp;the&nbsp;infill&nbsp;in&nbsp;direction&nbsp;of&nbsp;bridge.</tt></dd></dl>
 
 <dl><dt><a name="Cylinder-setCarveIsCorrectMesh"><strong>setCarveIsCorrectMesh</strong></a>(self, isCorrectMesh)</dt><dd><tt>Set&nbsp;the&nbsp;is&nbsp;correct&nbsp;mesh&nbsp;flag.</tt></dd></dl>
 
@@ -352,6 +356,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a>:<br>
 <dl><dt><a name="Cylinder-addXMLInnerSection"><strong>addXMLInnerSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;xml&nbsp;inner&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="Cylinder-getMatrix4X4"><strong>getMatrix4X4</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix4X4.</tt></dd></dl>
 
 <dl><dt><a name="Cylinder-getMatrixChainTetragrid"><strong>getMatrixChainTetragrid</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix&nbsp;chain&nbsp;tetragrid.</tt></dd></dl>
 
@@ -409,6 +415,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#
 
 <dl><dt><a name="Group-getLoops"><strong>getLoops</strong></a>(self, importRadius, z)</dt><dd><tt>Get&nbsp;loops&nbsp;sliced&nbsp;through&nbsp;shape.</tt></dd></dl>
 
+<dl><dt><a name="Group-getMatrix4X4"><strong>getMatrix4X4</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix4X4.</tt></dd></dl>
+
 <dl><dt><a name="Group-getMatrixChainTetragrid"><strong>getMatrixChainTetragrid</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix&nbsp;chain&nbsp;tetragrid.</tt></dd></dl>
 
 <dl><dt><a name="Group-getVisible"><strong>getVisible</strong></a>(self)</dt><dd><tt>Get&nbsp;visible.</tt></dd></dl>
@@ -460,7 +468,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 <dd><a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml_plugins.artofillusion.html#Sphere">Sphere</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.sphere.html#Sphere">fabmetheus_utilities.geometry.solids.sphere.Sphere</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.cube.html#Cube">fabmetheus_utilities.geometry.solids.cube.Cube</a></dd>
-<dd><a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a></dd>
+<dd><a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.geometry_tools.dictionary.html#Dictionary">fabmetheus_utilities.geometry.geometry_tools.dictionary.Dictionary</a></dd>
 </dl>
@@ -477,7 +485,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.cube.html#C
 <dl><dt><a name="Sphere-addXMLSection"><strong>addXMLSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;the&nbsp;xml&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a>:<br>
+Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>:<br>
 <dl><dt><a name="Sphere-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Add&nbsp;empty&nbsp;lists.</tt></dd></dl>
 
 <dl><dt><a name="Sphere-getCarveCornerMaximum"><strong>getCarveCornerMaximum</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;corner&nbsp;maximum&nbsp;of&nbsp;the&nbsp;vertexes.</tt></dd></dl>
@@ -506,9 +514,9 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 
 <dl><dt><a name="Sphere-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
 
-<dl><dt><a name="Sphere-setCarveBridgeLayerThickness"><strong>setCarveBridgeLayerThickness</strong></a>(self, bridgeLayerThickness)</dt><dd><tt>Set&nbsp;the&nbsp;bridge&nbsp;layer&nbsp;thickness.&nbsp;&nbsp;If&nbsp;the&nbsp;infill&nbsp;is&nbsp;not&nbsp;in&nbsp;the&nbsp;direction&nbsp;of&nbsp;the&nbsp;bridge,&nbsp;the&nbsp;bridge&nbsp;layer&nbsp;thickness&nbsp;should&nbsp;be&nbsp;given&nbsp;as&nbsp;None&nbsp;or&nbsp;not&nbsp;set&nbsp;at&nbsp;all.</tt></dd></dl>
-
 <dl><dt><a name="Sphere-setCarveImportRadius"><strong>setCarveImportRadius</strong></a>(self, importRadius)</dt><dd><tt>Set&nbsp;the&nbsp;import&nbsp;radius.</tt></dd></dl>
+
+<dl><dt><a name="Sphere-setCarveInfillInDirectionOfBridge"><strong>setCarveInfillInDirectionOfBridge</strong></a>(self, infillInDirectionOfBridge)</dt><dd><tt>Set&nbsp;the&nbsp;infill&nbsp;in&nbsp;direction&nbsp;of&nbsp;bridge.</tt></dd></dl>
 
 <dl><dt><a name="Sphere-setCarveIsCorrectMesh"><strong>setCarveIsCorrectMesh</strong></a>(self, isCorrectMesh)</dt><dd><tt>Set&nbsp;the&nbsp;is&nbsp;correct&nbsp;mesh&nbsp;flag.</tt></dd></dl>
 
@@ -519,6 +527,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a>:<br>
 <dl><dt><a name="Sphere-addXMLInnerSection"><strong>addXMLInnerSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;xml&nbsp;inner&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="Sphere-getMatrix4X4"><strong>getMatrix4X4</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix4X4.</tt></dd></dl>
 
 <dl><dt><a name="Sphere-getMatrixChainTetragrid"><strong>getMatrixChainTetragrid</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix&nbsp;chain&nbsp;tetragrid.</tt></dd></dl>
 
@@ -552,14 +562,14 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="TriangleMesh">class <strong>TriangleMesh</strong></a>(<a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="TriangleMesh">class <strong>TriangleMesh</strong></a>(<a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt>An&nbsp;Art&nbsp;of&nbsp;Illusion&nbsp;triangle&nbsp;mesh&nbsp;object.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="fabmetheus_utilities.fabmetheus_tools.interpret_plugins.xml_plugins.artofillusion.html#TriangleMesh">TriangleMesh</a></dd>
-<dd><a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a></dd>
+<dd><a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a></dd>
 <dd><a href="fabmetheus_utilities.geometry.geometry_tools.dictionary.html#Dictionary">fabmetheus_utilities.geometry.geometry_tools.dictionary.Dictionary</a></dd>
 </dl>
@@ -568,7 +578,7 @@ Methods defined here:<br>
 <dl><dt><a name="TriangleMesh-setToObjectAttributeDictionary"><strong>setToObjectAttributeDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
 
 <hr>
-Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.trianglemesh.TriangleMesh</a>:<br>
+Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>:<br>
 <dl><dt><a name="TriangleMesh-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Add&nbsp;empty&nbsp;lists.</tt></dd></dl>
 
 <dl><dt><a name="TriangleMesh-addXMLSection"><strong>addXMLSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;the&nbsp;xml&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
@@ -599,9 +609,9 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 
 <dl><dt><a name="TriangleMesh-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
 
-<dl><dt><a name="TriangleMesh-setCarveBridgeLayerThickness"><strong>setCarveBridgeLayerThickness</strong></a>(self, bridgeLayerThickness)</dt><dd><tt>Set&nbsp;the&nbsp;bridge&nbsp;layer&nbsp;thickness.&nbsp;&nbsp;If&nbsp;the&nbsp;infill&nbsp;is&nbsp;not&nbsp;in&nbsp;the&nbsp;direction&nbsp;of&nbsp;the&nbsp;bridge,&nbsp;the&nbsp;bridge&nbsp;layer&nbsp;thickness&nbsp;should&nbsp;be&nbsp;given&nbsp;as&nbsp;None&nbsp;or&nbsp;not&nbsp;set&nbsp;at&nbsp;all.</tt></dd></dl>
-
 <dl><dt><a name="TriangleMesh-setCarveImportRadius"><strong>setCarveImportRadius</strong></a>(self, importRadius)</dt><dd><tt>Set&nbsp;the&nbsp;import&nbsp;radius.</tt></dd></dl>
+
+<dl><dt><a name="TriangleMesh-setCarveInfillInDirectionOfBridge"><strong>setCarveInfillInDirectionOfBridge</strong></a>(self, infillInDirectionOfBridge)</dt><dd><tt>Set&nbsp;the&nbsp;infill&nbsp;in&nbsp;direction&nbsp;of&nbsp;bridge.</tt></dd></dl>
 
 <dl><dt><a name="TriangleMesh-setCarveIsCorrectMesh"><strong>setCarveIsCorrectMesh</strong></a>(self, isCorrectMesh)</dt><dd><tt>Set&nbsp;the&nbsp;is&nbsp;correct&nbsp;mesh&nbsp;flag.</tt></dd></dl>
 
@@ -612,6 +622,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.trianglemes
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a>:<br>
 <dl><dt><a name="TriangleMesh-addXMLInnerSection"><strong>addXMLInnerSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;xml&nbsp;inner&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="TriangleMesh-getMatrix4X4"><strong>getMatrix4X4</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix4X4.</tt></dd></dl>
 
 <dl><dt><a name="TriangleMesh-getMatrixChainTetragrid"><strong>getMatrixChainTetragrid</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;matrix&nbsp;chain&nbsp;tetragrid.</tt></dd></dl>
 
@@ -667,7 +679,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
 <strong>__license__</strong> = 'GPL 3.0'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
-<strong>globalCarvableClassObjectTable</strong> = {'CSGObject': &lt;class fabmetheus_utilities.fabmetheus_tools.int...plugins.artofillusion.BooleanSolid at 0xb66e6f8c&gt;, 'Cube': &lt;class fabmetheus_utilities.fabmetheus_tools.int...ins.xml_plugins.artofillusion.Cube at 0xb66e6fbc&gt;, 'Cylinder': &lt;class fabmetheus_utilities.fabmetheus_tools.int...xml_plugins.artofillusion.Cylinder at 0xb66f502c&gt;, 'Sphere': &lt;class fabmetheus_utilities.fabmetheus_tools.int...s.xml_plugins.artofillusion.Sphere at 0xb66f508c&gt;, 'TriangleMesh': &lt;class fabmetheus_utilities.fabmetheus_tools.int...plugins.artofillusion.TriangleMesh at 0xb66f50bc&gt;, 'artofillusion.object.NullObject': &lt;class fabmetheus_utilities.fabmetheus_tools.int...ns.xml_plugins.artofillusion.Group at 0xb66f505c&gt;}</td></tr></table><p>
+<strong>globalCarvableClassObjectTable</strong> = {'CSGObject': &lt;class fabmetheus_utilities.fabmetheus_tools.int...plugins.artofillusion.BooleanSolid at 0xb6696f2c&gt;, 'Cube': &lt;class fabmetheus_utilities.fabmetheus_tools.int...ins.xml_plugins.artofillusion.Cube at 0xb6696f5c&gt;, 'Cylinder': &lt;class fabmetheus_utilities.fabmetheus_tools.int...xml_plugins.artofillusion.Cylinder at 0xb6696f8c&gt;, 'Sphere': &lt;class fabmetheus_utilities.fabmetheus_tools.int...s.xml_plugins.artofillusion.Sphere at 0xb66a002c&gt;, 'TriangleMesh': &lt;class fabmetheus_utilities.fabmetheus_tools.int...plugins.artofillusion.TriangleMesh at 0xb66a005c&gt;, 'artofillusion.object.NullObject': &lt;class fabmetheus_utilities.fabmetheus_tools.int...ns.xml_plugins.artofillusion.Group at 0xb6696fbc&gt;}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

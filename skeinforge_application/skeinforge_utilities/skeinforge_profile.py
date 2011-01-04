@@ -41,7 +41,7 @@ __license__ = 'GPL 3.0'
 
 def addListsSetCraftProfile( craftSequence, defaultProfile, repository, fileNameHelp ):
 	"Set the craft profile repository."
-	settings.addListsToRepository( fileNameHelp, None, repository )
+	settings.addListsToRepository(fileNameHelp, repository)
 	repository.craftSequenceLabel = settings.LabelDisplay().getFromName('Craft Sequence: ', repository )
 	craftToolStrings = []
 	for craftTool in craftSequence[ : - 1 ]:
@@ -59,13 +59,13 @@ def addListsSetCraftProfile( craftSequence, defaultProfile, repository, fileName
 	archive.makeDirectory(directoryName)
 	repository.windowPosition.value = '0+400'
 
-def addListsToCraftTypeRepository( fileNameHelp, repository ):
+def addListsToCraftTypeRepository(fileNameHelp, repository):
 	"Add the value to the lists."
-	settings.addListsToRepository( fileNameHelp, getProfileDirectory, repository )
+	settings.addListsToRepositoryByFunction(fileNameHelp, getProfileDirectory, repository)
 	dotsMinusOne = fileNameHelp.count('.') - 1
 	x = 0
 	xAddition = 400
-	for step in xrange( dotsMinusOne ):
+	for step in xrange(dotsMinusOne):
 		x += xAddition
 		xAddition /= 2
 	repository.windowPosition.value = '%s+0' % x
@@ -346,7 +346,7 @@ class ProfileRepository:
 	"A class to handle the profile entities."
 	def __init__(self):
 		"Set the default entities, execute title & repository fileName."
-		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_profile.html', None, self )
+		settings.addListsToRepository('skeinforge_application.skeinforge_utilities.skeinforge_profile.html', self)
 		importantFileNames = ['extrusion']
 		self.craftRadios = settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self )
 		ProfilePluginRadioButtonsSaveListener().getFromRadioPlugins( self.craftRadios, self )

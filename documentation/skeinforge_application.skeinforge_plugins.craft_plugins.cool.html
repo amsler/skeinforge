@@ -24,6 +24,7 @@ Allan Ecker aka The Masked Retriever's has written the "Skeinforge Quicktip: Coo
 <br />
 <a href="#Operation">Operation</a><br />
 <a href="#Settings">Settings</a><br />
+&nbsp;&nbsp;<a href="#Bridge Cool">Bridge Cool</a><br />
 &nbsp;&nbsp;<a href="#Cool Type">Cool Type</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Orbit">Orbit</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Slow Down">Slow Down</a><br />
@@ -45,6 +46,12 @@ The default 'Activate Cool' checkbox is on.  When it is on, the functions descri
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
+<a name="Bridge Cool" id="Bridge Cool"></a><h3>Bridge Cool</h3>
+
+Default is one degree Celcius.<br>
+ <br>
+If the layer is a bridge layer, then cool will lower the temperature by 'Bridge Cool' degrees Celcius.<br>
+ <br>
 <a name="Cool Type" id="Cool Type"></a><h3>Cool Type</h3>
 
 Default is 'Orbit', because many extruders do not operate properly at very slow flow rates.<br>
@@ -59,7 +66,7 @@ When selected, cool will slow down the extruder so that it will take the minimum
  <br>
 <a name="Maximum Cool" id="Maximum Cool"></a><h3>Maximum Cool</h3>
 
-Default is 2 Celcius.<br>
+Default is 2 degrees Celcius.<br>
  <br>
 If it takes less time to extrude the layer than the minimum layer time, then cool will lower the temperature by the 'Maximum Cool' setting times the layer time over the minimum layer time.<br>
  <br>
@@ -213,7 +220,7 @@ The cool tool has created the file:<br>
 
 <dl><dt><a name="CoolSkein-getCoolMove"><strong>getCoolMove</strong></a>(self, line, location, splitLine)</dt><dd><tt>Add&nbsp;line&nbsp;to&nbsp;time&nbsp;spent&nbsp;on&nbsp;layer.</tt></dd></dl>
 
-<dl><dt><a name="CoolSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeText, coolRepository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;cool&nbsp;gcode.</tt></dd></dl>
+<dl><dt><a name="CoolSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeText, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;cool&nbsp;gcode.</tt></dd></dl>
 
 <dl><dt><a name="CoolSkein-getLayerTime"><strong>getLayerTime</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;time&nbsp;the&nbsp;extruder&nbsp;spends&nbsp;on&nbsp;the&nbsp;layer.</tt></dd></dl>
 
@@ -232,11 +239,11 @@ The cool tool has created the file:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, coolRepository<font color="#909090">=None</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, coolRepository<font color="#909090">=None</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, repository<font color="#909090">=None</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;cool&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.&nbsp;&nbsp;Chain&nbsp;cool&nbsp;the&nbsp;gcode&nbsp;if&nbsp;it&nbsp;is&nbsp;not&nbsp;already&nbsp;cooled.&nbsp;If&nbsp;no&nbsp;fileName&nbsp;is&nbsp;specified,&nbsp;cool&nbsp;the&nbsp;first&nbsp;unmodified&nbsp;gcode&nbsp;file&nbsp;in&nbsp;this&nbsp;folder.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.&nbsp;&nbsp;Chain&nbsp;cool&nbsp;the&nbsp;gcode&nbsp;if&nbsp;it&nbsp;is&nbsp;not&nbsp;already&nbsp;cooled.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

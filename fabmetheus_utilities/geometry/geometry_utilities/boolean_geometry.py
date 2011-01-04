@@ -32,7 +32,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_solid
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import settings
@@ -46,18 +46,18 @@ __license__ = 'GPL 3.0'
 
 
 class BooleanGeometry:
-	"A shape scene."
+	'A shape scene.'
 	def __init__(self):
-		"Add empty lists."
+		'Add empty lists.'
 		self.archivableObjects = []
 		self.belowLoops = []
-		self.bridgeLayerThickness = None
+		self.infillInDirectionOfBridge = False
 		self.importRadius = 0.3
 		self.layerThickness = 0.4
 		self.rotatedLoopLayers = []
 
 	def __repr__(self):
-		"Get the string representation of this carving."
+		'Get the string representation of this carving.'
 		xmlElement = None
 		if len(self.archivableObjects) > 0:
 			xmlElement = self.archivableObjects[0].xmlElement
@@ -66,23 +66,23 @@ class BooleanGeometry:
 		return xml_simple_writer.getEndGeometryXMLString(output)
 
 	def addXML(self, depth, output):
-		"Add xml for this object."
+		'Add xml for this object.'
 		xml_simple_writer.addXMLFromObjects( depth, self.archivableObjects, output )
 
 	def getCarveCornerMaximum(self):
-		"Get the corner maximum of the vertexes."
+		'Get the corner maximum of the vertexes.'
 		return self.cornerMaximum
 
 	def getCarveCornerMinimum(self):
-		"Get the corner minimum of the vertexes."
+		'Get the corner minimum of the vertexes.'
 		return self.cornerMinimum
 
 	def getCarveLayerThickness(self):
-		"Get the layer thickness."
+		'Get the layer thickness.'
 		return self.layerThickness
 
 	def getCarveRotatedBoundaryLayers(self):
-		"Get the rotated boundary layers."
+		'Get the rotated boundary layers.'
 		vertexes = []
 		for visibleObject in evaluate.getVisibleObjects(self.archivableObjects):
 			vertexes += visibleObject.getTransformedVertexes()
@@ -93,7 +93,7 @@ class BooleanGeometry:
 		for vertex in vertexes:
 			self.maximumZ = max(self.maximumZ, vertex.z)
 			self.minimumZ = min(self.minimumZ, vertex.z)
-		trianglemesh.initializeZoneIntervalTable(self, vertexes)
+		triangle_mesh.initializeZoneIntervalTable(self, vertexes)
 		halfHeight = 0.5 * self.layerThickness
 		self.setActualMinimumZ(halfHeight)
 		z = self.minimumZ + halfHeight
@@ -116,8 +116,8 @@ class BooleanGeometry:
 		return []
 
 	def getEmptyZExtruderPaths( self, shouldPrintWarning, z ):
-		"Get extruder loops."
-		z = trianglemesh.getEmptyZ(self, z)
+		'Get extruder loops.'
+		z = triangle_mesh.getEmptyZ(self, z)
 		rotatedLoopLayer = euclidean.RotatedLoopLayer(z)
 		visibleObjectLoopsList = boolean_solid.getVisibleObjectLoopsList( self.importRadius, evaluate.getVisibleObjects(self.archivableObjects), z )
 		rotatedLoopLayer.loops = euclidean.getConcatenatedList( visibleObjectLoopsList )
@@ -125,43 +125,37 @@ class BooleanGeometry:
 			rotatedLoopLayer.loops = boolean_solid.getLoopsUnified(self.importRadius, visibleObjectLoopsList)
 			if shouldPrintWarning:
 				print('Warning, the triangle mesh slice intersects itself in getExtruderPaths in boolean_geometry.')
-				print( "Something will still be printed, but there is no guarantee that it will be the correct shape." )
+				print( 'Something will still be printed, but there is no guarantee that it will be the correct shape.' )
 				print('Once the gcode is saved, you should check over the layer with a z of:')
 				print(z)
 		return rotatedLoopLayer
 
 	def getFabmetheusXML(self):
-		"Return the fabmetheus XML."
+		'Return the fabmetheus XML.'
 		if len(self.archivableObjects) > 0:
 			return self.archivableObjects[0].xmlElement.getParser().getOriginalRoot()
 		return None
 
 	def getInterpretationSuffix(self):
-		"Return the suffix for a boolean carving."
+		'Return the suffix for a boolean carving.'
 		return 'xml'
 
-	def getMatrixChainTetragrid(self):
-		"Get the matrix chain tetragrid."
+	def getMatrix4X4(self):
+		'Get the matrix4X4.'
 		return None
 
-	def getZAddExtruderPaths( self, z ):
-		"Get next z and add extruder loops."
+	def getMatrixChainTetragrid(self):
+		'Get the matrix chain tetragrid.'
+		return None
+
+	def getZAddExtruderPaths(self, z):
+		'Get next z and add extruder loops.'
 		settings.printProgress(len(self.rotatedLoopLayers), 'slice')
 		rotatedLoopLayer = self.getEmptyZExtruderPaths(True, z)
-		self.rotatedLoopLayers.append( rotatedLoopLayer )
-		if self.bridgeLayerThickness == None:
-			return z + self.layerThickness
-		allExtrudateLoops = []
-		for loop in rotatedLoopLayer.loops:
-			allExtrudateLoops += trianglemesh.getBridgeLoops( self.layerThickness, loop )
-		rotatedLoopLayer.rotation = trianglemesh.getBridgeDirection( self.belowLoops, allExtrudateLoops, self.layerThickness )
-		self.belowLoops = allExtrudateLoops
-		if rotatedLoopLayer.rotation == None:
-			return z + self.layerThickness
-		return z + self.bridgeLayerThickness
+		return triangle_mesh.getZAddExtruderPathsBySolidCarving(rotatedLoopLayer, self, z)
 
 	def setActualMinimumZ(self, halfHeight):
-		"Get the actual minimum z at the lowest rotated boundary layer."
+		'Get the actual minimum z at the lowest rotated boundary layer.'
 		halfHeightOverMyriad = 0.0001 * halfHeight
 		halfHeightOverThousand = 0.001 * halfHeight
 		while self.minimumZ < self.maximumZ:
@@ -177,18 +171,18 @@ class BooleanGeometry:
 				return
 			self.minimumZ += self.layerThickness
 
-	def setCarveBridgeLayerThickness( self, bridgeLayerThickness ):
-		"Set the bridge layer thickness.  If the infill is not in the direction of the bridge, the bridge layer thickness should be given as None or not set at all."
-		self.bridgeLayerThickness = bridgeLayerThickness
+	def setCarveInfillInDirectionOfBridge( self, infillInDirectionOfBridge ):
+		'Set the infill in direction of bridge.'
+		self.infillInDirectionOfBridge = infillInDirectionOfBridge
 
 	def setCarveLayerThickness( self, layerThickness ):
-		"Set the layer thickness."
+		'Set the layer thickness.'
 		self.layerThickness = layerThickness
 
 	def setCarveImportRadius( self, importRadius ):
-		"Set the import radius."
+		'Set the import radius.'
 		self.importRadius = importRadius
 
 	def setCarveIsCorrectMesh( self, isCorrectMesh ):
-		"Set the is correct mesh flag."
+		'Set the is correct mesh flag.'
 		self.isCorrectMesh = isCorrectMesh

@@ -10,7 +10,7 @@ import __init__
 from fabmetheus_utilities.geometry.geometry_tools import face
 from fabmetheus_utilities.geometry.geometry_tools import dictionary
 from fabmetheus_utilities.geometry.geometry_tools import vertex
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.solids import group
 from fabmetheus_utilities import xml_simple_writer
 from fabmetheus_utilities.vector3 import Vector3
@@ -179,7 +179,7 @@ def addWithLeastLength(importRadius, loops, point):
 		shortestLoop.insert( shortestPointIndex, point )
 
 def convertXMLElement(geometryOutput, xmlElement):
-	'Convert the xml element to a trianglemesh xml element.'
+	'Convert the xml element to a TriangleMesh xml element.'
 	xmlElement.linkObject(TriangleMesh())
 	matrix.setXMLElementDictionaryToOtherElementDictionary(xmlElement, xmlElement.object.matrix4X4, 'matrix.', xmlElement)
 	vertex.addGeometryList(geometryOutput['vertex'], xmlElement)
@@ -407,7 +407,7 @@ def getLoopsFromCorrectMesh( edges, faces, vertexes, z ):
 	while isPathAdded( edges, faces, loops, remainingEdgeTable, vertexes, z ):
 		pass
 	if euclidean.isLoopListIntersecting(loops):
-		print('Warning, the triangle mesh slice intersects itself in getLoopsFromCorrectMesh in trianglemesh.')
+		print('Warning, the triangle mesh slice intersects itself in getLoopsFromCorrectMesh in triangle_mesh.')
 		print('Something will still be printed, but there is no guarantee that it will be the correct shape.')
 		print('Once the gcode is saved, you should check over the layer with a z of:')
 		print(z)
@@ -594,6 +594,19 @@ def getWideAnglePointIndex(loop):
 			widestPointIndex = pointIndex
 	return widestPointIndex
 
+def getZAddExtruderPathsBySolidCarving(rotatedLoopLayer, solidCarving, z):
+	'Get next z and add extruder loops by solid carving.'
+	solidCarving.rotatedLoopLayers.append(rotatedLoopLayer)
+	nextZ = z + solidCarving.layerThickness
+	if not solidCarving.infillInDirectionOfBridge:
+		return nextZ
+	allExtrudateLoops = []
+	for loop in rotatedLoopLayer.loops:
+		allExtrudateLoops += getBridgeLoops(solidCarving.layerThickness, loop)
+	rotatedLoopLayer.rotation = getBridgeDirection(solidCarving.belowLoops, allExtrudateLoops, solidCarving.layerThickness)
+	solidCarving.belowLoops = allExtrudateLoops
+	return nextZ
+
 def initializeZoneIntervalTable( shape, vertexes ):
 	'Initialize the zone interval and the zZone table'
 	shape.zoneInterval = shape.layerThickness / math.sqrt(len(vertexes)) / 1000.0
@@ -642,7 +655,7 @@ def setEdgeMaximumMinimum(edge, vertexes):
 	beginIndex = edge.vertexIndexes[0]
 	endIndex = edge.vertexIndexes[1]
 	if beginIndex >= len(vertexes) or endIndex >= len(vertexes):
-		print('Warning, there are duplicate vertexes in setEdgeMaximumMinimum in trianglemesh.')
+		print('Warning, there are duplicate vertexes in setEdgeMaximumMinimum in triangle_mesh.')
 		print('Something might still be printed, but there is no guarantee that it will be the correct shape.' )
 		edge.zMaximum = -987654321.0
 		edge.zMinimum = -987654321.0
@@ -682,7 +695,7 @@ class TriangleMesh( group.Group ):
 		'Add empty lists.'
 		group.Group.__init__(self)
 		self.belowLoops = []
-		self.bridgeLayerThickness = None
+		self.infillInDirectionOfBridge = False
 		self.edges = []
 		self.faces = []
 		self.importCoarseness = 1.0
@@ -780,26 +793,16 @@ class TriangleMesh( group.Group ):
 		self.transformedVertexes = None
 		return dictionary.getAllVertexes(self.vertexes, self)
 
-	def getZAddExtruderPaths( self, z ):
+	def getZAddExtruderPaths(self, z):
 		'Get next z and add extruder loops.'
 		settings.printProgress(len(self.rotatedLoopLayers), 'slice')
 		rotatedLoopLayer = euclidean.RotatedLoopLayer(z)
-		self.rotatedLoopLayers.append( rotatedLoopLayer )
-		rotatedLoopLayer.loops = self.getLoopsFromMesh( getEmptyZ( self, z ) )
-		if self.bridgeLayerThickness == None:
-			return z + self.layerThickness
-		allExtrudateLoops = []
-		for loop in rotatedLoopLayer.loops:
-			allExtrudateLoops += getBridgeLoops( self.layerThickness, loop )
-		rotatedLoopLayer.rotation = getBridgeDirection( self.belowLoops, allExtrudateLoops, self.layerThickness )
-		self.belowLoops = allExtrudateLoops
-		if rotatedLoopLayer.rotation == None:
-			return z + self.layerThickness
-		return z + self.bridgeLayerThickness
+		rotatedLoopLayer.loops = self.getLoopsFromMesh(getEmptyZ( self, z ))
+		return getZAddExtruderPathsBySolidCarving(rotatedLoopLayer, self, z)
 
-	def setCarveBridgeLayerThickness( self, bridgeLayerThickness ):
-		'Set the bridge layer thickness.  If the infill is not in the direction of the bridge, the bridge layer thickness should be given as None or not set at all.'
-		self.bridgeLayerThickness = bridgeLayerThickness
+	def setCarveInfillInDirectionOfBridge( self, infillInDirectionOfBridge ):
+		'Set the infill in direction of bridge.'
+		self.infillInDirectionOfBridge = infillInDirectionOfBridge
 
 	def setCarveLayerThickness( self, layerThickness ):
 		'Set the layer thickness.'

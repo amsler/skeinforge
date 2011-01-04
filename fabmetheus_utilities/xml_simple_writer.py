@@ -109,7 +109,7 @@ def getBeforeRootOutput(xmlParser):
 	xmlParser.getRoot().addXML(0, output)
 	return output.getvalue()
 
-def getBeginGeometryXMLOutput(xmlElement):
+def getBeginGeometryXMLOutput(xmlElement=None):
 	'Get the beginning of the string representation of this boolean geometry object info.'
 	output = getBeginXMLOutput()
 	attributeDictionary = {}

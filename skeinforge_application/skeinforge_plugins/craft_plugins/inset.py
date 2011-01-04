@@ -81,7 +81,7 @@ except:
 import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
@@ -365,7 +365,7 @@ class InsetSkein:
 			halfWidth *= self.repository.bridgeWidthMultiplier.value
 			self.distanceFeedRate.addTagBracketedLine('bridgeRotation', rotatedLoopLayer.rotation )
 		extrudateLoops = intercircle.getInsetLoopsFromLoops( halfWidth, rotatedLoopLayer.loops )
-		trianglemesh.sortLoopsInOrderOfArea(not self.repository.loopOrderAscendingArea.value, extrudateLoops)
+		triangle_mesh.sortLoopsInOrderOfArea(not self.repository.loopOrderAscendingArea.value, extrudateLoops)
 		for extrudateLoop in extrudateLoops:
 			self.addGcodeFromRemainingLoop( extrudateLoop, alreadyFilledArounds, halfWidth, rotatedLoopLayer.z )
 
@@ -387,7 +387,8 @@ class InsetSkein:
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(<decimalPlacesCarried>':
 				self.addInitializationToOutput()
-				self.distanceFeedRate.addTagBracketedLine('bridgeWidthMultiplier', self.distanceFeedRate.getRounded( self.repository.bridgeWidthMultiplier.value ) )
+				self.distanceFeedRate.addTagBracketedLine(
+					'bridgeWidthMultiplier', self.distanceFeedRate.getRounded( self.repository.bridgeWidthMultiplier.value ) )
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedLine('procedureName', 'inset')
 				return
@@ -406,9 +407,9 @@ class InsetSkein:
 		if firstWord == '(<boundaryPoint>':
 			location = gcodec.getLocationFromSplitLine(None, splitLine)
 			self.boundary.append(location.dropAxis())
-		elif ( firstWord == '(<bridgeRotation>' or firstWord == '<!--bridgeRotation-->'):
+		elif firstWord == '(<bridgeRotation>':
 			secondWordWithoutBrackets = splitLine[1].replace('(', '').replace(')', '')
-			self.rotatedLoopLayer.rotation = complex( secondWordWithoutBrackets )
+			self.rotatedLoopLayer.rotation = complex(secondWordWithoutBrackets)
 		elif firstWord == '(</crafting>)':
 				self.distanceFeedRate.addLine(line)
 				if self.repository.turnExtruderHeaterOffAtShutDown.value:

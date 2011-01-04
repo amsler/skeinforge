@@ -203,11 +203,13 @@ Below are examples of euclidean use.<br>
 
 <dl><dt><a name="SurroundingLoop-addToThreads"><strong>addToThreads</strong></a>(self, oldOrderedLocation, skein)</dt><dd><tt>Add&nbsp;to&nbsp;paths&nbsp;from&nbsp;the&nbsp;last&nbsp;location.&nbsp;perimeter&gt;inner&nbsp;&gt;fill&gt;paths&nbsp;or&nbsp;fill&gt;&nbsp;perimeter&gt;inner&nbsp;&gt;paths</tt></dd></dl>
 
-<dl><dt><a name="SurroundingLoop-getFillLoops"><strong>getFillLoops</strong></a>(self)</dt><dd><tt>Get&nbsp;last&nbsp;fill&nbsp;loops&nbsp;from&nbsp;the&nbsp;outside&nbsp;loop&nbsp;and&nbsp;the&nbsp;loops&nbsp;inside&nbsp;the&nbsp;inside&nbsp;loops.</tt></dd></dl>
+<dl><dt><a name="SurroundingLoop-getFillLoops"><strong>getFillLoops</strong></a>(self, penultimateFillLoops)</dt><dd><tt>Get&nbsp;last&nbsp;fill&nbsp;loops&nbsp;from&nbsp;the&nbsp;outside&nbsp;loop&nbsp;and&nbsp;the&nbsp;loops&nbsp;inside&nbsp;the&nbsp;inside&nbsp;loops.</tt></dd></dl>
 
 <dl><dt><a name="SurroundingLoop-getFromInsideSurroundings"><strong>getFromInsideSurroundings</strong></a>(self, inputSurroundingInsides, perimeterWidth)</dt><dd><tt>Initialize&nbsp;from&nbsp;inside&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
 
 <dl><dt><a name="SurroundingLoop-getLoopsToBeFilled"><strong>getLoopsToBeFilled</strong></a>(self)</dt><dd><tt>Get&nbsp;last&nbsp;fill&nbsp;loops&nbsp;from&nbsp;the&nbsp;outside&nbsp;loop&nbsp;and&nbsp;the&nbsp;loops&nbsp;inside&nbsp;the&nbsp;inside&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="SurroundingLoop-getSurroundingBoundaries"><strong>getSurroundingBoundaries</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;boundary&nbsp;of&nbsp;the&nbsp;surronding&nbsp;loop&nbsp;plus&nbsp;any&nbsp;boundaries&nbsp;of&nbsp;the&nbsp;innerSurroundings.</tt></dd></dl>
 
 <dl><dt><a name="SurroundingLoop-transferClosestFillLoops"><strong>transferClosestFillLoops</strong></a>(self, oldOrderedLocation, skein)</dt><dd><tt>Transfer&nbsp;closest&nbsp;fill&nbsp;loops.</tt></dd></dl>
 
@@ -282,8 +284,7 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getAroundLoop"><strong>getAroundLoop</strong></a>(begin, end, loop)</dt><dd><tt>Get&nbsp;an&nbsp;arc&nbsp;around&nbsp;a&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getAwayPoints"><strong>getAwayPoints</strong></a>(points, radius)</dt><dd><tt>Get&nbsp;a&nbsp;path&nbsp;with&nbsp;only&nbsp;the&nbsp;points&nbsp;that&nbsp;are&nbsp;far&nbsp;enough&nbsp;away&nbsp;from&nbsp;each&nbsp;other.</tt></dd></dl>
  <dl><dt><a name="-getBackOfLoops"><strong>getBackOfLoops</strong></a>(loops)</dt><dd><tt>Get&nbsp;the&nbsp;back&nbsp;of&nbsp;the&nbsp;loops.</tt></dd></dl>
- <dl><dt><a name="-getBooleanFromDictionary"><strong>getBooleanFromDictionary</strong></a>(dictionary, key)</dt><dd><tt>Get&nbsp;boolean&nbsp;from&nbsp;the&nbsp;dictionary&nbsp;and&nbsp;key.</tt></dd></dl>
- <dl><dt><a name="-getBooleanFromDictionaryDefault"><strong>getBooleanFromDictionaryDefault</strong></a>(defaultBoolean, dictionary, key)</dt><dd><tt>Get&nbsp;boolean&nbsp;from&nbsp;the&nbsp;dictionary&nbsp;and&nbsp;key.</tt></dd></dl>
+ <dl><dt><a name="-getBooleanFromDictionary"><strong>getBooleanFromDictionary</strong></a>(defaultBoolean, dictionary, key)</dt><dd><tt>Get&nbsp;boolean&nbsp;from&nbsp;the&nbsp;dictionary&nbsp;and&nbsp;key.</tt></dd></dl>
  <dl><dt><a name="-getBooleanFromValue"><strong>getBooleanFromValue</strong></a>(value)</dt><dd><tt>Get&nbsp;boolean&nbsp;from&nbsp;the&nbsp;word.</tt></dd></dl>
  <dl><dt><a name="-getBottomPath"><strong>getBottomPath</strong></a>(path)</dt><dd><tt>Get&nbsp;the&nbsp;bottom&nbsp;of&nbsp;the&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getBottomPaths"><strong>getBottomPaths</strong></a>(paths)</dt><dd><tt>Get&nbsp;the&nbsp;bottom&nbsp;of&nbsp;the&nbsp;paths.</tt></dd></dl>
@@ -318,7 +319,7 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getEnumeratorKeys"><strong>getEnumeratorKeys</strong></a>(enumerator, keys)</dt><dd><tt>Get&nbsp;enumerator&nbsp;keys.</tt></dd></dl>
  <dl><dt><a name="-getEnumeratorKeysAlwaysList"><strong>getEnumeratorKeysAlwaysList</strong></a>(enumerator, keys)</dt><dd><tt>Get&nbsp;enumerator&nbsp;keys.</tt></dd></dl>
  <dl><dt><a name="-getEnumeratorKeysExceptForOneArgument"><strong>getEnumeratorKeysExceptForOneArgument</strong></a>(enumerator, keys)</dt><dd><tt>Get&nbsp;enumerator&nbsp;keys,&nbsp;except&nbsp;when&nbsp;there&nbsp;is&nbsp;one&nbsp;argument.</tt></dd></dl>
- <dl><dt><a name="-getFillOfSurroundings"><strong>getFillOfSurroundings</strong></a>(surroundingLoops)</dt><dd><tt>Get&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;of&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-getFillOfSurroundings"><strong>getFillOfSurroundings</strong></a>(penultimateFillLoops, surroundingLoops)</dt><dd><tt>Get&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;of&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getFloatDefaultByDictionary"><strong>getFloatDefaultByDictionary</strong></a>(defaultFloat, dictionary, key)</dt><dd><tt>Get&nbsp;the&nbsp;value&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
  <dl><dt><a name="-getFloatFromValue"><strong>getFloatFromValue</strong></a>(value)</dt><dd><tt>Get&nbsp;the&nbsp;value&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
  <dl><dt><a name="-getFourSignificantFigures"><strong>getFourSignificantFigures</strong></a>(number)</dt><dd><tt>Get&nbsp;number&nbsp;rounded&nbsp;to&nbsp;four&nbsp;significant&nbsp;figures&nbsp;as&nbsp;a&nbsp;string.</tt></dd></dl>
@@ -335,7 +336,8 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-getIntermediateLocation"><strong>getIntermediateLocation</strong></a>(alongWay, begin, end)</dt><dd><tt>Get&nbsp;the&nbsp;intermediate&nbsp;location&nbsp;between&nbsp;begin&nbsp;and&nbsp;end.</tt></dd></dl>
  <dl><dt><a name="-getIntersectionOfXIntersectionIndexes"><strong>getIntersectionOfXIntersectionIndexes</strong></a>(totalSolidSurfaceThickness, xIntersectionIndexList)</dt><dd><tt>Get&nbsp;x&nbsp;intersections&nbsp;from&nbsp;surrounding&nbsp;layers.</tt></dd></dl>
  <dl><dt><a name="-getIntersectionOfXIntersectionsTables"><strong>getIntersectionOfXIntersectionsTables</strong></a>(xIntersectionsTables)</dt><dd><tt>Get&nbsp;the&nbsp;intersection&nbsp;of&nbsp;both&nbsp;XIntersections&nbsp;tables.</tt></dd></dl>
- <dl><dt><a name="-getIsInFilledRegion"><strong>getIsInFilledRegion</strong></a>(loops, point)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;left&nbsp;point&nbsp;is&nbsp;in&nbsp;the&nbsp;filled&nbsp;region&nbsp;of&nbsp;the&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-getIsInFilledRegion"><strong>getIsInFilledRegion</strong></a>(loops, point)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;point&nbsp;is&nbsp;in&nbsp;the&nbsp;filled&nbsp;region&nbsp;of&nbsp;the&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-getIsInFilledRegionByPaths"><strong>getIsInFilledRegionByPaths</strong></a>(loops, paths)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;point&nbsp;of&nbsp;any&nbsp;path&nbsp;is&nbsp;in&nbsp;the&nbsp;filled&nbsp;region&nbsp;of&nbsp;the&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getIsRadianClose"><strong>getIsRadianClose</strong></a>(firstRadian, secondRadian)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;firstRadian&nbsp;is&nbsp;close&nbsp;to&nbsp;the&nbsp;secondRadian.</tt></dd></dl>
  <dl><dt><a name="-getIsWiddershinsByVector3"><strong>getIsWiddershinsByVector3</strong></a>(polygon)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;polygon&nbsp;goes&nbsp;round&nbsp;in&nbsp;the&nbsp;widdershins&nbsp;direction.</tt></dd></dl>
  <dl><dt><a name="-getJoinOfXIntersectionIndexes"><strong>getJoinOfXIntersectionIndexes</strong></a>(xIntersectionIndexList)</dt><dd><tt>Get&nbsp;joined&nbsp;x&nbsp;intersections&nbsp;from&nbsp;surrounding&nbsp;layers.</tt></dd></dl>
@@ -442,7 +444,7 @@ Below are examples of euclidean use.<br>
  <dl><dt><a name="-removeElementFromDictionary"><strong>removeElementFromDictionary</strong></a>(dictionary, key)</dt><dd><tt>Remove&nbsp;element&nbsp;from&nbsp;the&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-removeElementFromListTable"><strong>removeElementFromListTable</strong></a>(element, key, listTable)</dt><dd><tt>Remove&nbsp;an&nbsp;element&nbsp;from&nbsp;the&nbsp;list&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-removeElementFromPixelListFromPoint"><strong>removeElementFromPixelListFromPoint</strong></a>(element, pixelDictionary, point)</dt><dd><tt>Remove&nbsp;an&nbsp;element&nbsp;from&nbsp;the&nbsp;pixel&nbsp;list.</tt></dd></dl>
- <dl><dt><a name="-removeListFromDictionary"><strong>removeListFromDictionary</strong></a>(dictionary, keys)</dt><dd><tt>Remove&nbsp;list&nbsp;from&nbsp;the&nbsp;dictionary.</tt></dd></dl>
+ <dl><dt><a name="-removeElementsFromDictionary"><strong>removeElementsFromDictionary</strong></a>(dictionary, keys)</dt><dd><tt>Remove&nbsp;list&nbsp;from&nbsp;the&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-removePixelTableFromPixelTable"><strong>removePixelTableFromPixelTable</strong></a>(pixelDictionaryToBeRemoved, pixelDictionaryToBeRemovedFrom)</dt><dd><tt>Remove&nbsp;pixel&nbsp;from&nbsp;the&nbsp;pixel&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-removePrefixFromDictionary"><strong>removePrefixFromDictionary</strong></a>(dictionary, prefix)</dt><dd><tt>Remove&nbsp;the&nbsp;attributes&nbsp;starting&nbsp;with&nbsp;the&nbsp;prefix&nbsp;from&nbsp;the&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-removeTrueFromDictionary"><strong>removeTrueFromDictionary</strong></a>(dictionary, key)</dt><dd><tt>Remove&nbsp;key&nbsp;from&nbsp;the&nbsp;dictionary&nbsp;in&nbsp;the&nbsp;value&nbsp;is&nbsp;true.</tt></dd></dl>

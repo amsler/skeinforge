@@ -165,6 +165,12 @@ def getBracketValuesDeleteEvaluator(bracketBeginIndex, bracketEndIndex, evaluato
 	del evaluators[ bracketBeginIndex + 1: bracketEndIndex + 1 ]
 	return bracketValues
 
+def getCapitalizedSuffixKey(prefix, suffix):
+	'Get key with capitalized suffix.'
+	if prefix == '' or prefix.endswith('.'):
+		return prefix + suffix
+	return prefix + suffix[:1].upper()+suffix[1:]
+
 def getCumulativeVector3(prefix, vector3, xmlElement):
 	'Get cumulative vector3 and delete the prefixed attributes.'
 	cumulativeVector3 = getVector3ByPrefix(vector3, prefix + 'rectangular', xmlElement)
@@ -598,14 +604,14 @@ def getPathByPrefix(path, prefix, xmlElement):
 	if len(path) < 2:
 		print('Warning, bug, path is too small in evaluate in setPathByPrefix.')
 		return
-	pathByKey = getPathByKey([], prefix + 'path', xmlElement)
+	pathByKey = getPathByKey([], getCapitalizedSuffixKey(prefix, 'path'), xmlElement)
 	if len( pathByKey ) < len(path):
 		for pointIndex in xrange( len( pathByKey ) ):
 			path[ pointIndex ] = pathByKey[ pointIndex ]
 	else:
 		path = pathByKey
-	path[0] = getVector3ByPrefix(path[0], prefix + 'pathStart', xmlElement)
-	path[-1] = getVector3ByPrefix(path[-1], prefix + 'pathEnd', xmlElement)
+	path[0] = getVector3ByPrefix(path[0], getCapitalizedSuffixKey(prefix, 'pathStart'), xmlElement)
+	path[-1] = getVector3ByPrefix(path[-1], getCapitalizedSuffixKey(prefix, 'pathEnd'), xmlElement)
 	return path
 
 def getPathsByKey(defaultPaths, key, xmlElement):
@@ -696,14 +702,14 @@ def getTransformedPathByPrefix(path, prefix, xmlElement):
 	if len(path) < 2:
 		print('Warning, bug, path is too small in evaluate in setPathByPrefix.')
 		return
-	pathByKey = getTransformedPathByKey([], prefix + 'path', xmlElement)
+	pathByKey = getTransformedPathByKey([], getCapitalizedSuffixKey(prefix, 'path'), xmlElement)
 	if len( pathByKey ) < len(path):
 		for pointIndex in xrange( len( pathByKey ) ):
 			path[ pointIndex ] = pathByKey[ pointIndex ]
 	else:
 		path = pathByKey
-	path[0] = getVector3ByPrefix(path[0], prefix + 'pathStart', xmlElement)
-	path[-1] = getVector3ByPrefix(path[-1], prefix + 'pathEnd', xmlElement)
+	path[0] = getVector3ByPrefix(path[0], getCapitalizedSuffixKey(prefix, 'pathStart'), xmlElement)
+	path[-1] = getVector3ByPrefix(path[-1], getCapitalizedSuffixKey(prefix, 'pathEnd'), xmlElement)
 	return path
 
 def getTransformedPathsByKey(defaultTransformedPaths, key, xmlElement):

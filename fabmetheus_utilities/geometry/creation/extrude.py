@@ -10,7 +10,7 @@ import __init__
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
@@ -27,7 +27,7 @@ def addLoop(derivation, endMultiplier, loopLists, path, portionDirectionIndex, p
 	'Add an indexed loop to the vertexes.'
 	portionDirection = portionDirections[ portionDirectionIndex ]
 	if portionDirection.directionReversed == True:
-		loopLists.append( [] )
+		loopLists.append([])
 	loops = loopLists[-1]
 	interpolationOffset = derivation.interpolationDictionary['offset']
 	offset = interpolationOffset.getVector3ByPortion( portionDirection )
@@ -71,7 +71,7 @@ def addNegatives(derivation, negatives, paths):
 	portionDirections = getSpacedPortionDirections(derivation.interpolationDictionary)
 	for path in paths:
 		loopLists = getLoopListsByPath(derivation, 1.000001, path, portionDirections)
-		geometryOutput = trianglemesh.getPillarsOutput(loopLists)
+		geometryOutput = triangle_mesh.getPillarsOutput(loopLists)
 		negatives.append(geometryOutput)
 
 def addNegativesPositives(derivation, negatives, paths, positives):
@@ -82,7 +82,7 @@ def addNegativesPositives(derivation, negatives, paths, positives):
 		if not euclidean.getIsWiddershinsByVector3(path):
 			endMultiplier = 1.000001
 		loopLists = getLoopListsByPath(derivation, endMultiplier, path, portionDirections)
-		geometryOutput = trianglemesh.getPillarsOutput(loopLists)
+		geometryOutput = triangle_mesh.getPillarsOutput(loopLists)
 		if endMultiplier == None:
 			positives.append(geometryOutput)
 		else:
@@ -99,7 +99,7 @@ def addPositives(derivation, paths, positives):
 	portionDirections = getSpacedPortionDirections(derivation.interpolationDictionary)
 	for path in paths:
 		loopLists = getLoopListsByPath(derivation, None, path, portionDirections)
-		geometryOutput = trianglemesh.getPillarsOutput(loopLists)
+		geometryOutput = triangle_mesh.getPillarsOutput(loopLists)
 		positives.append(geometryOutput)
 
 def addSpacedPortionDirection( portionDirection, spacedPortionDirections ):
@@ -160,48 +160,21 @@ def getGeometryOutput(derivation, xmlElement):
 	negatives = []
 	positives = []
 	addNegativesPositives(derivation, negatives, derivation.target, positives)
-	return getGeometryOutputByNegativesPositives(derivation, negatives, positives, xmlElement)
+	return getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
 	'Get triangle mesh from attribute dictionary by arguments.'
 	return getGeometryOutput(None, xmlElement)
 
-def getGeometryOutputByConnection(connectionEnd, connectionStart, geometryOutput, xmlElement):
-	'Get solid output by connection.'
-	firstValue = geometryOutput.values()[0]
-	firstValue['connectionStart'] = connectionStart
-	firstValue['connectionEnd'] = connectionEnd
-	return solid.getGeometryOutputByManipulation(geometryOutput, xmlElement)
-
-def getGeometryOutputByNegativesPositives(derivation, negatives, positives, xmlElement):
-	'Get triangle mesh from derivation, negatives, positives and xmlElement.'
-	interpolationOffset = derivation.interpolationDictionary['offset']
-	positiveOutput = trianglemesh.getUnifiedOutput(positives)
-	if len(negatives) < 1:
-		return getGeometryOutputByOffset(positiveOutput, interpolationOffset, xmlElement)
-	if len(positives) < 1:
-		negativeOutput = trianglemesh.getUnifiedOutput(negatives)
-		return getGeometryOutputByOffset(negativeOutput, interpolationOffset, xmlElement)
-	return getGeometryOutputByOffset({'difference' : {'shapes' : [positiveOutput] + negatives}}, interpolationOffset, xmlElement)
-
 def getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement):
 	'Get triangle mesh from derivation, negatives, positives and xmlElement.'
-	positiveOutput = trianglemesh.getUnifiedOutput(positives)
+	positiveOutput = triangle_mesh.getUnifiedOutput(positives)
 	if len(negatives) < 1:
 		return solid.getGeometryOutputByManipulation(positiveOutput, xmlElement)
 	if len(positives) < 1:
-		negativeOutput = trianglemesh.getUnifiedOutput(negatives)
+		negativeOutput = triangle_mesh.getUnifiedOutput(negatives)
 		return solid.getGeometryOutputByManipulation(negativeOutput, xmlElement)
 	return solid.getGeometryOutputByManipulation({'difference' : {'shapes' : [positiveOutput] + negatives}}, xmlElement)
-
-def getGeometryOutputByOffset( geometryOutput, interpolationOffset, xmlElement ):
-	'Get solid output by interpolationOffset.'
-	geometryOutputValues = geometryOutput.values()
-	if len(geometryOutputValues) < 1:
-		return geometryOutput
-	connectionStart = interpolationOffset.getVector3ByPortion(PortionDirection(0.0))
-	connectionEnd = interpolationOffset.getVector3ByPortion(PortionDirection(1.0))
-	return getGeometryOutputByConnection(connectionEnd, connectionStart, geometryOutput, xmlElement)
 
 def getLoopListsByPath(derivation, endMultiplier, path, portionDirections):
 	'Get loop lists from path.'

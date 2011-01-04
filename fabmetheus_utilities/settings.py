@@ -54,7 +54,11 @@ def addEmptyRow( gridPosition ):
 	gridPosition.increment()
 	Tkinter.Label( gridPosition.master ).grid( row = gridPosition.row, column = gridPosition.column )
 
-def addListsToRepository(fileNameHelp, getProfileDirectory, repository):
+def addListsToRepository(fileNameHelp, repository):
+	'Add the value to the lists.'
+	addListsToRepositoryByFunction(fileNameHelp, None, repository)
+
+def addListsToRepositoryByFunction(fileNameHelp, getProfileDirectory, repository):
 	'Add the value to the lists.'
 	repository.displayEntities = []
 	repository.executeTitle = None

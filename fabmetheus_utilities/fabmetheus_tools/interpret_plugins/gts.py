@@ -38,7 +38,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import face
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import gcodec
@@ -91,4 +91,4 @@ def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh 
 
 def getCarving(fileName):
 	"Get the carving for the gts file."
-	return getFromGNUTriangulatedSurfaceText( archive.getFileText(fileName), trianglemesh.TriangleMesh() )
+	return getFromGNUTriangulatedSurfaceText( archive.getFileText(fileName), triangle_mesh.TriangleMesh() )

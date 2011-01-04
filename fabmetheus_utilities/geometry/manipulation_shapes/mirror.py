@@ -10,9 +10,9 @@ import __init__
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.geometry_tools import face
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_evaluator import matrix
+from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.manipulation_shapes import flip
-from fabmetheus_utilities.geometry.solids import trianglemesh
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 
@@ -28,7 +28,7 @@ globalExecutionOrder = 200
 
 def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
 	'Get equated geometryOutput.'
-	flippedGeometryOutput = trianglemesh.getGeometryOutputCopy(geometryOutput)
+	flippedGeometryOutput = triangle_mesh.getGeometryOutputCopy(geometryOutput)
 	flip.flipPoints(matrix.getVertexes(flippedGeometryOutput), prefix, xmlElement)
 	if flip.getShouldReverse(prefix, xmlElement):
 		flippedFaces = face.getFaces(flippedGeometryOutput)
