@@ -10,6 +10,7 @@ import __init__
 from fabmetheus_utilities.geometry.creation import extrude
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_tools import path
+from fabmetheus_utilities.geometry.geometry_utilities.evaluate_elements import setting
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -18,8 +19,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addNegativesByRadius(end, negatives, radius, start, xmlElement):
@@ -50,16 +51,20 @@ def getInclination(end, start):
 	endMinusStart = end - start
 	return math.atan2(endMinusStart.z, abs(endMinusStart.dropAxis()))
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return TeardropDerivation(xmlElement)
+
 def getTeardropPath(inclination, radius, xmlElement):
 	"Get vector3 teardrop path."
 	teardropSides = evaluate.getSidesMinimumThreeBasedOnPrecision(radius, xmlElement)
 	sideAngle = 2.0 * math.pi / float(teardropSides)
-	overhangAngle = evaluate.getOverhangSupportAngle(xmlElement)
-	overhangPlaneAngle = euclidean.getWiddershinsUnitPolar(overhangAngle)
-	overhangAngle = math.atan2(overhangPlaneAngle.imag, overhangPlaneAngle.real * math.cos(inclination))
-	tanOverhangAngle = math.tan(overhangAngle)
-	beginAngle = overhangAngle
-	beginMinusEndAngle = math.pi + overhangAngle + overhangAngle
+	overhangRadians = setting.getOverhangRadians(xmlElement)
+	overhangPlaneAngle = euclidean.getWiddershinsUnitPolar(overhangRadians)
+	overhangRadians = math.atan2(overhangPlaneAngle.imag, overhangPlaneAngle.real * math.cos(inclination))
+	tanOverhangAngle = math.tan(overhangRadians)
+	beginAngle = overhangRadians
+	beginMinusEndAngle = math.pi + overhangRadians + overhangRadians
 	withinSides = int(math.ceil(beginMinusEndAngle / sideAngle))
 	withinSideAngle = -beginMinusEndAngle / float(withinSides)
 	teardropPath = []
@@ -68,7 +73,7 @@ def getTeardropPath(inclination, radius, xmlElement):
 		teardropPath.append(unitPolar * radius)
 		beginAngle += withinSideAngle
 	firstPoint = teardropPath[0]
-	overhangSpan = evaluate.getOverhangSpan(xmlElement)
+	overhangSpan = setting.getOverhangSpan(xmlElement)
 	if overhangSpan <= 0.0:
 		teardropPath.append(complex(0.0, firstPoint.imag + firstPoint.real / tanOverhangAngle))
 	else:
@@ -97,9 +102,9 @@ class TeardropDerivation:
 		end = evaluate.getVector3ByPrefix(None, 'end', xmlElement)
 		start = evaluate.getVector3ByPrefix(Vector3(), 'start', xmlElement)
 		inclinationDegree = math.degrees(getInclination(end, start))
-		self.inclination = math.radians(evaluate.getEvaluatedFloatDefault(inclinationDegree, 'inclination', xmlElement))
+		self.inclination = math.radians(evaluate.getEvaluatedFloat(inclinationDegree, 'inclination', xmlElement))
 		self.radius = lineation.getFloatByPrefixBeginEnd('radius', 'diameter', 1.0, xmlElement)
-		size = evaluate.getEvaluatedFloatDefault(None, 'size', xmlElement)
+		size = evaluate.getEvaluatedFloat(None, 'size', xmlElement)
 		if size != None:
 			self.radius = 0.5 * size
 		self.xmlElement = xmlElement

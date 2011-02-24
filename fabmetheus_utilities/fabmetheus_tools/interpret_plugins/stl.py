@@ -12,20 +12,6 @@ http://en.wikipedia.org/wiki/STL_(file_format)
 A good triangle surface format is the GNU Triangulated Surface format which is described at:
 http://gts.sourceforge.net/reference/gts-surfaces.html#GTS-SURFACE-WRITE
 
-This example gets a carving for the stl file Screw Holder Bottom.stl.  This example is run in a terminal in the folder which contains Screw Holder Bottom.stl and stl.py.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import stl
->>> stl.getCarving()
-[11.6000003815, 10.6837882996, 7.80209827423
-..
-many more lines of the carving
-..
-
 """
 
 
@@ -43,7 +29,7 @@ from struct import unpack
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addFacesGivenBinary( stlData, triangleMesh, vertexIndexTable ):
@@ -75,7 +61,7 @@ def getCarving(fileName=''):
 	"Get the triangle mesh for the stl file."
 	if fileName == '':
 		return None
-	stlData = archive.getFileText( fileName, 'rb')
+	stlData = archive.getFileText(fileName, True, 'rb')
 	if stlData == '':
 		return None
 	triangleMesh = triangle_mesh.TriangleMesh()
@@ -87,7 +73,6 @@ def getCarving(fileName=''):
 	else:
 #	A binary stl should never start with the word "solid".  Because this error is common the file is been parsed as binary regardless.
 		addFacesGivenBinary( stlData, triangleMesh, vertexIndexTable )
-	triangleMesh.setEdgesForAllFaces()
 	return triangleMesh
 
 def getFaceGivenLines( triangleMesh, vertexStartIndex, vertexIndexTable, vertexes ):

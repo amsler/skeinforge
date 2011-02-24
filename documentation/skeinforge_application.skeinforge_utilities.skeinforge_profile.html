@@ -16,18 +16,7 @@ Profile presents the user with a choice of the craft types in the profile_plugin
 The setting is the selection.  If you hit 'Save and Close' the selection will be saved, if you hit 'Cancel' the selection will not be saved.<br>
  <br>
 To change the profile setting, in a shell in the profile folder type:<br>
-&gt; python profile.py<br>
- <br>
-An example of using profile from the python interpreter follows below.<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import profile<br>
-&gt;&gt;&gt; profile.main()<br>
-This brings up the profile setting dialog.</tt></p>
+&gt; python profile.py</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -199,6 +188,8 @@ Methods inherited from <a href="fabmetheus_utilities.settings.html#StringSetting
 
 <dl><dt><a name="ProfileListboxSetting-setValueToSplitLine"><strong>setValueToSplitLine</strong></a>(self, lineIndex, lines, splitLine)</dt><dd><tt>Set&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;second&nbsp;word&nbsp;of&nbsp;a&nbsp;split&nbsp;line.</tt></dd></dl>
 
+<dl><dt><a name="ProfileListboxSetting-updateSaveListeners"><strong>updateSaveListeners</strong></a>(self)</dt><dd><tt>Update&nbsp;save&nbsp;listeners&nbsp;if&nbsp;any.</tt></dd></dl>
+
 <dl><dt><a name="ProfileListboxSetting-writeToRepositoryWriter"><strong>writeToRepositoryWriter</strong></a>(self, repositoryWriter)</dt><dd><tt>Write&nbsp;tab&nbsp;separated&nbsp;name&nbsp;and&nbsp;value&nbsp;to&nbsp;the&nbsp;repository&nbsp;writer.</tt></dd></dl>
 
 </td></tr></table> <p>
@@ -281,7 +272,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_utilities.skei
  <dl><dt><a name="-cancelAll"><strong>cancelAll</strong></a>()</dt><dd><tt>Cancel&nbsp;all&nbsp;the&nbsp;dialogs.</tt></dd></dl>
  <dl><dt><a name="-getCraftTypeName"><strong>getCraftTypeName</strong></a>(subName<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;craft&nbsp;type&nbsp;from&nbsp;the&nbsp;profile.</tt></dd></dl>
  <dl><dt><a name="-getCraftTypePluginModule"><strong>getCraftTypePluginModule</strong></a>(craftTypeName<font color="#909090">=''</font>)</dt><dd><tt>Get&nbsp;the&nbsp;craft&nbsp;type&nbsp;plugin&nbsp;module.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getPluginFileNames"><strong>getPluginFileNames</strong></a>()</dt><dd><tt>Get&nbsp;analyze&nbsp;plugin&nbsp;fileNames.</tt></dd></dl>
  <dl><dt><a name="-getPluginsDirectoryPath"><strong>getPluginsDirectoryPath</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;plugins&nbsp;directory&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getProfileDirectory"><strong>getProfileDirectory</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;profile&nbsp;directory.</tt></dd></dl>
@@ -297,7 +288,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_utilities.skei
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

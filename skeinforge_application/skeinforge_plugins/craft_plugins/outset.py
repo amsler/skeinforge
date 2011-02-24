@@ -8,29 +8,10 @@ The default 'Activate Outset' checkbox is on.  When it is on, the gcode will be 
 ==Examples==
 The following examples outset the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and outset.py.
 
-
 > python outset.py
 This brings up the outset dialog.
 
-
 > python outset.py Screw Holder Bottom.stl
-The outset tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The outset tool has created the file:
-.. Screw Holder Bottom_outset.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import outset
->>> outset.main()
-This brings up the outset dialog.
-
-
->>> outset.writeOutput('Screw Holder Bottom.stl')
 The outset tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -62,16 +43,16 @@ import sys
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/28/04 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def getCraftedText( fileName, text = '', repository=None):
-	"Outset the preface file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
+def getCraftedText( fileName, text='', repository=None):
+	'Outset the preface file or text.'
+	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
 def getCraftedTextFromText(gcodeText, repository=None):
-	"Outset the preface gcode text."
+	'Outset the preface gcode text.'
 	if gcodec.isProcedureDoneOrFileIsEmpty( gcodeText, 'outset'):
 		return gcodeText
 	if repository == None:
@@ -81,34 +62,32 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return OutsetSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return OutsetRepository()
 
-def writeOutput(fileName=''):
-	"Outset the carving of a gcode file.  If no fileName is specified, outset the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'outset')
+def writeOutput(fileName, shouldAnalyze=True):
+	'Outset the carving of a gcode file.'
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'outset', shouldAnalyze)
 
 
 class OutsetRepository:
-	"A class to handle the outset settings."
+	'A class to handle the outset settings.'
 	def __init__(self):
-		"Set the default settings, execute title & settings fileName."
+		'Set the default settings, execute title & settings fileName.'
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.outset.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Outset', self, '')
 		self.activateOutset = settings.BooleanSetting().getFromValue('Activate Outset:', self, True )
 		self.executeTitle = 'Outset'
 
 	def execute(self):
-		"Outset button has been clicked."
+		'Outset button has been clicked.'
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
 
 class OutsetSkein:
-	"A class to outset a skein of extrusions."
+	'A class to outset a skein of extrusions.'
 	def __init__(self):
 		self.boundary = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
@@ -117,22 +96,22 @@ class OutsetSkein:
 		self.rotatedLoopLayer = None
 
 	def addGcodeFromRemainingLoop( self, loop, radius, z ):
-		"Add the remainder of the loop."
+		'Add the remainder of the loop.'
 		boundary = intercircle.getLargestInsetLoopFromLoopRegardless( loop, radius )
 		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
 		self.distanceFeedRate.addPerimeterBlock(loop, z)
 		self.distanceFeedRate.addLine('(</boundaryPerimeter>)')
-		self.distanceFeedRate.addLine('(</surroundingLoop>)')
+		self.distanceFeedRate.addLine('(</nestedRing>)')
 
 	def addOutset(self, rotatedLoopLayer):
-		"Add outset to the layer."
+		'Add outset to the layer.'
 		extrudateLoops = intercircle.getInsetLoopsFromLoops(-self.absoluteHalfPerimeterWidth, rotatedLoopLayer.loops)
-		sortedLoops = triangle_mesh.sortLoopsInOrderOfArea(False, extrudateLoops)
-		for sortedLoop in sortedLoops:
-			self.addGcodeFromRemainingLoop(sortedLoop, self.absoluteHalfPerimeterWidth, rotatedLoopLayer.z)
+		triangle_mesh.sortLoopsInOrderOfArea(False, extrudateLoops)
+		for extrudateLoop in extrudateLoops:
+			self.addGcodeFromRemainingLoop(extrudateLoop, self.absoluteHalfPerimeterWidth, rotatedLoopLayer.z)
 
 	def getCraftedGcode(self, gcodeText, repository):
-		"Parse gcode text and store the bevel gcode."
+		'Parse gcode text and store the bevel gcode.'
 		self.repository = repository
 		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
@@ -155,7 +134,7 @@ class OutsetSkein:
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, lineIndex ):
-		"Parse a gcode line and add it to the outset skein."
+		'Parse a gcode line and add it to the outset skein.'
 		line = self.lines[lineIndex].lstrip()
 		splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 		if len(splitLine) < 1:
@@ -171,7 +150,7 @@ class OutsetSkein:
 		elif firstWord == '(</layer>)':
 			self.addOutset( self.rotatedLoopLayer )
 			self.rotatedLoopLayer = None
-		elif firstWord == '(<surroundingLoop>)':
+		elif firstWord == '(<nestedRing>)':
 			self.boundary = []
 			self.rotatedLoopLayer.loops.append( self.boundary )
 		if self.rotatedLoopLayer == None:
@@ -179,11 +158,11 @@ class OutsetSkein:
 
 
 def main():
-	"Display the outset dialog."
+	'Display the outset dialog.'
 	if len(sys.argv) > 1:
 		writeOutput(' '.join(sys.argv[1 :]))
 	else:
 		settings.startMainLoopFromConstructor( getNewRepository() )
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main()

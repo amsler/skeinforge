@@ -59,29 +59,10 @@ Defines the temperature of the supported layers of the object, those layers whic
 ==Examples==
 The following examples add temperature information to the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and temperature.py.
 
-
 > python temperature.py
 This brings up the temperature dialog.
 
-
 > python temperature.py Screw Holder Bottom.stl
-The temperature tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The temperature tool has created the file:
-.. Screw Holder Bottom_temperature.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import temperature
->>> temperature.main()
-This brings up the temperature dialog.
-
-
->>> temperature.writeOutput('Screw Holder Bottom.stl')
 The temperature tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -109,12 +90,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def getCraftedText( fileName, text = '', repository=None):
+def getCraftedText( fileName, text='', repository=None):
 	"Temperature the file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Temperature a gcode linear move text."
@@ -127,14 +108,12 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return TemperatureSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return TemperatureRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Temperature a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'temperature')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'temperature', shouldAnalyze)
 
 
 class TemperatureRepository:

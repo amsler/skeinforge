@@ -12,7 +12,7 @@ The default 'Activate Export' checkbox is on.  When it is on, the functions desc
 ===Also Send Output To===
 Default is empty.
 
-Defines the output name for sending to a file or pipe.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  With the empty default, nothing will be done.
+Defines the output name for sending to a file or pipe.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  With the empty default, nothing will be done.  If the value is anything else, the output will be written to that file name.
 
 ===Comment Choice===
 Default is 'Delete All Comments'.
@@ -34,43 +34,25 @@ Default is gcode.
 
 Defines the file extension added to the name of the output file.
 
+===Name of Replace File===
+Default is replace.csv.
+
+When export is exporting the code, if there is a tab separated file  with the name of the "Name of Replace File" setting, it will replace the string in the first column by its replacement in the second column.  If there is nothing in the second column, the first column string will be deleted, if this leads to an empty line, the line will be deleted.  If there are replacement columns after the second, they will be added as extra lines of text.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.
+
+Export looks for the alteration file in the alterations folder in the .skeinforge folder in the home directory.  Export does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder.
+
 ===Save Penultimate Gcode===
 Default is off.
 
 When selected, export will save the gcode file with the suffix '_penultimate.gcode' just before it is exported.  This is useful because the code after it is exported could be in a form which the viewers can not display well.
 
-==Alterations==
-Export looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Export does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the skeinforge_plugins folder.
-
-===replace.csv===
-When export is exporting the code, if there is a tab separated file replace.csv, it will replace the string in the first column by its replacement in the second column.  If there is nothing in the second column, the first column string will be deleted, if this leads to an empty line, the line will be deleted.  If there are replacement columns after the second, they will be added as extra lines of text.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.
-
 ==Examples==
 The following examples export the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and export.py.
-
 
 > python export.py
 This brings up the export dialog.
 
-
 > python export.py Screw Holder Bottom.stl
-The export tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The export tool has created the file:
-.. Screw Holder Bottom_export.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import export
->>> export.main()
-This brings up the export dialog.
-
-
->>> export.writeOutput('Screw Holder Bottom.stl')
 The export tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -101,7 +83,7 @@ import time
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedTextFromText(gcodeText, repository=None):
@@ -132,21 +114,20 @@ def getDistanceGcode(exportText):
 	return exportText
 
 def getNewRepository():
-	'Get the repository constructor.'
+	'Get new repository.'
 	return ExportRepository()
 
-def getReplaced(exportText):
+def getReplaceableExportGcode(nameOfReplaceFile, replaceableExportGcode):
 	'Get text with strings replaced according to replace.csv file.'
-	replaceText = settings.getFileInAlterationsOrGivenDirectory(os.path.dirname(__file__), 'Replace.csv')
-	replaceLines = archive.getTextLines(replaceText)
+	replaceLines = settings.getLinesInAlterationsOrGivenDirectory(nameOfReplaceFile)
 	if len(replaceLines) < 1:
-		return exportText
+		return replaceableExportGcode
 	for replaceLine in replaceLines:
 		splitLine = replaceLine.replace('\\n', '\t').split('\t')
 		if len(splitLine) > 0:
-			exportText = exportText.replace(splitLine[0], '\n'.join(splitLine[1 :]))
+			replaceableExportGcode = replaceableExportGcode.replace(splitLine[0], '\n'.join(splitLine[1 :]))
 	output = cStringIO.StringIO()
-	gcodec.addLinesToCString(output, archive.getTextLines(exportText))
+	gcodec.addLinesToCString(output, archive.getTextLines(replaceableExportGcode))
 	return output.getvalue()
 
 def getSelectedPluginModule( plugins ):
@@ -156,47 +137,58 @@ def getSelectedPluginModule( plugins ):
 			return archive.getModuleWithDirectoryPath( plugin.directoryPath, plugin.name )
 	return None
 
-def writeOutput(fileName=''):
-	'Export a gcode linear move file.'
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName == '':
+def sendOutputTo(text, toValue):
+	'Send output to a file or a standard output.'
+	if toValue == 'sys.stderr':
+		print(text, ' ', '\n', sys.stderr)
 		return
+	if toValue == 'sys.stdout':
+		print(text, ' ', '\n', sys.stdout)
+		return
+	archive.writeFileText(toValue, text)
+
+def writeOutput(fileName, shouldAnalyze=True):
+	'Export a gcode linear move file.'
+	if fileName == '':
+		return None
 	repository = ExportRepository()
 	settings.getReadRepository(repository)
 	startTime = time.time()
 	print('File ' + archive.getSummarizedFileName(fileName) + ' is being chain exported.')
-	suffixFileName = fileName[: fileName.rfind('.')]
+	fileNameSuffix = fileName[: fileName.rfind('.')]
 	if repository.addExportSuffix.value:
-		suffixFileName += '_export.'
-	suffixFileName += repository.fileExtension.value
+		fileNameSuffix += '_export'
+	fileNameSuffix += '.' + repository.fileExtension.value
 	gcodeText = gcodec.getGcodeFileText(fileName, '')
 	procedures = skeinforge_craft.getProcedures('export', gcodeText)
 	gcodeText = skeinforge_craft.getChainTextFromProcedures(fileName, procedures[ : - 1 ], gcodeText)
 	if gcodeText == '':
-		return
-	window = skeinforge_analyze.writeOutput(fileName, suffixFileName, gcodeText)
+		return None
 	if repository.savePenultimateGcode.value:
 		penultimateFileName = fileName[: fileName.rfind('.')] + '_penultimate.gcode'
 		archive.writeFileText(penultimateFileName, gcodeText)
 		print('The penultimate file is saved as ' + archive.getSummarizedFileName(penultimateFileName))
-	exportChainGcode = getCraftedTextFromText(gcodeText, repository)
-	replaceableExportChainGcode = None
+	exportGcode = getCraftedTextFromText(gcodeText, repository)
+	window = None
+	if shouldAnalyze:
+		window = skeinforge_analyze.writeOutput(fileName, fileNameSuffix, gcodeText)
+	replaceableExportGcode = None
 	selectedPluginModule = getSelectedPluginModule(repository.exportPlugins)
 	if selectedPluginModule == None:
-		replaceableExportChainGcode = exportChainGcode
+		replaceableExportGcode = exportGcode
 	else:
 		if selectedPluginModule.globalIsReplaceable:
-			replaceableExportChainGcode = selectedPluginModule.getOutput(exportChainGcode)
+			replaceableExportGcode = selectedPluginModule.getOutput(exportGcode)
 		else:
-			selectedPluginModule.writeOutput(suffixFileName, exportChainGcode)
-	if replaceableExportChainGcode != None:
-		replaceableExportChainGcode = getReplaced(replaceableExportChainGcode)
-		archive.writeFileText( suffixFileName, replaceableExportChainGcode )
-		print('The exported file is saved as ' + archive.getSummarizedFileName(suffixFileName))
+			selectedPluginModule.writeOutput(fileNameSuffix, exportGcode)
+	if replaceableExportGcode != None:
+		replaceableExportGcode = getReplaceableExportGcode(repository.nameOfReplaceFile.value, replaceableExportGcode)
+		archive.writeFileText( fileNameSuffix, replaceableExportGcode )
+		print('The exported file is saved as ' + archive.getSummarizedFileName(fileNameSuffix))
 	if repository.alsoSendOutputTo.value != '':
-		if replaceableExportChainGcode == None:
-			replaceableExportChainGcode = selectedPluginModule.getOutput(exportChainGcode)
-		exec('print >> ' + repository.alsoSendOutputTo.value + ', replaceableExportChainGcode')
+		if replaceableExportGcode == None:
+			replaceableExportGcode = selectedPluginModule.getOutput(exportGcode)
+		sendOutputTo(replaceableExportGcode, repository.alsoSendOutputTo.value)
 	print('It took %s to export the file.' % euclidean.getDurationString(time.time() - startTime))
 	return window
 
@@ -236,6 +228,7 @@ class ExportRepository:
 				exportPlugin.directoryPath = exportStaticDirectoryPath
 			self.exportPlugins.append(exportPlugin)
 		self.fileExtension = settings.StringSetting().getFromValue('File Extension:', self, 'gcode')
+		self.nameOfReplaceFile = settings.StringSetting().getFromValue('Name of Replace File:', self, 'replace.csv')
 		self.savePenultimateGcode = settings.BooleanSetting().getFromValue('Save Penultimate Gcode', self, False)
 		self.executeTitle = 'Export'
 

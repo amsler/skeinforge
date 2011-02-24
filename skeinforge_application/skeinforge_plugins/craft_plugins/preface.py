@@ -13,17 +13,17 @@ Default is empty.
 The 'Meta' field is to add meta tags or a note to all your files.  Whatever is in that field will be added in a meta tagged line to the output.
 
 ===Name of Alteration Files===
-Preface looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Preface does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the craft_plugins folder.
+Preface looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Preface does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder.
 
 ====Name of End File====
+Default is end.gcode.
+
+If there is a file with the name of the "Name of End File" setting, it will be added to the very end of the gcode.
+
+====Name of Start File====
 Default is start.gcode.
 
 If there is a file with the name of the "Name of Start File" setting, it will be added to the very beginning of the gcode.
-
-====Name of Start File====
-Default is end.gcode.
-
-If there is a file with the name of the "Name of Start File" setting, it will be added to the very end.
 
 ===Set Positioning to Absolute===
 Default is on.
@@ -54,29 +54,10 @@ When selected, the M103 turn extruder off gcode will be added at the beginning o
 ==Examples==
 The following examples preface the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and preface.py.
 
-
 > python preface.py
 This brings up the preface dialog.
 
-
 > python preface.py Screw Holder Bottom.stl
-The preface tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The preface tool has created the file:
-.. Screw Holder Bottom_preface.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import preface
->>> preface.main()
-This brings up the preface dialog.
-
-
->>> preface.writeOutput('Screw Holder Bottom.stl')
 The preface tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -107,32 +88,29 @@ import sys
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/28/04 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def getCraftedText( fileName, text = '', prefaceRepository = None ):
+def getCraftedText( fileName, text='', repository = None ):
 	"Preface and convert an svg file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), prefaceRepository )
+	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
-def getCraftedTextFromText( text, prefaceRepository = None ):
+def getCraftedTextFromText( text, repository = None ):
 	"Preface and convert an svg text."
 	if gcodec.isProcedureDoneOrFileIsEmpty( text, 'preface'):
 		return text
-	if prefaceRepository == None:
-		prefaceRepository = settings.getReadRepository(PrefaceRepository())
-	return PrefaceSkein().getCraftedGcode(prefaceRepository, text)
+	if repository == None:
+		repository = settings.getReadRepository(PrefaceRepository())
+	return PrefaceSkein().getCraftedGcode(repository, text)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return PrefaceRepository()
 
-def writeOutput(fileName=''):
-	"Preface the carving of a gcode file.  If no fileName is specified, preface the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName == '':
-		return
-	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'preface')
+def writeOutput(fileName, shouldAnalyze=True):
+	"Preface the carving of a gcode file."
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'preface', shouldAnalyze)
 
 
 class PrefaceRepository:
@@ -173,15 +151,13 @@ class PrefaceSkein:
 		self.oldLocation = None
 		self.svgReader = SVGReader()
 
-	def addFromUpperLowerFile( self, fileName ):
+	def addFromUpperLowerFile(self, fileName):
 		"Add lines of text from the fileName or the lowercase fileName, if there is no file by the original fileName in the directory."
-		fileText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), fileName )
-		fileLines = archive.getTextLines(fileText)
-		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode( fileLines )
+		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(settings.getLinesInAlterationsOrGivenDirectory(fileName))
 
 	def addInitializationToOutput(self):
 		"Add initialization gcode to the output."
-		self.addFromUpperLowerFile(self.prefaceRepository.nameOfStartFile.value) # Add a start file if it exists.
+		self.addFromUpperLowerFile(self.repository.nameOfStartFile.value) # Add a start file if it exists.
 		self.distanceFeedRate.addTagBracketedLine('creation', 'skeinforge') # GCode formatted comment
 		absoluteFilePathUntilDot = os.path.abspath(__file__)[: os.path.abspath(__file__).rfind('.')]
 		if absoluteFilePathUntilDot == '/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/preface': #is this script on Enrique's computer?
@@ -189,23 +165,23 @@ class PrefaceSkein:
 		versionText = archive.getFileText(archive.getVersionFileName())
 		self.distanceFeedRate.addTagBracketedLine('version', versionText) # GCode formatted comment
 		self.distanceFeedRate.addLine('(<extruderInitialization>)') # GCode formatted comment
-		if self.prefaceRepository.setPositioningToAbsolute.value:
+		if self.repository.setPositioningToAbsolute.value:
 			self.distanceFeedRate.addLine('G90 ;set positioning to absolute') # Set positioning to absolute.
-		if self.prefaceRepository.setUnitsToMillimeters.value:
+		if self.repository.setUnitsToMillimeters.value:
 			self.distanceFeedRate.addLine('G21 ;set units to millimeters') # Set units to millimeters.
-		if self.prefaceRepository.startAtHome.value:
+		if self.repository.startAtHome.value:
 			self.distanceFeedRate.addLine('G28 ;start at home') # Start at home.
-		if self.prefaceRepository.turnExtruderOffAtStartUp.value:
+		if self.repository.turnExtruderOffAtStartUp.value:
 			self.distanceFeedRate.addLine('M103') # Turn extruder off.
 		craftTypeName = skeinforge_profile.getCraftTypeName()
 		self.distanceFeedRate.addTagBracketedLine('craftTypeName', craftTypeName)
 		self.distanceFeedRate.addTagBracketedLine('decimalPlacesCarried', self.distanceFeedRate.decimalPlacesCarried)
 		layerThickness = float(self.svgReader.sliceDictionary['layerThickness'])
-		self.distanceFeedRate.addTagBracketedLine('layerThickness', self.distanceFeedRate.getRounded(layerThickness))
-		if self.prefaceRepository.meta.value:
-			self.distanceFeedRate.addTagBracketedLine('meta', self.prefaceRepository.meta.value)
+		self.distanceFeedRate.addTagRoundedLine('layerThickness', layerThickness)
+		if self.repository.meta.value:
+			self.distanceFeedRate.addTagBracketedLine('meta', self.repository.meta.value)
 		perimeterWidth = float(self.svgReader.sliceDictionary['perimeterWidth'])
-		self.distanceFeedRate.addTagBracketedLine('perimeterWidth', self.distanceFeedRate.getRounded(perimeterWidth))
+		self.distanceFeedRate.addTagRoundedLine('perimeterWidth', perimeterWidth)
 		self.distanceFeedRate.addTagBracketedLine('profileName', skeinforge_profile.getProfileName(craftTypeName))
 		procedureNames = self.svgReader.sliceDictionary['procedureName'].replace(',', ' ').split()
 		for procedureName in procedureNames:
@@ -220,19 +196,19 @@ class PrefaceSkein:
 		if rotatedLoopLayer.rotation != None:
 			self.distanceFeedRate.addTagBracketedLine('bridgeRotation', str( rotatedLoopLayer.rotation ) ) # Indicate the bridge rotation.
 		for loop in rotatedLoopLayer.loops:
-			self.distanceFeedRate.addGcodeFromLoop( loop, rotatedLoopLayer.z )
+			self.distanceFeedRate.addGcodeFromLoop(loop, rotatedLoopLayer.z)
 		self.distanceFeedRate.addLine('(</layer>)')
 
 	def addShutdownToOutput(self):
 		"Add shutdown gcode to the output."
 		self.distanceFeedRate.addLine('(</crafting>)') # GCode formatted comment
-		if self.prefaceRepository.turnExtruderOffAtShutDown.value:
+		if self.repository.turnExtruderOffAtShutDown.value:
 			self.distanceFeedRate.addLine('M103') # Turn extruder motor off.
-		self.addFromUpperLowerFile( self.prefaceRepository.nameOfEndFile.value ) # Add an end file if it exists.
+		self.addFromUpperLowerFile(self.repository.nameOfEndFile.value) # Add an end file if it exists.
 
-	def getCraftedGcode( self, prefaceRepository, gcodeText ):
+	def getCraftedGcode( self, repository, gcodeText ):
 		"Parse gcode text and store the bevel gcode."
-		self.prefaceRepository = prefaceRepository
+		self.repository = repository
 		self.svgReader.parseSVG('', gcodeText)
 		if self.svgReader.sliceDictionary == None:
 			print('Warning, nothing will be done because the sliceDictionary could not be found getCraftedGcode in preface.')

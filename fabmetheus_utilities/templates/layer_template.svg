@@ -127,19 +127,17 @@ function displayLayer(layerNum) {
 		globalSlider.setAttributeNS(null, 'visibility', 'hidden');
 		globalThumb.setAttributeNS(null, 'visibility', 'hidden');
 	}
-	decreaseLayerIndexButton = document.getElementById('decreaseLayerIndex')
 	if (layerNum <= 0) {
-		decreaseLayerIndexButton.setAttributeNS(null, 'visibility', 'hidden');
+		document.getElementById('decreaseLayerIndex').setAttributeNS(null, 'visibility', 'hidden');
 	}
 	else {
-		decreaseLayerIndexButton.setAttributeNS(null, 'visibility', 'visible');
+		document.getElementById('decreaseLayerIndex').setAttributeNS(null, 'visibility', 'visible');
 	}
-	increaseLayerIndexButton = document.getElementById('increaseLayerIndex')
 	if (layerNum >= globalLayers.length - 1) {
-		increaseLayerIndexButton.setAttributeNS(null, 'visibility', 'hidden');
+		document.getElementById('increaseLayerIndex').setAttributeNS(null, 'visibility', 'hidden');
 	}
 	else {
-		increaseLayerIndexButton.setAttributeNS(null, 'visibility', 'visible');
+		document.getElementById('increaseLayerIndex').setAttributeNS(null, 'visibility', 'visible');
 	}
 	if (layerNum < 0 || layerNum >= globalLayers.length) {
 		return
@@ -319,7 +317,7 @@ function viewIso() {
 		  }
 	  }
 	  //show control box
-	hideElements(['isoViewButton', 'layerControlBox', 'layerViewLabel', 'scrollControlBox', 'scrollViewLabel']);
+	hideElements(['decreaseLayerIndex', 'increaseLayerIndex', 'isoViewButton', 'layerControlBox', 'layerViewLabel', 'scrollControlBox', 'scrollViewLabel']);
 	showElements(['isoControlBox', 'isoViewLabel', 'layerViewButton', 'scrollViewButton']);
 	displayIso(globalLatitude, globalLongitude);
 	setScaleText('scaleIso');

@@ -27,29 +27,10 @@ Defines the layer index which the script starts extruding towers, after the last
 ==Examples==
 The following examples tower the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and tower.py.
 
-
 > python tower.py
 This brings up the tower dialog.
 
-
 > python tower.py Screw Holder Bottom.stl
-The tower tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The tower tool has created the file:
-.. Screw Holder Bottom_tower.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import tower
->>> tower.main()
-This brings up the tower dialog.
-
-
->>> tower.writeOutput('Screw Holder Bottom.stl')
 The tower tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -78,11 +59,11 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 def getCraftedText( fileName, text, towerRepository = None ):
 	"Tower a gcode linear move file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), towerRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), towerRepository )
 
 def getCraftedTextFromText( gcodeText, towerRepository = None ):
 	"Tower a gcode linear move text."
@@ -95,14 +76,12 @@ def getCraftedTextFromText( gcodeText, towerRepository = None ):
 	return TowerSkein().getCraftedGcode( gcodeText, towerRepository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return TowerRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Tower a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'tower')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'tower', shouldAnalyze)
 
 
 class Island:
@@ -164,7 +143,7 @@ class TowerSkein:
 		self.afterExtrusionLines = []
 		self.beforeExtrusionLines = []
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
-		self.highestZ = - 999999999.0
+		self.highestZ = - 987654321.0
 		self.island = None
 		self.layerIndex = 0
 		self.lineIndex = 0
@@ -175,10 +154,10 @@ class TowerSkein:
 		self.oldOrderedLocation = Vector3()
 		self.perimeterWidth = 0.6
 		self.shutdownLineIndex = sys.maxint
-		self.surroundingLoopCount = 0
+		self.nestedRingCount = 0
 		self.threadLayer = None
 		self.threadLayers = []
-		self.travelFeedRatePerMinute = None
+		self.travelFeedRateMinute = None
 
 	def addEntireLayer( self, threadLayer ):
 		"Add entire thread layer."
@@ -191,9 +170,9 @@ class TowerSkein:
 		"Add thread with a high move if necessary to clear the previous extrusion."
 		if self.oldLocation != None:
 			if self.oldLocation.z + self.minimumBelow < self.highestZ:
-				self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, self.oldLocation.dropAxis(), self.highestZ )
+				self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRateMinute, self.oldLocation.dropAxis(), self.highestZ )
 		if location.z + self.minimumBelow < self.highestZ:
-			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, location.dropAxis(), self.highestZ )
+			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRateMinute, location.dropAxis(), self.highestZ )
 
 	def addThreadLayerIfNone(self):
 		"Add a thread layer if it is none."
@@ -246,8 +225,8 @@ class TowerSkein:
 		self.lines = archive.getTextLines(gcodeText)
 		self.towerRepository = towerRepository
 		self.parseInitialization()
-		if gcodec.isThereAFirstWord('(<operatingLayerEnd>', self.lines, self.lineIndex ):
-			self.parseUntilOperatingLayer()
+		self.parseIfWordUntilWord('(<operatingLayerEnd>')
+		self.parseIfWordUntilWord('(</skirt>)')
 		for lineIndex in xrange( self.lineIndex, len(self.lines) ):
 			self.parseLine( lineIndex )
 		concatenateEndIndex = min( len( self.threadLayers ), towerRepository.towerStartLayer.value )
@@ -263,25 +242,25 @@ class TowerSkein:
 		threadLayer = None
 		if layerIndex != self.oldLayerIndex:
 			self.oldLayerIndex = layerIndex
-			threadLayer = self.threadLayers[ layerIndex ]
+			threadLayer = self.threadLayers[layerIndex]
 			self.distanceFeedRate.addLines( threadLayer.beforeExtrusionLines )
 		removedIsland = self.getTransferClosestSurroundingLoopLines( self.oldOrderedLocation, islands )
 		if threadLayer != None:
 			self.distanceFeedRate.addLines( threadLayer.afterExtrusionLines )
 		return removedIsland
 
-	def getTransferClosestSurroundingLoopLines( self, oldOrderedLocation, remainingSurroundingLoops ):
+	def getTransferClosestSurroundingLoopLines( self, oldOrderedLocation, remainingNestedRings ):
 		"Get and transfer the closest remaining surrounding loop."
-		if len( remainingSurroundingLoops ) > 0:
-			oldOrderedLocation.z = remainingSurroundingLoops[0].z
-		closestDistance = 999999999999999999.0
+		if len( remainingNestedRings ) > 0:
+			oldOrderedLocation.z = remainingNestedRings[0].z
+		closestDistance = 999999999987654321.0
 		closestSurroundingLoop = None
-		for remainingSurroundingLoop in remainingSurroundingLoops:
+		for remainingSurroundingLoop in remainingNestedRings:
 			distance = euclidean.getNearestDistanceIndex( oldOrderedLocation.dropAxis(), remainingSurroundingLoop.boundary ).distance
 			if distance < closestDistance:
 				closestDistance = distance
 				closestSurroundingLoop = remainingSurroundingLoop
-		remainingSurroundingLoops.remove( closestSurroundingLoop )
+		remainingNestedRings.remove( closestSurroundingLoop )
 		hasTravelledHighRoad = False
 		for line in closestSurroundingLoop.lines:
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
@@ -304,13 +283,25 @@ class TowerSkein:
 		bottomLayerIndex = self.getBottomLayerIndex()
 		coneAngleTangent = math.tan( math.radians( self.towerRepository.extruderPossibleCollisionConeAngle.value ) )
 		for layerIndex in xrange( bottomLayerIndex, untilLayerIndex ):
-			islands = self.threadLayers[ layerIndex ].islands
+			islands = self.threadLayers[layerIndex].islands
 			outsetDistance = self.perimeterWidth * ( untilLayerIndex - layerIndex ) * coneAngleTangent + 0.5 * self.perimeterWidth
-			for belowIsland in self.threadLayers[ layerIndex ].islands:
+			for belowIsland in self.threadLayers[layerIndex].islands:
 				outsetIslandLoop = belowIsland.boundingLoop.getOutsetBoundingLoop( outsetDistance )
 				if island.boundingLoop.isOverlappingAnother( outsetIslandLoop ):
 					return False
 		return True
+
+	def parseIfWordUntilWord(self, word):
+		"Parse gcode if there is a word until the word is reached."
+		for self.lineIndex in xrange(self.lineIndex, gcodec.getFirstWordIndexReverse(word, self.lines, self.lineIndex)):
+			line = self.lines[self.lineIndex]
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
+			firstWord = gcodec.getFirstWord(splitLine)
+			self.distanceFeedRate.addLine(line)
+			if firstWord == 'G1':
+				self.oldLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
+				if self.oldLocation.z > self.highestZ:
+					self.highestZ = self.oldLocation.z
 
 	def parseInitialization(self):
 		'Parse gcode initialization and store the parameters.'
@@ -328,7 +319,7 @@ class TowerSkein:
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float(splitLine[1])
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
+				self.travelFeedRateMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine( self, lineIndex ):
@@ -350,7 +341,7 @@ class TowerSkein:
 		elif firstWord == '(<layer>':
 			self.beforeExtrusionLines = [ line ]
 			self.island = None
-			self.surroundingLoopCount = 0
+			self.nestedRingCount = 0
 			self.threadLayer = None
 			return
 		elif firstWord == '(</layer>)':
@@ -359,37 +350,23 @@ class TowerSkein:
 			self.afterExtrusionLines = []
 		elif firstWord == '(</loop>)':
 			self.afterExtrusionLines = []
-		elif firstWord == '(</perimeter>)':
-			self.afterExtrusionLines = []
-		elif firstWord == '(<surroundingLoop>)':
-			self.surroundingLoopCount += 1
+		elif firstWord == '(<nestedRing>)':
+			self.nestedRingCount += 1
 			if self.island == None:
 				self.island = Island()
 				self.addThreadLayerIfNone()
 				self.threadLayer.islands.append( self.island )
+		elif firstWord == '(</perimeter>)':
+			self.afterExtrusionLines = []
 		if self.island != None:
 			self.island.lines.append(line)
-		if firstWord == '(</surroundingLoop>)':
+		if firstWord == '(</nestedRing>)':
 			self.afterExtrusionLines = []
-			self.surroundingLoopCount -= 1
-			if self.surroundingLoopCount == 0:
+			self.nestedRingCount -= 1
+			if self.nestedRingCount == 0:
 				self.island = None
 		if len( self.beforeExtrusionLines ) > 0:
 			self.beforeExtrusionLines.append(line)
-
-	def parseUntilOperatingLayer(self):
-		"Parse gcode until the operating layer if there is one."
-		for self.lineIndex in xrange( self.lineIndex, len(self.lines) ):
-			line = self.lines[self.lineIndex]
-			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
-			firstWord = gcodec.getFirstWord(splitLine)
-			self.distanceFeedRate.addLine(line)
-			if firstWord == 'G1':
-				self.oldLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
-				if self.oldLocation.z > self.highestZ:
-					self.highestZ = self.oldLocation.z
-			if firstWord == '(<operatingLayerEnd>':
-				return
 
 
 def main():

@@ -17,8 +17,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -29,6 +29,8 @@ def getGeometryOutput(derivation, xmlElement):
 	angleTotal = math.radians(derivation.start)
 	sidesCeiling = int(math.ceil(abs(derivation.sides) * derivation.extent / 360.0))
 	sideAngle = math.radians(derivation.extent) / sidesCeiling
+	if derivation.sides < 0.0:
+		sideAngle = -sideAngle
 	spiral = lineation.Spiral(derivation.spiral, 0.5 * sideAngle / math.pi)
 	for side in xrange(sidesCeiling + 1):
 		unitPolar = euclidean.getWiddershinsUnitPolar(angleTotal)
@@ -45,6 +47,10 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	evaluate.setAttributeDictionaryByArguments(['radius', 'start', 'end', 'revolutions'], arguments, xmlElement)
 	return getGeometryOutput(None, xmlElement)
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return CircleDerivation(xmlElement)
+
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
@@ -55,14 +61,14 @@ class CircleDerivation:
 	def __init__(self, xmlElement):
 		'Set defaults.'
 		self.radius = lineation.getRadiusComplex(complex(1.0, 1.0), xmlElement)
-		self.sides = evaluate.getEvaluatedFloatDefault(None, 'sides', xmlElement)
+		self.sides = evaluate.getEvaluatedFloat(None, 'sides', xmlElement)
 		if self.sides == None:
 			radiusMaximum = max(self.radius.real, self.radius.imag)
 			self.sides = evaluate.getSidesMinimumThreeBasedOnPrecisionSides(radiusMaximum, xmlElement)
-		self.start = evaluate.getEvaluatedFloatDefault(0.0, 'start', xmlElement)
-		end = evaluate.getEvaluatedFloatDefault(360.0, 'end', xmlElement)
-		self.revolutions = evaluate.getEvaluatedFloatDefault(1.0, 'revolutions', xmlElement)
-		self.extent = evaluate.getEvaluatedFloatDefault(end - self.start, 'extent', xmlElement)
+		self.start = evaluate.getEvaluatedFloat(0.0, 'start', xmlElement)
+		end = evaluate.getEvaluatedFloat(360.0, 'end', xmlElement)
+		self.revolutions = evaluate.getEvaluatedFloat(1.0, 'revolutions', xmlElement)
+		self.extent = evaluate.getEvaluatedFloat(end - self.start, 'extent', xmlElement)
 		self.extent += 360.0 * (self.revolutions - 1.0)
 		self.spiral = evaluate.getVector3ByPrefix(None, 'spiral', xmlElement)
 

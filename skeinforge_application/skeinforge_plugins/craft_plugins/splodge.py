@@ -44,29 +44,10 @@ Defines the quantity length of extra extrusion at the operating feed rate that w
 ==Examples==
 The following examples splodge the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and splodge.py.
 
-
 > python splodge.py
 This brings up the splodge dialog.
 
-
 > python splodge.py Screw Holder Bottom.stl
-The splodge tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The splodge tool has created the file:
-.. Screw Holder Bottom_splodge.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import splodge
->>> splodge.main()
-This brings up the splodge dialog.
-
-
->>> splodge.writeOutput('Screw Holder Bottom.stl')
 The splodge tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -93,12 +74,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, text, splodgeRepository = None ):
 	"Splodge a gcode linear move file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), splodgeRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), splodgeRepository )
 
 def getCraftedTextFromText( gcodeText, splodgeRepository = None ):
 	"Splodge a gcode linear move text."
@@ -111,14 +92,12 @@ def getCraftedTextFromText( gcodeText, splodgeRepository = None ):
 	return SplodgeSkein().getCraftedGcode( gcodeText, splodgeRepository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return SplodgeRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Splodge a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'splodge')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'splodge', shouldAnalyze)
 
 
 class SplodgeRepository:

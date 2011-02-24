@@ -44,25 +44,7 @@ The following examples inset the file Screw Holder Bottom.stl.  The examples are
 > python inset.py
 This brings up the inset dialog.
 
-
 > python inset.py Screw Holder Bottom.stl
-The inset tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The inset tool has created the file:
-.. Screw Holder Bottom_inset.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import inset
->>> inset.main()
-This brings up the inset dialog.
-
-
->>> inset.writeOutput('Screw Holder Bottom.stl')
 The inset tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -97,8 +79,8 @@ import sys
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/28/04 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addAlreadyFilledArounds( alreadyFilledArounds, loop, radius ):
@@ -167,9 +149,9 @@ def addSegmentOutline( isThick, outlines, pointBegin, pointEnd, width ):
 		outline.append( outsideBeginCenterDown )
 	outlines.append( euclidean.getPointsRoundZAxis( normalizedSegment, outline ) )
 
-def getCraftedText( fileName, text = '', repository=None):
+def getCraftedText( fileName, text='', repository=None):
 	"Inset the preface file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Inset the preface gcode text."
@@ -188,7 +170,7 @@ def getIsIntersectingWithinList( loop, loopList ):
 	return euclidean.isLoopIntersectingLoops( loop, loopList )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return InsetRepository()
 
 def getSegmentsFromLoopListsPoints( loopLists, pointBegin, pointEnd ):
@@ -243,11 +225,9 @@ def isIntersectingWithinLists( loop, loopLists ):
 			return True
 	return False
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Inset the carving of a gcode file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'inset')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'inset', shouldAnalyze)
 
 
 class InsetRepository:
@@ -328,17 +308,14 @@ class InsetSkein:
 #		loop = euclidean.getSimplifiedLoop( intercircle.getCentersFromLoopDirection( euclidean.isWiddershins(loop), loop, radius )[0], radius )
 #		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
 #		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
-
 		centerOutset = intercircle.getLargestCenterOutsetLoopFromLoopRegardless( loop, radius )
 		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, centerOutset.outset, z )
 		self.addGcodePerimeterBlockFromRemainingLoop( centerOutset.center, loopLists, radius, z )
-
-
 #		boundary = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, - radius )
 #		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
 #		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
 		self.distanceFeedRate.addLine('(</boundaryPerimeter>)')
-		self.distanceFeedRate.addLine('(</surroundingLoop>)')
+		self.distanceFeedRate.addLine('(</nestedRing>)')
 
 	def addGcodePerimeterBlockFromRemainingLoop( self, loop, loopLists, radius, z ):
 		"Add the perimter block remainder of the loop which does not overlap the alreadyFilledArounds loops."
@@ -422,7 +399,7 @@ class InsetSkein:
 		elif firstWord == '(</layer>)':
 			self.addInset( self.rotatedLoopLayer )
 			self.rotatedLoopLayer = None
-		elif firstWord == '(<surroundingLoop>)':
+		elif firstWord == '(<nestedRing>)':
 			self.boundary = []
 			self.rotatedLoopLayer.loops.append( self.boundary )
 		if self.rotatedLoopLayer == None:

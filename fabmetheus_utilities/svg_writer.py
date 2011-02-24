@@ -11,11 +11,11 @@ import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.vector3 import Vector3
-from fabmetheus_utilities.xml_simple_reader import XMLElement
 from fabmetheus_utilities.xml_simple_reader import XMLSimpleReader
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
+from fabmetheus_utilities import xml_simple_reader
 from fabmetheus_utilities import xml_simple_writer
 import cStringIO
 import math
@@ -24,7 +24,7 @@ import os
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalOriginalTextString = '<!-- Original XML Text:\n'
@@ -64,13 +64,18 @@ def getSliceXMLElements(xmlElement):
 				sliceXMLElements.append(gXMLElement)
 	return sliceXMLElements
 
-def getSVGByLoopLayers(addLayerTemplateToSVG, rotatedLoopLayers, svgCarving):
+def getSVGByLoopLayers(addLayerTemplateToSVG, carving, rotatedLoopLayers):
 	'Get the svg text.'
 	if len(rotatedLoopLayers) < 1:
 		return ''
-	decimalPlacesCarried = max(0, 2 - int(math.floor(math.log10(svgCarving.layerThickness))))
-	svgWriter = SVGWriter(addLayerTemplateToSVG, svgCarving, decimalPlacesCarried)
-	return svgWriter.getReplacedSVGTemplate(svgCarving.fileName, 'basic', rotatedLoopLayers, svgCarving.getFabmetheusXML())
+	decimalPlacesCarried = max(0, 2 - int(math.floor(math.log10(carving.layerThickness))))
+	svgWriter = SVGWriter(
+		addLayerTemplateToSVG,
+		carving.getCarveCornerMaximum(),
+		carving.getCarveCornerMinimum(),
+		decimalPlacesCarried,
+		carving.getCarveLayerThickness())
+	return svgWriter.getReplacedSVGTemplate(carving.fileName, 'basic', rotatedLoopLayers, carving.getFabmetheusXML())
 
 def getTruncatedRotatedBoundaryLayers(repository, rotatedLoopLayers):
 	'Get the truncated rotated boundary layers.'
@@ -97,7 +102,7 @@ class SVGWriter:
 			cornerMinimum,
 			decimalPlacesCarried,
 			layerThickness,
-			perimeterWidth = None):
+			perimeterWidth=None):
 		'Initialize.'
 		self.addLayerTemplateToSVG = addLayerTemplateToSVG
 		self.cornerMaximum = cornerMaximum
@@ -132,7 +137,7 @@ class SVGWriter:
 		if xmlElement.className == 'comment':
 			xmlElement.setParentAddToChildren(self.svgElement)
 			return
-		commentElement = XMLElement()
+		commentElement = xml_simple_reader.XMLElement()
 		commentElement.className = 'comment'
 		xmlElementOutput = cStringIO.StringIO()
 		xmlElement.addXML(0, xmlElementOutput)

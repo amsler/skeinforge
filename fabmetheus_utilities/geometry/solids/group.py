@@ -9,37 +9,29 @@ import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import dictionary
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_matrix import matrix
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities import euclidean
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def convertXMLElement(geometryOutput, xmlElement):
 	"Convert the xml element to a group xml element."
-	convertContainerXMLElement(geometryOutput, Group(), xmlElement)
+	convertContainerXMLElement(geometryOutput, xmlElement, Group())
 
-def convertContainerXMLElement(geometryOutput, object, xmlElement):
+def convertContainerXMLElement(geometryOutput, xmlElement, xmlObject):
 	"Convert the xml element to a group xml element."
-	xmlElement.linkObject(object)
-	matrix.setXMLElementDictionaryToOtherElementDictionary(xmlElement, xmlElement.object.matrix4X4, 'matrix.', xmlElement)
+	xmlElement.linkObject(xmlObject)
+	matrix.getBranchMatrixSetXMLElement(xmlElement)
 	xmlElement.getXMLProcessor().createChildren(geometryOutput['shapes'], xmlElement)
-
-def processShape(archivableClass, xmlElement):
-	"Get any new elements and process the shape."
-	if xmlElement == None:
-		return
-	evaluate.getArchivableObjectAddToParent(archivableClass, xmlElement)
-	matrix.setXMLElementDictionaryToOtherElementDictionary(xmlElement, xmlElement.object.matrix4X4, 'matrix.', xmlElement)
-	xmlElement.getXMLProcessor().processChildren(xmlElement)
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	processShape(Group, xmlElement)
+	evaluate.processArchivable(Group, xmlElement)
 
 
 class Group(dictionary.Dictionary):
@@ -73,8 +65,14 @@ class Group(dictionary.Dictionary):
 
 	def getMatrixChainTetragrid(self):
 		"Get the matrix chain tetragrid."
-		return self.matrix4X4.getOtherTimesSelf(self.xmlElement.parent.object.getMatrixChainTetragrid()).tetragrid
+		return matrix.getTetragridTimesOther(self.xmlElement.parent.xmlObject.getMatrixChainTetragrid(), self.matrix4X4.tetragrid)
 
 	def getVisible(self):
 		"Get visible."
 		return euclidean.getBooleanFromDictionary(True, self.getAttributeDictionary(), 'visible')
+
+	def setToXMLElement(self, xmlElement):
+		'Set to xmlElement.'
+		self.xmlElement = xmlElement
+		xmlElement.parent.xmlObject.archivableObjects.append(self)
+		matrix.getBranchMatrixSetXMLElement(xmlElement)

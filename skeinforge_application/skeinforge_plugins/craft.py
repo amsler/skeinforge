@@ -22,7 +22,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addSubmenus( menu, pluginFileName, pluginFolderPath, pluginPath ):
@@ -55,10 +55,10 @@ def addToMenu( master, menu, repository, window ):
 	CraftMenuSaveListener( menu, window )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return skeinforge_craft.CraftRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName):
 	"Craft a gcode file."
 	return skeinforge_craft.writeOutput(fileName)
 
@@ -69,7 +69,7 @@ class CraftMenuSaveListener:
 		"Set the menu."
 		self.menu = menu
 		addToCraftMenu( menu )
-		euclidean.addElementToListTableIfNotThere( self, window, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListDictionaryIfNotThere( self, window, settings.globalProfileSaveListenerListTable )
 
 	def save(self):
 		"Profile has been saved and profile menu should be updated."
@@ -81,7 +81,7 @@ class CraftRadioButtonsSaveListener:
 	"A class to update the craft radio buttons."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		euclidean.addElementToListTableIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListDictionaryIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
 		self.gridPosition = gridPosition.getCopy()
 		self.gridPosition.increment()
 		self.gridPosition.row = gridPosition.rowStart

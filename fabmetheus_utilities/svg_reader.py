@@ -25,7 +25,7 @@ import traceback
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalNumberOfCornerPoints = 11
@@ -734,13 +734,13 @@ class PathReader:
 	def processPathWordC(self):
 		'Process path word C.'
 		end = self.getComplexByExtraIndex( 5 )
-		self.addPathCubic( [ self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex( 3 ) ], end )
+		self.addPathCubic( [ self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex(3) ], end )
 
 	def processPathWordc(self):
 		'Process path word C.'
 		begin = self.getOldPoint()
 		end = self.getComplexByExtraIndex( 5 )
-		self.addPathCubic( [ self.getComplexByExtraIndex( 1 ) + begin, self.getComplexByExtraIndex( 3 ) + begin ], end + begin )
+		self.addPathCubic( [ self.getComplexByExtraIndex( 1 ) + begin, self.getComplexByExtraIndex(3) + begin ], end + begin )
 
 	def processPathWordH(self):
 		"Process path word H."
@@ -782,7 +782,7 @@ class PathReader:
 
 	def processPathWordQ(self):
 		'Process path word Q.'
-		self.addPathQuadratic( self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex( 3 ) )
+		self.addPathQuadratic( self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex(3) )
 
 	def processPathWordq(self):
 		'Process path word q.'
@@ -791,7 +791,7 @@ class PathReader:
 
 	def processPathWordS(self):
 		'Process path word S.'
-		self.addPathCubicReflected( self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex( 3 ) )
+		self.addPathCubicReflected( self.getComplexByExtraIndex( 1 ), self.getComplexByExtraIndex(3) )
 
 	def processPathWords(self):
 		'Process path word s.'

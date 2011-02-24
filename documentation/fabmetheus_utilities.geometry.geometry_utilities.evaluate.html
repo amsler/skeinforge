@@ -23,10 +23,11 @@
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.gcodec.html">fabmetheus_utilities.gcodec</a><br>
 <a href="math.html">math</a><br>
 <a href="os.html">os</a><br>
-</td><td width="25%" valign=top><a href="fabmetheus_utilities.settings.html">fabmetheus_utilities.settings</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate_elements.setting.html">fabmetheus_utilities.geometry.geometry_utilities.evaluate_elements.setting</a><br>
+<a href="fabmetheus_utilities.settings.html">fabmetheus_utilities.settings</a><br>
 <a href="sys.html">sys</a><br>
-<a href="traceback.html">traceback</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top><a href="traceback.html">traceback</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -81,12 +82,7 @@
 </dl>
 </dd>
 <dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorAttribute">EvaluatorAttribute</a>
-</font></dt><dd>
-<dl>
-<dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorFundamental">EvaluatorFundamental</a>
-</font></dt></dl>
-</dd>
-<dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorBracketCurly">EvaluatorBracketCurly</a>
+</font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorBracketCurly">EvaluatorBracketCurly</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorBracketRound">EvaluatorBracketRound</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorBracketSquare">EvaluatorBracketSquare</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorClass">EvaluatorClass</a>
@@ -102,6 +98,7 @@
 </dd>
 <dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorFalse">EvaluatorFalse</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorFunction">EvaluatorFunction</a>
+</font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorFundamental">EvaluatorFundamental</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorNone">EvaluatorNone</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorNumeric">EvaluatorNumeric</a>
 </font></dt><dt><font face="helvetica, arial"><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorTrue">EvaluatorTrue</a>
@@ -838,25 +835,15 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="EvaluatorFundamental">class <strong>EvaluatorFundamental</strong></a>(<a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorAttribute">EvaluatorAttribute</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="EvaluatorFundamental">class <strong>EvaluatorFundamental</strong></a>(<a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#Evaluator">Evaluator</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt>Fundamental&nbsp;evaluator&nbsp;class.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%"><dl><dt>Method resolution order:</dt>
-<dd><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorFundamental">EvaluatorFundamental</a></dd>
-<dd><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorAttribute">EvaluatorAttribute</a></dd>
-<dd><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#Evaluator">Evaluator</a></dd>
-</dl>
-<hr>
-Methods defined here:<br>
+<td width="100%">Methods defined here:<br>
 <dl><dt><a name="EvaluatorFundamental-executeCenterOperation"><strong>executeCenterOperation</strong></a>(self, evaluators, evaluatorIndex)</dt><dd><tt>Execute&nbsp;operator&nbsp;which&nbsp;acts&nbsp;on&nbsp;the&nbsp;center.</tt></dd></dl>
 
-<hr>
-Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorAttribute">EvaluatorAttribute</a>:<br>
 <dl><dt><a name="EvaluatorFundamental-executeFunction"><strong>executeFunction</strong></a>(self, evaluators, evaluatorIndex, nextEvaluator)</dt><dd><tt>Execute&nbsp;the&nbsp;function.</tt></dd></dl>
-
-<dl><dt><a name="EvaluatorFundamental-executeRightOperation"><strong>executeRightOperation</strong></a>(self, evaluators, evaluatorIndex)</dt><dd><tt>Execute&nbsp;operator&nbsp;which&nbsp;acts&nbsp;from&nbsp;the&nbsp;right.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#Evaluator">Evaluator</a>:<br>
@@ -875,6 +862,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities
 <dl><dt><a name="EvaluatorFundamental-executeList"><strong>executeList</strong></a>(self, evaluators, keys, evaluatorIndex, nextEvaluator)</dt><dd><tt>Execute&nbsp;the&nbsp;key&nbsp;index.</tt></dd></dl>
 
 <dl><dt><a name="EvaluatorFundamental-executePairOperation"><strong>executePairOperation</strong></a>(self, evaluators, evaluatorIndex, operationLevel)</dt><dd><tt>Operate&nbsp;on&nbsp;two&nbsp;evaluators.</tt></dd></dl>
+
+<dl><dt><a name="EvaluatorFundamental-executeRightOperation"><strong>executeRightOperation</strong></a>(self, evaluators, evaluatorIndex)</dt><dd><tt>Execute&nbsp;operator&nbsp;which&nbsp;acts&nbsp;from&nbsp;the&nbsp;right.</tt></dd></dl>
 
 <dl><dt><a name="EvaluatorFundamental-executeString"><strong>executeString</strong></a>(self, evaluators, keys, evaluatorIndex, nextEvaluator)</dt><dd><tt>Execute&nbsp;the&nbsp;string.</tt></dd></dl>
 
@@ -1605,11 +1594,11 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities
 Methods defined here:<br>
 <dl><dt><a name="EvaluatorSelf-executeCenterOperation"><strong>executeCenterOperation</strong></a>(self, evaluators, evaluatorIndex)</dt><dd><tt>Execute&nbsp;operator&nbsp;which&nbsp;acts&nbsp;on&nbsp;the&nbsp;center.</tt></dd></dl>
 
-<dl><dt><a name="EvaluatorSelf-executeFunction"><strong>executeFunction</strong></a>(self, evaluators, evaluatorIndex, nextEvaluator)</dt><dd><tt>Execute&nbsp;the&nbsp;function.</tt></dd></dl>
-
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#EvaluatorElement">EvaluatorElement</a>:<br>
 <dl><dt><a name="EvaluatorSelf-__init__"><strong>__init__</strong></a>(self, word, xmlElement)</dt><dd><tt>Set&nbsp;value&nbsp;to&nbsp;none.</tt></dd></dl>
+
+<dl><dt><a name="EvaluatorSelf-executeFunction"><strong>executeFunction</strong></a>(self, evaluators, evaluatorIndex, nextEvaluator)</dt><dd><tt>Execute&nbsp;the&nbsp;function.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html#Evaluator">Evaluator</a>:<br>
@@ -1855,35 +1844,33 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities
 <td width="100%"><dl><dt><a name="-addPrefixDictionary"><strong>addPrefixDictionary</strong></a>(dictionary, keys, value)</dt><dd><tt>Add&nbsp;prefixed&nbsp;key&nbsp;values&nbsp;to&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-addQuoteWord"><strong>addQuoteWord</strong></a>(evaluatorWords, word)</dt><dd><tt>Add&nbsp;quote&nbsp;word&nbsp;and&nbsp;remainder&nbsp;if&nbsp;the&nbsp;word&nbsp;starts&nbsp;with&nbsp;a&nbsp;quote&nbsp;character&nbsp;or&nbsp;dollar&nbsp;sign,&nbsp;otherwise&nbsp;add&nbsp;the&nbsp;word.</tt></dd></dl>
  <dl><dt><a name="-addToPathsRecursively"><strong>addToPathsRecursively</strong></a>(paths, vector3Lists)</dt><dd><tt>Add&nbsp;to&nbsp;vector3&nbsp;paths&nbsp;recursively.</tt></dd></dl>
+ <dl><dt><a name="-addValueToEvaluatedDictionary"><strong>addValueToEvaluatedDictionary</strong></a>(evaluatedDictionary, key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-addVector3ToXMLElement"><strong>addVector3ToXMLElement</strong></a>(key, vector3, xmlElement)</dt><dd><tt>Add&nbsp;vector3&nbsp;to&nbsp;xml&nbsp;element.</tt></dd></dl>
  <dl><dt><a name="-compareExecutionOrderAscending"><strong>compareExecutionOrderAscending</strong></a>(module, otherModule)</dt><dd><tt>Get&nbsp;comparison&nbsp;in&nbsp;order&nbsp;to&nbsp;sort&nbsp;modules&nbsp;in&nbsp;ascending&nbsp;execution&nbsp;order.</tt></dd></dl>
  <dl><dt><a name="-convertToPaths"><strong>convertToPaths</strong></a>(dictionary)</dt><dd><tt>Recursively&nbsp;convert&nbsp;any&nbsp;XMLElements&nbsp;to&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-convertToTransformedPaths"><strong>convertToTransformedPaths</strong></a>(dictionary)</dt><dd><tt>Recursively&nbsp;convert&nbsp;any&nbsp;XMLElements&nbsp;to&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-executeLeftOperations"><strong>executeLeftOperations</strong></a>(evaluators, operationLevel)</dt><dd><tt>Evaluate&nbsp;the&nbsp;expression&nbsp;value&nbsp;from&nbsp;the&nbsp;numeric&nbsp;and&nbsp;operation&nbsp;evaluators.</tt></dd></dl>
+ <dl><dt><a name="-executeNextEvaluatorArguments"><strong>executeNextEvaluatorArguments</strong></a>(evaluator, evaluators, evaluatorIndex, nextEvaluator)</dt><dd><tt>Execute&nbsp;the&nbsp;nextEvaluator&nbsp;arguments.</tt></dd></dl>
  <dl><dt><a name="-executePairOperations"><strong>executePairOperations</strong></a>(evaluators, operationLevel)</dt><dd><tt>Evaluate&nbsp;the&nbsp;expression&nbsp;value&nbsp;from&nbsp;the&nbsp;numeric&nbsp;and&nbsp;operation&nbsp;evaluators.</tt></dd></dl>
- <dl><dt><a name="-getArchivableObjectAddToParent"><strong>getArchivableObjectAddToParent</strong></a>(archivableClass, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;archivable&nbsp;object&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;parent&nbsp;object.</tt></dd></dl>
  <dl><dt><a name="-getBracketEvaluators"><strong>getBracketEvaluators</strong></a>(bracketBeginIndex, bracketEndIndex, evaluators)</dt><dd><tt>Get&nbsp;the&nbsp;bracket&nbsp;evaluators.</tt></dd></dl>
  <dl><dt><a name="-getBracketValuesDeleteEvaluator"><strong>getBracketValuesDeleteEvaluator</strong></a>(bracketBeginIndex, bracketEndIndex, evaluators)</dt><dd><tt>Get&nbsp;the&nbsp;bracket&nbsp;values&nbsp;and&nbsp;delete&nbsp;the&nbsp;evaluator.</tt></dd></dl>
  <dl><dt><a name="-getBracketsExist"><strong>getBracketsExist</strong></a>(evaluators)</dt><dd><tt>Evaluate&nbsp;the&nbsp;expression&nbsp;value.</tt></dd></dl>
  <dl><dt><a name="-getCapitalizedSuffixKey"><strong>getCapitalizedSuffixKey</strong></a>(prefix, suffix)</dt><dd><tt>Get&nbsp;key&nbsp;with&nbsp;capitalized&nbsp;suffix.</tt></dd></dl>
- <dl><dt><a name="-getCumulativeVector3"><strong>getCumulativeVector3</strong></a>(prefix, vector3, xmlElement)</dt><dd><tt>Get&nbsp;cumulative&nbsp;vector3&nbsp;and&nbsp;delete&nbsp;the&nbsp;prefixed&nbsp;attributes.</tt></dd></dl>
  <dl><dt><a name="-getDictionarySplitWords"><strong>getDictionarySplitWords</strong></a>(dictionary, value)</dt><dd><tt>Get&nbsp;split&nbsp;line&nbsp;for&nbsp;evaluators.</tt></dd></dl>
  <dl><dt><a name="-getEndIndexConvertEquationValue"><strong>getEndIndexConvertEquationValue</strong></a>(bracketEndIndex, evaluatorIndex, evaluators)</dt><dd><tt>Get&nbsp;the&nbsp;bracket&nbsp;end&nbsp;index&nbsp;and&nbsp;convert&nbsp;the&nbsp;equation&nbsp;value&nbsp;evaluators&nbsp;into&nbsp;a&nbsp;string.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedBooleanDefault"><strong>getEvaluatedBooleanDefault</strong></a>(defaultBoolean, key, xmlElement<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;boolean&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedDictionary"><strong>getEvaluatedDictionary</strong></a>(evaluationKeys, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;dictionary.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedBoolean"><strong>getEvaluatedBoolean</strong></a>(defaultValue, key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;boolean.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedDictionaryByCopyKeys"><strong>getEvaluatedDictionaryByCopyKeys</strong></a>(copyKeys, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;dictionary&nbsp;by&nbsp;copyKeys.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedDictionaryByEvaluationKeys"><strong>getEvaluatedDictionaryByEvaluationKeys</strong></a>(evaluationKeys, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-getEvaluatedExpressionValue"><strong>getEvaluatedExpressionValue</strong></a>(value, xmlElement)</dt><dd><tt>Evaluate&nbsp;the&nbsp;expression&nbsp;value.</tt></dd></dl>
  <dl><dt><a name="-getEvaluatedExpressionValueBySplitLine"><strong>getEvaluatedExpressionValueBySplitLine</strong></a>(words, xmlElement)</dt><dd><tt>Evaluate&nbsp;the&nbsp;expression&nbsp;value.</tt></dd></dl>
  <dl><dt><a name="-getEvaluatedExpressionValueEvaluators"><strong>getEvaluatedExpressionValueEvaluators</strong></a>(evaluators)</dt><dd><tt>Evaluate&nbsp;the&nbsp;expression&nbsp;value&nbsp;from&nbsp;the&nbsp;numeric&nbsp;and&nbsp;operation&nbsp;evaluators.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedFloat"><strong>getEvaluatedFloat</strong></a>(key, xmlElement<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedFloatByKeys"><strong>getEvaluatedFloatByKeys</strong></a>(defaultFloat, keys, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value&nbsp;as&nbsp;a&nbsp;float&nbsp;by&nbsp;keys.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedFloatDefault"><strong>getEvaluatedFloatDefault</strong></a>(defaultFloat, key, xmlElement<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value&nbsp;as&nbsp;a&nbsp;float.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedInt"><strong>getEvaluatedInt</strong></a>(key, xmlElement<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value&nbsp;as&nbsp;an&nbsp;int.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedIntByKeys"><strong>getEvaluatedIntByKeys</strong></a>(defaultInt, keys, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value&nbsp;as&nbsp;an&nbsp;int&nbsp;by&nbsp;keys.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedIntDefault"><strong>getEvaluatedIntDefault</strong></a>(defaultInt, key, xmlElement<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value&nbsp;as&nbsp;an&nbsp;int.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedFloat"><strong>getEvaluatedFloat</strong></a>(defaultValue, key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;float.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedFloatByKeys"><strong>getEvaluatedFloatByKeys</strong></a>(defaultValue, keys, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;float&nbsp;by&nbsp;keys.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedInt"><strong>getEvaluatedInt</strong></a>(defaultValue, key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;int.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedIntByKeys"><strong>getEvaluatedIntByKeys</strong></a>(defaultValue, keys, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;int&nbsp;by&nbsp;keys.</tt></dd></dl>
  <dl><dt><a name="-getEvaluatedLinkValue"><strong>getEvaluatedLinkValue</strong></a>(word, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;link&nbsp;value.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedString"><strong>getEvaluatedString</strong></a>(key, xmlElement<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value&nbsp;as&nbsp;a&nbsp;string.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedStringDefault"><strong>getEvaluatedStringDefault</strong></a>(defaultString, key, xmlElement<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value&nbsp;as&nbsp;a&nbsp;string.</tt></dd></dl>
- <dl><dt><a name="-getEvaluatedValue"><strong>getEvaluatedValue</strong></a>(key, xmlElement<font color="#909090">=None</font>)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedString"><strong>getEvaluatedString</strong></a>(defaultValue, key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;string.</tt></dd></dl>
+ <dl><dt><a name="-getEvaluatedValue"><strong>getEvaluatedValue</strong></a>(defaultValue, key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value.</tt></dd></dl>
  <dl><dt><a name="-getEvaluatedValueObliviously"><strong>getEvaluatedValueObliviously</strong></a>(key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluated&nbsp;value.</tt></dd></dl>
  <dl><dt><a name="-getEvaluator"><strong>getEvaluator</strong></a>(evaluators, nextWord, word, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;evaluator.</tt></dd></dl>
  <dl><dt><a name="-getEvaluatorSplitWords"><strong>getEvaluatorSplitWords</strong></a>(value)</dt><dd><tt>Get&nbsp;split&nbsp;words&nbsp;for&nbsp;evaluators.</tt></dd></dl>
@@ -1894,19 +1881,14 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities
  <dl><dt><a name="-getIsBracketed"><strong>getIsBracketed</strong></a>(word)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;word&nbsp;is&nbsp;bracketed.</tt></dd></dl>
  <dl><dt><a name="-getIsQuoted"><strong>getIsQuoted</strong></a>(word)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;word&nbsp;is&nbsp;quoted.</tt></dd></dl>
  <dl><dt><a name="-getKeys"><strong>getKeys</strong></a>(repository)</dt><dd><tt>Get&nbsp;keys&nbsp;for&nbsp;repository.</tt></dd></dl>
- <dl><dt><a name="-getLayerThickness"><strong>getLayerThickness</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;layer&nbsp;thickness.</tt></dd></dl>
  <dl><dt><a name="-getLocalAttributeValueString"><strong>getLocalAttributeValueString</strong></a>(key, valueString)</dt><dd><tt>Get&nbsp;the&nbsp;local&nbsp;attribute&nbsp;value&nbsp;string&nbsp;with&nbsp;augmented&nbsp;assignment.</tt></dd></dl>
  <dl><dt><a name="-getMatchingPlugins"><strong>getMatchingPlugins</strong></a>(namePathDictionary, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;plugins&nbsp;whose&nbsp;names&nbsp;are&nbsp;in&nbsp;the&nbsp;attribute&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-getNextChildIndex"><strong>getNextChildIndex</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;next&nbsp;child&nbsp;index.</tt></dd></dl>
- <dl><dt><a name="-getOverhangSpan"><strong>getOverhangSpan</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;overhang&nbsp;span.</tt></dd></dl>
- <dl><dt><a name="-getOverhangSupportAngle"><strong>getOverhangSupportAngle</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;overhang&nbsp;support&nbsp;angle&nbsp;in&nbsp;radians.</tt></dd></dl>
  <dl><dt><a name="-getPathByKey"><strong>getPathByKey</strong></a>(defaultPath, key, xmlElement)</dt><dd><tt>Get&nbsp;path&nbsp;from&nbsp;prefix&nbsp;and&nbsp;xml&nbsp;element.</tt></dd></dl>
  <dl><dt><a name="-getPathByList"><strong>getPathByList</strong></a>(vertexList)</dt><dd><tt>Get&nbsp;the&nbsp;paths&nbsp;by&nbsp;list.</tt></dd></dl>
  <dl><dt><a name="-getPathByPrefix"><strong>getPathByPrefix</strong></a>(path, prefix, xmlElement)</dt><dd><tt>Get&nbsp;path&nbsp;from&nbsp;prefix&nbsp;and&nbsp;xml&nbsp;element.</tt></dd></dl>
  <dl><dt><a name="-getPathsByKey"><strong>getPathsByKey</strong></a>(defaultPaths, key, xmlElement)</dt><dd><tt>Get&nbsp;paths&nbsp;by&nbsp;key.</tt></dd></dl>
  <dl><dt><a name="-getPathsByLists"><strong>getPathsByLists</strong></a>(vertexLists)</dt><dd><tt>Get&nbsp;paths&nbsp;by&nbsp;lists.</tt></dd></dl>
- <dl><dt><a name="-getPrecision"><strong>getPrecision</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;cascade&nbsp;precision.</tt></dd></dl>
- <dl><dt><a name="-getSheetThickness"><strong>getSheetThickness</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;sheet&nbsp;thickness.</tt></dd></dl>
  <dl><dt><a name="-getSidesBasedOnPrecision"><strong>getSidesBasedOnPrecision</strong></a>(radius, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;poygon&nbsp;sides.</tt></dd></dl>
  <dl><dt><a name="-getSidesMinimumThreeBasedOnPrecision"><strong>getSidesMinimumThreeBasedOnPrecision</strong></a>(radius, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;poygon&nbsp;sides,&nbsp;with&nbsp;a&nbsp;minimum&nbsp;of&nbsp;three.</tt></dd></dl>
  <dl><dt><a name="-getSidesMinimumThreeBasedOnPrecisionSides"><strong>getSidesMinimumThreeBasedOnPrecisionSides</strong></a>(radius, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;poygon&nbsp;sides,&nbsp;with&nbsp;a&nbsp;minimum&nbsp;of&nbsp;three.</tt></dd></dl>
@@ -1928,13 +1910,13 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities
  <dl><dt><a name="-getVector3FromXMLElement"><strong>getVector3FromXMLElement</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;vector3&nbsp;from&nbsp;xml&nbsp;element.</tt></dd></dl>
  <dl><dt><a name="-getVector3IfNone"><strong>getVector3IfNone</strong></a>(vector3)</dt><dd><tt>Get&nbsp;new&nbsp;vector3&nbsp;if&nbsp;the&nbsp;original&nbsp;vector3&nbsp;is&nbsp;none.</tt></dd></dl>
  <dl><dt><a name="-getVector3ListsRecursively"><strong>getVector3ListsRecursively</strong></a>(floatLists)</dt><dd><tt>Get&nbsp;vector3&nbsp;lists&nbsp;recursively.</tt></dd></dl>
- <dl><dt><a name="-getVector3RemoveByPrefix"><strong>getVector3RemoveByPrefix</strong></a>(prefix, vector3, xmlElement)</dt><dd><tt>Get&nbsp;vector3&nbsp;from&nbsp;prefix&nbsp;and&nbsp;xml&nbsp;element,&nbsp;then&nbsp;remove&nbsp;prefix&nbsp;attributes&nbsp;from&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-getVisibleObjects"><strong>getVisibleObjects</strong></a>(archivableObjects)</dt><dd><tt>Get&nbsp;the&nbsp;visible&nbsp;objects.</tt></dd></dl>
  <dl><dt><a name="-getXMLElementByKey"><strong>getXMLElementByKey</strong></a>(key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;xml&nbsp;element&nbsp;by&nbsp;key.</tt></dd></dl>
  <dl><dt><a name="-getXMLElementObject"><strong>getXMLElementObject</strong></a>(evaluatedLinkValue)</dt><dd><tt>Get&nbsp;XMLElementObject.</tt></dd></dl>
  <dl><dt><a name="-getXMLElementsByKey"><strong>getXMLElementsByKey</strong></a>(key, xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;xml&nbsp;elements&nbsp;by&nbsp;key.</tt></dd></dl>
  <dl><dt><a name="-processArchivable"><strong>processArchivable</strong></a>(archivableClass, xmlElement)</dt><dd><tt>Get&nbsp;any&nbsp;new&nbsp;elements&nbsp;and&nbsp;process&nbsp;the&nbsp;archivable.</tt></dd></dl>
  <dl><dt><a name="-processCondition"><strong>processCondition</strong></a>(xmlElement)</dt><dd><tt>Process&nbsp;the&nbsp;xml&nbsp;element&nbsp;condition.</tt></dd></dl>
+ <dl><dt><a name="-removeIdentifiersFromDictionary"><strong>removeIdentifiersFromDictionary</strong></a>(dictionary)</dt><dd><tt>Remove&nbsp;the&nbsp;identifier&nbsp;elements&nbsp;from&nbsp;a&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-setAttributeDictionaryByArguments"><strong>setAttributeDictionaryByArguments</strong></a>(argumentNames, arguments, xmlElement)</dt><dd><tt>Set&nbsp;the&nbsp;attribute&nbsp;dictionary&nbsp;to&nbsp;the&nbsp;arguments.</tt></dd></dl>
  <dl><dt><a name="-setFunctionLocalDictionary"><strong>setFunctionLocalDictionary</strong></a>(arguments, function)</dt><dd><tt>Evaluate&nbsp;the&nbsp;function&nbsp;statement&nbsp;and&nbsp;delete&nbsp;the&nbsp;evaluators.</tt></dd></dl>
  <dl><dt><a name="-setLocalAttribute"><strong>setLocalAttribute</strong></a>(xmlElement)</dt><dd><tt>Set&nbsp;the&nbsp;local&nbsp;attribute&nbsp;if&nbsp;any.</tt></dd></dl>
@@ -1948,16 +1930,16 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__credits__</strong> = 'Art of Illusion &lt;http://www.artofillusion.org/&gt;'<br>
 <strong>__date__</strong> = '$Date: 2008/02/05 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
-<strong>globalCreationDictionary</strong> = {'circle': '/home/enrique/Desktop/backup/babbleold/script/re...eus/fabmetheus_utilities/geometry/creation/circle', 'concatenate': '/home/enrique/Desktop/backup/babbleold/script/re...abmetheus_utilities/geometry/creation/concatenate', 'drill': '/home/enrique/Desktop/backup/babbleold/script/re...eus/fabmetheus_utilities/geometry/creation/_drill', 'extrude': '/home/enrique/Desktop/backup/babbleold/script/re...us/fabmetheus_utilities/geometry/creation/extrude', 'gear': '/home/enrique/Desktop/backup/babbleold/script/re...theus/fabmetheus_utilities/geometry/creation/gear', 'grid': '/home/enrique/Desktop/backup/babbleold/script/re...theus/fabmetheus_utilities/geometry/creation/grid', 'lathe': '/home/enrique/Desktop/backup/babbleold/script/re...heus/fabmetheus_utilities/geometry/creation/lathe', 'line': '/home/enrique/Desktop/backup/babbleold/script/re...theus/fabmetheus_utilities/geometry/creation/line', 'linearbearingcage': '/home/enrique/Desktop/backup/babbleold/script/re...s_utilities/geometry/creation/linear_bearing_cage', 'lineation': '/home/enrique/Desktop/backup/babbleold/script/re.../fabmetheus_utilities/geometry/creation/lineation', ...}<br>
-<strong>globalDictionaryOperatorBegin</strong> = {'!=': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorNotEqual at 0xb66c705c&gt;, '**': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorPower at 0xb66c70ec&gt;, '&lt;=': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorLessEqual at 0xb673cecc&gt;, '==': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorEqual at 0xb673cb6c&gt;, '&gt;=': &lt;class fabmetheus_utilities.geometry.geometry_ut...ies.evaluate.EvaluatorGreaterEqual at 0xb673ce6c&gt;, '||': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorConcatenate at 0xb673cd1c&gt;}<br>
-<strong>globalElementNameSet</strong> = set(['creation', 'document'])<br>
+<strong>globalCreationDictionary</strong> = {'circle': '/home/enrique/Desktop/backup/babbleold/script/re...eus/fabmetheus_utilities/geometry/creation/circle', 'concatenate': '/home/enrique/Desktop/backup/babbleold/script/re...abmetheus_utilities/geometry/creation/concatenate', 'drill': '/home/enrique/Desktop/backup/babbleold/script/re...eus/fabmetheus_utilities/geometry/creation/_drill', 'extrude': '/home/enrique/Desktop/backup/babbleold/script/re...us/fabmetheus_utilities/geometry/creation/extrude', 'gear': '/home/enrique/Desktop/backup/babbleold/script/re...theus/fabmetheus_utilities/geometry/creation/gear', 'grid': '/home/enrique/Desktop/backup/babbleold/script/re...theus/fabmetheus_utilities/geometry/creation/grid', 'heightmap': '/home/enrique/Desktop/backup/babbleold/script/re.../fabmetheus_utilities/geometry/creation/heightmap', 'lathe': '/home/enrique/Desktop/backup/babbleold/script/re...heus/fabmetheus_utilities/geometry/creation/lathe', 'line': '/home/enrique/Desktop/backup/babbleold/script/re...theus/fabmetheus_utilities/geometry/creation/line', 'linearbearingcage': '/home/enrique/Desktop/backup/babbleold/script/re...s_utilities/geometry/creation/linear_bearing_cage', ...}<br>
+<strong>globalDictionaryOperatorBegin</strong> = {'!=': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorNotEqual at 0xb67549bc&gt;, '**': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorPower at 0xb6754a4c&gt;, '&lt;=': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorLessEqual at 0xb675486c&gt;, '==': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorEqual at 0xb675450c&gt;, '&gt;=': &lt;class fabmetheus_utilities.geometry.geometry_ut...ies.evaluate.EvaluatorGreaterEqual at 0xb675480c&gt;, '||': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorConcatenate at 0xb67546bc&gt;}<br>
+<strong>globalElementNameSet</strong> = set(['creation', 'document', 'setting'])<br>
 <strong>globalFundamentalNameSet</strong> = set(['_math', 'euclid', 'print'])<br>
-<strong>globalModuleEvaluatorDictionary</strong> = {'creation': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorElement at 0xb673cdac&gt;, 'document': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorElement at 0xb673cdac&gt;, 'euclid': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorFundamental at 0xb673ce3c&gt;, 'math': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorFundamental at 0xb673ce3c&gt;, 'print': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorFundamental at 0xb673ce3c&gt;, 'self': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorSelf at 0xb66c711c&gt;}<br>
+<strong>globalModuleEvaluatorDictionary</strong> = {'creation': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorElement at 0xb675474c&gt;, 'document': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorElement at 0xb675474c&gt;, 'euclid': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorFundamental at 0xb67547dc&gt;, 'math': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorFundamental at 0xb67547dc&gt;, 'print': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorFundamental at 0xb67547dc&gt;, 'self': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorSelf at 0xb6754a7c&gt;, 'setting': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorElement at 0xb675474c&gt;}<br>
 <strong>globalModuleFunctionsDictionary</strong> = {}<br>
-<strong>globalSplitDictionary</strong> = {'!=': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorNotEqual at 0xb66c705c&gt;, '%': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorModulo at 0xb673cf5c&gt;, '(': &lt;class fabmetheus_utilities.geometry.geometry_ut...ies.evaluate.EvaluatorBracketRound at 0xb673cc5c&gt;, ')': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.Evaluator at 0xb673cb0c&gt;, '*': &lt;class fabmetheus_utilities.geometry.geometry_ut...s.evaluate.EvaluatorMultiplication at 0xb673cf8c&gt;, '**': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorPower at 0xb66c70ec&gt;, '+': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorAddition at 0xb673cb3c&gt;, ',': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorComma at 0xb673ccec&gt;, '-': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorSubtraction at 0xb673cb9c&gt;, '/': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorDivision at 0xb673cd7c&gt;, ...}<br>
-<strong>globalSplitDictionaryOperator</strong> = {'%': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorModulo at 0xb673cf5c&gt;, '(': &lt;class fabmetheus_utilities.geometry.geometry_ut...ies.evaluate.EvaluatorBracketRound at 0xb673cc5c&gt;, ')': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.Evaluator at 0xb673cb0c&gt;, '*': &lt;class fabmetheus_utilities.geometry.geometry_ut...s.evaluate.EvaluatorMultiplication at 0xb673cf8c&gt;, '+': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorAddition at 0xb673cb3c&gt;, ',': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorComma at 0xb673ccec&gt;, '-': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorSubtraction at 0xb673cb9c&gt;, '/': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorDivision at 0xb673cd7c&gt;, ':': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorDictionary at 0xb673cd4c&gt;, '&lt;': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorLess at 0xb673cefc&gt;, ...}</td></tr></table><p>
+<strong>globalSplitDictionary</strong> = {'!=': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorNotEqual at 0xb67549bc&gt;, '%': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorModulo at 0xb67548fc&gt;, '(': &lt;class fabmetheus_utilities.geometry.geometry_ut...ies.evaluate.EvaluatorBracketRound at 0xb67545fc&gt;, ')': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.Evaluator at 0xb67544ac&gt;, '*': &lt;class fabmetheus_utilities.geometry.geometry_ut...s.evaluate.EvaluatorMultiplication at 0xb675492c&gt;, '**': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorPower at 0xb6754a4c&gt;, '+': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorAddition at 0xb67544dc&gt;, ',': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorComma at 0xb675468c&gt;, '-': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorSubtraction at 0xb675453c&gt;, '/': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorDivision at 0xb675471c&gt;, ...}<br>
+<strong>globalSplitDictionaryOperator</strong> = {'%': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorModulo at 0xb67548fc&gt;, '(': &lt;class fabmetheus_utilities.geometry.geometry_ut...ies.evaluate.EvaluatorBracketRound at 0xb67545fc&gt;, ')': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.Evaluator at 0xb67544ac&gt;, '*': &lt;class fabmetheus_utilities.geometry.geometry_ut...s.evaluate.EvaluatorMultiplication at 0xb675492c&gt;, '+': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorAddition at 0xb67544dc&gt;, ',': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorComma at 0xb675468c&gt;, '-': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorSubtraction at 0xb675453c&gt;, '/': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorDivision at 0xb675471c&gt;, ':': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorDictionary at 0xb67546ec&gt;, '&lt;': &lt;class fabmetheus_utilities.geometry.geometry_utilities.evaluate.EvaluatorLess at 0xb675489c&gt;, ...}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

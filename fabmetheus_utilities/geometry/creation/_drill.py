@@ -20,8 +20,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -37,6 +37,10 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	evaluate.setAttributeDictionaryByArguments(['radius', 'start', 'end'], arguments, xmlElement)
 	return getGeometryOutput(None, xmlElement)
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return DrillDerivation(xmlElement)
+
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	solid.processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
@@ -49,7 +53,7 @@ class DrillDerivation:
 		self.end = evaluate.getVector3ByPrefix(Vector3(0.0, 0.0, 1.0), 'end', xmlElement)
 		self.start = evaluate.getVector3ByPrefix(Vector3(), 'start', xmlElement)
 		self.radius = lineation.getFloatByPrefixBeginEnd('radius', 'diameter', 1.0, xmlElement)
-		size = evaluate.getEvaluatedFloatDefault(None, 'size', xmlElement)
+		size = evaluate.getEvaluatedFloat(None, 'size', xmlElement)
 		if size != None:
 			self.radius = 0.5 * size
 		self.xmlElement = xmlElement

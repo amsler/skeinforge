@@ -14,29 +14,10 @@ Defines the flow rate which will be written following the M108 command.  The flo
 ==Examples==
 The following examples flow the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and flow.py.
 
-
 > python flow.py
 This brings up the flow dialog.
 
-
 > python flow.py Screw Holder Bottom.stl
-The flow tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The flow tool has created the file:
-.. Screw Holder Bottom_flow.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import flow
->>> flow.main()
-This brings up the flow dialog.
-
-
->>> flow.writeOutput('Screw Holder Bottom.stl')
 The flow tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -62,12 +43,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def getCraftedText( fileName, text = '', flowRepository = None ):
+def getCraftedText( fileName, text='', flowRepository = None ):
 	"Flow the file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), flowRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), flowRepository )
 
 def getCraftedTextFromText( gcodeText, flowRepository = None ):
 	"Flow a gcode linear move text."
@@ -80,14 +61,12 @@ def getCraftedTextFromText( gcodeText, flowRepository = None ):
 	return FlowSkein().getCraftedGcode( gcodeText, flowRepository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return FlowRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Flow a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'flow')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'flow', shouldAnalyze)
 
 
 class FlowRepository:

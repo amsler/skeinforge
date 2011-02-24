@@ -7,8 +7,8 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
@@ -23,8 +23,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addFaces(geometryOutput, faces):
@@ -71,10 +71,10 @@ def getFaces(geometryOutput):
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	face = Face()
-	face.index = len( xmlElement.parent.object.faces )
-	for vertexIndexIndex in xrange( 3 ):
-		face.vertexIndexes.append( evaluate.getEvaluatedInt('vertex' + str(vertexIndexIndex), xmlElement ) )
-	xmlElement.parent.object.faces.append( face )
+	face.index = len(xmlElement.parent.xmlObject.faces)
+	for vertexIndexIndex in xrange(3):
+		face.vertexIndexes.append(evaluate.getEvaluatedInt(None, 'vertex' + str(vertexIndexIndex), xmlElement))
+	xmlElement.parent.xmlObject.faces.append(face)
 
 
 class Edge:
@@ -138,11 +138,13 @@ class Face:
 
 	def getFromEdgeIndexes( self, edgeIndexes, edges, faceIndex ):
 		"Initialize from edge indices."
+		if len(self.vertexIndexes) > 0:
+			return
 		self.index = faceIndex
 		self.edgeIndexes = edgeIndexes
 		for edgeIndex in edgeIndexes:
 			edges[ edgeIndex ].addFaceIndex( faceIndex )
-		for triangleIndex in xrange( 3 ):
+		for triangleIndex in xrange(3):
 			indexFirst = ( 3 - triangleIndex ) % 3
 			indexSecond = ( 4 - triangleIndex ) % 3
 			self.vertexIndexes.append( getCommonVertexIndex( edges[ edgeIndexes[ indexFirst ] ], edges[ edgeIndexes[ indexSecond ] ] ) )
@@ -150,7 +152,9 @@ class Face:
 
 	def setEdgeIndexesToVertexIndexes( self, edges, edgeTable ):
 		"Set the edge indexes to the vertex indexes."
-		for triangleIndex in xrange( 3 ):
+		if len(self.edgeIndexes) > 0:
+			return
+		for triangleIndex in xrange(3):
 			indexFirst = ( 3 - triangleIndex ) % 3
 			indexSecond = ( 4 - triangleIndex ) % 3
 			vertexIndexFirst = self.vertexIndexes[ indexFirst ]
@@ -166,4 +170,3 @@ class Face:
 				edges.append( edge )
 			edges[ edgeIndex ].addFaceIndex( self.index )
 			self.edgeIndexes.append( edgeIndex )
-		return self

@@ -19,11 +19,11 @@ import traceback
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return AnalyzeRepository()
 
 def getPluginFileNames():

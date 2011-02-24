@@ -53,9 +53,13 @@ The important values for the raft settings are the temperatures of the raft, the
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Layer Thickness over Extrusion Height">Interface Layer Thickness over Extrusion Height</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Layers">Interface Layers</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Interface Nozzle Lift over Interface Layer Thickness">Interface Nozzle Lift over Interface Layer Thickness</a><br />
+&nbsp;&nbsp;<a href="#Name of Alteration Files">Name of Alteration Files</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Name of Support End File">Name of Support End File</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Name of Support Start File">Name of Support Start File</a><br />
 &nbsp;&nbsp;<a href="#Object First Layer Feed Rate Infill Multiplier">Object First Layer Feed Rate Infill Multiplier</a><br />
 &nbsp;&nbsp;<a href="#Object First Layer Feed Rate Perimeter Multiplier">Object First Layer Feed Rate Perimeter Multiplier</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Object First Layer Flow Rate Multiplier">Object First Layer Flow Rate Multiplier</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Object First Layer Flow Rate Infill Multiplier">Object First Layer Flow Rate Infill Multiplier</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Object First Layer Flow Rate Perimeter Multiplier">Object First Layer Flow Rate Perimeter Multiplier</a><br />
 &nbsp;&nbsp;<a href="#Operating Nozzle Lift over Layer Thickness">Operating Nozzle Lift over Layer Thickness</a><br />
 &nbsp;&nbsp;<a href="#Raft Size">Raft Size</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Raft Margin">Raft Margin</a><br />
@@ -70,9 +74,6 @@ The important values for the raft settings are the temperatures of the raft, the
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Exterior Only">Exterior Only</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#None">None</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Support Minimum Angle">Support Minimum Angle</a><br />
-<a href="#Alterations">Alterations</a><br />
-&nbsp;&nbsp;<a href="#support_start.gcode">support_start.gcode</a><br />
-&nbsp;&nbsp;<a href="#support_end.gcode">support_end.gcode</a><br />
 <a href="#Examples">Examples</a><br />
 <br />
 <a name="Operation" id="Operation"></a><h2>Operation</h2>
@@ -177,23 +178,43 @@ Default is 0.45.<br>
  <br>
 Defines the amount the nozzle is above the center of the interface extrusion divided by the interface layer thickness.<br>
  <br>
+<a name="Name of Alteration Files" id="Name of Alteration Files"></a><h3>Name of Alteration Files</h3>
+
+If support material is generated, raft looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Raft does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder.<br>
+ <br>
+<a name="Name of Support End File" id="Name of Support End File"></a><h4>Name of Support End File</h4>
+
+Default is support_end.gcode.<br>
+ <br>
+If support material is generated and if there is a file with the name of the "Name of Support End File" setting, it will be added to the end of the support gcode.<br>
+ <br>
+<a name="Name of Support Start File" id="Name of Support Start File"></a><h4>Name of Support Start File</h4>
+
+If support material is generated and if there is a file with the name of the "Name of Support Start File" setting, it will be added to the start of the support gcode.<br>
+ <br>
 <a name="Object First Layer Feed Rate Infill Multiplier" id="Object First Layer Feed Rate Infill Multiplier"></a><h3>Object First Layer Feed Rate Infill Multiplier</h3>
 
-Default is one.<br>
+Default is 0.4.<br>
  <br>
 Defines the object first layer infill feed rate multiplier.  The greater the 'Object First Layer Feed Rate Infill Multiplier, the thinner the infill, the lower the 'Object First Layer Feed Rate Infill Multiplier', the thicker the infill.<br>
  <br>
 <a name="Object First Layer Feed Rate Perimeter Multiplier" id="Object First Layer Feed Rate Perimeter Multiplier"></a><h3>Object First Layer Feed Rate Perimeter Multiplier</h3>
 
-Default is one.<br>
+Default is 0.4.<br>
  <br>
 Defines the object first layer perimeter feed rate multiplier.  The greater the 'Object First Layer Feed Rate Perimeter Multiplier, the thinner the perimeter, the lower the 'Object First Layer Feed Rate Perimeter Multiplier', the thicker the perimeter.<br>
  <br>
-<a name="Object First Layer Flow Rate Multiplier" id="Object First Layer Flow Rate Multiplier"></a><h4>Object First Layer Flow Rate Multiplier</h4>
+<a name="Object First Layer Flow Rate Infill Multiplier" id="Object First Layer Flow Rate Infill Multiplier"></a><h4>Object First Layer Flow Rate Infill Multiplier</h4>
 
-Default is one.<br>
+Default is 0.4.<br>
  <br>
-Defines the object first layer flow rate multiplier.  The greater the 'Object First Layer Flow Rate Multiplier', the thicker the first layer, the lower the 'Object First Layer Flow Rate Multiplier, the thinner the first layer.<br>
+Defines the object first layer infill flow rate multiplier.  The greater the 'Object First Layer Flow Rate Infill Multiplier', the thicker the infill, the lower the 'Object First Layer Flow Rate Infill Multiplier, the thinner the infill.<br>
+ <br>
+<a name="Object First Layer Flow Rate Perimeter Multiplier" id="Object First Layer Flow Rate Perimeter Multiplier"></a><h4>Object First Layer Flow Rate Perimeter Multiplier</h4>
+
+Default is 0.4.<br>
+ <br>
+Defines the object first layer perimeter flow rate multiplier.  The greater the 'Object First Layer Flow Rate Perimeter Multiplier', the thicker the perimeter, the lower the 'Object First Layer Flow Rate Perimeter Multiplier, the thinner the perimeter.<br>
  <br>
 <a name="Operating Nozzle Lift over Layer Thickness" id="Operating Nozzle Lift over Layer Thickness"></a><h3>Operating Nozzle Lift over Layer Thickness</h3>
 
@@ -263,48 +284,15 @@ Default is sixty degrees.<br>
  <br>
 Defines the minimum angle that a surface overhangs before support material is added.  This angle is defined from the vertical, so zero is a vertical wall, ten is a wall with a bit of overhang, thirty is the typical safe angle for filament extrusion, sixty is a really high angle for extrusion and ninety is an unsupported horizontal ceiling.<br>
  <br>
-<a name="Alterations" id="Alterations"></a><h2>Alterations</h2>
-<hr>
-
-If support material is generated, raft looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Raft does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the craft_plugins folder.<br>
- <br>
-<a name="support_start.gcode" id="support_start.gcode"></a><h3>support_start.gcode</h3>
-
-If support material is generated, raft will add support_start.gcode, if it exists, to the start of the support gcode.<br>
- <br>
-<a name="support_end.gcode" id="support_end.gcode"></a><h3>support_end.gcode</h3>
-
-If support material is generated, raft will add support_end.gcode, if it exists, to the end of the support gcode.<br>
- <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
 The following examples raft the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and raft.py.<br>
  <br>
- <br>
 &gt; python raft.py<br>
 This brings up the raft dialog.<br>
  <br>
- <br>
 &gt; python raft.py Screw Holder Bottom.stl<br>
-The raft tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The raft tool has created the file:<br>
-Screw Holder Bottom_raft.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import raft<br>
-&gt;&gt;&gt; raft.<a href="#-main">main</a>()<br>
-This brings up the raft dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; raft.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
-Screw Holder Bottom.stl<br>
 The raft tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -337,6 +325,7 @@ Screw Holder Bottom_raft.gcode</tt>
 <a href="skeinforge_application.skeinforge_utilities.skeinforge_polyfile.html">skeinforge_application.skeinforge_utilities.skeinforge_polyfile</a><br>
 <a href="skeinforge_application.skeinforge_utilities.skeinforge_profile.html">skeinforge_application.skeinforge_utilities.skeinforge_profile</a><br>
 </td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html">fabmetheus_utilities.geometry.solids.triangle_mesh</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -387,7 +376,7 @@ Screw Holder Bottom_raft.gcode</tt>
 
 <dl><dt><a name="RaftSkein-addInterfaceLayer"><strong>addInterfaceLayer</strong></a>(self)</dt><dd><tt>Add&nbsp;an&nbsp;interface&nbsp;layer.</tt></dd></dl>
 
-<dl><dt><a name="RaftSkein-addInterfaceTables"><strong>addInterfaceTables</strong></a>(self, baseStep, interfaceExtrusionWidth)</dt><dd><tt>Add&nbsp;a&nbsp;interface&nbsp;tables.</tt></dd></dl>
+<dl><dt><a name="RaftSkein-addInterfaceTables"><strong>addInterfaceTables</strong></a>(self, baseStep, interfaceExtrusionWidth)</dt><dd><tt>Add&nbsp;interface&nbsp;tables.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addLayerFromSegments"><strong>addLayerFromSegments</strong></a>(self, feedRateMultiplier, flowRateMultiplier, layerLayerThickness, layerThicknessRatio, segments, z)</dt><dd><tt>Add&nbsp;a&nbsp;layer&nbsp;from&nbsp;segments&nbsp;and&nbsp;raise&nbsp;the&nbsp;extrusion&nbsp;top.</tt></dd></dl>
 
@@ -396,6 +385,8 @@ Screw Holder Bottom_raft.gcode</tt>
 <dl><dt><a name="RaftSkein-addOperatingOrbits"><strong>addOperatingOrbits</strong></a>(self, boundaryLoops, pointComplex, temperatureChangeTime, z)</dt><dd><tt>Add&nbsp;the&nbsp;orbits&nbsp;before&nbsp;the&nbsp;operating&nbsp;layers.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addRaft"><strong>addRaft</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;raft.</tt></dd></dl>
+
+<dl><dt><a name="RaftSkein-addRaftPerimeters"><strong>addRaftPerimeters</strong></a>(self)</dt><dd><tt>Add&nbsp;raft&nbsp;perimeters&nbsp;if&nbsp;there&nbsp;is&nbsp;a&nbsp;raft.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addSegmentTablesToSupportLayers"><strong>addSegmentTablesToSupportLayers</strong></a>(self)</dt><dd><tt>Add&nbsp;segment&nbsp;tables&nbsp;to&nbsp;the&nbsp;support&nbsp;layers.</tt></dd></dl>
 
@@ -410,6 +401,8 @@ Screw Holder Bottom_raft.gcode</tt>
 <dl><dt><a name="RaftSkein-addToFillXIntersectionIndexTables"><strong>addToFillXIntersectionIndexTables</strong></a>(self, supportLayer)</dt><dd><tt>Add&nbsp;fill&nbsp;segments&nbsp;from&nbsp;the&nbsp;boundary&nbsp;layers.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-extendXIntersections"><strong>extendXIntersections</strong></a>(self, loops, radius, xIntersectionsTable)</dt><dd><tt>Extend&nbsp;the&nbsp;support&nbsp;segments.</tt></dd></dl>
+
+<dl><dt><a name="RaftSkein-getBaseDirectionSegments"><strong>getBaseDirectionSegments</strong></a>(self, baseOverhang, baseStep)</dt><dd><tt>Get&nbsp;base&nbsp;direction&nbsp;segments.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeText, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;raft&nbsp;gcode.</tt></dd></dl>
 
@@ -467,10 +460,10 @@ Screw Holder Bottom_raft.gcode</tt>
  <dl><dt><a name="-getCrossHatchPointLine"><strong>getCrossHatchPointLine</strong></a>(crossHatchPointLineTable, y)</dt><dd><tt>Get&nbsp;the&nbsp;cross&nbsp;hatch&nbsp;point&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-getEndpointsFromYIntersections"><strong>getEndpointsFromYIntersections</strong></a>(x, yIntersections)</dt><dd><tt>Get&nbsp;endpoints&nbsp;from&nbsp;the&nbsp;y&nbsp;intersections.</tt></dd></dl>
  <dl><dt><a name="-getExtendedLineSegment"><strong>getExtendedLineSegment</strong></a>(extensionDistance, lineSegment, loopXIntersections)</dt><dd><tt>Get&nbsp;extended&nbsp;line&nbsp;segment.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;raft&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-setExtendedPoint"><strong>setExtendedPoint</strong></a>(lineSegmentEnd, pointOriginal, x)</dt><dd><tt>Set&nbsp;the&nbsp;point&nbsp;in&nbsp;the&nbsp;extended&nbsp;line&nbsp;segment.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Raft&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Raft&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -480,7 +473,7 @@ Screw Holder Bottom_raft.gcode</tt>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

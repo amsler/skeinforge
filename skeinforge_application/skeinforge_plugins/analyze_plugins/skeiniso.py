@@ -214,25 +214,10 @@ http://forums.reprap.org/file.php?12,file=565
 ==Examples==
 Below are examples of skeiniso being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeiniso.py.
 
-
 > python skeiniso.py
 This brings up the skeiniso dialog.
 
-
 > python skeiniso.py Screw Holder_penultimate.gcode
-This brings up the skeiniso viewer to view the gcode file.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import skeiniso
->>> skeiniso.main()
-This brings up the skeiniso dialog.
-
-
->>> skeiniso.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
 This brings up the skeiniso viewer to view the gcode file.
 
 """
@@ -258,7 +243,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def compareLayerSequence( first, second ):
@@ -272,7 +257,7 @@ def compareLayerSequence( first, second ):
 	return int( first.sequenceIndex > second.sequenceIndex )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return SkeinisoRepository()
 
 def getWindowAnalyzeFile(fileName):
@@ -382,7 +367,7 @@ class SkeinisoSkein:
 		self.layerTops = []
 		self.lineIndex = 0
 		self.oldLayerZoneIndex = 0
-		self.oldZ = - 999999999999.0
+		self.oldZ = - 999987654321.0
 		self.skeinPane = None
 		self.skeinPanes = []
 		self.thirdLayerThickness = 0.133333
@@ -489,7 +474,7 @@ class SkeinisoSkein:
 			self.extruderActive = False
 		elif firstWord == '(<layerThickness>':
 			self.thirdLayerThickness = 0.33333333333 * float(splitLine[1])
-		if firstWord == '(<surroundingLoop>)':
+		if firstWord == '(<nestedRing>)':
 			if self.layerTopZ > self.getLayerTop():
 				self.layerTops.append( self.layerTopZ )
 
@@ -499,11 +484,11 @@ class SkeinisoSkein:
 		self.fileName = fileName
 		self.gcodeText = gcodeText
 		self.initializeActiveLocation()
-		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, -999999999.0)
-		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
+		self.cornerMaximum = Vector3(-987654321.0, -987654321.0, -987654321.0)
+		self.cornerMinimum = Vector3(987654321.0, 987654321.0, 987654321.0)
 		self.goAroundExtruderOffTravel = repository.goAroundExtruderOffTravel.value
 		self.lines = archive.getTextLines(gcodeText)
-		self.isThereALayerStartWord = gcodec.isThereAFirstWord('(<layer>', self.lines, 1 )
+		self.isThereALayerStartWord = (gcodec.getFirstWordIndexReverse('(<layer>', self.lines, 1) > -1)
 		if self.isThereALayerStartWord:
 			self.parseInitialization()
 		else:
@@ -520,7 +505,7 @@ class SkeinisoSkein:
 			print('')
 		for line in self.lines[self.lineIndex :]:
 			self.parseCorner(line)
-		self.oldZ = - 999999999999.0
+		self.oldZ = - 999987654321.0
 		if len( self.layerTops ) > 0:
 			self.layerTops[-1] += 912345678.9
 		if len( self.layerTops ) > 1:
@@ -581,14 +566,14 @@ class SkeinisoSkein:
 		elif firstWord == '(</loop>)':
 			self.moveColoredThreadToSkeinPane()
 			self.isLoop = False
+		elif firstWord == '(<nestedRing>)':
+			self.hasASurroundingLoopBeenReached = True
 		elif firstWord == '(<perimeter>':
 			self.isPerimeter = True
 			self.isOuter = ( splitLine[1] == 'outer')
 		elif firstWord == '(</perimeter>)':
 			self.moveColoredThreadToSkeinPane()
 			self.isPerimeter = False
-		elif firstWord == '(<surroundingLoop>)':
-			self.hasASurroundingLoopBeenReached = True
 		if firstWord == 'G2' or firstWord == 'G3':
 			relativeLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			relativeLocation.z = 0.0

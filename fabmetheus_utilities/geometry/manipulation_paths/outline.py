@@ -16,8 +16,8 @@ from fabmetheus_utilities import intercircle
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalExecutionOrder = 80
@@ -27,7 +27,7 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 	"Get path with outline."
 	if len(loop) < 2:
 		return [loop]
-	isClosed = evaluate.getEvaluatedBooleanDefault(False, prefix + 'closed', xmlElement)
+	isClosed = evaluate.getEvaluatedBoolean(False, prefix + 'closed', xmlElement)
 	radius = lineation.getStrokeRadiusByPrefix(prefix, xmlElement )
 	loopComplex = euclidean.getComplexPath(loop)
 	if isClosed:

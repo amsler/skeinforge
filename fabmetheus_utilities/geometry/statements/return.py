@@ -12,8 +12,8 @@ from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def processXMLElement(xmlElement):
@@ -23,11 +23,11 @@ def processXMLElement(xmlElement):
 		return
 	function = functions[-1]
 	function.shouldReturn = True
-	if xmlElement.object == None:
+	if xmlElement.xmlObject == None:
 		if 'return' in xmlElement.attributeDictionary:
 			value = xmlElement.attributeDictionary['return']
-			xmlElement.object = evaluate.getEvaluatorSplitWords(value)
+			xmlElement.xmlObject = evaluate.getEvaluatorSplitWords(value)
 		else:
-			xmlElement.object = []
-	if len( xmlElement.object ) > 0:
-		function.returnValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object, xmlElement )
+			xmlElement.xmlObject = []
+	if len( xmlElement.xmlObject ) > 0:
+		function.returnValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.xmlObject, xmlElement )

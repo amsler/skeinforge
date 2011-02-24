@@ -35,7 +35,6 @@ The default 'Activate Statistic' checkbox is on.  When it is on, the functions d
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
- <br>
 <a name="Extrusion Diameter over Thickness" id="Extrusion Diameter over Thickness"></a><h3>Extrusion Diameter over Thickness</h3>
 
 Default is 1.25.<br>
@@ -57,7 +56,6 @@ When the 'Save Statistics' checkbox is on, the statistics will be saved as a .tx
 <a name="Gcodes" id="Gcodes"></a><h2>Gcodes</h2>
 <hr>
 
- <br>
 An explanation of the gcodes is at:<br>
 <a href="http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter">http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter</a><br>
  <br>
@@ -70,29 +68,13 @@ A gode example is at:<br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
- <br>
 Below are examples of statistic being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and statistic.py.  The 'Save Statistics' checkbox is selected.<br>
- <br>
  <br>
 &gt; python statistic.py<br>
 This brings up the statistic dialog.<br>
  <br>
- <br>
 &gt; python statistic.py Screw Holder_penultimate.gcode<br>
-The statistic file is saved as Screw_Holder_penultimate_statistic.txt<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import statistic<br>
-&gt;&gt;&gt; statistic.<a href="#-main">main</a>()<br>
-This brings up the statistic dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; statistic.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>('Screw Holder_penultimate.gcode')<br>
-The statistics file is saved as Screw Holder_penultimate_statistic.txt</tt>
+The statistic file is saved as Screw_Holder_penultimate_statistic.txt</tt>
 <br />
 <br />
 <p>
@@ -177,7 +159,7 @@ The statistics file is saved as Screw Holder_penultimate_statistic.txt</tt>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getWindowAnalyzeFile"><strong>getWindowAnalyzeFile</strong></a>(fileName)</dt><dd><tt>Write&nbsp;statistics&nbsp;for&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getWindowAnalyzeFileGivenText"><strong>getWindowAnalyzeFileGivenText</strong></a>(fileName, gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Write&nbsp;statistics&nbsp;for&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;statistics&nbsp;dialog.</tt></dd></dl>
@@ -191,7 +173,7 @@ The statistics file is saved as Screw Holder_penultimate_statistic.txt</tt>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

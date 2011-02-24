@@ -10,7 +10,7 @@
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/speed.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/speed.py</a></font></td></tr></table>
     <p>
-<a href="skeinforge_application.skeinforge_plugins.craft_plugins.scale.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_application.skeinforge_plugins.craft_plugins.skirt.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
 Speed is a script to set the feed rate, and flow rate.<br>
@@ -125,29 +125,10 @@ Defines the feed rate when the extruder is off.  The 'Travel Feed Rate' could be
 
 The following examples speed the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and speed.py.<br>
  <br>
- <br>
 &gt; python speed.py<br>
 This brings up the speed dialog.<br>
  <br>
- <br>
 &gt; python speed.py Screw Holder Bottom.stl<br>
-The speed tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The speed tool has created the file:<br>
-.. Screw Holder Bottom_speed.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import speed<br>
-&gt;&gt;&gt; speed.<a href="#-main">main</a>()<br>
-This brings up the speed dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; speed.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The speed tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -156,7 +137,7 @@ The speed tool has created the file:<br>
 <br />
 <br />
 <p>
-<a href="skeinforge_application.skeinforge_plugins.craft_plugins.scale.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="skeinforge_application.skeinforge_plugins.craft_plugins.skirt.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>
@@ -239,9 +220,9 @@ The speed tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, repository<font color="#909090">=None</font>)</dt><dd><tt>Speed&nbsp;the&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Speed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;speed&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Speed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Speed&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -251,7 +232,7 @@ The speed tool has created the file:<br>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

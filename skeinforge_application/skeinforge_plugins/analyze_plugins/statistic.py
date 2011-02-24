@@ -9,7 +9,6 @@ http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Statistic
 The default 'Activate Statistic' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Statistic' checkbox is on, when statistic is run directly.
 
 ==Settings==
-
 ===Extrusion Diameter over Thickness===
 Default is 1.25.
 
@@ -26,7 +25,6 @@ Default is off.
 When the 'Save Statistics' checkbox is on, the statistics will be saved as a .txt file.
 
 ==Gcodes==
-
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
 
@@ -37,29 +35,13 @@ A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
 
 ==Examples==
-
 Below are examples of statistic being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and statistic.py.  The 'Save Statistics' checkbox is selected.
-
 
 > python statistic.py
 This brings up the statistic dialog.
 
-
 > python statistic.py Screw Holder_penultimate.gcode
 The statistic file is saved as Screw_Holder_penultimate_statistic.txt
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import statistic
->>> statistic.main()
-This brings up the statistic dialog.
-
-
->>> statistic.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
-The statistics file is saved as Screw Holder_penultimate_statistic.txt
 
 """
 
@@ -81,11 +63,11 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return StatisticRepository()
 
 def getWindowAnalyzeFile(fileName):
@@ -177,8 +159,8 @@ class StatisticSkein:
 		"Parse gcode text and store the statistics."
 		self.absolutePerimeterWidth = 0.4
 		self.characters = 0
-		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, -999999999.0)
-		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
+		self.cornerMaximum = Vector3(-987654321.0, -987654321.0, -987654321.0)
+		self.cornerMinimum = Vector3(987654321.0, 987654321.0, 987654321.0)
 		self.extruderActive = False
 		self.extruderSpeed = None
 		self.extruderToggled = 0

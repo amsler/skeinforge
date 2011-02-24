@@ -22,8 +22,9 @@
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html">fabmetheus_utilities.geometry.geometry_utilities.evaluate</a><br>
 <a href="fabmetheus_utilities.geometry.creation.lineation.html">fabmetheus_utilities.geometry.creation.lineation</a><br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
-<a href="fabmetheus_utilities.geometry.creation.solid.html">fabmetheus_utilities.geometry.creation.solid</a><br>
-</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html">fabmetheus_utilities.geometry.solids.triangle_mesh</a><br>
+<a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate_elements.setting.html">fabmetheus_utilities.geometry.geometry_utilities.evaluate_elements.setting</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.creation.solid.html">fabmetheus_utilities.geometry.creation.solid</a><br>
+<a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html">fabmetheus_utilities.geometry.solids.triangle_mesh</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -117,8 +118,11 @@
  <dl><dt><a name="-comparePortionDirection"><strong>comparePortionDirection</strong></a>(portionDirection, otherPortionDirection)</dt><dd><tt>Comparison&nbsp;in&nbsp;order&nbsp;to&nbsp;sort&nbsp;portion&nbsp;directions&nbsp;in&nbsp;ascending&nbsp;order&nbsp;of&nbsp;portion&nbsp;then&nbsp;direction.</tt></dd></dl>
  <dl><dt><a name="-getGeometryOutput"><strong>getGeometryOutput</strong></a>(derivation, xmlElement)</dt><dd><tt>Get&nbsp;triangle&nbsp;mesh&nbsp;from&nbsp;attribute&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-getGeometryOutputByArguments"><strong>getGeometryOutputByArguments</strong></a>(arguments, xmlElement)</dt><dd><tt>Get&nbsp;triangle&nbsp;mesh&nbsp;from&nbsp;attribute&nbsp;dictionary&nbsp;by&nbsp;arguments.</tt></dd></dl>
- <dl><dt><a name="-getGeometryOutputByNegativesPositivesOnly"><strong>getGeometryOutputByNegativesPositivesOnly</strong></a>(negatives, positives, xmlElement)</dt><dd><tt>Get&nbsp;triangle&nbsp;mesh&nbsp;from&nbsp;derivation,&nbsp;negatives,&nbsp;positives&nbsp;and&nbsp;xmlElement.</tt></dd></dl>
+ <dl><dt><a name="-getGeometryOutputByLoops"><strong>getGeometryOutputByLoops</strong></a>(derivation, loops)</dt><dd><tt>Get&nbsp;geometry&nbsp;output&nbsp;by&nbsp;sorted,&nbsp;nested&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-getGeometryOutputByNegativesPositives"><strong>getGeometryOutputByNegativesPositives</strong></a>(negatives, positives, xmlElement)</dt><dd><tt>Get&nbsp;triangle&nbsp;mesh&nbsp;from&nbsp;derivation,&nbsp;negatives,&nbsp;positives&nbsp;and&nbsp;xmlElement.</tt></dd></dl>
+ <dl><dt><a name="-getGeometryOutputByNestedRing"><strong>getGeometryOutputByNestedRing</strong></a>(derivation, nestedRing, portionDirections)</dt><dd><tt>Get&nbsp;geometry&nbsp;output&nbsp;by&nbsp;sorted,&nbsp;nested&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getLoopListsByPath"><strong>getLoopListsByPath</strong></a>(derivation, endMultiplier, path, portionDirections)</dt><dd><tt>Get&nbsp;loop&nbsp;lists&nbsp;from&nbsp;path.</tt></dd></dl>
+ <dl><dt><a name="-getNewDerivation"><strong>getNewDerivation</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;new&nbsp;derivation.</tt></dd></dl>
  <dl><dt><a name="-getNormalAverage"><strong>getNormalAverage</strong></a>(normals)</dt><dd><tt>Get&nbsp;normal.</tt></dd></dl>
  <dl><dt><a name="-getNormals"><strong>getNormals</strong></a>(interpolationOffset, offset, portionDirection)</dt><dd><tt>Get&nbsp;normals.</tt></dd></dl>
  <dl><dt><a name="-getSpacedPortionDirections"><strong>getSpacedPortionDirections</strong></a>(interpolationDictionary)</dt><dd><tt>Get&nbsp;sorted&nbsp;portion&nbsp;directions.</tt></dd></dl>
@@ -136,7 +140,7 @@
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__credits__</strong> = 'Art of Illusion &lt;http://www.artofillusion.org/&gt;'<br>
 <strong>__date__</strong> = '$Date: 2008/02/05 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

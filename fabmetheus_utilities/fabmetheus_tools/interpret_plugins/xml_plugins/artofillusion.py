@@ -6,21 +6,6 @@ An import plugin is a script in the interpret_plugins folder which has the funct
 
 The getCarving function takes the file name of an xml file and returns the carving.
 
-This example gets a triangle mesh for the xml file boolean.xml.  This example is run in a terminal in the folder which contains boolean.xml and xml.py.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import xml
->>> xml.getCarving().getCarveRotatedBoundaryLayers()
-[-1.159765625, None, [[(-18.925000000000001-2.4550000000000001j), (-18.754999999999981-2.4550000000000001j)
-..
-many more lines of the carving
-..
-
-
 An xml file can be exported from Art of Illusion by going to the "File" menu, then going into the "Export" menu item, then picking the XML choice.  This will bring up the XML file chooser window, choose a place to save the file then click "OK".  Leave the "compressFile" checkbox unchecked.  All the objects from the scene will be exported, this plugin will ignore the light and camera.  If you want to fabricate more than one object at a time, you can have multiple objects in the Art of Illusion scene and they will all be carved, then fabricated together.
 
 """
@@ -31,9 +16,9 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_tools import face
-from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_geometry
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_solid
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities.geometry.solids import cube
 from fabmetheus_utilities.geometry.solids import cylinder
 from fabmetheus_utilities.geometry.solids import group
@@ -46,14 +31,14 @@ from fabmetheus_utilities import euclidean
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCarvingFromParser( xmlParser ):
 	"Get the carving for the parser."
 	booleanGeometry = boolean_geometry.BooleanGeometry()
 	artOfIllusionElement = xmlParser.getRoot()
-	artOfIllusionElement.object = booleanGeometry
+	artOfIllusionElement.xmlObject = booleanGeometry
 	euclidean.removeElementsFromDictionary( artOfIllusionElement.attributeDictionary, ['fileversion', 'xmlns:bf'] )
 	sceneElement = artOfIllusionElement.getFirstChildWithClassName('Scene')
 	xmlElements = sceneElement.getFirstChildWithClassName('objects').getChildrenWithClassName('bf:Elem')
@@ -63,16 +48,15 @@ def getCarvingFromParser( xmlParser ):
 
 def getCarvableObject(globalObject, object, xmlElement):
 	"Get new carvable object info."
-	archivableObject = globalObject()
-	archivableObject.xmlElement = object
+	object.xmlObject = globalObject()
+	object.xmlObject.xmlElement = object
 	object.attributeDictionary['id'] = xmlElement.getFirstChildWithClassName('name').text
-	object.object = archivableObject
 	coords = xmlElement.getFirstChildWithClassName('coords')
 	transformXMLElement = getTransformXMLElement(coords, 'transformFrom')
 	if len(transformXMLElement.attributeDictionary) < 16:
 		transformXMLElement = getTransformXMLElement(coords, 'transformTo')
-	matrix.setXMLElementDictionaryToOtherElementDictionary( transformXMLElement, object.object.matrix4X4, '', object )
-	return archivableObject
+	matrix.setXMLElementDictionaryMatrix(object.xmlObject.matrix4X4.getFromXMLElement('', transformXMLElement), object)
+	return object.xmlObject
 
 def getTransformXMLElement( coords, transformName ):
 	"Get the transform attributes."
@@ -96,7 +80,7 @@ def processXMLElement( archivableObjects, parent, xmlElement ):
 	carvableClassObject = globalCarvableClassObjectTable[ shapeType ]
 	archivableObject = getCarvableObject( carvableClassObject, object, xmlElement )
 	archivableObject.xmlElement.attributeDictionary['visible'] = xmlElement.attributeDictionary['visible']
-	archivableObject.setToObjectAttributeDictionary()
+	archivableObject.setToArtOfIllusionDictionary()
 	archivableObject.xmlElement.parent = parent
 	archivableObjects.append(archivableObject)
 
@@ -108,7 +92,7 @@ def removeListArtOfIllusionFromDictionary( dictionary, scrubKeys ):
 
 class BooleanSolid( boolean_solid.BooleanSolid ):
 	"An Art of Illusion CSG object info."
-	def setToObjectAttributeDictionary(self):
+	def setToArtOfIllusionDictionary(self):
 		"Set the shape of this carvable object info."
 		processXMLElement( self.archivableObjects, self.xmlElement, self.xmlElement.getFirstChildWithClassName('obj1') )
 		processXMLElement( self.archivableObjects, self.xmlElement, self.xmlElement.getFirstChildWithClassName('obj2') )
@@ -121,7 +105,7 @@ class BooleanSolid( boolean_solid.BooleanSolid ):
 
 class Cube( cube.Cube ):
 	"An Art of Illusion Cube object."
-	def setToObjectAttributeDictionary(self):
+	def setToArtOfIllusionDictionary(self):
 		"Set the shape of this carvable object info."
 		self.inradius = Vector3(
 			float( self.xmlElement.attributeDictionary['halfx'] ),
@@ -136,7 +120,7 @@ class Cube( cube.Cube ):
 
 class Cylinder(cylinder.Cylinder):
 	"An Art of Illusion Cylinder object."
-	def setToObjectAttributeDictionary(self):
+	def setToArtOfIllusionDictionary(self):
 		"Set the shape of this carvable object info."
 		self.inradius = Vector3()
 		self.inradius.x = float(self.xmlElement.attributeDictionary['rx'])
@@ -146,15 +130,15 @@ class Cylinder(cylinder.Cylinder):
 		self.xmlElement.attributeDictionary['radius.x'] = self.xmlElement.attributeDictionary['rx']
 		self.xmlElement.attributeDictionary['radius.y'] = self.xmlElement.attributeDictionary['rz']
 		self.xmlElement.attributeDictionary['topOverBottom'] = self.xmlElement.attributeDictionary['ratio']
-		object = self.xmlElement.object
-		object.matrix4X4 = object.matrix4X4.getOtherTimesSelf(matrix.getDiagonalSwitchedTetragrid(90.0, [0, 2]))
+		xmlObject = self.xmlElement.xmlObject
+		xmlObject.matrix4X4 = xmlObject.matrix4X4.getOtherTimesSelf(matrix.getDiagonalSwitchedTetragrid(90.0, [0, 2]))
 		removeListArtOfIllusionFromDictionary(self.xmlElement.attributeDictionary, ['rx', 'rz', 'ratio'])
 		self.createShape()
 
 
 class Group( group.Group ):
 	"An Art of Illusion Group object."
-	def setToObjectAttributeDictionary(self):
+	def setToArtOfIllusionDictionary(self):
 		"Set the shape of this group."
 		childrenElement = self.xmlElement.parent.getFirstChildWithClassName('children')
 		children = childrenElement.getChildrenWithClassName('bf:Elem')
@@ -165,7 +149,7 @@ class Group( group.Group ):
 
 class Sphere( sphere.Sphere ):
 	"An Art of Illusion Sphere object."
-	def setToObjectAttributeDictionary(self):
+	def setToArtOfIllusionDictionary(self):
 		"Set the shape of this carvable object."
 		self.radius = Vector3(
 			float( self.xmlElement.attributeDictionary['rx'] ),
@@ -178,9 +162,9 @@ class Sphere( sphere.Sphere ):
 		self.createShape()
 
 
-class TriangleMesh( triangle_mesh.TriangleMesh ):
+class TriangleMesh(triangle_mesh.TriangleMesh):
 	"An Art of Illusion triangle mesh object."
-	def setToObjectAttributeDictionary(self):
+	def setToArtOfIllusionDictionary(self):
 		"Set the shape of this carvable object info."
 		vertexElement = self.xmlElement.getFirstChildWithClassName('vertex')
 		vertexPointElements = vertexElement.getChildrenWithClassName('bf:Elem')

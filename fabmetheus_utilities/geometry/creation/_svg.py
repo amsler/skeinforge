@@ -17,7 +17,7 @@ from fabmetheus_utilities import svg_reader
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -43,9 +43,13 @@ def getGeometryOutputBySVGReader(svgReader, xmlElement):
 			geometryOutput += lineation.getGeometryOutputByManipulation(sideLoop, xmlElement)
 	return geometryOutput
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return SVGDerivation(xmlElement)
+
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	path.convertProcessXMLElementRenameByPaths(getGeometryOutput(None, xmlElement), xmlElement)
+	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
 
 
 class SVGDerivation:

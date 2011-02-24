@@ -8,20 +8,11 @@ Default is empty.
 
 The suggested format is a description, followed by a link to a profile post or web page.
 
-==Examples==
-Examples of using description follow below.
-
+==Example==
+Example of using description follows below.
 
 > python description.py
 This brings up the description dialog.
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import description
->>> description.main()
-This brings up the description setting dialog.
 
 """
 
@@ -35,11 +26,11 @@ from skeinforge_application.skeinforge_utilities import skeinforge_profile
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return DescriptionRepository()
 
 

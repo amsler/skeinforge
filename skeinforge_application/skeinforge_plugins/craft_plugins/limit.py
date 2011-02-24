@@ -23,29 +23,10 @@ Defines the maximum speed that the tool head will move in the z direction.
 ==Examples==
 The following examples limit the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and limit.py.
 
-
 > python limit.py
 This brings up the limit dialog.
 
-
 > python limit.py Screw Holder Bottom.stl
-The limit tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The limit tool has created the file:
-.. Screw Holder Bottom_limit.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import limit
->>> limit.main()
-This brings up the limit dialog.
-
-
->>> limit.writeOutput('Screw Holder Bottom.stl')
 The limit tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -75,7 +56,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/28/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText(fileName, gcodeText='', repository=None):
@@ -93,14 +74,12 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return LimitSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	'Get the repository constructor.'
+	'Get new repository.'
 	return LimitRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	'Limit a gcode file.'
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'limit')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'limit', shouldAnalyze)
 
 
 class LimitRepository:

@@ -18,7 +18,7 @@ import math
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -37,6 +37,10 @@ def getGeometryOutput(derivation, xmlElement):
 def getGeometryOutputByArguments(arguments, xmlElement):
 	'Get triangle mesh from attribute dictionary by arguments.'
 	return getGeometryOutput(None, xmlElement)
+
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return ConcatenateDerivation(xmlElement)
 
 def processXMLElement(xmlElement):
 	'Process the xml element.'

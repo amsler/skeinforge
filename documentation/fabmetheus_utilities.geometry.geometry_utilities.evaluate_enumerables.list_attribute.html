@@ -43,11 +43,15 @@
 
 <dl><dt><a name="ListAttribute-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;list&nbsp;representation&nbsp;of&nbsp;this&nbsp;<a href="#ListAttribute">ListAttribute</a>.</tt></dd></dl>
 
+<dl><dt><a name="ListAttribute-add"><strong>add</strong></a>(self, value)</dt><dd><tt>Get&nbsp;the&nbsp;concatenation,&nbsp;same&nbsp;as&nbsp;append.</tt></dd></dl>
+
 <dl><dt><a name="ListAttribute-copy"><strong>copy</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;copy.</tt></dd></dl>
 
 <dl><dt><a name="ListAttribute-delete"><strong>delete</strong></a>(self, arguments)</dt><dd><tt>Get&nbsp;the&nbsp;delete&nbsp;list.</tt></dd></dl>
 
 <dl><dt><a name="ListAttribute-get"><strong>get</strong></a>(self, itemIndex)</dt><dd><tt>Get&nbsp;value&nbsp;by&nbsp;index</tt></dd></dl>
+
+<dl><dt><a name="ListAttribute-getExpansion"><strong>getExpansion</strong></a>(self, items)</dt><dd><tt>Get&nbsp;the&nbsp;concatenated&nbsp;copies.</tt></dd></dl>
 
 <dl><dt><a name="ListAttribute-getIsIn"><strong>getIsIn</strong></a>(self, value)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;in.</tt></dd></dl>
 
@@ -81,10 +85,10 @@
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__credits__</strong> = 'Art of Illusion &lt;http://www.artofillusion.org/&gt;'<br>
 <strong>__date__</strong> = '$Date: 2008/02/05 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
-<strong>globalAccessibleAttributes</strong> = ['copy', 'count', 'delete', 'get', 'getIsIn', 'getIsNotIn', 'getLength', 'getMax', 'getMin', 'insert', 'keys', 'length', 'rindex', 'set', 'values']<br>
-<strong>globalGetAccessibleAttributeSet</strong> = set(['copy', 'count', 'delete', 'get', 'getIsIn', 'getIsNotIn', ...])<br>
+<strong>globalAccessibleAttributes</strong> = ['add', 'copy', 'count', 'delete', 'get', 'getExpansion', 'getIsIn', 'getIsNotIn', 'getLength', 'getMax', 'getMin', 'insert', 'keys', 'length', 'rindex', 'set', 'values']<br>
+<strong>globalGetAccessibleAttributeSet</strong> = set(['add', 'copy', 'count', 'delete', 'get', 'getExpansion', ...])<br>
 <strong>globalNativeFunctionSet</strong> = set(['append', 'extend', 'index', 'pop', 'remove', 'reverse', ...])<br>
 <strong>globalNativeFunctions</strong> = ['append', 'extend', 'index', 'pop', 'remove', 'reverse', 'sort']</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

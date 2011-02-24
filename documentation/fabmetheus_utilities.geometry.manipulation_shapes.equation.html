@@ -20,9 +20,8 @@
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="__init__.html">__init__</a><br>
 <a href="fabmetheus_utilities.euclidean.html">fabmetheus_utilities.euclidean</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html">fabmetheus_utilities.geometry.geometry_utilities.evaluate</a><br>
-<a href="fabmetheus_utilities.geometry.creation.lineation.html">fabmetheus_utilities.geometry.creation.lineation</a><br>
-</td><td width="25%" valign=top><a href="math.html">math</a><br>
-<a href="fabmetheus_utilities.geometry.manipulation_matrix.matrix.html">fabmetheus_utilities.geometry.manipulation_matrix.matrix</a><br>
+<a href="math.html">math</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.geometry_utilities.matrix.html">fabmetheus_utilities.geometry.geometry_utilities.matrix</a><br>
 </td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -54,23 +53,12 @@
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-equateCylindrical"><strong>equateCylindrical</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;cylindrical.</tt></dd></dl>
- <dl><dt><a name="-equateCylindricalDotAzimuth"><strong>equateCylindricalDotAzimuth</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;cylindrical&nbsp;azimuth.</tt></dd></dl>
- <dl><dt><a name="-equateCylindricalDotRadius"><strong>equateCylindricalDotRadius</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;cylindrical&nbsp;radius.</tt></dd></dl>
- <dl><dt><a name="-equateCylindricalDotZ"><strong>equateCylindricalDotZ</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;cylindrical&nbsp;z.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-equate"><strong>equate</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;rectangular.</tt></dd></dl>
  <dl><dt><a name="-equatePoints"><strong>equatePoints</strong></a>(points, prefix, revolutions, xmlElement)</dt><dd><tt>Equate&nbsp;the&nbsp;points.</tt></dd></dl>
- <dl><dt><a name="-equatePolar"><strong>equatePolar</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;polar.</tt></dd></dl>
- <dl><dt><a name="-equatePolarDotAzimuth"><strong>equatePolarDotAzimuth</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;polar&nbsp;azimuth.</tt></dd></dl>
- <dl><dt><a name="-equatePolarDotRadius"><strong>equatePolarDotRadius</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;polar&nbsp;radius.</tt></dd></dl>
- <dl><dt><a name="-equateRectangular"><strong>equateRectangular</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;rectangular.</tt></dd></dl>
- <dl><dt><a name="-equateRectangularDotX"><strong>equateRectangularDotX</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;rectangular&nbsp;x.</tt></dd></dl>
- <dl><dt><a name="-equateRectangularDotY"><strong>equateRectangularDotY</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;rectangular&nbsp;y.</tt></dd></dl>
- <dl><dt><a name="-equateRectangularDotZ"><strong>equateRectangularDotZ</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;rectangular&nbsp;z.</tt></dd></dl>
- <dl><dt><a name="-equateSpherical"><strong>equateSpherical</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;spherical.</tt></dd></dl>
- <dl><dt><a name="-equateSphericalDotAzimuth"><strong>equateSphericalDotAzimuth</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;spherical&nbsp;azimuth.</tt></dd></dl>
- <dl><dt><a name="-equateSphericalDotElevation"><strong>equateSphericalDotElevation</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;spherical&nbsp;elevation.</tt></dd></dl>
- <dl><dt><a name="-equateSphericalDotRadius"><strong>equateSphericalDotRadius</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;spherical&nbsp;radius.</tt></dd></dl>
  <dl><dt><a name="-equateVertexesByFunction"><strong>equateVertexesByFunction</strong></a>(equationFunction, points, prefix, revolutions, xmlElement)</dt><dd><tt>Get&nbsp;equated&nbsp;points&nbsp;by&nbsp;equation&nbsp;function.</tt></dd></dl>
+ <dl><dt><a name="-equateX"><strong>equateX</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;rectangular&nbsp;x.</tt></dd></dl>
+ <dl><dt><a name="-equateY"><strong>equateY</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;rectangular&nbsp;y.</tt></dd></dl>
+ <dl><dt><a name="-equateZ"><strong>equateZ</strong></a>(point, returnValue)</dt><dd><tt>Get&nbsp;equation&nbsp;for&nbsp;rectangular&nbsp;z.</tt></dd></dl>
  <dl><dt><a name="-getManipulatedGeometryOutput"><strong>getManipulatedGeometryOutput</strong></a>(geometryOutput, prefix, xmlElement)</dt><dd><tt>Get&nbsp;equated&nbsp;geometryOutput.</tt></dd></dl>
  <dl><dt><a name="-getManipulatedPaths"><strong>getManipulatedPaths</strong></a>(close, loop, prefix, sideLength, xmlElement)</dt><dd><tt>Get&nbsp;equated&nbsp;paths.</tt></dd></dl>
 </td></tr></table><p>
@@ -83,7 +71,7 @@
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__credits__</strong> = 'Art of Illusion &lt;http://www.artofillusion.org/&gt;'<br>
 <strong>__date__</strong> = '$Date: 2008/02/05 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
 <strong>globalExecutionOrder</strong> = -100</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

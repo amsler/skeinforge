@@ -160,6 +160,10 @@ When the skeinforge dialog pops up, click 'Skeinforge', choose the file which yo
 Or you can turn files into gcode by adding the file name, for example:
 > python skeinforge.py Screw Holder Bottom.stl
 
+===License===
+GNU Affero General Public License
+http://www.gnu.org/licenses/agpl.html
+
 ===Motto===
 I may be slow, but I get there in the end.
 
@@ -202,25 +206,10 @@ The following examples forge the STL file Screw Holder.stl.  The examples are ru
 This brings up the dialog, after clicking 'Skeinforge', the following is printed:
 The exported file is saved as Screw Holder_export.gcode
 
-
 > python skeinforge.py Screw Holder.stl
 The exported file is saved as Screw Holder_export.gcode
 
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import skeinforge
->>> skeinforge.writeOutput('Screw Holder.stl')
-The exported file is saved as Screw Holder_export.gcode
-
-
->>> skeinforge.main()
-This brings up the skeinforge dialog.
-
-
-To run only fill for example, type in the skeinforge_plugins folder which fill is in:
+To run only fill for example, type in the craft_plugins folder which fill is in:
 > python fill.py
 
 """
@@ -241,31 +230,13 @@ import os
 import sys
 
 
-# http://hydraraptor.blogspot.com/2008/08/bearing-fruit.html
-# On the other hand: use cone
-# http://hydraraptor.blogspot.com/2010/12/tip-top-top-layer-tip.html
+# announce
 #
-# array paths, follow paths, later maybe targetequation radius xyz give index equation given parameters
-# unify doubly_hollow square
-# inset stretch corner bug in fill getting inset loop
-# equation rippled circle example
-# equation for vertexes if not already
-# voronoi average location intersection looped inset intercircles
-# grate separate
-# add overview link to crnsdoo index and svg page
-# xml_creation
-# linearbearingexample 15 x 1 x 2
-# look at height in boolean_geometry
-# commandLineInterface
-# bound.bottom to cube, sphere, cylinder input, maybe mesh., bound.bottom & left & right & top for xy plane
-# connectionfrom, to, connect, xaxis
-# lathe, transform normal in getRemaining, getConnection
-# getConnection of some kind like getConnectionVertexes, getConnection
-# mechaslab
-# import, write, copy examples
-# stretch add back addAlong
-# multiply to table + boundary bedBound bedWidth bedHeight bedFile.csv
-#
+# circle is average radius in drill
+# change topOverBottom in linearbearingexample to pegAngle
+# add links download manual svg_writer
+# change thickness to height in gear xml
+# base xmlelement off xmlatom
 # maybe in svgReader if loop intersection with previous union else add
 #
 # unimportant
@@ -273,33 +244,60 @@ import sys
 # view profile 1 mm thickness
 #
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
+# hollow top
+# packingDensity or density in grid - probably just density
+# derivations for shapes
+# think about rectangular getVector3RemoveByPre..
+# links in layerTemplate
 # del previous, add begin & end if far  get actual path
+# linearbearingexample 15 x 1 x 2, linearbearingcage
 # clairvoyance
+# add date time 11.01.02|12:08
 # polling
+# connectionfrom, to, connect, xaxis
+# lathe, transform normal in getRemaining, getConnection
+# getConnection of some kind like getConnectionVertexes, getConnection
+# xml_creation
+# voronoi average location intersection looped inset intercircles
+# 'fileName, text, repository' commandLineInterface
+#
+#
+# multiply to table + boundary bedBound bedWidth bedHeight bedFile.csv
 # getNormal, getIsFlat?
-# getElementsByTags, removeIdentifiers
-# write svg for visible paths???
+# info statistics, procedures, xml if any
+# test solid arguments
 # combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
 # pixel, voxel, surfaxel/boxel, lattice, mesh
 # probably not replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
-# probably not speed up CircleIntersection by performing isWithinCircles before creation
 # mesh. for cube, then cyliner, then sphere after lathe
+# dimension extrude diameter, density
+# thermistor lookup table
+# add overview link to crnsdoo index and svg page
+# stretch add back addAlong
+# import, write, copy examples
+# maybe remove default warnings from scale, rotate, translate, transform
+# easy helix
+# write tool; maybe write one deep
+#
+#
 # tube
 # rotor
+# coin
 # demozendium privacy policy, maybe thumbnail logo
 # pymethe
 # test translate
 # full lathe
-# think about setActualMinimumZ in boolean_geometry
 # pyramid
 # round extrusion ?, fillet
+# make html statistics, move statistics to folder
 # manipulate solid, maybe manipulate around elements
-# hollow top
 # boolean loop corner outset
+# mechaslab advanced drainage, shingles
 # dovetail
 # maybe not getNewObject, getNew, addToBoolean
 # work out close and radius
 # maybe try to get rid of comment if possible
+# maybe have add function as well as append for list and string
 # maybe move and give geometryOutput to cube, cylinder, sphere
 #
 # comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
@@ -307,13 +305,15 @@ import sys
 # comb documentation
 #
 # maybe move widen before bottom
+# maybe add 1 to max layer input to iso in layer_template.svg
 # maybe save all generated_files option
-# maybe meta overhang
 # table to dictionary
 # check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # remove cool set at end of layer
 # add fan on when hot in chamber
 # maybe measuring rod
+# getLayerThickness from xml
+# maybe center for xy plane
 # remove comments from clip, bend
 # winding into coiling, coil into wind & weave
 # later, precision
@@ -321,8 +321,10 @@ import sys
 # http://wiki.makerbot.com/configuring-skeinforge
 #
 #
-# remove index from CircleIntersection _speed
+# remove index from CircleIntersection remove ahead or behind from CircleIntersection _speed
 # cache surroundingCarves _speed
+# probably not speed up CircleIntersection by performing isWithinCircles before creation _speed
+# pixelSet instead of pixelTable for arounds _speed
 #
 #
 # add hook _extrusion
@@ -332,11 +334,12 @@ import sys
 # layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
 # maybe double height shells option _extrusion
 # raft triple layer base, middle interface with hot loop or ties
-# apron _extrusion
 # somehow, add pattern to outside, http://blog.makerbot.com/2010/09/03/lampshades/
 #
 # rename skeinforge_profile.addListsToCraftTypeRepository to skeinforge_profile.addToCraftTypeRepository after apron
+# basic tool
 # arch, ceiling
+# meta setting, rename setting _setting
 # add polish, has perimeter, has cut first layer (False)
 # probably not set addedLocation in distanceFeedRate after arc move
 # maybe horizontal bridging and/or check to see if the ends are standing on anything
@@ -345,8 +348,8 @@ import sys
 # save all analyze viewers of the same name except itself, update help menu self.wikiManualPrimary.setUpdateFunction
 # check alterations folder first, if there is something copy it to the home directory, if not check the home directory
 # set temperature in temperature
+# add links to demozendium in help
 # maybe add hop only if long option
-# move alterations and profiles to top level
 #
 #
 #
@@ -364,7 +367,6 @@ import sys
 # move & rotate model
 # possible jitter bug http://cpwebste.blogspot.com/2010/04/hydras-first-print.html
 # trial, meta in a grid settings
-# maybe svg slice format
 # maybe interpret svg_convex_mesh
 #laminate tool head
 #maybe use 5x5 radius search in circle node
@@ -388,18 +390,16 @@ import sys
 # simulate
 #transform
 # juricator
-#extrude loops I guess make circles? and/or run along sparse infill
+# probably not run along sparse infill to avoid stops
 #custom inclined plane, inclined plane from model, screw, fillet travel as well maybe
 # probably not stretch single isLoop
 #maybe much afterwards make congajure multistep view
 #maybe stripe although model colors alone can handle it
 #stretch fiber around shape, maybe modify winding for asymmetric shapes
 #multiple heads around edge
-#maybe add full underscored date name for version
 #maybe add rarely used tool option
 #angle shape for overhang extrusions
 #maybe m111? countdown
-#common tool
 #first time tool tip
 #individual tool tip to place in text
 # maybe try to simplify raft layer start
@@ -471,10 +471,8 @@ import sys
 # concept, indexium expand condense remove, single text, pymetheus
 # concept, inscribed key silencer
 # concept, spreadsheet to python and/or javascript
-# concept, blog, frequent updates, mix associated news
 # concept, range voting for posters, informative, complainer, funny, insightful, rude, spammer, literacy,  troll?
 # concept, intermittent cloud with multiple hash functions
-# concept, demodiu xml articles
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
@@ -497,8 +495,8 @@ Zach Hoeken <http://blog.zachhoeken.com/>
 
 Organizations:
 Art of Illusion <http://www.artofillusion.org/>"""
-__date__ = '$Date: 2008/21/11 $'
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addToProfileMenu(profileSelection, profileType, repository):
@@ -521,7 +519,7 @@ def getPluginFileNames():
 	return archive.getPluginFileNamesFromDirectoryPath(getPluginsDirectoryPath())
 
 def getNewRepository():
-	'Get the repository constructor.'
+	'Get new repository.'
 	return SkeinforgeRepository()
 
 def getRadioPluginsAddPluginGroupFrame(directoryPath, importantFileNames, names, repository):

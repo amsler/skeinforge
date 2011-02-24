@@ -12,8 +12,8 @@ from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def processChildrenByIndexValue( function, index, indexValue, value, xmlElement ):
@@ -26,9 +26,9 @@ def processChildrenByIndexValue( function, index, indexValue, value, xmlElement 
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	if xmlElement.object == None:
-		xmlElement.object = IndexValue(xmlElement)
-	if xmlElement.object.inSplitWords == None:
+	if xmlElement.xmlObject == None:
+		xmlElement.xmlObject = IndexValue(xmlElement)
+	if xmlElement.xmlObject.inSplitWords == None:
 		return
 	xmlProcessor = xmlElement.getXMLProcessor()
 	if len( xmlProcessor.functions ) < 1:
@@ -36,16 +36,16 @@ def processXMLElement(xmlElement):
 		print(xmlElement)
 		return
 	function = xmlProcessor.functions[-1]
-	inValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object.inSplitWords, xmlElement )
+	inValue = evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.xmlObject.inSplitWords, xmlElement )
 	if inValue.__class__ == list or inValue.__class__ == str:
 		for index, value in enumerate( inValue ):
-			processChildrenByIndexValue( function, index, xmlElement.object, value, xmlElement )
+			processChildrenByIndexValue( function, index, xmlElement.xmlObject, value, xmlElement )
 		return
 	if inValue.__class__ == dict:
 		inKeys = inValue.keys()
 		inKeys.sort()
 		for inKey in inKeys:
-			processChildrenByIndexValue( function, inKey, xmlElement.object, inValue[ inKey ], xmlElement )
+			processChildrenByIndexValue( function, inKey, xmlElement.xmlObject, inValue[ inKey ], xmlElement )
 
 
 class IndexValue:

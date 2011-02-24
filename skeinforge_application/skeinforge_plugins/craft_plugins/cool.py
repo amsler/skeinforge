@@ -41,6 +41,20 @@ Default is 10 millimeters.
 
 When the orbit cool type is selected, if the area of the largest island is as large as the square of the "Minimum Orbital Radius" then the orbits will be just within the island.  If the island is smaller, then the orbits will be in a square of the "Minimum Orbital Radius" around the center of the island.
 
+===Name of Alteration Files===
+Cool looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder.  The cool start and end text idea is from:
+http://makerhahn.blogspot.com/2008/10/yay-minimug.html
+
+====Name of Cool End File====
+Default is cool_end.gcode.
+
+If there is a file with the name of the "Name of Cool End File" setting, it will be added to the start of the orbits.
+
+====Name of Cool Start File====
+Default is cool_start.gcode.
+
+If there is a file with the name of the "Name of Cool Start File" setting, it will be added to the end of the orbits.
+
 ===Turn Fan On at Beginning===
 Default is on.
 
@@ -51,42 +65,13 @@ Default is on.
 
 When selected, cool will turn the fan off at the ending of the fabrication.
 
-==Alterations==
-Cool looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the craft_plugins folder.  The cool start and end text idea is from:
-http://makerhahn.blogspot.com/2008/10/yay-minimug.html
-
-===cool_start.gcode===
-Cool will add cool_start.gcode to the start of the orbits if it exists.
-
-===cool_end.gcode===
-After it has added the orbits, it will add the file cool_end.gcode if it exists.
-
 ==Examples==
 The following examples cool the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and cool.py.
-
 
 > python cool.py
 This brings up the cool dialog.
 
-
 > python cool.py Screw Holder Bottom.stl
-The cool tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The cool tool has created the file:
-.. Screw Holder Bottom_cool.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import cool
->>> cool.main()
-This brings up the cool dialog.
-
-
->>> cool.writeOutput('Screw Holder Bottom.stl')
 The cool tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -114,7 +99,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText(fileName, text, repository=None):
@@ -132,14 +117,12 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return CoolSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	'Get the repository constructor.'
+	'Get new repository.'
 	return CoolRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	'Cool a gcode linear move file.  Chain cool the gcode if it is not already cooled.'
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage(fileName, 'cool')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'cool', shouldAnalyze)
 
 
 class CoolRepository:
@@ -160,6 +143,11 @@ class CoolRepository:
 		self.minimumLayerTime = settings.FloatSpin().getFromValue(0.0, 'Minimum Layer Time (seconds):', self, 120.0, 60.0)
 		self.minimumOrbitalRadius = settings.FloatSpin().getFromValue(
 			0.0, 'Minimum Orbital Radius (millimeters):', self, 20.0, 10.0)
+		settings.LabelSeparator().getFromRepository(self)
+		settings.LabelDisplay().getFromName('- Name of Alteration Files -', self )
+		self.nameOfCoolEndFile = settings.StringSetting().getFromValue('Name of Cool End File:', self, 'cool_end.gcode')
+		self.nameOfCoolStartFile = settings.StringSetting().getFromValue('Name of Cool Start File:', self, 'cool_start.gcode')
+		settings.LabelSeparator().getFromRepository(self)
 		self.turnFanOnAtBeginning = settings.BooleanSetting().getFromValue('Turn Fan On at Beginning', self, True)
 		self.turnFanOffAtEnding = settings.BooleanSetting().getFromValue('Turn Fan Off at Ending', self, True)
 		self.executeTitle = 'Cool'
@@ -261,10 +249,8 @@ class CoolSkein:
 	def getCraftedGcode(self, gcodeText, repository):
 		'Parse gcode text and store the cool gcode.'
 		self.repository = repository
-		self.coolEndText = settings.getFileInAlterationsOrGivenDirectory(os.path.dirname(__file__), 'Cool_End.gcode')
-		self.coolEndLines = archive.getTextLines(self.coolEndText)
-		self.coolStartText = settings.getFileInAlterationsOrGivenDirectory( os.path.dirname(__file__), 'Cool_Start.gcode')
-		self.coolStartLines = archive.getTextLines(self.coolStartText)
+		self.coolEndLines = settings.getLinesInAlterationsOrGivenDirectory(repository.nameOfCoolEndFile.value)
+		self.coolStartLines = settings.getLinesInAlterationsOrGivenDirectory(repository.nameOfCoolStartFile.value)
 		self.halfCorner = complex(repository.minimumOrbitalRadius.value, repository.minimumOrbitalRadius.value)
 		self.lines = archive.getTextLines(gcodeText)
 		self.minimumArea = 4.0 * repository.minimumOrbitalRadius.value * repository.minimumOrbitalRadius.value
@@ -334,6 +320,12 @@ class CoolSkein:
 			location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			line = self.getCoolMove(line, location, splitLine)
 			self.oldLocation = location
+		elif firstWord == 'M104':
+			self.oldTemperature = gcodec.getDoubleAfterFirstLetter(splitLine[1])
+		elif firstWord == 'M108':
+			self.setOperatingFlowString(splitLine)
+			self.addFlowRateMultipliedLineIfNecessary(self.oldFlowRate)
+			return
 		elif firstWord == '(<boundaryPoint>':
 			self.boundaryLoop.append(gcodec.getLocationFromSplitLine(None, splitLine).dropAxis())
 		elif firstWord == '(<layer>':
@@ -359,13 +351,7 @@ class CoolSkein:
 				self.addTemperature(self.oldTemperature)
 				self.coolTemperature = None
 			self.addFlowRateLineIfNecessary(self.oldFlowRate)
-		elif firstWord == 'M104':
-			self.oldTemperature = gcodec.getDoubleAfterFirstLetter(splitLine[1])
-		elif firstWord == 'M108':
-			self.setOperatingFlowString(splitLine)
-			self.addFlowRateMultipliedLineIfNecessary(self.oldFlowRate)
-			return
-		elif firstWord == '(<surroundingLoop>)':
+		elif firstWord == '(<nestedRing>)':
 			self.boundaryLoop = []
 			self.boundaryLayer.loops.append(self.boundaryLoop)
 		self.distanceFeedRate.addLine(line)

@@ -82,28 +82,12 @@ If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector grap
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
- <br>
 Below are examples of vectorwrite being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and vectorwrite.py.<br>
- <br>
  <br>
 &gt; python vectorwrite.py<br>
 This brings up the vectorwrite dialog.<br>
  <br>
- <br>
 &gt; python vectorwrite.py Screw Holder_penultimate.gcode<br>
-The vectorwrite file is saved as Screw_Holder_penultimate_vectorwrite.svg<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import vectorwrite<br>
-&gt;&gt;&gt; vectorwrite.<a href="#-main">main</a>()<br>
-This brings up the vectorwrite dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; vectorwrite.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>('Screw Holder_penultimate.gcode')<br>
 The vectorwrite file is saved as Screw_Holder_penultimate_vectorwrite.svg</tt>
 <br />
 <br />
@@ -264,7 +248,7 @@ Methods inherited from <a href="fabmetheus_utilities.svg_writer.html#SVGWriter">
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getWindowAnalyzeFile"><strong>getWindowAnalyzeFile</strong></a>(fileName)</dt><dd><tt>Write&nbsp;scalable&nbsp;vector&nbsp;graphics&nbsp;for&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getWindowAnalyzeFileGivenText"><strong>getWindowAnalyzeFileGivenText</strong></a>(fileName, gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Write&nbsp;scalable&nbsp;vector&nbsp;graphics&nbsp;for&nbsp;a&nbsp;gcode&nbsp;file&nbsp;given&nbsp;the&nbsp;settings.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;vectorwrite&nbsp;dialog.</tt></dd></dl>
@@ -279,7 +263,7 @@ Methods inherited from <a href="fabmetheus_utilities.svg_writer.html#SVGWriter">
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__credits__</strong> = 'Nophead &lt;http://hydraraptor.blogspot.com/&gt;'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

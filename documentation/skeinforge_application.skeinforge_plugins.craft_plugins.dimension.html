@@ -6,7 +6,7 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_application.html"><font color="#ffffff">skeinforge_application</font></a>.<a href="skeinforge_application.skeinforge_plugins.html"><font color="#ffffff">skeinforge_plugins</font></a>.<a href="skeinforge_application.skeinforge_plugins.craft_plugins.html"><font color="#ffffff">craft_plugins</font></a>.dimension</strong></big></big> ($Date: 2008/28/04 $)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_application.html"><font color="#ffffff">skeinforge_application</font></a>.<a href="skeinforge_application.skeinforge_plugins.html"><font color="#ffffff">skeinforge_plugins</font></a>.<a href="skeinforge_application.skeinforge_plugins.craft_plugins.html"><font color="#ffffff">craft_plugins</font></a>.dimension</strong></big></big> ($Date: 2008/02/05 $)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/dimension.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/dimension.py</a></font></td></tr></table>
     <p>
@@ -29,6 +29,9 @@ The dimension manual page is at:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Absolute Extrusion Distance">Absolute Extrusion Distance</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Relative Extrusion Distance">Relative Extrusion Distance</a><br />
 &nbsp;&nbsp;<a href="#Extruder Retraction Speed">Extruder Retraction Speed</a><br />
+&nbsp;&nbsp;<a href="#Filament">Filament</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Filament Diameter">Filament Diameter</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Filament Packing Density">Filament Packing Density</a><br />
 &nbsp;&nbsp;<a href="#Retraction Distance">Retraction Distance</a><br />
 &nbsp;&nbsp;<a href="#Restart Extra Distance">Restart Extra Distance</a><br />
 <a href="#Examples">Examples</a><br />
@@ -59,6 +62,24 @@ Default is 13.3 mm/s.<br>
  <br>
 Defines the extruder retraction feed rate.<br>
  <br>
+<a name="Filament" id="Filament"></a><h3>Filament</h3>
+
+<a name="Filament Diameter" id="Filament Diameter"></a><h4>Filament Diameter</h4>
+
+Default is 2.8 millimeters.<br>
+ <br>
+Defines the filament diameter.<br>
+ <br>
+<a name="Filament Packing Density" id="Filament Packing Density"></a><h4>Filament Packing Density</h4>
+
+Default is 0.85.  This is for ABS.<br>
+ <br>
+Defines the effective filament packing density.<br>
+ <br>
+The default value is so low for ABS because ABS is relatively soft and with a pinch wheel extruder the teeth of the pinch dig in farther, so it sees a smaller effective diameter.  With a hard plastic like PLA the teeth of the pinch wheel don't dig in as far, so it sees a larger effective diameter, so feeds faster, so for PLA the value should be around 0.97.  This is with Wade's hobbed bolt.  The effect is less significant with larger pinch wheels.<br>
+ <br>
+Overall, you'll have to find the optimal filament packing density by experiment.<br>
+ <br>
 <a name="Retraction Distance" id="Retraction Distance"></a><h3>Retraction Distance</h3>
 
 Default is zero.<br>
@@ -76,29 +97,10 @@ Defines the restart extra distance when the thread restarts.  The restart distan
 
 The following examples dimension the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and dimension.py.<br>
  <br>
- <br>
 &gt; python dimension.py<br>
 This brings up the dimension dialog.<br>
  <br>
- <br>
 &gt; python dimension.py Screw Holder Bottom.stl<br>
-The dimension tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The dimension tool has created the file:<br>
-.. Screw Holder Bottom_dimension.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import dimension<br>
-&gt;&gt;&gt; dimension.<a href="#-main">main</a>()<br>
-This brings up the dimension dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; dimension.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The dimension tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -193,9 +195,9 @@ The dimension tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText<font color="#909090">=''</font>, repository<font color="#909090">=None</font>)</dt><dd><tt>Dimension&nbsp;a&nbsp;gcode&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Dimension&nbsp;a&nbsp;gcode&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;dimension&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Dimension&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Dimension&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -204,8 +206,8 @@ The dimension tool has created the file:<br>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
-<strong>__date__</strong> = '$Date: 2008/28/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'</td></tr></table><p>
+<strong>__date__</strong> = '$Date: 2008/02/05 $'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

@@ -15,32 +15,12 @@ The default 'Activate Comb' checkbox is off.  When it is on, the functions descr
 Placeholder.
 
 ==Examples==
-
 The following examples comb the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and comb.py.
-
 
 > python comb.py
 This brings up the comb dialog.
 
-
 > python comb.py Screw Holder Bottom.stl
-The comb tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The comb tool has created the file:
-.. Screw Holder Bottom_comb.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import comb
->>> comb.main()
-This brings up the comb dialog.
-
-
->>> comb.writeOutput('Screw Holder Bottom.stl')
 The comb tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -73,12 +53,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, text, combRepository = None ):
 	"Comb a gcode linear move text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), combRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), combRepository )
 
 def getCraftedTextFromText( gcodeText, combRepository = None ):
 	"Comb a gcode linear move text."
@@ -114,7 +94,7 @@ def getInsideness(path, loop):
 	return incrementRatio * numberOfPointsInside
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return CombRepository()
 
 def getPathsByIntersectedLoop( begin, end, loop ):
@@ -134,11 +114,9 @@ def getPathsByIntersectedLoop( begin, end, loop ):
 	widdershinsPath.append( nearestEnd )
 	return [ clockwisePath, widdershinsPath ]
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Comb a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'comb')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'comb', shouldAnalyze)
 
 
 class CombRepository:
@@ -177,7 +155,7 @@ class CombSkein:
 		self.oldLocation = None
 		self.oldZ = None
 		self.operatingFeedRatePerMinute = None
-		self.travelFeedRatePerMinute = None
+		self.travelFeedRateMinute = None
 
 	def addGcodePathZ( self, feedRateMinute, path, z ):
 		"Add a gcode path, without modifying the extruder, to the output."
@@ -190,7 +168,7 @@ class CombSkein:
 		if not self.isAlteration and not self.extruderActive and self.oldLocation != None:
 			if len( self.getBoundaries() ) > 0:
 				highestZ = max( location.z, self.oldLocation.z )
-				self.addGcodePathZ( self.travelFeedRatePerMinute, self.getPathsBetween( self.oldLocation.dropAxis(), location.dropAxis() ), highestZ )
+				self.addGcodePathZ( self.travelFeedRateMinute, self.getPathsBetween( self.oldLocation.dropAxis(), location.dropAxis() ), highestZ )
 		self.oldLocation = location
 
 	def addToLoop(self, location):
@@ -403,7 +381,7 @@ class CombSkein:
 				self.betweenInset = 0.4 * perimeterWidth
 				self.uTurnWidth = 0.5 * self.betweenInset
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
+				self.travelFeedRateMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine(self, line):

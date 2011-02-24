@@ -12,7 +12,7 @@ from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.creation import peg
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_matrix import matrix
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities.geometry.manipulation_matrix import translate
 from fabmetheus_utilities.geometry.solids import cylinder
 from fabmetheus_utilities.geometry.solids import sphere
@@ -24,7 +24,7 @@ import math
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addAssemblyCage(derivation, negatives, positives):
@@ -62,23 +62,18 @@ def addCageGroove(derivation, negatives, positives):
 
 def addGroove(derivation, negatives):
 	'Add groove on each side of cage.'
-	copyShallow = derivation.xmlElement.getCopyShallow()
-	extrude.setXMLElementToEndStart(Vector3(-derivation.demilength), Vector3(derivation.demilength), copyShallow)
-	extrudeDerivation = extrude.ExtrudeDerivation(copyShallow)
 	bottom = derivation.demiheight - 0.5 * derivation.grooveWidth
-	outside = derivation.demiwidth
+	outside = 1.0001 * derivation.demiwidth
 	top = derivation.demiheight
 	leftGroove = [
-		complex(-outside, bottom),
+		complex(-outside, top),
 		complex(-derivation.innerDemiwidth, derivation.demiheight),
-		complex(-outside, top)]
+		complex(-outside, bottom)]
 	rightGroove = [
-		complex(outside, top),
+		complex(outside, bottom),
 		complex(derivation.innerDemiwidth, derivation.demiheight),
-		complex(outside, bottom)]
-	groovesComplex = [leftGroove, rightGroove]
-	groovesVector3 = euclidean.getVector3Paths(groovesComplex)
-	extrude.addPositives(extrudeDerivation, groovesVector3, negatives)
+		complex(outside, top)]
+	extrude.addSymmetricXPaths(negatives, [leftGroove, rightGroove], derivation.demilength)
 
 def addNegativePeg(derivation, negatives, x, y):
 	'Add negative cylinder at x and y.'
@@ -87,8 +82,7 @@ def addNegativePeg(derivation, negatives, x, y):
 	copyShallow = derivation.xmlElement.getCopyShallow()
 	start = Vector3(x, y, derivation.height)
 	sides = evaluate.getSidesMinimumThreeBasedOnPrecision(negativePegRadius, copyShallow )
-	cylinderOutput = cylinder.getGeometryOutputByEndStart(0.0, inradius, sides, start, derivation.topOverBottom, copyShallow)
-	negatives.append(cylinderOutput)
+	cylinder.addCylinderOutputByEndStart(0.0, inradius, negatives, sides, start, derivation.topOverBottom)
 
 def addNegativeSphere(derivation, negatives, x):
 	'Add negative sphere at x.'
@@ -104,7 +98,7 @@ def addPositivePeg(derivation, positives, x, y):
 	copyShallow = derivation.xmlElement.getCopyShallow()
 	start = Vector3(x, y, derivation.demiheight)
 	endZ = derivation.height
-	peg.addPeg(derivation.pegBevel, endZ, positives, radius, start, derivation.topOverBottom, copyShallow)
+	peg.addPegOutput(derivation.pegBevel, endZ, positives, radius, start, derivation.topOverBottom, copyShallow)
 
 def getBearingCenterXs(bearingCenterX, numberOfSteps, stepX):
 	'Get the bearing center x list.'
@@ -114,22 +108,25 @@ def getBearingCenterXs(bearingCenterX, numberOfSteps, stepX):
 		bearingCenterX += stepX
 	return bearingCenterXs
 
-def getGeometryOutput(derivation, xmlElement):
+def getGeometryOutput(xmlElement):
 	'Get vector3 vertexes from attribute dictionary.'
-	if derivation == None:
-		derivation = LinearBearingCageDerivation(xmlElement)
+	derivation = LinearBearingCageDerivation(xmlElement)
 	negatives = []
 	positives = []
 	if derivation.typeStringFirstCharacter == 'a':
 		addAssemblyCage(derivation, negatives, positives)
 	else:
 		addCage(derivation, derivation.height, negatives, positives)
-	return extrude.getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement)
+	return extrude.getGeometryOutputByNegativesPositives(negatives, positives, xmlElement)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
 	'Get vector3 vertexes from attribute dictionary by arguments.'
 	evaluate.setAttributeDictionaryByArguments(['length', 'radius'], arguments, xmlElement)
-	return getGeometryOutput(None, xmlElement)
+	return getGeometryOutput(xmlElement)
+
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return LinearBearingCageDerivation(xmlElement)
 
 def getPegCenterXs(numberOfSteps, pegCenterX, stepX):
 	'Get the peg center x list.'
@@ -164,29 +161,29 @@ def getRoundedExtendedRectangle(radius, rectangleCenterX, sides):
 
 def processXMLElement(xmlElement):
 	'Process the xml element.'
-	solid.processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
+	solid.processXMLElementByGeometry(getGeometryOutput(xmlElement), xmlElement)
 
 
 class LinearBearingCageDerivation:
 	'Class to hold linear bearing cage variables.'
 	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.length = evaluate.getEvaluatedFloatDefault(50.0, 'length', xmlElement)
+		self.length = evaluate.getEvaluatedFloat(50.0, 'length', xmlElement)
 		self.demilength = 0.5 * self.length
 		self.radius = lineation.getFloatByPrefixBeginEnd('radius', 'diameter', 5.0, xmlElement)
-		self.cageClearanceOverRadius = evaluate.getEvaluatedFloatDefault(0.05, 'cageClearanceOverRadius', xmlElement)
+		self.cageClearanceOverRadius = evaluate.getEvaluatedFloat(0.05, 'cageClearanceOverRadius', xmlElement)
 		self.cageClearance = self.cageClearanceOverRadius * self.radius
-		self.cageClearance = evaluate.getEvaluatedFloatDefault(self.cageClearance, 'cageClearance', xmlElement)
-		self.racewayClearanceOverRadius = evaluate.getEvaluatedFloatDefault(0.1, 'racewayClearanceOverRadius', xmlElement)
+		self.cageClearance = evaluate.getEvaluatedFloat(self.cageClearance, 'cageClearance', xmlElement)
+		self.racewayClearanceOverRadius = evaluate.getEvaluatedFloat(0.1, 'racewayClearanceOverRadius', xmlElement)
 		self.racewayClearance = self.racewayClearanceOverRadius * self.radius
-		self.racewayClearance = evaluate.getEvaluatedFloatDefault(self.racewayClearance, 'racewayClearance', xmlElement)
+		self.racewayClearance = evaluate.getEvaluatedFloat(self.racewayClearance, 'racewayClearance', xmlElement)
 		self.typeMenuRadioStrings = 'assembly integral'.split()
-		self.typeString = evaluate.getEvaluatedStringDefault('assembly', 'type', xmlElement)
+		self.typeString = evaluate.getEvaluatedString('assembly', 'type', xmlElement)
 		self.typeStringFirstCharacter = self.typeString[: 1 ].lower()
-		self.wallThicknessOverRadius = evaluate.getEvaluatedFloatDefault(0.5, 'wallThicknessOverRadius', xmlElement)
+		self.wallThicknessOverRadius = evaluate.getEvaluatedFloat(0.5, 'wallThicknessOverRadius', xmlElement)
 		self.wallThickness = self.wallThicknessOverRadius * self.radius
-		self.wallThickness = evaluate.getEvaluatedFloatDefault(self.wallThickness, 'wallThickness', xmlElement)
-		self.zenithAngle = evaluate.getEvaluatedFloatDefault(45.0, 'zenithAngle', xmlElement)
+		self.wallThickness = evaluate.getEvaluatedFloat(self.wallThickness, 'wallThickness', xmlElement)
+		self.zenithAngle = evaluate.getEvaluatedFloat(45.0, 'zenithAngle', xmlElement)
 		self.zenithRadian = math.radians(self.zenithAngle)
 		self.demiheight = self.radius * math.cos(self.zenithRadian) - self.racewayClearance
 		self.height = self.demiheight + self.demiheight
@@ -210,27 +207,27 @@ class LinearBearingCageDerivation:
 
 	def setAssemblyCage(self):
 		'Set two piece assembly parameters.'
-		self.grooveDepthOverRadius = evaluate.getEvaluatedFloatDefault(0.15, 'grooveDepthOverRadius', self.xmlElement)
+		self.grooveDepthOverRadius = evaluate.getEvaluatedFloat(0.15, 'grooveDepthOverRadius', self.xmlElement)
 		self.grooveDepth = self.grooveDepthOverRadius * self.radius
-		self.grooveDepth = evaluate.getEvaluatedFloatDefault(self.grooveDepth, 'grooveDepth', self.xmlElement)
-		self.grooveWidthOverRadius = evaluate.getEvaluatedFloatDefault(0.6, 'grooveWidthOverRadius', self.xmlElement)
+		self.grooveDepth = evaluate.getEvaluatedFloat(self.grooveDepth, 'grooveDepth', self.xmlElement)
+		self.grooveWidthOverRadius = evaluate.getEvaluatedFloat(0.6, 'grooveWidthOverRadius', self.xmlElement)
 		self.grooveWidth = self.grooveWidthOverRadius * self.radius
-		self.grooveWidth = evaluate.getEvaluatedFloatDefault(self.grooveWidth, 'grooveWidth', self.xmlElement)
-		self.pegClearanceOverRadius = evaluate.getEvaluatedFloatDefault(0.0, 'pegClearanceOverRadius', self.xmlElement)
+		self.grooveWidth = evaluate.getEvaluatedFloat(self.grooveWidth, 'grooveWidth', self.xmlElement)
+		self.pegClearanceOverRadius = evaluate.getEvaluatedFloat(0.0, 'pegClearanceOverRadius', self.xmlElement)
 		self.pegClearance = self.pegClearanceOverRadius * self.radius
-		self.pegClearance = evaluate.getEvaluatedFloatDefault(self.pegClearance, 'pegClearance', self.xmlElement)
+		self.pegClearance = evaluate.getEvaluatedFloat(self.pegClearance, 'pegClearance', self.xmlElement)
 		self.halfPegClearance = 0.5 * self.pegClearance
-		self.pegRadiusOverRadius = evaluate.getEvaluatedFloatDefault(0.5, 'pegRadiusOverRadius', self.xmlElement)
+		self.pegRadiusOverRadius = evaluate.getEvaluatedFloat(0.5, 'pegRadiusOverRadius', self.xmlElement)
 		self.pegRadius = self.pegRadiusOverRadius * self.radius
-		self.pegRadius = evaluate.getEvaluatedFloatDefault(self.pegRadius, 'pegRadius', self.xmlElement)
-		self.pegBevelOverPegRadius = evaluate.getEvaluatedFloatDefault(0.25, 'pegBevelOverPegRadius', self.xmlElement)
+		self.pegRadius = evaluate.getEvaluatedFloat(self.pegRadius, 'pegRadius', self.xmlElement)
+		self.pegBevelOverPegRadius = evaluate.getEvaluatedFloat(0.25, 'pegBevelOverPegRadius', self.xmlElement)
 		self.pegBevel = self.pegBevelOverPegRadius * self.pegRadius
-		self.pegBevel = evaluate.getEvaluatedFloatDefault(self.pegBevel, 'pegBevel', self.xmlElement)
+		self.pegBevel = evaluate.getEvaluatedFloat(self.pegBevel, 'pegBevel', self.xmlElement)
 		self.pegMaximumRadius = self.pegRadius + abs(self.halfPegClearance)
-		self.separationOverRadius = evaluate.getEvaluatedFloatDefault(0.5, 'separationOverRadius', self.xmlElement)
+		self.separationOverRadius = evaluate.getEvaluatedFloat(0.5, 'separationOverRadius', self.xmlElement)
 		self.separation = self.separationOverRadius * self.radius
-		self.separation = evaluate.getEvaluatedFloatDefault(self.separation, 'separation', self.xmlElement)
-		self.topOverBottom = evaluate.getEvaluatedFloatDefault(0.8, 'topOverBottom', self.xmlElement)
+		self.separation = evaluate.getEvaluatedFloat(self.separation, 'separation', self.xmlElement)
+		self.topOverBottom = evaluate.getEvaluatedFloat(0.8, 'topOverBottom', self.xmlElement)
 		self.quarterHeight = 0.5 * self.demiheight
 		self.pegY = 0.5 * self.wallThickness + self.pegMaximumRadius
 		cagePegRadius = self.cageRadius + self.pegMaximumRadius

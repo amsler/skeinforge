@@ -17,8 +17,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -57,6 +57,10 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	xmlElement.attributeDictionary['inradius.y'] = str(inradius)
 	return getGeometryOutput(None, xmlElement)
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return SquareDerivation(xmlElement)
+
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
@@ -72,8 +76,8 @@ class SquareDerivation:
 		self.demiheight = lineation.getFloatByPrefixBeginEnd('demiheight', 'height', self.inradius.imag, xmlElement)
 		self.bottomDemiwidth = lineation.getFloatByPrefixBeginEnd('bottomdemiwidth', 'bottomwidth', self.demiwidth, xmlElement)
 		self.topDemiwidth = lineation.getFloatByPrefixBeginEnd('topdemiwidth', 'topwidth', self.demiwidth, xmlElement)
-		self.interiorAngle = evaluate.getEvaluatedFloatDefault(90.0, 'interiorangle', xmlElement)
-		self.revolutions = evaluate.getEvaluatedIntDefault(1, 'revolutions', xmlElement)
+		self.interiorAngle = evaluate.getEvaluatedFloat(90.0, 'interiorangle', xmlElement)
+		self.revolutions = evaluate.getEvaluatedInt(1, 'revolutions', xmlElement)
 		self.spiral = evaluate.getVector3ByPrefix(None, 'spiral', xmlElement)
 
 	def __repr__(self):

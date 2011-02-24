@@ -26,7 +26,7 @@ except:
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = "$Date: 2008/23/04 $"
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalRepositoryDialogListTable = {}
@@ -131,7 +131,7 @@ def getAlongWayHexadecimalColor( beginBrightness, colorWidth, difference, endCol
 		alongWay = 0.4 + 0.6 * min( 1.0, abs( float( difference ) / float( wayLength ) ) )
 	hexadecimalColor = '#'
 	oneMinusAlongWay = 1.0 - alongWay
-	for primaryIndex in xrange( 3 ):
+	for primaryIndex in xrange(3):
 		hexadecimalColor += getAlongWayHexadecimalPrimary( beginBrightness, oneMinusAlongWay, colorWidth, endColorTuple[ primaryIndex ], alongWay )
 	return hexadecimalColor
 
@@ -175,20 +175,15 @@ def getEachWordCapitalized( name ):
 		capitalizedStrings.append( word.capitalize() )
 	return ' '.join( capitalizedStrings )
 
-def getFileInAlterationsOrGivenDirectory( directory, fileName ):
-	"Get the file from the fileName or the lowercase fileName in the alterations directories, if there is no file look in the given directory."
+def getFileInAlterationsOrGivenDirectory(fileName):
+	"Get the file from the fileName or the lowercase fileName in the alterations directories."
 	settingsAlterationsDirectory = archive.getSettingsPath('alterations')
-	archive.makeDirectory( settingsAlterationsDirectory )
-	fileInSettingsAlterationsDirectory = getFileInGivenDirectory( settingsAlterationsDirectory, fileName )
+	archive.makeDirectory(settingsAlterationsDirectory)
+	fileInSettingsAlterationsDirectory = getFileInGivenDirectory(settingsAlterationsDirectory, fileName)
 	if fileInSettingsAlterationsDirectory != '':
 		return fileInSettingsAlterationsDirectory
 	alterationsDirectory = archive.getSkeinforgePath('alterations')
-	fileInAlterationsDirectory = getFileInGivenDirectory( alterationsDirectory, fileName )
-	if fileInAlterationsDirectory != '':
-		return fileInAlterationsDirectory
-	if directory == '':
-		directory = os.getcwd()
-	return getFileInGivenDirectory( directory, fileName )
+	return getFileInGivenDirectory(alterationsDirectory, fileName)
 
 def getFileInGivenDirectory( directory, fileName ):
 	"Get the file from the fileName or the lowercase fileName in the given directory."
@@ -224,6 +219,10 @@ def getGlobalRepositoryDialogValues():
 	"Get the global repository dialog values."
 	global globalRepositoryDialogListTable
 	return euclidean.getListTableElements(globalRepositoryDialogListTable)
+
+def getLinesInAlterationsOrGivenDirectory(fileName):
+	"Get the text lines from the fileName in the alterations directories, if there is no file look in the given directory."
+	return archive.getTextLines(getFileInAlterationsOrGivenDirectory(fileName))
 
 def getPathInFabmetheusFromFileNameHelp( fileNameHelp ):
 	"Get the directory path from file name help."
@@ -267,19 +266,19 @@ def getRadioPluginsAddPluginFrame( directoryPath, importantFileNames, names, rep
 
 def getReadRepository(repository):
 	"Read and return settings from a file."
-	text = archive.getFileText(archive.getProfilesPath(getProfileBaseName(repository)), 'r', False)
+	text = archive.getFileText(archive.getProfilesPath(getProfileBaseName(repository)), False)
 	if text == '':
 		if repository.baseNameSynonym != None:
-			text = archive.getFileText(archive.getProfilesPath(getProfileBaseNameSynonym(repository)), 'r', False)
+			text = archive.getFileText(archive.getProfilesPath(getProfileBaseNameSynonym(repository)), False)
 	if text == '':
 		print('The default %s will be written in the .skeinforge folder in the home directory.' % repository.title.lower() )
-		text = archive.getFileText( getProfilesDirectoryInAboveDirectory( getProfileBaseName(repository) ), 'r', False )
+		text = archive.getFileText(getProfilesDirectoryInAboveDirectory(getProfileBaseName(repository)), False)
 		if text != '':
-			readSettingsFromText( repository, text )
+			readSettingsFromText(repository, text)
 		writeSettings(repository)
 		temporaryApplyOverrides(repository)
 		return repository
-	readSettingsFromText( repository, text )
+	readSettingsFromText(repository, text)
 	temporaryApplyOverrides(repository)
 	return repository
 
@@ -381,7 +380,7 @@ def openSVGPage( fileName, svgViewer ):
 		return
 	filePath = '"' + os.path.normpath(fileName) + '"' # " to send in file name with spaces
 	shellCommand = svgViewer + ' ' + filePath
-	commandResult = os.system( shellCommand )
+	commandResult = os.system(shellCommand)
 	if commandResult != 0:
 		print('It may be that the system could not find the %s program.' % svgViewer )
 		print('If so, try installing the %s program or look for another svg viewer, like Netscape which can be found at:' % svgViewer )
@@ -516,7 +515,7 @@ def setSpinColor( setting ):
 		setting.colorWidth = len( setting.backgroundColor ) / 3
 		setting.grey = int( setting.backgroundColor[ 1 : 1 + setting.colorWidth ], 16 )
 		setting.white = int('f' * setting.colorWidth, 16 )
-	if abs( setting.value - setting.defaultValue ) < 0.02 * setting.width:
+	if abs( setting.value - setting.defaultValue ) <= 0.05 * setting.minimumWidth:
 		setting.entry['background'] = setting.backgroundColor
 		return
 	difference = setting.value - setting.defaultValue
@@ -580,9 +579,11 @@ def writeValueListToRepositoryWriter( repositoryWriter, setting ):
 
 def writeSettings(repository):
 	"Write the settings to a file."
-	profilesDirectoryPath = archive.getProfilesPath( getProfileBaseName(repository) )
-	archive.makeDirectory( os.path.dirname( profilesDirectoryPath ) )
-	archive.writeFileText( profilesDirectoryPath, getRepositoryText(repository) )
+	profilesDirectoryPath = archive.getProfilesPath(getProfileBaseName(repository))
+	archive.makeDirectory(os.path.dirname(profilesDirectoryPath))
+	archive.writeFileText(profilesDirectoryPath, getRepositoryText(repository))
+	for setting in repository.preferences:
+		setting.updateSaveListeners()
 
 def writeSettingsPrintMessage(repository):
 	"Set the settings to the dialog then write them."
@@ -688,6 +689,10 @@ class StringSetting:
 		"Set the value to the value string."
 		self.value = valueString
 
+	def updateSaveListeners(self):
+		"Update save listeners if any."
+		pass
+
 	def writeToRepositoryWriter( self, repositoryWriter ):
 		"Write tab separated name and value to the repository writer."
 		repositoryWriter.write('%s%s%s\n' % ( self.name, globalSpreadsheetSeparator, self.value ) )
@@ -763,7 +768,7 @@ class CloseListener:
 		self.window = window
 		self.shouldWasClosedBeBound = True
 		global globalRepositoryDialogListTable
-		euclidean.addElementToListTableIfNotThere( window, window, globalRepositoryDialogListTable )
+		euclidean.addElementToListDictionaryIfNotThere( window, window, globalRepositoryDialogListTable )
 
 	def listenToWidget( self, widget ):
 		"Listen to the destroy message of the widget."
@@ -980,15 +985,15 @@ class FloatSpin( FloatSetting ):
 		if self.updateFunction != None:
 			self.updateFunction(event)
 
-	def getFromValue( self, from_, name, repository, to, value ):
+	def getFromValue(self, from_, name, repository, to, value):
 		"Initialize."
 		self.backgroundColor = None
 		self.from_ = from_
-		self.width = to - from_
-		rank = euclidean.getRank( 0.05 * self.width )
-		self.increment = euclidean.getIncrementFromRank( rank )
+		self.minimumWidth = min(value - from_, to - value)
+		rank = euclidean.getRank(0.05 * (to - from_))
+		self.increment = euclidean.getIncrementFromRank(rank)
 		self.to = to
-		return self.getFromValueOnlyAddToRepository( name, repository, value )
+		return self.getFromValueOnlyAddToRepository(name, repository, value)
 
 	def increase(self):
 		"Increase the value then set the state and color to the value."
@@ -1061,6 +1066,10 @@ class FrameList:
 	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
 		"Set the value to the second and later words of a split line."
 		self.value = splitLine[1 :]
+
+	def updateSaveListeners(self):
+		"Update save listeners if any."
+		pass
 
 	def writeToRepositoryWriter( self, repositoryWriter ):
 		"Write tab separated name and list to the repository writer."
@@ -1233,24 +1242,24 @@ class IntSetting( FloatSetting ):
 		setIntegerValueToString( self, valueString )
 
 
-class IntSpin( FloatSpin ):
+class IntSpin(FloatSpin):
 	"A class to display, read & write an int in a spin box."
-	def getFromValue( self, from_, name, repository, to, value ):
+	def getFromValue(self, from_, name, repository, to, value):
 		"Initialize."
 		self.backgroundColor = None
 		self.from_ = from_
-		self.width = to - from_
-		rank = euclidean.getRank( 0.05 * self.width )
-		self.increment = max( 1, int( euclidean.getIncrementFromRank( rank ) ) )
+		rank = euclidean.getRank(0.05 * (to - from_))
+		self.increment = max(1, int(euclidean.getIncrementFromRank(rank)))
+		self.minimumWidth = min(value - from_, to - value)
 		self.to = to
-		return self.getFromValueOnlyAddToRepository( name, repository, value )
+		return self.getFromValueOnlyAddToRepository(name, repository, value)
 
 	def getSingleIncrementFromValue( self, from_, name, repository, to, value ):
 		"Initialize."
 		self.backgroundColor = None
 		self.from_ = from_
-		self.width = to - from_
 		self.increment = 1
+		self.minimumWidth = min(value - from_, to - value)
 		self.to = to
 		return self.getFromValueOnlyAddToRepository( name, repository, value )
 
@@ -1323,7 +1332,7 @@ class LabelSeparator:
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		gridPosition.increment()
-		self.label = Tkinter.Label( gridPosition.master, text = '')
+		self.label = Tkinter.Label( gridPosition.master, text='')
 		self.label.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
 
 	def addToMenu( self, repositoryMenu ):
@@ -1607,12 +1616,16 @@ class PluginFrame:
 			return
 		self.createFrame( self.gridPosition )
 
-	def writeToRepositoryWriter( self, repositoryWriter ):
-		"Write tab separated name and value to the repository writer."
+	def updateSaveListeners(self):
+		"Update save listeners if any."
 		gridTableKeys = self.gridTable.keys()
 		gridTableKeys.sort()
 		for gridTableKey in gridTableKeys:
 			saveRepository( self.gridTable[ gridTableKey ].repository )
+
+	def writeToRepositoryWriter( self, repositoryWriter ):
+		"Write tab separated name and value to the repository writer."
+		pass
 
 
 class PluginGroupFrame( PluginFrame ):
@@ -1691,8 +1704,10 @@ class Radio( BooleanSetting ):
 
 	def setSelect(self):
 		"Set the int var and select the radio button."
+		oldLatentStringValue = self.latentStringVar.getString()
 		self.latentStringVar.setString( self.radiobutton['value'] )
 		self.radiobutton.select()
+		return oldLatentStringValue != self.latentStringVar.getString()
 
 	def setStateToValue(self):
 		"Set the checkbutton to the boolean."

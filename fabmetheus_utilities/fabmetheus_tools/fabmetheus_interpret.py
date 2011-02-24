@@ -35,7 +35,7 @@ import time
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCarving(fileName):
@@ -44,16 +44,6 @@ def getCarving(fileName):
 	if pluginModule == None:
 		return None
 	return pluginModule.getCarving(fileName)
-
-def getFirstTranslatorFileNameUnmodified(fileName):
-	"Get the first file name from the translators in the import plugins folder, if the file name is not already set."
-	if fileName != '':
-		return fileName
-	unmodified = getGNUTranslatorFilesUnmodified()
-	if len( unmodified ) == 0:
-		print( "There are no unmodified gcode files in this folder." )
-		return ''
-	return unmodified[0]
 
 def getGNUTranslatorGcodeFileTypeTuples():
 	"Get the file type tuples from the translators in the import plugins folder plus gcode."
@@ -84,7 +74,7 @@ def getInterpretPlugin(fileName):
 	return None
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return InterpretRepository()
 
 def getPluginsDirectoryPath():
@@ -130,8 +120,8 @@ def getWindowAnalyzeFile(fileName):
 	textFilePath = '"' + os.path.normpath(suffixFileName) + '"' # " to send in file name with spaces
 	shellCommand = textProgram + ' ' + textFilePath
 	print('Sending the shell command:')
-	print( shellCommand )
-	commandResult = os.system( shellCommand )
+	print(shellCommand)
+	commandResult = os.system(shellCommand)
 	if commandResult != 0:
 		print('It may be that the system could not find the %s program.' % textProgram )
 		print('If so, try installing the %s program or look for another one, like Open Office which can be found at:' % textProgram )

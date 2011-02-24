@@ -6,23 +6,6 @@ An import plugin is a script in the interpret_plugins folder which has the funct
 
 The getCarving function takes the file name of an csv file and returns the carving.
 
-This example gets a triangle mesh for the csv file boolean.csv.  This example is run in a terminal in the folder which contains boolean.csv and csv.py.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import csv
->>> csv.getCarving().getCarveRotatedBoundaryLayers()
-[-1.159765625, None, [[(-18.925000000000001-2.4550000000000001j), (-18.754999999999981-2.4550000000000001j)
-..
-many more lines of the carving
-..
-
-
-An example of an csv boolean geometry format file follows below.
-
 """
 
 
@@ -39,7 +22,7 @@ import sys
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCarving(fileName=''):
@@ -77,7 +60,7 @@ class CSVElement( xml_simple_reader.XMLElement ):
 		key = splitLineStripped[0]
 		value = splitLineStripped[1]
 		self.attributeDictionary[key] = value
-		self.addToIDDictionaryIFIDExists()
+		self.addToIdentifierDictionaryIFIdentifierExists()
 
 	def continueParsingTable( self, line, lineStripped ):
 		"Parse replaced line."
@@ -96,7 +79,7 @@ class CSVElement( xml_simple_reader.XMLElement ):
 				key = self.headingDictionary[ columnIndex ]
 				value = lineDictionary[ columnIndex ]
 				csvElement.attributeDictionary[key] = value
-		csvElement.addToIDDictionaryIFIDExists()
+		csvElement.addToIdentifierDictionaryIFIdentifierExists()
 		if len( csvElement.attributeDictionary ) == 0 or oldAttributeDictionaryLength == 0 or self.parent == None:
 			return
 		self.parent.children.append( csvElement )

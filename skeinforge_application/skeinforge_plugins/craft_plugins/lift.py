@@ -19,29 +19,10 @@ Defines the distance above the top of the slab the cutting tool will be lifted w
 ==Examples==
 The following examples lift the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and lift.py.
 
-
 > python lift.py
 This brings up the lift dialog.
 
-
 > python lift.py Screw Holder Bottom.stl
-The lift tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The lift tool has created the file:
-.. Screw Holder Bottom_lift.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import lift
->>> lift.main()
-This brings up the lift dialog.
-
-
->>> lift.writeOutput('Screw Holder Bottom.stl')
 The lift tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -65,13 +46,13 @@ import sys
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/28/04 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def getCraftedText( fileName, text = '', liftRepository = None ):
+def getCraftedText( fileName, text='', liftRepository = None ):
 	"Lift the preface file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), liftRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), liftRepository )
 
 def getCraftedTextFromText( gcodeText, liftRepository = None ):
 	"Lift the preface gcode text."
@@ -84,14 +65,12 @@ def getCraftedTextFromText( gcodeText, liftRepository = None ):
 	return LiftSkein().getCraftedGcode( liftRepository, gcodeText )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return LiftRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Lift the carving of a gcode file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'lift')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'lift', shouldAnalyze)
 
 
 class LiftRepository:

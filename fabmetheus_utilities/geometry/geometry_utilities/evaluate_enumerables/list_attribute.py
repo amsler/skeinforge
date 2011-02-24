@@ -12,8 +12,8 @@ from fabmetheus_utilities import euclidean
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def _getAccessibleAttribute(attributeName, listObject):
@@ -36,6 +36,10 @@ class ListAttribute:
 		"Get the list representation of this ListAttribute."
 		return str(self.listObject)
 
+	def add(self, value):
+		'Get the concatenation, same as append.'
+		return self.listObject + [value]
+
 	def copy(self):
 		'Get the copy.'
 		return self.listObject[:]
@@ -52,6 +56,13 @@ class ListAttribute:
 	def get(self, itemIndex):
 		'Get value by index'
 		return self.listObject[itemIndex]
+
+	def getExpansion(self, items):
+		'Get the concatenated copies.'
+		expansion = []
+		for itemIndex in xrange(items):
+			expansion += self.listObject[:]
+		return expansion
 
 	def getIsIn(self, value):
 		'Determine if the value is in.'
@@ -105,7 +116,7 @@ class ListAttribute:
 		return self.listObject
 
 
-globalAccessibleAttributes = 'copy count delete get getIsIn getIsNotIn getLength getMax getMin'.split()
+globalAccessibleAttributes = 'add copy count delete get getExpansion getIsIn getIsNotIn getLength getMax getMin'.split()
 globalAccessibleAttributes += 'insert keys length rindex set values'.split()
 globalGetAccessibleAttributeSet = set(globalAccessibleAttributes)
 globalNativeFunctions = 'append extend index pop remove reverse sort'.split()

@@ -10,7 +10,8 @@ import __init__
 from fabmetheus_utilities.geometry.geometry_tools import face
 from fabmetheus_utilities.geometry.geometry_tools import dictionary
 from fabmetheus_utilities.geometry.geometry_tools import vertex
-from fabmetheus_utilities.geometry.manipulation_matrix import matrix
+from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities.geometry.solids import group
 from fabmetheus_utilities import xml_simple_writer
 from fabmetheus_utilities.vector3 import Vector3
@@ -25,7 +26,7 @@ import math
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addEdgePair( edgePairTable, edges, faceEdgeIndex, remainingEdgeIndex, remainingEdgeTable ):
@@ -94,6 +95,12 @@ def addFacesByConvexReversed(faces, indexedLoop):
 	'Add faces from a reversed convex polygon.'
 	addFacesByConvex(faces, indexedLoop[: : -1])
 
+def addFacesByGrid(faces, grid):
+	'Add faces from grid.'
+	cellTopLoops = getIndexedCellLoopsFromIndexedGrid(grid)
+	for cellTopLoop in cellTopLoops:
+		addFacesByConvex(faces, cellTopLoop)
+
 def addFacesByLoop(faces, indexedLoop):
 	'Add faces from a polygon which may be concave.'
 	if len(indexedLoop) < 3:
@@ -137,15 +144,19 @@ def addPillarByLoops(faces, indexedLoops):
 	addFacesByConvexLoops(faces, indexedLoops)
 	addFacesByLoop(faces, indexedLoops[-1])
 
-def addPillarFromConvexLoopsGrids( faces, grids, indexedLoops ):
+def addPillarFromConvexLoopsGrids(faces, indexedGrids, indexedLoops):
 	'Add pillar from convex loops and grids.'
-	cellBottomLoops = getIndexedCellLoopsFromIndexedGrid( grids[0] )
+	cellBottomLoops = getIndexedCellLoopsFromIndexedGrid(indexedGrids[0])
 	for cellBottomLoop in cellBottomLoops:
-		addFacesByConvexReversed( faces, cellBottomLoop )
+		addFacesByConvexReversed(faces, cellBottomLoop)
 	addFacesByConvexLoops(faces, indexedLoops)
-	cellTopLoops = getIndexedCellLoopsFromIndexedGrid( grids[-1] )
-	for cellTopLoop in cellTopLoops:
-		addFacesByConvex( faces, cellTopLoop )
+	addFacesByGrid(faces, indexedGrids[-1])
+
+def addPillarFromConvexLoopsGridTop(faces, indexedGridTop, indexedLoops):
+	'Add pillar from convex loops and grid top.'
+	addFacesByLoopReversed(faces, indexedLoops[0])
+	addFacesByConvexLoops(faces, indexedLoops)
+	addFacesByGrid(faces, indexedGridTop)
 
 def addPointsAtZ(edgePair, points, radius, vertexes, z):
 	'Add point complexes on the segment between the edge intersections with z.'
@@ -154,11 +165,27 @@ def addPointsAtZ(edgePair, points, radius, vertexes, z):
 	# threshold radius above 0.8 can create extra holes on Screw Holder, 0.7 should be safe for everything
 	intercircle.addPointsFromSegment(carveIntersectionFirst, carveIntersectionSecond, points, radius, 0.7)
 
-def addToZoneTable( point, shape ):
-	'Add point to the zone table.'
-	zoneIndexFloat = point.z / shape.zoneInterval
-	shape.zZoneTable[ math.floor( zoneIndexFloat ) ] = None
-	shape.zZoneTable[ math.ceil( zoneIndexFloat ) ] = None
+def addSymmetricXPath(outputs, path, x):
+	'Add x path output to outputs.'
+	vertexes = []
+	loops = [getSymmetricXLoop(path, vertexes, -x), getSymmetricXLoop(path, vertexes, x)]
+	outputs.append(getPillarOutput(loops))
+
+def addSymmetricXPaths(outputs, paths, x):
+	'Add x paths outputs to outputs.'
+	for path in paths:
+		addSymmetricXPath(outputs, path, x)
+
+def addSymmetricYPath(outputs, path, y):
+	'Add y path output to outputs.'
+	vertexes = []
+	loops = [getSymmetricYLoop(path, vertexes, -y), getSymmetricYLoop(path, vertexes, y)]
+	outputs.append(getPillarOutput(loops))
+
+def addSymmetricYPaths(outputs, paths, y):
+	'Add y paths outputs to outputs.'
+	for path in paths:
+		addSymmetricYPath(outputs, path, y)
 
 def addWithLeastLength(importRadius, loops, point):
 	'Insert a point into a loop, at the index at which the loop would be shortest.'
@@ -181,7 +208,7 @@ def addWithLeastLength(importRadius, loops, point):
 def convertXMLElement(geometryOutput, xmlElement):
 	'Convert the xml element to a TriangleMesh xml element.'
 	xmlElement.linkObject(TriangleMesh())
-	matrix.setXMLElementDictionaryToOtherElementDictionary(xmlElement, xmlElement.object.matrix4X4, 'matrix.', xmlElement)
+	matrix.getBranchMatrixSetXMLElement(xmlElement)
 	vertex.addGeometryList(geometryOutput['vertex'], xmlElement)
 	face.addGeometryList(geometryOutput['face'], xmlElement)
 	xmlElement.getXMLProcessor().processChildren(xmlElement)
@@ -194,18 +221,18 @@ def getAddIndexedGrid( grid, vertexes, z ):
 		indexedGrid.append( indexedRow )
 		for pointComplex in row:
 			vector3index = Vector3Index( len(vertexes), pointComplex.real, pointComplex.imag, z )
-			indexedRow.append( vector3index )
-			vertexes.append( vector3index )
+			indexedRow.append(vector3index)
+			vertexes.append(vector3index)
 	return indexedGrid
 
-def getAddIndexedLoop( loop, vertexes, z ):
+def getAddIndexedLoop(loop, vertexes, z):
 	'Get and add an indexed loop.'
 	indexedLoop = []
 	for index in xrange(len(loop)):
-		pointComplex = loop[ index ]
-		vector3index = Vector3Index( len(vertexes), pointComplex.real, pointComplex.imag, z )
-		indexedLoop.append( vector3index )
-		vertexes.append( vector3index )
+		pointComplex = loop[index]
+		vector3index = Vector3Index(len(vertexes), pointComplex.real, pointComplex.imag, z)
+		indexedLoop.append(vector3index)
+		vertexes.append(vector3index)
 	return indexedLoop
 
 def getAddIndexedLoops( loop, vertexes, zList ):
@@ -271,7 +298,7 @@ def getCarveIntersectionFromEdge(edge, vertexes, z):
 	return zMinusFirst * ( secondVertexComplex - firstVertexComplex ) / up + firstVertexComplex
 
 def getDescendingAreaLoops(allPoints, corners, importRadius):
-	'Get loops which include most of the points.'
+	'Get descending area loops which include most of the points.'
 	loops = intercircle.getCentersFromPoints(allPoints, importRadius)
 	descendingAreaLoops = []
 	sortLoopsInOrderOfArea(True, loops)
@@ -283,6 +310,10 @@ def getDescendingAreaLoops(allPoints, corners, importRadius):
 			addLoopToPointTable(loop, pointDictionary)
 	descendingAreaLoops = euclidean.getSimplifiedLoops(descendingAreaLoops, importRadius)
 	return getLoopsWithCorners(corners, importRadius, descendingAreaLoops, pointDictionary)
+
+def getDescendingAreaOrientedLoops(allPoints, corners, importRadius):
+	'Get descending area oriented loops which include most of the points.'
+	return getOrientedLoops(getDescendingAreaLoops(allPoints, corners, importRadius))
 
 def getDoubledRoundZ( overhangingSegment, segmentRoundZ ):
 	'Get doubled plane angle around z of the overhanging segment.'
@@ -296,20 +327,9 @@ def getDoubledRoundZ( overhangingSegment, segmentRoundZ ):
 	roundZLength = abs( roundZ )
 	return roundZ * roundZ / roundZLength
 
-def getEmptyZ( shape, z ):
-	'Get the first z which is not in the zone table.'
-	zoneIndex = round( z / shape.zoneInterval )
-	if zoneIndex not in shape.zZoneTable:
-		return z
-	zoneAround = 1
-	while 1:
-		zoneDown = zoneIndex - zoneAround
-		if zoneDown not in shape.zZoneTable:
-			return zoneDown * shape.zoneInterval
-		zoneUp = zoneIndex + zoneAround
-		if zoneUp not in shape.zZoneTable:
-			return zoneUp * shape.zoneInterval
-		zoneAround += 1
+def getGeometryOutputByFacesVertexes(faces, vertexes):
+	'Get geometry output dictionary by faces and vertexes.'
+	return {'trianglemesh' : {'vertex' : vertexes, 'face' : faces}}
 
 def getGeometryOutputCopy(object):
 	'Get the geometry output copy.'
@@ -463,6 +483,15 @@ def getNextEdgeIndexAroundZ( edge, faces, remainingEdgeTable ):
 				return edgeIndex
 	return - 1
 
+def getOrientedLoops(loops):
+	'Orient the loops which must be in descending order.'
+	for loopIndex, loop in enumerate(loops):
+		leftPoint = euclidean.getLeftPoint(loop)
+		isInFilledRegion = euclidean.getIsInFilledRegion(loops[: loopIndex] + loops[loopIndex + 1 :], leftPoint)
+		if isInFilledRegion == euclidean.isWiddershins(loop):
+			loop.reverse()
+	return loops
+
 def getOverhangDirection( belowOutsetLoops, segmentBegin, segmentEnd ):
 	'Add to span direction from the endpoint segments which overhang the layer below.'
 	segment = segmentEnd - segmentBegin
@@ -505,20 +534,9 @@ def getPath( edges, pathIndexes, loop, z ):
 def getPillarOutput(loops):
 	'Get pillar output.'
 	faces = []
-	vertexDictionary = {}
-	vertexes = []
-	for loop in loops:
-		for vertexIndex, vertex in enumerate(loop):
-			position = (vertex.x, vertex.y, vertex.z)
-			if position in vertexDictionary:
-				loop[vertexIndex] = vertexDictionary[position]
-			else:
-				if vertex.__class__ != Vector3Index:
-					loop[vertexIndex] = Vector3Index(len(vertexDictionary), vertex.x, vertex.y, vertex.z)
-				vertexDictionary[position] = loop[vertexIndex]
-				vertexes.append(loop[vertexIndex])
+	vertexes = getUniqueVertexes(loops)
 	addPillarByLoops(faces, loops)
-	return {'trianglemesh' : {'vertex' : vertexes, 'face' : faces}}
+	return getGeometryOutputByFacesVertexes(faces, vertexes)
 
 def getPillarsOutput(loopLists):
 	'Get pillars output.'
@@ -568,13 +586,49 @@ def getSharedFace( firstEdge, faces, secondEdge ):
 				return faces[ firstEdgeFaceIndex ]
 	return None
 
+def getSymmetricXLoop(path, vertexes, x):
+	'Get symmetrix x loop.'
+	loop = []
+	for point in path:
+		vector3Index = Vector3Index(len(vertexes), x, point.real, point.imag)
+		loop.append(vector3Index)
+		vertexes.append(vector3Index)
+	return loop
+
+def getSymmetricYLoop(path, vertexes, y):
+	'Get symmetrix y loop.'
+	loop = []
+	for point in path:
+		vector3Index = Vector3Index(len(vertexes), point.real, y, point.imag)
+		loop.append(vector3Index)
+		vertexes.append(vector3Index)
+	return loop
+
 def getUnifiedOutput(outputs):
 	'Get unified output.'
 	if len(outputs) < 1:
-		return {'trianglemesh' : {'vertex' : [], 'face' : []}}
-	if len(outputs) < 2:
+		return {}
+	if len(outputs) == 1:
 		return outputs[0]
 	return {'union' : {'shapes' : outputs}}
+
+def getUniqueVertexes(loops):
+	'Get unique vertexes.'
+	vertexDictionary = {}
+	uniqueVertexes = []
+	for loop in loops:
+		for vertexIndex, vertex in enumerate(loop):
+			vertexTuple = (vertex.x, vertex.y, vertex.z)
+			if vertexTuple in vertexDictionary:
+				loop[vertexIndex] = vertexDictionary[vertexTuple]
+			else:
+				if vertex.__class__ == Vector3Index:
+					loop[vertexIndex].index = len(vertexDictionary)
+				else:
+					loop[vertexIndex] = Vector3Index(len(vertexDictionary), vertex.x, vertex.y, vertex.z)
+				vertexDictionary[vertexTuple] = loop[vertexIndex]
+				uniqueVertexes.append(loop[vertexIndex])
+	return uniqueVertexes
 
 def getWideAnglePointIndex(loop):
 	'Get a point index which has a wide enough angle, most point indexes have a wide enough angle, this is just to make sure.'
@@ -606,13 +660,6 @@ def getZAddExtruderPathsBySolidCarving(rotatedLoopLayer, solidCarving, z):
 	rotatedLoopLayer.rotation = getBridgeDirection(solidCarving.belowLoops, allExtrudateLoops, solidCarving.layerThickness)
 	solidCarving.belowLoops = allExtrudateLoops
 	return nextZ
-
-def initializeZoneIntervalTable( shape, vertexes ):
-	'Initialize the zone interval and the zZone table'
-	shape.zoneInterval = shape.layerThickness / math.sqrt(len(vertexes)) / 1000.0
-	shape.zZoneTable = {}
-	for point in vertexes:
-		addToZoneTable( point, shape )
 
 def isInline( beginComplex, centerComplex, endComplex ):
 	'Determine if the three complex points form a line.'
@@ -648,7 +695,7 @@ def isPathAdded( edges, faces, loops, remainingEdgeTable, vertexes, z ):
 
 def processXMLElement(xmlElement):
 	'Process the xml element.'
-	group.processShape( TriangleMesh, xmlElement)
+	evaluate.processArchivable(TriangleMesh, xmlElement)
 
 def setEdgeMaximumMinimum(edge, vertexes):
 	'Set the edge maximum and minimum.'
@@ -724,13 +771,10 @@ class TriangleMesh( group.Group ):
 
 	def getCarveRotatedBoundaryLayers(self):
 		'Get the rotated boundary layers.'
-		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, -999999999.0)
-		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
-		for point in self.getTransformedVertexes():
-			self.cornerMaximum.maximize(point)
-			self.cornerMinimum.minimize(point)
+		if self.getMinimumZ() == None:
+			return []
 		halfHeight = 0.5 * self.layerThickness
-		initializeZoneIntervalTable(self, self.getTransformedVertexes())
+		self.zoneArrangement = ZoneArrangement(self.layerThickness, self.getTransformedVertexes())
 		layerTop = self.cornerMaximum.z - halfHeight * 0.5
 		z = self.cornerMinimum.z + halfHeight
 		while z < layerTop:
@@ -743,7 +787,7 @@ class TriangleMesh( group.Group ):
 
 	def getGeometryOutput(self):
 		'Get geometry output dictionary.'
-		return {'trianglemesh' : {'vertex' : self.getTransformedVertexes(), 'face' : self.faces}}
+		return getGeometryOutputByFacesVertexes(self.faces, self.vertexes)
 
 	def getInterpretationSuffix(self):
 		'Return the suffix for a triangle mesh.'
@@ -757,32 +801,40 @@ class TriangleMesh( group.Group ):
 	def getLoopsFromMesh( self, z ):
 		'Get loops from a carve of a mesh.'
 		originalLoops = []
+		self.setEdgesForAllFaces()
 		if self.isCorrectMesh:
 			originalLoops = getLoopsFromCorrectMesh( self.edges, self.faces, self.getTransformedVertexes(), z )
 		if len( originalLoops ) < 1:
 			originalLoops = getLoopsFromUnprovenMesh( self.edges, self.faces, self.importRadius, self.getTransformedVertexes(), z )
 		loops = euclidean.getSimplifiedLoops(originalLoops, self.importRadius)
 		sortLoopsInOrderOfArea(True, loops)
-		for loopIndex in xrange( len(loops) ):
-			loop = loops[loopIndex]
-			leftPoint = euclidean.getLeftPoint(loop)
-			isInFilledRegion = euclidean.getIsInFilledRegion( loops[ : loopIndex ] + loops[loopIndex + 1 :], leftPoint )
-			if isInFilledRegion == euclidean.isWiddershins(loop):
-				loop.reverse()
-		return loops
+		return getOrientedLoops(loops)
+
+	def getMinimumZ(self):
+		'Get the minimum z.'
+		self.cornerMaximum = Vector3(-987654321.0, -987654321.0, -987654321.0)
+		self.cornerMinimum = Vector3(987654321.0, 987654321.0, 987654321.0)
+		transformedVertexes = self.getTransformedVertexes()
+		if len(transformedVertexes) < 1:
+			return None
+		for point in transformedVertexes:
+			self.cornerMaximum.maximize(point)
+			self.cornerMinimum.minimize(point)
+		return self.cornerMinimum.z
 
 	def getTransformedVertexes(self):
 		'Get all transformed vertexes.'
 		if self.xmlElement == None:
-			return dictionary.getAllVertexes(self.vertexes, self)
+			return self.vertexes
 		chainTetragrid = self.getMatrixChainTetragrid()
 		if self.oldChainTetragrid != chainTetragrid:
 			self.oldChainTetragrid = chainTetragrid
 			self.transformedVertexes = None
 		if self.transformedVertexes == None:
-			self.setEdgesForAllFaces()
+			if len(self.edges) > 0:
+				self.edges[0].zMinimum = None
 			self.transformedVertexes = matrix.getTransformedVector3s(chainTetragrid, self.vertexes)
-		return dictionary.getAllTransformedVertexes(self.transformedVertexes, self)
+		return self.transformedVertexes
 
 	def getTriangleMeshes(self):
 		'Get all triangleMeshes.'
@@ -791,14 +843,23 @@ class TriangleMesh( group.Group ):
 	def getVertexes(self):
 		'Get all vertexes.'
 		self.transformedVertexes = None
-		return dictionary.getAllVertexes(self.vertexes, self)
+		return self.vertexes
 
 	def getZAddExtruderPaths(self, z):
 		'Get next z and add extruder loops.'
 		settings.printProgress(len(self.rotatedLoopLayers), 'slice')
 		rotatedLoopLayer = euclidean.RotatedLoopLayer(z)
-		rotatedLoopLayer.loops = self.getLoopsFromMesh(getEmptyZ( self, z ))
+		rotatedLoopLayer.loops = self.getLoopsFromMesh(self.zoneArrangement.getEmptyZ(z))
 		return getZAddExtruderPathsBySolidCarving(rotatedLoopLayer, self, z)
+
+	def liftByMinimumZ(self, minimumZ):
+		'Lift the triangle mesh to the altitude.'
+		altitude = evaluate.getEvaluatedFloat(None, 'altitude', self.xmlElement)
+		if altitude == None:
+			return
+		lift = altitude - minimumZ
+		for vertex in self.vertexes:
+			vertex.z += lift
 
 	def setCarveInfillInDirectionOfBridge( self, infillInDirectionOfBridge ):
 		'Set the infill in direction of bridge.'
@@ -821,3 +882,30 @@ class TriangleMesh( group.Group ):
 		edgeTable = {}
 		for face in self.faces:
 			face.setEdgeIndexesToVertexIndexes( self.edges, edgeTable )
+
+
+class ZoneArrangement:
+	'A zone arrangement.'
+	def __init__(self, layerThickness, vertexes):
+		'Initialize the zone interval and the zZone table.'
+		self.zoneInterval = layerThickness / math.sqrt(len(vertexes)) / 1000.0
+		self.zZoneSet = set()
+		for point in vertexes:
+			zoneIndexFloat = point.z / self.zoneInterval
+			self.zZoneSet.add(math.floor(zoneIndexFloat))
+			self.zZoneSet.add(math.ceil(zoneIndexFloat ))
+
+	def getEmptyZ(self, z):
+		'Get the first z which is not in the zone table.'
+		zoneIndex = round(z / self.zoneInterval)
+		if zoneIndex not in self.zZoneSet:
+			return z
+		zoneAround = 1
+		while 1:
+			zoneDown = zoneIndex - zoneAround
+			if zoneDown not in self.zZoneSet:
+				return zoneDown * self.zoneInterval
+			zoneUp = zoneIndex + zoneAround
+			if zoneUp not in self.zZoneSet:
+				return zoneUp * self.zoneInterval
+			zoneAround += 1

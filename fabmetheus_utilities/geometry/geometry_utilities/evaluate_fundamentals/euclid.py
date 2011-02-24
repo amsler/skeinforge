@@ -15,8 +15,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def _getAccessibleAttribute(attributeName):
@@ -25,14 +25,40 @@ def _getAccessibleAttribute(attributeName):
 		return globalAccessibleAttributeDictionary[attributeName]
 	return None
 
-
 def getComplex(x=0.0, y=0.0):
 	'Get the complex.'
 	return complex(x, y)
 
+def getCylindrical(azimuthDegrees, radius=1.0, z=0.0):
+	'Get the cylindrical vector3 by degrees.'
+	return getCylindricalByRadians(math.radians(azimuthDegrees), radius, z)
+
+def getCylindricalByRadians(azimuthRadians, radius=1.0, z=0.0):
+	'Get the cylindrical vector3 by radians.'
+	polar = radius * euclidean.getWiddershinsUnitPolar(azimuthRadians)
+	return Vector3(polar.real, polar.imag, z)
+
 def getNestedVectorTestExample(x=0.0, y=0.0, z=0.0):
 	'Get the NestedVectorTestExample.'
 	return NestedVectorTestExample(Vector3(x, y, z))
+
+def getPolar(angleDegrees, radius=1.0):
+	'Get the complex polar by degrees.'
+	return radius * euclidean.getWiddershinsUnitPolar(math.radians(angleDegrees))
+
+def getPolarByRadians(angleRadians, radius=1.0):
+	'Get the complex polar by radians.'
+	return radius * euclidean.getWiddershinsUnitPolar(angleRadians)
+
+def getSpherical(azimuthDegrees, elevationDegrees, radius=1.0):
+	'Get the spherical vector3 unit by degrees.'
+	return getSphericalByRadians(math.radians(azimuthDegrees), math.radians(elevationDegrees), radius)
+
+def getSphericalByRadians(azimuthRadians, elevationRadians, radius=1.0):
+	'Get the spherical vector3 unit by radians.'
+	elevationComplex = euclidean.getWiddershinsUnitPolar(elevationRadians)
+	azimuthComplex = euclidean.getWiddershinsUnitPolar(azimuthRadians) * elevationComplex.real
+	return Vector3(azimuthComplex.real, azimuthComplex.imag, elevationComplex.imag) * radius
 
 def getVector3(x=0.0, y=0.0, z=0.0):
 	'Get the vector3.'
@@ -58,6 +84,12 @@ class NestedVectorTestExample:
 
 globalAccessibleAttributeDictionary = {
 	'complex' : getComplex,
+	'getCylindrical' : getCylindrical,
+	'getCylindricalByRadians' : getCylindricalByRadians,
+	'getPolar' : getPolar,
+	'getPolarByRadians' : getPolarByRadians,
+	'getSpherical' : getSpherical,
+	'getSphericalByRadians' : getSphericalByRadians,
 	'NestedVectorTestExample' : getNestedVectorTestExample,
 	'Vector3' : getVector3,
 	'Vector3Index' : getVector3Index}

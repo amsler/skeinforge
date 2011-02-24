@@ -31,11 +31,11 @@ Allan Ecker aka The Masked Retriever's has written the "Skeinforge Quicktip: Coo
 &nbsp;&nbsp;<a href="#Maximum Cool">Maximum Cool</a><br />
 &nbsp;&nbsp;<a href="#Minimum Layer Time">Minimum Layer Time</a><br />
 &nbsp;&nbsp;<a href="#Minimum Orbital Radius">Minimum Orbital Radius</a><br />
+&nbsp;&nbsp;<a href="#Name of Alteration Files">Name of Alteration Files</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Name of Cool End File">Name of Cool End File</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Name of Cool Start File">Name of Cool Start File</a><br />
 &nbsp;&nbsp;<a href="#Turn Fan On at Beginning">Turn Fan On at Beginning</a><br />
 &nbsp;&nbsp;<a href="#Turn Fan On at Ending">Turn Fan On at Ending</a><br />
-<a href="#Alterations">Alterations</a><br />
-&nbsp;&nbsp;<a href="#cool_start.gcode">cool_start.gcode</a><br />
-&nbsp;&nbsp;<a href="#cool_end.gcode">cool_end.gcode</a><br />
 <a href="#Examples">Examples</a><br />
 <br />
 <a name="Operation" id="Operation"></a><h2>Operation</h2>
@@ -82,6 +82,23 @@ Default is 10 millimeters.<br>
  <br>
 When the orbit cool type is selected, if the area of the largest island is as large as the square of the "Minimum Orbital Radius" then the orbits will be just within the island.  If the island is smaller, then the orbits will be in a square of the "Minimum Orbital Radius" around the center of the island.<br>
  <br>
+<a name="Name of Alteration Files" id="Name of Alteration Files"></a><h3>Name of Alteration Files</h3>
+
+Cool looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder.  The cool start and end text idea is from:<br>
+<a href="http://makerhahn.blogspot.com/2008/10/yay-minimug.html">http://makerhahn.blogspot.com/2008/10/yay-minimug.html</a><br>
+ <br>
+<a name="Name of Cool End File" id="Name of Cool End File"></a><h4>Name of Cool End File</h4>
+
+Default is cool_end.gcode.<br>
+ <br>
+If there is a file with the name of the "Name of Cool End File" setting, it will be added to the start of the orbits.<br>
+ <br>
+<a name="Name of Cool Start File" id="Name of Cool Start File"></a><h4>Name of Cool Start File</h4>
+
+Default is cool_start.gcode.<br>
+ <br>
+If there is a file with the name of the "Name of Cool Start File" setting, it will be added to the end of the orbits.<br>
+ <br>
 <a name="Turn Fan On at Beginning" id="Turn Fan On at Beginning"></a><h3>Turn Fan On at Beginning</h3>
 
 Default is on.<br>
@@ -94,48 +111,15 @@ Default is on.<br>
  <br>
 When selected, cool will turn the fan off at the ending of the fabrication.<br>
  <br>
-<a name="Alterations" id="Alterations"></a><h2>Alterations</h2>
-<hr>
-
-Cool looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Cool does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the craft_plugins folder.  The cool start and end text idea is from:<br>
-<a href="http://makerhahn.blogspot.com/2008/10/yay-minimug.html">http://makerhahn.blogspot.com/2008/10/yay-minimug.html</a><br>
- <br>
-<a name="cool_start.gcode" id="cool_start.gcode"></a><h3>cool_start.gcode</h3>
-
-Cool will add cool_start.gcode to the start of the orbits if it exists.<br>
- <br>
-<a name="cool_end.gcode" id="cool_end.gcode"></a><h3>cool_end.gcode</h3>
-
-After it has added the orbits, it will add the file cool_end.gcode if it exists.<br>
- <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
 The following examples cool the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and cool.py.<br>
  <br>
- <br>
 &gt; python cool.py<br>
 This brings up the cool dialog.<br>
  <br>
- <br>
 &gt; python cool.py Screw Holder Bottom.stl<br>
-The cool tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The cool tool has created the file:<br>
-.. Screw Holder Bottom_cool.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import cool<br>
-&gt;&gt;&gt; cool.<a href="#-main">main</a>()<br>
-This brings up the cool dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; cool.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The cool tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -241,9 +225,9 @@ The cool tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, repository<font color="#909090">=None</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;cool&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.&nbsp;&nbsp;Chain&nbsp;cool&nbsp;the&nbsp;gcode&nbsp;if&nbsp;it&nbsp;is&nbsp;not&nbsp;already&nbsp;cooled.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Cool&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.&nbsp;&nbsp;Chain&nbsp;cool&nbsp;the&nbsp;gcode&nbsp;if&nbsp;it&nbsp;is&nbsp;not&nbsp;already&nbsp;cooled.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -253,7 +237,7 @@ The cool tool has created the file:<br>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

@@ -60,29 +60,10 @@ If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector grap
 ==Examples==
 The following examples cleave the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and cleave.py.
 
-
 > python cleave.py
 This brings up the cleave dialog.
 
-
 > python cleave.py Screw Holder Bottom.stl
-The cleave tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The cleave tool has created the file:
-.. Screw Holder Bottom_cleave.svg
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import cleave
->>> cleave.main()
-This brings up the cleave dialog.
-
-
->>> cleave.writeOutput('Screw Holder Bottom.stl')
 The cleave tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -115,8 +96,8 @@ import time
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, gcodeText = '', repository=None):
@@ -134,11 +115,11 @@ def getCraftedText( fileName, gcodeText = '', repository=None):
 	return CleaveSkein().getCarvedSVG( carving, fileName, repository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return CleaveRepository()
 
-def writeOutput(fileName=''):
-	"Cleave a GNU Triangulated Surface file.  If no fileName is specified, cleave the first GNU Triangulated Surface file in this folder."
+def writeOutput(fileName, shouldAnalyze=True):
+	"Cleave a GNU Triangulated Surface file."
 	startTime = time.time()
 	print('File ' + archive.getSummarizedFileName(fileName) + ' is being cleaved.')
 	repository = CleaveRepository()
@@ -153,7 +134,8 @@ def writeOutput(fileName=''):
 	archive.writeFileText( suffixFileName, cleaveGcode )
 	print('The cleaved file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
 	print('It took %s to cleave the file.' % euclidean.getDurationString( time.time() - startTime ) )
-	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
+	if shouldAnalyze:
+		settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 
 class CleaveRepository:

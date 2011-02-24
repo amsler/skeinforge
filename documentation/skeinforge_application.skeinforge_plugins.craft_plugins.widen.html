@@ -39,25 +39,7 @@ The following examples widen the file Screw Holder Bottom.stl.  The examples are
 &gt; python widen.py<br>
 This brings up the widen dialog.<br>
  <br>
- <br>
 &gt; python widen.py Screw Holder Bottom.stl<br>
-The widen tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The widen tool has created the file:<br>
-.. Screw Holder Bottom_widen.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import widen<br>
-&gt;&gt;&gt; widen.<a href="#-main">main</a>()<br>
-This brings up the widen dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; widen.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The widen tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -148,10 +130,10 @@ The widen tool has created the file:<br>
  <dl><dt><a name="-getIntersectingWithinLoops"><strong>getIntersectingWithinLoops</strong></a>(loop, loopList, outsetLoop)</dt><dd><tt>Get&nbsp;the&nbsp;loops&nbsp;which&nbsp;are&nbsp;intersecting&nbsp;or&nbsp;which&nbsp;it&nbsp;is&nbsp;within.</tt></dd></dl>
  <dl><dt><a name="-getIsIntersectingWithinLoop"><strong>getIsIntersectingWithinLoop</strong></a>(loop, otherLoop, outsetLoop)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;loop&nbsp;is&nbsp;intersecting&nbsp;or&nbsp;is&nbsp;within&nbsp;the&nbsp;other&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getIsPointInsideALoop"><strong>getIsPointInsideALoop</strong></a>(loops, point)</dt><dd><tt>Determine&nbsp;if&nbsp;a&nbsp;point&nbsp;is&nbsp;inside&nbsp;a&nbsp;loop&nbsp;of&nbsp;a&nbsp;loop&nbsp;list.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getWidenedLoop"><strong>getWidenedLoop</strong></a>(loop, loopList, outsetLoop, radius)</dt><dd><tt>Get&nbsp;the&nbsp;widened&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;widen&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Widen&nbsp;the&nbsp;carving&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Widen&nbsp;the&nbsp;carving&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -161,7 +143,7 @@ The widen tool has created the file:<br>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/28/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

@@ -19,21 +19,6 @@ An import plugin is a script in the interpret_plugins folder which has the funct
  <br>
 The getCarving function takes the file name of an xml file and returns the carving.<br>
  <br>
-This example gets a triangle mesh for the xml file boolean.xml.  This example is run in a terminal in the folder which contains boolean.xml and xml.py.<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import xml<br>
-&gt;&gt;&gt; xml.getCarving().getCarveRotatedBoundaryLayers()<br>
-[-1.159765625, None, [[(-18.925000000000001-2.4550000000000001j), (-18.754999999999981-2.4550000000000001j)<br>
-..<br>
-many more lines of the carving<br>
-..<br>
- <br>
- <br>
 An xml file can be exported from Art of Illusion by going to the "File" menu, then going into the "Export" menu item, then picking the XML choice.  This will bring up the XML file chooser window, choose a place to save the file then click "OK".  Leave the "compressFile" checkbox unchecked.  All the objects from the scene will be exported, this plugin will ignore the light and camera.  If you want to fabricate more than one object at a time, you can have multiple objects in the Art of Illusion scene and they will all be carved, then fabricated together.</tt>
 <br />
 <br />
@@ -57,7 +42,7 @@ An xml file can be exported from Art of Illusion by going to the "File" menu, th
 <a href="fabmetheus_utilities.euclidean.html">fabmetheus_utilities.euclidean</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.geometry_tools.face.html">fabmetheus_utilities.geometry.geometry_tools.face</a><br>
 <a href="fabmetheus_utilities.geometry.solids.group.html">fabmetheus_utilities.geometry.solids.group</a><br>
-<a href="fabmetheus_utilities.geometry.manipulation_matrix.matrix.html">fabmetheus_utilities.geometry.manipulation_matrix.matrix</a><br>
+<a href="fabmetheus_utilities.geometry.geometry_utilities.matrix.html">fabmetheus_utilities.geometry.geometry_utilities.matrix</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.solids.sphere.html">fabmetheus_utilities.geometry.solids.sphere</a><br>
 <a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html">fabmetheus_utilities.geometry.solids.triangle_mesh</a><br>
 </td></tr></table></td></tr></table><p>
@@ -122,7 +107,7 @@ An xml file can be exported from Art of Illusion by going to the "File" menu, th
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="BooleanSolid-setToObjectAttributeDictionary"><strong>setToObjectAttributeDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
+<dl><dt><a name="BooleanSolid-setToArtOfIllusionDictionary"><strong>setToArtOfIllusionDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_utilities.boolean_solid.html#BooleanSolid">fabmetheus_utilities.geometry.geometry_utilities.boolean_solid.BooleanSolid</a>:<br>
@@ -154,6 +139,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#
 
 <dl><dt><a name="BooleanSolid-getVisible"><strong>getVisible</strong></a>(self)</dt><dd><tt>Get&nbsp;visible.</tt></dd></dl>
 
+<dl><dt><a name="BooleanSolid-setToXMLElement"><strong>setToXMLElement</strong></a>(self, xmlElement)</dt><dd><tt>Set&nbsp;to&nbsp;xmlElement.</tt></dd></dl>
+
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dictionary.html#Dictionary">fabmetheus_utilities.geometry.geometry_tools.dictionary.Dictionary</a>:<br>
 <dl><dt><a name="BooleanSolid-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;string&nbsp;representation&nbsp;of&nbsp;this&nbsp;object&nbsp;info.</tt></dd></dl>
@@ -170,9 +157,11 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 
 <dl><dt><a name="BooleanSolid-getFabricationExtension"><strong>getFabricationExtension</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;extension.</tt></dd></dl>
 
-<dl><dt><a name="BooleanSolid-getFabricationText"><strong>getFabricationText</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
+<dl><dt><a name="BooleanSolid-getFabricationText"><strong>getFabricationText</strong></a>(self, addLayerTemplate)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
 
 <dl><dt><a name="BooleanSolid-getGeometryOutput"><strong>getGeometryOutput</strong></a>(self)</dt><dd><tt>Get&nbsp;geometry&nbsp;output&nbsp;dictionary.</tt></dd></dl>
+
+<dl><dt><a name="BooleanSolid-getMinimumZ"><strong>getMinimumZ</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;minimum&nbsp;z.</tt></dd></dl>
 
 <dl><dt><a name="BooleanSolid-getPaths"><strong>getPaths</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;paths.</tt></dd></dl>
 
@@ -202,13 +191,15 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Cube-setToObjectAttributeDictionary"><strong>setToObjectAttributeDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
+<dl><dt><a name="Cube-setToArtOfIllusionDictionary"><strong>setToArtOfIllusionDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.cube.html#Cube">fabmetheus_utilities.geometry.solids.cube.Cube</a>:<br>
 <dl><dt><a name="Cube-addXMLSection"><strong>addXMLSection</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;the&nbsp;xml&nbsp;section&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
 
 <dl><dt><a name="Cube-createShape"><strong>createShape</strong></a>(self)</dt><dd><tt>Create&nbsp;the&nbsp;shape.</tt></dd></dl>
+
+<dl><dt><a name="Cube-setToXMLElement"><strong>setToXMLElement</strong></a>(self, xmlElement)</dt><dd><tt>Set&nbsp;to&nbsp;xmlElement.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>:<br>
@@ -232,6 +223,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_me
 
 <dl><dt><a name="Cube-getLoopsFromMesh"><strong>getLoopsFromMesh</strong></a>(self, z)</dt><dd><tt>Get&nbsp;loops&nbsp;from&nbsp;a&nbsp;carve&nbsp;of&nbsp;a&nbsp;mesh.</tt></dd></dl>
 
+<dl><dt><a name="Cube-getMinimumZ"><strong>getMinimumZ</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;minimum&nbsp;z.</tt></dd></dl>
+
 <dl><dt><a name="Cube-getTransformedVertexes"><strong>getTransformedVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;transformed&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getTriangleMeshes"><strong>getTriangleMeshes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;triangleMeshes.</tt></dd></dl>
@@ -239,6 +232,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_me
 <dl><dt><a name="Cube-getVertexes"><strong>getVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="Cube-liftByMinimumZ"><strong>liftByMinimumZ</strong></a>(self, minimumZ)</dt><dd><tt>Lift&nbsp;the&nbsp;triangle&nbsp;mesh&nbsp;to&nbsp;the&nbsp;altitude.</tt></dd></dl>
 
 <dl><dt><a name="Cube-setCarveImportRadius"><strong>setCarveImportRadius</strong></a>(self, importRadius)</dt><dd><tt>Set&nbsp;the&nbsp;import&nbsp;radius.</tt></dd></dl>
 
@@ -274,7 +269,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 
 <dl><dt><a name="Cube-getFabricationExtension"><strong>getFabricationExtension</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;extension.</tt></dd></dl>
 
-<dl><dt><a name="Cube-getFabricationText"><strong>getFabricationText</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
+<dl><dt><a name="Cube-getFabricationText"><strong>getFabricationText</strong></a>(self, addLayerTemplate)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
 
 <dl><dt><a name="Cube-getPaths"><strong>getPaths</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;paths.</tt></dd></dl>
 
@@ -303,13 +298,15 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Cylinder-setToObjectAttributeDictionary"><strong>setToObjectAttributeDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
+<dl><dt><a name="Cylinder-setToArtOfIllusionDictionary"><strong>setToArtOfIllusionDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.cylinder.html#Cylinder">fabmetheus_utilities.geometry.solids.cylinder.Cylinder</a>:<br>
 <dl><dt><a name="Cylinder-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Add&nbsp;empty&nbsp;lists.</tt></dd></dl>
 
 <dl><dt><a name="Cylinder-createShape"><strong>createShape</strong></a>(self)</dt><dd><tt>Create&nbsp;the&nbsp;shape.</tt></dd></dl>
+
+<dl><dt><a name="Cylinder-setToXMLElement"><strong>setToXMLElement</strong></a>(self, xmlElement)</dt><dd><tt>Set&nbsp;to&nbsp;xmlElement.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.cube.html#Cube">fabmetheus_utilities.geometry.solids.cube.Cube</a>:<br>
@@ -335,6 +332,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_me
 
 <dl><dt><a name="Cylinder-getLoopsFromMesh"><strong>getLoopsFromMesh</strong></a>(self, z)</dt><dd><tt>Get&nbsp;loops&nbsp;from&nbsp;a&nbsp;carve&nbsp;of&nbsp;a&nbsp;mesh.</tt></dd></dl>
 
+<dl><dt><a name="Cylinder-getMinimumZ"><strong>getMinimumZ</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;minimum&nbsp;z.</tt></dd></dl>
+
 <dl><dt><a name="Cylinder-getTransformedVertexes"><strong>getTransformedVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;transformed&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Cylinder-getTriangleMeshes"><strong>getTriangleMeshes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;triangleMeshes.</tt></dd></dl>
@@ -342,6 +341,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_me
 <dl><dt><a name="Cylinder-getVertexes"><strong>getVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Cylinder-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="Cylinder-liftByMinimumZ"><strong>liftByMinimumZ</strong></a>(self, minimumZ)</dt><dd><tt>Lift&nbsp;the&nbsp;triangle&nbsp;mesh&nbsp;to&nbsp;the&nbsp;altitude.</tt></dd></dl>
 
 <dl><dt><a name="Cylinder-setCarveImportRadius"><strong>setCarveImportRadius</strong></a>(self, importRadius)</dt><dd><tt>Set&nbsp;the&nbsp;import&nbsp;radius.</tt></dd></dl>
 
@@ -377,7 +378,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 
 <dl><dt><a name="Cylinder-getFabricationExtension"><strong>getFabricationExtension</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;extension.</tt></dd></dl>
 
-<dl><dt><a name="Cylinder-getFabricationText"><strong>getFabricationText</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
+<dl><dt><a name="Cylinder-getFabricationText"><strong>getFabricationText</strong></a>(self, addLayerTemplate)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
 
 <dl><dt><a name="Cylinder-getPaths"><strong>getPaths</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;paths.</tt></dd></dl>
 
@@ -403,7 +404,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Group-setToObjectAttributeDictionary"><strong>setToObjectAttributeDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;group.</tt></dd></dl>
+<dl><dt><a name="Group-setToArtOfIllusionDictionary"><strong>setToArtOfIllusionDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;group.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#Group">fabmetheus_utilities.geometry.solids.group.Group</a>:<br>
@@ -421,6 +422,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#
 
 <dl><dt><a name="Group-getVisible"><strong>getVisible</strong></a>(self)</dt><dd><tt>Get&nbsp;visible.</tt></dd></dl>
 
+<dl><dt><a name="Group-setToXMLElement"><strong>setToXMLElement</strong></a>(self, xmlElement)</dt><dd><tt>Set&nbsp;to&nbsp;xmlElement.</tt></dd></dl>
+
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dictionary.html#Dictionary">fabmetheus_utilities.geometry.geometry_tools.dictionary.Dictionary</a>:<br>
 <dl><dt><a name="Group-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;string&nbsp;representation&nbsp;of&nbsp;this&nbsp;object&nbsp;info.</tt></dd></dl>
@@ -437,9 +440,11 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 
 <dl><dt><a name="Group-getFabricationExtension"><strong>getFabricationExtension</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;extension.</tt></dd></dl>
 
-<dl><dt><a name="Group-getFabricationText"><strong>getFabricationText</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
+<dl><dt><a name="Group-getFabricationText"><strong>getFabricationText</strong></a>(self, addLayerTemplate)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
 
 <dl><dt><a name="Group-getGeometryOutput"><strong>getGeometryOutput</strong></a>(self)</dt><dd><tt>Get&nbsp;geometry&nbsp;output&nbsp;dictionary.</tt></dd></dl>
+
+<dl><dt><a name="Group-getMinimumZ"><strong>getMinimumZ</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;minimum&nbsp;z.</tt></dd></dl>
 
 <dl><dt><a name="Group-getPaths"><strong>getPaths</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;paths.</tt></dd></dl>
 
@@ -474,11 +479,13 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Sphere-setToObjectAttributeDictionary"><strong>setToObjectAttributeDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object.</tt></dd></dl>
+<dl><dt><a name="Sphere-setToArtOfIllusionDictionary"><strong>setToArtOfIllusionDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.sphere.html#Sphere">fabmetheus_utilities.geometry.solids.sphere.Sphere</a>:<br>
 <dl><dt><a name="Sphere-createShape"><strong>createShape</strong></a>(self)</dt><dd><tt>Create&nbsp;the&nbsp;shape.</tt></dd></dl>
+
+<dl><dt><a name="Sphere-setToXMLElement"><strong>setToXMLElement</strong></a>(self, xmlElement)</dt><dd><tt>Set&nbsp;to&nbsp;xmlElement.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.cube.html#Cube">fabmetheus_utilities.geometry.solids.cube.Cube</a>:<br>
@@ -506,6 +513,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_me
 
 <dl><dt><a name="Sphere-getLoopsFromMesh"><strong>getLoopsFromMesh</strong></a>(self, z)</dt><dd><tt>Get&nbsp;loops&nbsp;from&nbsp;a&nbsp;carve&nbsp;of&nbsp;a&nbsp;mesh.</tt></dd></dl>
 
+<dl><dt><a name="Sphere-getMinimumZ"><strong>getMinimumZ</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;minimum&nbsp;z.</tt></dd></dl>
+
 <dl><dt><a name="Sphere-getTransformedVertexes"><strong>getTransformedVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;transformed&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Sphere-getTriangleMeshes"><strong>getTriangleMeshes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;triangleMeshes.</tt></dd></dl>
@@ -513,6 +522,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_me
 <dl><dt><a name="Sphere-getVertexes"><strong>getVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="Sphere-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="Sphere-liftByMinimumZ"><strong>liftByMinimumZ</strong></a>(self, minimumZ)</dt><dd><tt>Lift&nbsp;the&nbsp;triangle&nbsp;mesh&nbsp;to&nbsp;the&nbsp;altitude.</tt></dd></dl>
 
 <dl><dt><a name="Sphere-setCarveImportRadius"><strong>setCarveImportRadius</strong></a>(self, importRadius)</dt><dd><tt>Set&nbsp;the&nbsp;import&nbsp;radius.</tt></dd></dl>
 
@@ -548,7 +559,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 
 <dl><dt><a name="Sphere-getFabricationExtension"><strong>getFabricationExtension</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;extension.</tt></dd></dl>
 
-<dl><dt><a name="Sphere-getFabricationText"><strong>getFabricationText</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
+<dl><dt><a name="Sphere-getFabricationText"><strong>getFabricationText</strong></a>(self, addLayerTemplate)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
 
 <dl><dt><a name="Sphere-getPaths"><strong>getPaths</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;paths.</tt></dd></dl>
 
@@ -575,7 +586,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="TriangleMesh-setToObjectAttributeDictionary"><strong>setToObjectAttributeDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
+<dl><dt><a name="TriangleMesh-setToArtOfIllusionDictionary"><strong>setToArtOfIllusionDictionary</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;shape&nbsp;of&nbsp;this&nbsp;carvable&nbsp;object&nbsp;info.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_mesh.html#TriangleMesh">fabmetheus_utilities.geometry.solids.triangle_mesh.TriangleMesh</a>:<br>
@@ -601,6 +612,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_me
 
 <dl><dt><a name="TriangleMesh-getLoopsFromMesh"><strong>getLoopsFromMesh</strong></a>(self, z)</dt><dd><tt>Get&nbsp;loops&nbsp;from&nbsp;a&nbsp;carve&nbsp;of&nbsp;a&nbsp;mesh.</tt></dd></dl>
 
+<dl><dt><a name="TriangleMesh-getMinimumZ"><strong>getMinimumZ</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;minimum&nbsp;z.</tt></dd></dl>
+
 <dl><dt><a name="TriangleMesh-getTransformedVertexes"><strong>getTransformedVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;transformed&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="TriangleMesh-getTriangleMeshes"><strong>getTriangleMeshes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;triangleMeshes.</tt></dd></dl>
@@ -608,6 +621,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.triangle_me
 <dl><dt><a name="TriangleMesh-getVertexes"><strong>getVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;vertexes.</tt></dd></dl>
 
 <dl><dt><a name="TriangleMesh-getZAddExtruderPaths"><strong>getZAddExtruderPaths</strong></a>(self, z)</dt><dd><tt>Get&nbsp;next&nbsp;z&nbsp;and&nbsp;add&nbsp;extruder&nbsp;loops.</tt></dd></dl>
+
+<dl><dt><a name="TriangleMesh-liftByMinimumZ"><strong>liftByMinimumZ</strong></a>(self, minimumZ)</dt><dd><tt>Lift&nbsp;the&nbsp;triangle&nbsp;mesh&nbsp;to&nbsp;the&nbsp;altitude.</tt></dd></dl>
 
 <dl><dt><a name="TriangleMesh-setCarveImportRadius"><strong>setCarveImportRadius</strong></a>(self, importRadius)</dt><dd><tt>Set&nbsp;the&nbsp;import&nbsp;radius.</tt></dd></dl>
 
@@ -629,6 +644,8 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.solids.group.html#
 
 <dl><dt><a name="TriangleMesh-getVisible"><strong>getVisible</strong></a>(self)</dt><dd><tt>Get&nbsp;visible.</tt></dd></dl>
 
+<dl><dt><a name="TriangleMesh-setToXMLElement"><strong>setToXMLElement</strong></a>(self, xmlElement)</dt><dd><tt>Set&nbsp;to&nbsp;xmlElement.</tt></dd></dl>
+
 <hr>
 Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dictionary.html#Dictionary">fabmetheus_utilities.geometry.geometry_tools.dictionary.Dictionary</a>:<br>
 <dl><dt><a name="TriangleMesh-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;string&nbsp;representation&nbsp;of&nbsp;this&nbsp;object&nbsp;info.</tt></dd></dl>
@@ -645,7 +662,7 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 
 <dl><dt><a name="TriangleMesh-getFabricationExtension"><strong>getFabricationExtension</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;extension.</tt></dd></dl>
 
-<dl><dt><a name="TriangleMesh-getFabricationText"><strong>getFabricationText</strong></a>(self)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
+<dl><dt><a name="TriangleMesh-getFabricationText"><strong>getFabricationText</strong></a>(self, addLayerTemplate)</dt><dd><tt>Get&nbsp;fabrication&nbsp;text.</tt></dd></dl>
 
 <dl><dt><a name="TriangleMesh-getPaths"><strong>getPaths</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;paths.</tt></dd></dl>
 
@@ -677,9 +694,9 @@ Methods inherited from <a href="fabmetheus_utilities.geometry.geometry_tools.dic
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__credits__</strong> = 'Nophead &lt;http://hydraraptor.blogspot.com/&gt;<font color="#c040c0">\n</font>Art of Illusion &lt;http://www.artofillusion.org/&gt;'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
-<strong>globalCarvableClassObjectTable</strong> = {'CSGObject': &lt;class fabmetheus_utilities.fabmetheus_tools.int...plugins.artofillusion.BooleanSolid at 0xb6696f2c&gt;, 'Cube': &lt;class fabmetheus_utilities.fabmetheus_tools.int...ins.xml_plugins.artofillusion.Cube at 0xb6696f5c&gt;, 'Cylinder': &lt;class fabmetheus_utilities.fabmetheus_tools.int...xml_plugins.artofillusion.Cylinder at 0xb6696f8c&gt;, 'Sphere': &lt;class fabmetheus_utilities.fabmetheus_tools.int...s.xml_plugins.artofillusion.Sphere at 0xb66a002c&gt;, 'TriangleMesh': &lt;class fabmetheus_utilities.fabmetheus_tools.int...plugins.artofillusion.TriangleMesh at 0xb66a005c&gt;, 'artofillusion.object.NullObject': &lt;class fabmetheus_utilities.fabmetheus_tools.int...ns.xml_plugins.artofillusion.Group at 0xb6696fbc&gt;}</td></tr></table><p>
+<strong>globalCarvableClassObjectTable</strong> = {'CSGObject': &lt;class fabmetheus_utilities.fabmetheus_tools.int...plugins.artofillusion.BooleanSolid at 0xb674705c&gt;, 'Cube': &lt;class fabmetheus_utilities.fabmetheus_tools.int...ins.xml_plugins.artofillusion.Cube at 0xb674708c&gt;, 'Cylinder': &lt;class fabmetheus_utilities.fabmetheus_tools.int...xml_plugins.artofillusion.Cylinder at 0xb67470bc&gt;, 'Sphere': &lt;class fabmetheus_utilities.fabmetheus_tools.int...s.xml_plugins.artofillusion.Sphere at 0xb674711c&gt;, 'TriangleMesh': &lt;class fabmetheus_utilities.fabmetheus_tools.int...plugins.artofillusion.TriangleMesh at 0xb674714c&gt;, 'artofillusion.object.NullObject': &lt;class fabmetheus_utilities.fabmetheus_tools.int...ns.xml_plugins.artofillusion.Group at 0xb67470ec&gt;}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

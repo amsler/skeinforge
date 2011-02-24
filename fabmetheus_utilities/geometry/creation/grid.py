@@ -18,12 +18,12 @@ import random
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addGridRow(diameter, gridPath, loopsComplex, maximumComplex, rowIndex, x, y, zigzag):
-	"Add grid row."
+	'Add grid row.'
 	row = []
 	while x < maximumComplex.real:
 		point = complex(x, y)
@@ -34,10 +34,9 @@ def addGridRow(diameter, gridPath, loopsComplex, maximumComplex, rowIndex, x, y,
 		row.reverse()
 	gridPath += row
 
-def getGeometryOutput(derivation, xmlElement):
-	"Get vector3 vertexes from attribute dictionary."
-	if derivation == None:
-		derivation = GridDerivation(xmlElement)
+def getGeometryOutput(xmlElement):
+	'Get vector3 vertexes from attribute dictionary.'
+	derivation = GridDerivation(xmlElement)
 	diameter = derivation.radius + derivation.radius
 	typeStringTwoCharacters = derivation.typeString.lower()[: 2]
 	typeStringFirstCharacter = typeStringTwoCharacters[: 1]
@@ -65,18 +64,18 @@ def getGeometryOutput(derivation, xmlElement):
 	return lineation.getGeometryOutputByLoop(lineation.SideLoop(loop, 0.5 * math.pi), xmlElement)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
-	"Get vector3 vertexes from attribute dictionary by arguments."
+	'Get vector3 vertexes from attribute dictionary by arguments.'
 	if len(arguments) < 1:
-		return getGeometryOutput(None, xmlElement)
+		return getGeometryOutput(xmlElement)
 	inradius = 0.5 * euclidean.getFloatFromValue(arguments[0])
 	xmlElement.attributeDictionary['inradius.x'] = str(inradius)
 	if len(arguments) > 1:
 		inradius = 0.5 * euclidean.getFloatFromValue(arguments[1])
 	xmlElement.attributeDictionary['inradius.y'] = str(inradius)
-	return getGeometryOutput(None, xmlElement)
+	return getGeometryOutput(xmlElement)
 
 def getHexagonalGrid(diameter, loopsComplex, maximumComplex, minimumComplex, zigzag):
-	"Get hexagonal grid."
+	'Get hexagonal grid.'
 	diameter = complex(diameter.real, math.sqrt(0.75) * diameter.imag)
 	demiradius = 0.25 * diameter
 	xRadius = 0.5 * diameter.real
@@ -94,7 +93,7 @@ def getHexagonalGrid(diameter, loopsComplex, maximumComplex, minimumComplex, zig
 	return gridPath
 
 def getIsPointInsideZoneAwayOthers(diameterReciprocal, loopsComplex, point, pixelDictionary):
-	"Determine if the point is inside the loops zone and and away from the other points."
+	'Determine if the point is inside the loops zone and and away from the other points.'
 	if not euclidean.getIsInFilledRegion(loopsComplex, point):
 		return False
 	pointOverDiameter = complex(point.real * diameterReciprocal.real, point.imag * diameterReciprocal.imag)
@@ -105,13 +104,17 @@ def getIsPointInsideZoneAwayOthers(diameterReciprocal, loopsComplex, point, pixe
 	euclidean.addElementToPixelListFromPoint(pointOverDiameter, pixelDictionary, pointOverDiameter)
 	return True
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return GridDerivation(xmlElement)
+
 def getRandomGrid(derivation, diameter, loopsComplex, maximumComplex, minimumComplex, xmlElement):
-	"Get rectangular grid."
+	'Get rectangular grid.'
 	gridPath = []
 	diameterReciprocal = complex(1.0 / diameter.real, 1.0 / diameter.imag)
 	diameterSquared = diameter.real * diameter.real + diameter.imag * diameter.imag
 	elements = int(math.ceil(derivation.packingDensity * euclidean.getAreaLoops(loopsComplex) / diameterSquared / math.sqrt(0.75)))
-	elements = evaluate.getEvaluatedIntDefault(elements, 'elements', xmlElement)
+	elements = evaluate.getEvaluatedInt(elements, 'elements', xmlElement)
 	failedPlacementAttempts = 0
 	pixelDictionary = {}
 	if derivation.seed != None:
@@ -130,7 +133,7 @@ def getRandomGrid(derivation, diameter, loopsComplex, maximumComplex, minimumCom
 	return gridPath
 
 def getRectangularGrid(diameter, loopsComplex, maximumComplex, minimumComplex, zigzag):
-	"Get rectangular grid."
+	'Get rectangular grid.'
 	demiradius = 0.25 * diameter
 	xStart = minimumComplex.real - demiradius.real
 	y = minimumComplex.imag - demiradius.imag
@@ -143,12 +146,12 @@ def getRectangularGrid(diameter, loopsComplex, maximumComplex, minimumComplex, z
 	return gridPath
 
 def processXMLElement(xmlElement):
-	"Process the xml element."
-	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
+	'Process the xml element.'
+	path.convertXMLElement(getGeometryOutput(xmlElement), xmlElement)
 
 
 class GridDerivation:
-	"Class to hold grid variables."
+	'Class to hold grid variables.'
 	def __init__(self, xmlElement):
 		'Set defaults.'
 		self.inradius = lineation.getComplexByPrefixes(['demisize', 'inradius'], complex(10.0, 10.0), xmlElement)
@@ -158,12 +161,12 @@ class GridDerivation:
 		self.packingDensity = evaluate.getEvaluatedFloatByKeys(0.2, ['packingDensity', 'density'], xmlElement)
 		self.radius = lineation.getComplexByPrefixBeginEnd('elementRadius', 'elementDiameter', complex(1.0, 1.0), xmlElement)
 		self.radius = lineation.getComplexByPrefixBeginEnd('radius', 'diameter', self.radius, xmlElement)
-		self.seed = evaluate.getEvaluatedIntDefault(None, 'seed', xmlElement)
+		self.seed = evaluate.getEvaluatedInt(None, 'seed', xmlElement)
 		self.target = evaluate.getTransformedPathsByKey([], 'target', xmlElement)
 		self.typeMenuRadioStrings = 'hexagonal random rectangular'.split()
-		self.typeString = evaluate.getEvaluatedStringDefault('rectangular', 'type', xmlElement)
-		self.zigzag = evaluate.getEvaluatedBooleanDefault(True, 'zigzag', xmlElement)
+		self.typeString = evaluate.getEvaluatedString('rectangular', 'type', xmlElement)
+		self.zigzag = evaluate.getEvaluatedBoolean(True, 'zigzag', xmlElement)
 
 	def __repr__(self):
-		"Get the string representation of this GridDerivation."
+		'Get the string representation of this GridDerivation.'
 		return str(self.__dict__)

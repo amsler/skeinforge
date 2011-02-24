@@ -16,8 +16,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -31,6 +31,10 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	"Get vector3 vertexes from attribute dictionary by arguments."
 	evaluate.setAttributeDictionaryByArguments(['radius', 'sides'], arguments, xmlElement)
 	return getGeometryOutput(None, xmlElement)
+
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return ShaftDerivation(xmlElement)
 
 def getShaftPath(depthBottom, depthTop, radius, sides):
 	'Get shaft with the option of a flat on the top and/or bottom.'
@@ -65,17 +69,17 @@ class ShaftDerivation:
 	"Class to hold shaft variables."
 	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.depthBottomOverRadius = evaluate.getEvaluatedFloatDefault(0.0, 'depthBottomOverRadius', xmlElement)
-		self.depthTopOverRadius = evaluate.getEvaluatedFloatDefault(0.0, 'depthOverRadius', xmlElement)
-		self.depthTopOverRadius = evaluate.getEvaluatedFloatDefault(
+		self.depthBottomOverRadius = evaluate.getEvaluatedFloat(0.0, 'depthBottomOverRadius', xmlElement)
+		self.depthTopOverRadius = evaluate.getEvaluatedFloat(0.0, 'depthOverRadius', xmlElement)
+		self.depthTopOverRadius = evaluate.getEvaluatedFloat(
 			self.depthTopOverRadius, 'depthTopOverRadius', xmlElement)
-		self.radius = evaluate.getEvaluatedFloatDefault(1.0, 'radius', xmlElement)
-		self.sides = evaluate.getEvaluatedIntDefault(4, 'sides', xmlElement)
+		self.radius = evaluate.getEvaluatedFloat(1.0, 'radius', xmlElement)
+		self.sides = evaluate.getEvaluatedInt(4, 'sides', xmlElement)
 		self.depthBottom = self.radius * self.depthBottomOverRadius
-		self.depthBottom = evaluate.getEvaluatedFloatDefault(self.depthBottom, 'depthBottom', xmlElement)
+		self.depthBottom = evaluate.getEvaluatedFloat(self.depthBottom, 'depthBottom', xmlElement)
 		self.depthTop = self.radius * self.depthTopOverRadius
-		self.depthTop = evaluate.getEvaluatedFloatDefault(self.depthTop, 'depth', xmlElement)
-		self.depthTop = evaluate.getEvaluatedFloatDefault(self.depthTop, 'depthTop', xmlElement)
+		self.depthTop = evaluate.getEvaluatedFloat(self.depthTop, 'depth', xmlElement)
+		self.depthTop = evaluate.getEvaluatedFloat(self.depthTop, 'depthTop', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this ShaftDerivation."

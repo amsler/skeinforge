@@ -14,8 +14,8 @@ from fabmetheus_utilities import euclidean
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalExecutionOrder = 60
@@ -143,10 +143,10 @@ class StartEnd:
 	'Class to get a start through end range.'
 	def __init__(self, modulo, prefix, xmlElement):
 		"Initialize."
-		self.start = evaluate.getEvaluatedIntDefault(0, prefix + 'start', xmlElement)
-		self.extent = evaluate.getEvaluatedIntDefault(modulo - self.start, prefix + 'extent', xmlElement)
-		self.end = evaluate.getEvaluatedIntDefault(self.start + self.extent, prefix + 'end', xmlElement)
-		self.revolutions = evaluate.getEvaluatedIntDefault(1, prefix + 'revolutions', xmlElement)
+		self.start = evaluate.getEvaluatedInt(0, prefix + 'start', xmlElement)
+		self.extent = evaluate.getEvaluatedInt(modulo - self.start, prefix + 'extent', xmlElement)
+		self.end = evaluate.getEvaluatedInt(self.start + self.extent, prefix + 'end', xmlElement)
+		self.revolutions = evaluate.getEvaluatedInt(1, prefix + 'revolutions', xmlElement)
 		if self.revolutions > 1:
 			self.end += modulo * (self.revolutions - 1)
 

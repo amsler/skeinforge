@@ -65,29 +65,10 @@ If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector grap
 ==Examples==
 The following examples chop the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and chop.py.
 
-
 > python chop.py
 This brings up the chop dialog.
 
-
 > python chop.py Screw Holder Bottom.stl
-The chop tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The chop tool has created the file:
-.. Screw Holder Bottom_chop.svg
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import chop
->>> chop.main()
-This brings up the chop dialog.
-
-
->>> chop.writeOutput('Screw Holder Bottom.stl')
 The chop tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -120,8 +101,8 @@ import time
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, gcodeText = '', repository=None):
@@ -139,10 +120,10 @@ def getCraftedText( fileName, gcodeText = '', repository=None):
 	return ChopSkein().getCarvedSVG( carving, fileName, repository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return ChopRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Chop a GNU Triangulated Surface file.  If no fileName is specified, chop the first GNU Triangulated Surface file in this folder."
 	startTime = time.time()
 	print('File ' + archive.getSummarizedFileName(fileName) + ' is being chopped.')
@@ -158,7 +139,8 @@ def writeOutput(fileName=''):
 	archive.writeFileText( suffixFileName, chopGcode )
 	print('The chopped file is saved as ' + archive.getSummarizedFileName(suffixFileName) )
 	print('It took %s to chop the file.' % euclidean.getDurationString( time.time() - startTime ) )
-	settings.openSVGPage( suffixFileName, repository.svgViewer.value )
+	if shouldAnalyze:
+		settings.openSVGPage( suffixFileName, repository.svgViewer.value )
 
 
 class ChopRepository:

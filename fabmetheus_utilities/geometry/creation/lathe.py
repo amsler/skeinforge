@@ -18,8 +18,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 def addLoopByComplex(derivation, endMultiplier, loopLists, path, pointComplex, vertexes):
 	"Add an indexed loop to the vertexes."
@@ -112,6 +112,10 @@ def getLoopListsByPath(derivation, endMultiplier, path):
 		loopLists[-1].append([])
 	return loopLists
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return LatheDerivation(xmlElement)
+
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	solid.processXMLElementByGeometry(getGeometryOutput(None, xmlElement), xmlElement)
@@ -123,10 +127,10 @@ class LatheDerivation:
 		'Set defaults.'
 		self.axisEnd = evaluate.getVector3ByPrefix(None, 'axisEnd', xmlElement)
 		self.axisStart = evaluate.getVector3ByPrefix(None, 'axisStart', xmlElement)
-		self.end = evaluate.getEvaluatedFloatDefault(360.0, 'end', xmlElement)
+		self.end = evaluate.getEvaluatedFloat(360.0, 'end', xmlElement)
 		self.loop = evaluate.getTransformedPathByKey([], 'loop', xmlElement)
-		self.sides = evaluate.getEvaluatedIntDefault(None, 'sides', xmlElement)
-		self.start = evaluate.getEvaluatedFloatDefault(0.0, 'start', xmlElement)
+		self.sides = evaluate.getEvaluatedInt(None, 'sides', xmlElement)
+		self.start = evaluate.getEvaluatedFloat(0.0, 'start', xmlElement)
 		self.target = evaluate.getTransformedPathsByKey([], 'target', xmlElement)
 		if len(self.target) < 1:
 			print('Warning, no target in derive in lathe for:')

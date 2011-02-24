@@ -19,25 +19,7 @@ The following examples widen the file Screw Holder Bottom.stl.  The examples are
 > python widen.py
 This brings up the widen dialog.
 
-
 > python widen.py Screw Holder Bottom.stl
-The widen tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The widen tool has created the file:
-.. Screw Holder Bottom_widen.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import widen
->>> widen.main()
-This brings up the widen dialog.
-
-
->>> widen.writeOutput('Screw Holder Bottom.stl')
 The widen tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -72,12 +54,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/28/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText(fileName, text='', repository=None):
 	'Widen the preface file or text.'
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	'Widen the preface gcode text.'
@@ -111,7 +93,7 @@ def getIsPointInsideALoop(loops, point):
 	return False
 
 def getNewRepository():
-	'Get the repository constructor.'
+	'Get new repository.'
 	return WidenRepository()
 
 def getWidenedLoop(loop, loopList, outsetLoop, radius):
@@ -124,11 +106,9 @@ def getWidenedLoop(loop, loopList, outsetLoop, radius):
 		return loop
 	return euclidean.getLargestLoop(loopsUnified)
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	'Widen the carving of a gcode file.'
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'widen')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'widen', shouldAnalyze)
 
 
 class WidenRepository:
@@ -227,7 +207,7 @@ class WidenSkein:
 		elif firstWord == '(</layer>)':
 			self.addWiden( self.rotatedLoopLayer )
 			self.rotatedLoopLayer = None
-		elif firstWord == '(<surroundingLoop>)':
+		elif firstWord == '(<nestedRing>)':
 			self.boundary = []
 			self.rotatedLoopLayer.loops.append( self.boundary )
 		if self.rotatedLoopLayer == None or firstWord == '(<bridgeRotation>':

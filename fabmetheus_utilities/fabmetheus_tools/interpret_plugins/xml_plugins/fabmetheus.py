@@ -6,21 +6,6 @@ An import plugin is a script in the interpret_plugins folder which has the funct
 
 The getCarving function takes the file name of an xml file and returns the carving.
 
-This example gets a triangle mesh for the xml file boolean.xml.  This example is run in a terminal in the folder which contains boolean.xml and xml.py.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import xml
->>> xml.getCarving().getCarveRotatedBoundaryLayers()
-[-1.159765625, None, [[(-18.925000000000001-2.4550000000000001j), (-18.754999999999981-2.4550000000000001j)
-..
-many more lines of the carving
-..
-
-
 An xml file can be exported from Art of Illusion by going to the "File" menu, then going into the "Export" menu item, then picking the XML choice.  This will bring up the XML file chooser window, choose a place to save the file then click "OK".  Leave the "compressFile" checkbox unchecked.  All the objects from the scene will be exported, this plugin will ignore the light and camera.  If you want to fabricate more than one object at a time, you can have multiple objects in the Art of Illusion scene and they will all be carved, then fabricated together.
 
 """
@@ -44,17 +29,16 @@ import traceback
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def getCarvingFromParser( xmlParser ):
+def getCarvingFromParser(xmlParser):
 	"Get the carving for the parser."
 	booleanGeometryElement = xmlParser.getRoot()
-	booleanGeometryElement.object = boolean_geometry.BooleanGeometry()
-	root = xmlParser.getRoot()
-	root.xmlProcessor = XMLBooleanGeometryProcessor()
-	root.xmlProcessor.processChildren( booleanGeometryElement )
-	return booleanGeometryElement.object
+	booleanGeometryElement.xmlObject = boolean_geometry.BooleanGeometry()
+	booleanGeometryElement.xmlProcessor = XMLBooleanGeometryProcessor()
+	booleanGeometryElement.xmlProcessor.processChildren(booleanGeometryElement)
+	return booleanGeometryElement.xmlObject
 
 
 class XMLBooleanGeometryProcessor():
@@ -105,7 +89,7 @@ class XMLBooleanGeometryProcessor():
 	def processChildren(self, xmlElement):
 		"Process the children of the xml element."
 		for child in xmlElement.children:
-			self.processXMLElement( child )
+			self.processXMLElement(child)
 
 	def processXMLElement(self, xmlElement):
 		'Process the xml element.'
@@ -119,7 +103,7 @@ class XMLBooleanGeometryProcessor():
 			return pluginModule.processXMLElement(xmlElement)
 		except:
 			print('Warning, could not processXMLElement in fabmetheus for:')
-			print( pluginModule )
+			print(pluginModule)
 			print(xmlElement)
 			traceback.print_exc(file=sys.stdout)
 		return None

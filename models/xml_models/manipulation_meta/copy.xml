@@ -1,8 +1,13 @@
 <?xml version='1.0' ?>
 <fabmetheus>
 	<polygon id='polygon_radius20_sides3' radius='20.0' sides='3'/>
-	<extrude id='extrudePolygon' target='=document.getElementByID(polygon_radius20_sides3)' translate.rectangular.y='50'/>
-	<copy target='=document.getElementByID(extrudePolygon)' translate.rectangular.x='40'/>
+	<group id='groupTest'>
+		<extrude id='extrudePolygon' target='=document.getElementByID(polygon_radius20_sides3)' scale.x='0.5'/>
+		<extrude id='extrudePolygon' target='=document.getElementByID(polygon_radius20_sides3)'>
+			<matrix translate.y='70'/>
+		</extrude>
+	</group>
+	<copy target='=document.getElementByID(groupTest)' translate.x='40'/>
 	<!--
 	<dictionary id='copyTest' eight='8'/>
 	<copy target='=document.getElementByID(copyTest)'/>

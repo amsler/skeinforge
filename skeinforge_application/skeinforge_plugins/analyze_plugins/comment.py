@@ -9,7 +9,6 @@ http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Comment
 The default 'Activate Comment' checkbox is on.  When it is on, the functions described below will work when called from the skeinforge toolchain, when it is off, the functions will not be called from the toolchain.  The functions will still be called, whether or not the 'Activate Comment' checkbox is on, when comment is run directly.
 
 ==Gcodes==
-
 An explanation of the gcodes is at:
 http://reprap.org/bin/view/Main/Arduino_GCode_Interpreter
 
@@ -20,28 +19,13 @@ A gode example is at:
 http://forums.reprap.org/file.php?12,file=565
 
 ==Examples==
-
 Below are examples of comment being used.  These examples are run in a terminal in the folder which contains Screw_Holder_penultimate.gcode and comment.py.
 
 > python comment.py
 This brings up the comment dialog.
 
-
 > python comment.py Screw Holder_penultimate.gcode
 The comment file is saved as Screw_Holder_penultimate_comment.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import comment
->>> comment.main()
-This brings up the comment dialog.
-
-
->>> comment.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
-The commente file is saved as Screw_Holder_penultimate_comment.gcode
 
 """
 
@@ -60,11 +44,11 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return CommentRepository()
 
 def getWindowAnalyzeFile(fileName):

@@ -18,29 +18,10 @@ Default is one millimeter.
 ==Examples==
 The following examples drill the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and drill.py.
 
-
 > python drill.py
 This brings up the drill dialog.
 
-
 > python drill.py Screw Holder Bottom.stl
-The drill tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The drill tool has created the file:
-.. Screw Holder Bottom_drill.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import drill
->>> drill.main()
-This brings up the drill dialog.
-
-
->>> drill.writeOutput('Screw Holder Bottom.stl')
 The drill tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -67,11 +48,11 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 def getCraftedText( fileName, text, repository=None):
 	"Drill a gcode linear move file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Drill a gcode linear move text."
@@ -84,7 +65,7 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return DrillSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return DrillRepository()
 
 def getPolygonCenter( polygon ):
@@ -99,11 +80,9 @@ def getPolygonCenter( polygon ):
 		pointSum += complex( pointBegin.real + pointEnd.real, pointBegin.imag + pointEnd.imag ) * area
 	return pointSum / 3.0 / areaSum
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Drill a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'drill')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'drill', shouldAnalyze)
 
 
 class ThreadLayer:

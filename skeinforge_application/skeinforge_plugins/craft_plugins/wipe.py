@@ -67,29 +67,10 @@ Defines the number of layers between wipes.  Wipe will always wipe just before l
 ==Examples==
 The following examples wipe the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and wipe.py.
 
-
 > python wipe.py
 This brings up the wipe dialog.
 
-
 > python wipe.py Screw Holder Bottom.stl
-The wipe tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The wipe tool has created the file:
-.. Screw Holder Bottom_wipe.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import wipe
->>> wipe.main()
-This brings up the wipe dialog.
-
-
->>> wipe.writeOutput('Screw Holder Bottom.stl')
 The wipe tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -117,12 +98,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, text, wipeRepository = None ):
 	"Wipe a gcode linear move text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), wipeRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), wipeRepository )
 
 def getCraftedTextFromText( gcodeText, wipeRepository = None ):
 	"Wipe a gcode linear move text."
@@ -135,14 +116,12 @@ def getCraftedTextFromText( gcodeText, wipeRepository = None ):
 	return WipeSkein().getCraftedGcode( gcodeText, wipeRepository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return WipeRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Wipe a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'wipe')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'wipe', shouldAnalyze)
 
 
 class WipeRepository:
@@ -190,7 +169,7 @@ class WipeSkein:
 		self.lines = None
 		self.oldLocation = None
 		self.shouldWipe = False
-		self.travelFeedRatePerMinute = 957.0
+		self.travelFeedRateMinute = 957.0
 
 	def addHop( self, begin, end ):
 		"Add hop to highest point."
@@ -200,10 +179,10 @@ class WipeSkein:
 		alongWay = self.absolutePerimeterWidth / beginEndDistance
 		closeToOldLocation = euclidean.getIntermediateLocation( alongWay, begin, end )
 		closeToOldLocation.z = self.highestZ
-		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRatePerMinute, closeToOldLocation ) )
+		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRateMinute, closeToOldLocation ) )
 		closeToOldArrival = euclidean.getIntermediateLocation( alongWay, end, begin )
 		closeToOldArrival.z = self.highestZ
-		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRatePerMinute, closeToOldArrival ) )
+		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRateMinute, closeToOldArrival ) )
 
 	def addWipeTravel( self, splitLine ):
 		"Add the wipe travel gcode."
@@ -216,9 +195,9 @@ class WipeSkein:
 			self.distanceFeedRate.addLine('M103')
 		if self.oldLocation != None:
 			self.addHop( self.oldLocation, self.locationArrival )
-		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRatePerMinute, self.locationArrival ) )
-		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRatePerMinute, self.locationWipe ) )
-		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRatePerMinute, self.locationDeparture ) )
+		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRateMinute, self.locationArrival ) )
+		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRateMinute, self.locationWipe ) )
+		self.distanceFeedRate.addLine( self.getLinearMoveWithFeedRate( self.travelFeedRateMinute, self.locationDeparture ) )
 		self.addHop( self.locationDeparture, location )
 		if self.extruderActive:
 			self.distanceFeedRate.addLine('M101')
@@ -253,7 +232,7 @@ class WipeSkein:
 			elif firstWord == '(<perimeterWidth>':
 				self.absolutePerimeterWidth = abs(float(splitLine[1]))
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
+				self.travelFeedRateMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine(self, line):

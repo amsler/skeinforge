@@ -12,8 +12,8 @@ from fabmetheus_utilities import euclidean
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def _getAccessibleAttribute(attributeName, stringObject):
@@ -36,6 +36,10 @@ class StringAttribute:
 		"Get the string representation of this StringAttribute."
 		return self.stringObject
 
+	def add(self, nextString):
+		'Get the add string, same as append.'
+		return self.stringObject + nextString
+
 	def append(self, nextString):
 		'Get the append string.'
 		return self.stringObject + nextString
@@ -56,6 +60,13 @@ class StringAttribute:
 	def get(self, itemIndex):
 		'Get value by characterIndex'
 		return self.stringObject[itemIndex]
+
+	def getExpansion(self, items):
+		'Get the concatenated copies.'
+		expansion = ''
+		for itemIndex in xrange(items):
+			expansion += self.stringObject
+		return expansion
 
 	def getIsIn(self, value):
 		'Determine if the value is in.'
@@ -116,7 +127,7 @@ class StringAttribute:
 		return values
 
 
-globalAccessibleAttributes = 'append copy delete get getIsIn getIsNotIn getLength getMax getMin'.split()
+globalAccessibleAttributes = 'add append copy delete get getExpansion getIsIn getIsNotIn getLength getMax getMin'.split()
 globalAccessibleAttributes += 'insert keys length remove reverse set values'.split()
 globalGetAccessibleAttributeSet = set(globalAccessibleAttributes)
 globalNativeFunctions = 'capitalize center count decode encode endswith expandtabs find format index isalnum join'.split()

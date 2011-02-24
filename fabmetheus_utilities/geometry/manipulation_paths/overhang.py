@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.creation import lineation
+from fabmetheus_utilities.geometry.geometry_utilities.evaluate_elements import setting
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
@@ -16,8 +17,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalExecutionOrder = 100
@@ -39,7 +40,7 @@ def addUnsupportedPointIndexes( alongAway ):
 def alterClockwiseSupportedPath( alongAway, xmlElement ):
 	"Get clockwise path with overhangs carved out."
 	alongAway.bottomPoints = []
-	alongAway.overhangSpan = evaluate.getOverhangSpan(xmlElement)
+	alongAway.overhangSpan = setting.getOverhangSpan(xmlElement)
 	maximumY = - 987654321.0
 	minimumYPointIndex = 0
 	for pointIndex in xrange( len( alongAway.loop ) ):
@@ -107,21 +108,21 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 		print('Warning, loop has less than three sides in getManipulatedPaths in overhang for:')
 		print(xmlElement)
 		return [loop]
-	overhangAngle = evaluate.getOverhangSupportAngle(xmlElement)
-	overhangPlaneAngle = euclidean.getWiddershinsUnitPolar( 0.5 * math.pi - overhangAngle )
-	overhangVerticalAngle = math.radians( evaluate.getEvaluatedFloatDefault(0.0,  prefix + 'inclination', xmlElement ) )
-	if overhangVerticalAngle != 0.0:
-		overhangVerticalCosine = abs( math.cos( overhangVerticalAngle ) )
+	overhangRadians = setting.getOverhangRadians(xmlElement)
+	overhangPlaneAngle = euclidean.getWiddershinsUnitPolar(0.5 * math.pi - overhangRadians)
+	overhangVerticalRadians = math.radians(evaluate.getEvaluatedFloat(0.0,  prefix + 'inclination', xmlElement))
+	if overhangVerticalRadians != 0.0:
+		overhangVerticalCosine = abs(math.cos(overhangVerticalRadians))
 		if overhangVerticalCosine == 0.0:
 			return [loop]
 		imaginaryTimesCosine = overhangPlaneAngle.imag * overhangVerticalCosine
-		overhangPlaneAngle = euclidean.getNormalized( complex( overhangPlaneAngle.real, imaginaryTimesCosine ) )
-	alongAway = AlongAway( loop, overhangPlaneAngle )
+		overhangPlaneAngle = euclidean.getNormalized(complex(overhangPlaneAngle.real, imaginaryTimesCosine))
+	alongAway = AlongAway(loop, overhangPlaneAngle)
 	if euclidean.getIsWiddershinsByVector3(loop):
-		alterWiddershinsSupportedPath( alongAway, close )
+		alterWiddershinsSupportedPath(alongAway, close)
 	else:
-		alterClockwiseSupportedPath( alongAway, xmlElement )
-	return [ euclidean.getLoopWithoutCloseSequentialPoints( close,  alongAway.loop ) ]
+		alterClockwiseSupportedPath(alongAway, xmlElement)
+	return [euclidean.getLoopWithoutCloseSequentialPoints(close,  alongAway.loop)]
 
 def getMinimumYByPath(path):
 	"Get path with overhangs removed or filled in."

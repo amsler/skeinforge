@@ -14,10 +14,8 @@ Defines the minimum distance between the wire dispenser and the object.  The 'Mi
 ==Examples==
 The following examples coil the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and coil.py.
 
-
 > python coil.py
 This brings up the coil dialog.
-
 
 > python coil.py Screw Holder Bottom.stl
 The coil tool is parsing the file:
@@ -25,25 +23,6 @@ Screw Holder Bottom.stl
 ..
 The coil tool has created the file:
 Screw Holder Bottom_coil.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import coil
->>> coil.main()
-This brings up the coil dialog.
-
-
->>> coil.writeOutput('Screw Holder Bottom.stl')
-Screw Holder Bottom.stl
-The coil tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The coil tool has created the file:
-Screw Holder Bottom_coil.gcode
-
 
 """
 
@@ -68,7 +47,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, gcodeText = '', repository=None):
@@ -86,15 +65,12 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return CoilSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return CoilRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Coil a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName == '':
-		return
-	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'coil')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'coil', shouldAnalyze)
 
 
 class CoilRepository:
@@ -129,7 +105,7 @@ class CoilSkein:
 	def addCoilLayer( self, boundaryLayers, radius, z ):
 		"Add a coil layer."
 		self.distanceFeedRate.addLine('(<layer> %s )' % z ) # Indicate that a new layer is starting.
-		self.distanceFeedRate.addLine('(<surroundingLoop>)')
+		self.distanceFeedRate.addLine('(<nestedRing>)')
 		thread = []
 		for boundaryLayerIndex in xrange(1, len(boundaryLayers) - 1):
 			boundaryLayer = boundaryLayers[boundaryLayerIndex]
@@ -139,7 +115,7 @@ class CoilSkein:
 			outsetLoop = intercircle.getLargestInsetLoopFromLoop(boundaryLayer.loops[0], - radius)
 			self.addCoilToThread(beginLocation, 0.5 * (boundaryLayer.z + boundaryLayerEnd.z), outsetLoop, thread)
 		self.addGcodeFromThread(thread)
-		self.distanceFeedRate.addLine('(</surroundingLoop>)')
+		self.distanceFeedRate.addLine('(</nestedRing>)')
 		self.distanceFeedRate.addLine('(</layer>)')
 
 	def addCoilLayers(self):
@@ -162,22 +138,22 @@ class CoilSkein:
 			z = startZ + layerIndex * zIncrement
 			self.addCoilLayer( boundaryLayers, radius, z )
 
-	def addCoilToThread( self, beginLocation, endZ, loop, thread ):
+	def addCoilToThread(self, beginLocation, endZ, loop, thread):
 		"Add a coil to the thread."
 		if len(loop) < 1:
 			return
-		loop = euclidean.getLoopStartingNearest( self.halfPerimeterWidth, self.oldLocationComplex, loop )
+		loop = euclidean.getLoopStartingNearest(self.halfPerimeterWidth, self.oldLocationComplex, loop)
 		length = euclidean.getLoopLength(loop)
 		if length <= 0.0:
 			return
 		oldPoint = loop[0]
 		pathLength = 0.0
 		for point in loop[1 :]:
-			pathLength += abs( point - oldPoint )
+			pathLength += abs(point - oldPoint)
 			along = pathLength / length
-			z = ( 1.0 - along ) * beginLocation.z + along * endZ
+			z = (1.0 - along) * beginLocation.z + along * endZ
 			location = Vector3(point.real, point.imag, z)
-			thread.append( location )
+			thread.append(location)
 			oldPoint = point
 		self.oldLocationComplex = loop[-1]
 

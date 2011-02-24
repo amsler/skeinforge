@@ -12,23 +12,23 @@ from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	if xmlElement.object == None:
+	if xmlElement.xmlObject == None:
 		if 'condition' in xmlElement.attributeDictionary:
 			value = xmlElement.attributeDictionary['condition']
-			xmlElement.object = evaluate.getEvaluatorSplitWords(value)
+			xmlElement.xmlObject = evaluate.getEvaluatorSplitWords(value)
 		else:
-			xmlElement.object = []
-	if len( xmlElement.object ) < 1:
+			xmlElement.xmlObject = []
+	if len( xmlElement.xmlObject ) < 1:
 		return
 	xmlProcessor = xmlElement.getXMLProcessor()
 	if len( xmlProcessor.functions ) < 1:
 		return
 	function = xmlProcessor.functions[-1]
-	while evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.object, xmlElement ) > 0:
+	while evaluate.getEvaluatedExpressionValueBySplitLine( xmlElement.xmlObject, xmlElement ) > 0:
 		function.processChildren(xmlElement)

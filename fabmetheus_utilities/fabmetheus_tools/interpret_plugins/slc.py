@@ -6,21 +6,6 @@ An import plugin is a script in the interpret_plugins folder which has the funct
 
 The getCarving function takes the file name of an slc file and returns the carving.
 
-This example gets a triangle mesh for the slc file rotor.slc.  This example is run in a terminal in the folder which contains rotor.slc and slc.py.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import slc
->>> slc.getCarving()
-0.20000000298, 999999999.0, -999999999.0, [8.72782748851e-17, None
-..
-many more lines of the carving
-..
-
-
 An explanation of the SLC format can be found at:
 http://rapid.lpt.fi/archives/rp-ml-1999/0713.html
 
@@ -43,7 +28,7 @@ import sys
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCarving(fileName=''):
@@ -93,8 +78,8 @@ class SLCCarving:
 	"An slc carving."
 	def __init__(self):
 		"Add empty lists."
-		self.maximumZ = - 999999999.0
-		self.minimumZ = 999999999.0
+		self.maximumZ = - 987654321.0
+		self.minimumZ = 987654321.0
 		self.layerThickness = None
 		self.rotatedLoopLayers = []
 	
@@ -162,8 +147,8 @@ class SLCCarving:
 		self.readTableEntry( pslcfile )
 		self.processContourLayers( pslcfile )
 		pslcfile.close()
-		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, self.maximumZ)
-		self.cornerMinimum = Vector3(999999999.0, 999999999.0, self.minimumZ)
+		self.cornerMaximum = Vector3(-987654321.0, -987654321.0, self.maximumZ)
+		self.cornerMinimum = Vector3(987654321.0, 987654321.0, self.minimumZ)
 		for rotatedLoopLayer in self.rotatedLoopLayers:
 			for loop in rotatedLoopLayer.loops:
 				for point in loop:

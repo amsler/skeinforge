@@ -16,8 +16,8 @@ from fabmetheus_utilities import svg_reader
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -42,21 +42,25 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	evaluate.setAttributeDictionaryByArguments(['text', 'fontSize', 'fontFamily'], arguments, xmlElement)
 	return getGeometryOutput(None, xmlElement)
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return TextDerivation(xmlElement)
+
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	path.convertProcessXMLElementRenameByPaths(getGeometryOutput(None, xmlElement), xmlElement)
+	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
 
 
 class TextDerivation:
 	"Class to hold text variables."
 	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.fontFamily = evaluate.getEvaluatedStringDefault('Gentium Basic Regular', 'font-family', xmlElement)
-		self.fontFamily = evaluate.getEvaluatedStringDefault(self.fontFamily, 'fontFamily', xmlElement)
-		self.fontSize = evaluate.getEvaluatedFloatDefault(12.0, 'font-size', xmlElement)
-		self.fontSize = evaluate.getEvaluatedFloatDefault(self.fontSize, 'fontSize', xmlElement)
+		self.fontFamily = evaluate.getEvaluatedString('Gentium Basic Regular', 'font-family', xmlElement)
+		self.fontFamily = evaluate.getEvaluatedString(self.fontFamily, 'fontFamily', xmlElement)
+		self.fontSize = evaluate.getEvaluatedFloat(12.0, 'font-size', xmlElement)
+		self.fontSize = evaluate.getEvaluatedFloat(self.fontSize, 'fontSize', xmlElement)
 		self.textString = xmlElement.text
-		self.textString = evaluate.getEvaluatedStringDefault(self.textString, 'text', xmlElement)
+		self.textString = evaluate.getEvaluatedString(self.textString, 'text', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this TextDerivation."

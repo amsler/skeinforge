@@ -41,32 +41,12 @@ Placeholder.<br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
- <br>
 The following examples comb the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and comb.py.<br>
- <br>
  <br>
 &gt; python comb.py<br>
 This brings up the comb dialog.<br>
  <br>
- <br>
 &gt; python comb.py Screw Holder Bottom.stl<br>
-The comb tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The comb tool has created the file:<br>
-.. Screw Holder Bottom_comb.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import comb<br>
-&gt;&gt;&gt; comb.<a href="#-main">main</a>()<br>
-This brings up the comb dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; comb.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The comb tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -177,10 +157,10 @@ The comb tool has created the file:<br>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text, combRepository<font color="#909090">=None</font>)</dt><dd><tt>Comb&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, combRepository<font color="#909090">=None</font>)</dt><dd><tt>Comb&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getInsideness"><strong>getInsideness</strong></a>(path, loop)</dt><dd><tt>Get&nbsp;portion&nbsp;of&nbsp;the&nbsp;path&nbsp;which&nbsp;is&nbsp;inside&nbsp;the&nbsp;loop.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getPathsByIntersectedLoop"><strong>getPathsByIntersectedLoop</strong></a>(begin, end, loop)</dt><dd><tt>Get&nbsp;both&nbsp;paths&nbsp;along&nbsp;the&nbsp;loop&nbsp;from&nbsp;the&nbsp;point&nbsp;nearest&nbsp;to&nbsp;the&nbsp;begin&nbsp;to&nbsp;the&nbsp;point&nbsp;nearest&nbsp;to&nbsp;the&nbsp;end.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;comb&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Comb&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Comb&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -190,7 +170,7 @@ The comb tool has created the file:<br>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

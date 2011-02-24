@@ -103,30 +103,10 @@ http://pleasantsoftware.com/developer/3d/2009/11/12/canned-heat/
 ==Examples==
 The following examples chamber the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and chamber.py.
 
-
 > python chamber.py
 This brings up the chamber dialog.
 
-
 > python chamber.py Screw Holder Bottom.stl
-The chamber tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The chamber tool has created the file:
-Screw Holder Bottom_chamber.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import chamber
->>> chamber.main()
-This brings up the chamber dialog.
-
-
->>> chamber.writeOutput('Screw Holder Bottom.stl')
-Screw Holder Bottom.stl
 The chamber tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -153,7 +133,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText(fileName, text='', repository=None):
@@ -171,15 +151,12 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return ChamberSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return ChamberRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Chamber a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName == '':
-		return
-	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'chamber')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'chamber', shouldAnalyze)
 
 
 class ChamberRepository:

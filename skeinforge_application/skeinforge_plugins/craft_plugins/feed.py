@@ -26,29 +26,10 @@ Defines the feed rate when the cutter is off.  The travel feed rate could be set
 ==Examples==
 The following examples feed the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and feed.py.
 
-
 > python feed.py
 This brings up the feed dialog.
 
-
 > python feed.py Screw Holder Bottom.stl
-The feed tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The feed tool has created the file:
-.. Screw Holder Bottom_feed.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import feed
->>> feed.main()
-This brings up the feed dialog.
-
-
->>> feed.writeOutput('Screw Holder Bottom.stl')
 The feed tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -76,7 +57,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText(fileName, gcodeText='', repository=None):
@@ -94,14 +75,12 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return FeedSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return FeedRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Feed a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage(fileName, 'feed')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'feed', shouldAnalyze)
 
 
 class FeedRepository:
@@ -138,7 +117,7 @@ class FeedSkein:
 		"Parse gcode text and store the feed gcode."
 		self.repository = repository
 		self.feedRatePerSecond = repository.feedRatePerSecond.value
-		self.travelFeedRatePerMinute = 60.0 * self.repository.travelFeedRatePerSecond.value
+		self.travelFeedRateMinute = 60.0 * self.repository.travelFeedRatePerSecond.value
 		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:
@@ -151,7 +130,7 @@ class FeedSkein:
 		self.oldLocation = location
 		feedRateMinute = 60.0 * self.feedRatePerSecond
 		if not self.isExtruderActive:
-			feedRateMinute = self.travelFeedRatePerMinute
+			feedRateMinute = self.travelFeedRateMinute
 		return self.distanceFeedRate.getLineWithFeedRate(feedRateMinute, line, splitLine)
 
 	def parseInitialization(self):

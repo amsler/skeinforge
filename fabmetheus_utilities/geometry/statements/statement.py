@@ -12,8 +12,8 @@ from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def processXMLElement(xmlElement):
@@ -25,12 +25,12 @@ def processXMLElement(xmlElement):
 		return
 	function = functions[-1]
 	evaluate.setLocalAttribute(xmlElement)
-	if xmlElement.object.value == None:
-		print('Warning, xmlElement.object.value is None in processXMLElement in statement for:')
+	if xmlElement.xmlObject.value == None:
+		print('Warning, xmlElement.xmlObject.value is None in processXMLElement in statement for:')
 		print(xmlElement)
 		return
-	localValue = evaluate.getEvaluatedExpressionValueBySplitLine(xmlElement.object.value, xmlElement)
-	keywords = xmlElement.object.key.split('.')
+	localValue = evaluate.getEvaluatedExpressionValueBySplitLine(xmlElement.xmlObject.value, xmlElement)
+	keywords = xmlElement.xmlObject.key.split('.')
 	if len(keywords) == 0:
 		print('Warning, there are no keywords in processXMLElement in statement for:')
 		print(xmlElement)

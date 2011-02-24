@@ -17,8 +17,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -82,6 +82,10 @@ def getGeometryOutputByStep(end, loop, steps, stepVector, xmlElement):
 	loop.append(end)
 	return lineation.getGeometryOutputByLoop(lineation.SideLoop(loop), xmlElement)
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return LineDerivation(xmlElement)
+
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
@@ -91,13 +95,13 @@ class LineDerivation:
 	"Class to hold line variables."
 	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.closed = evaluate.getEvaluatedBooleanDefault(False, 'closed', xmlElement)
+		self.closed = evaluate.getEvaluatedBoolean(False, 'closed', xmlElement)
 		self.end = evaluate.getVector3ByPrefix(Vector3(), 'end', xmlElement)
 		self.start = evaluate.getVector3ByPrefix(Vector3(), 'start', xmlElement)
-		self.step = evaluate.getEvaluatedFloatDefault(None, 'step', xmlElement)
-		self.steps = evaluate.getEvaluatedFloatDefault(None, 'steps', xmlElement)
+		self.step = evaluate.getEvaluatedFloat(None, 'step', xmlElement)
+		self.steps = evaluate.getEvaluatedFloat(None, 'steps', xmlElement)
 		self.typeMenuRadioStrings = 'average maximum minimum'.split()
-		self.typeString = evaluate.getEvaluatedStringDefault('minimum', 'type', xmlElement)
+		self.typeString = evaluate.getEvaluatedString('minimum', 'type', xmlElement)
 
 	def __repr__(self):
 		"Get the string representation of this LineDerivation."

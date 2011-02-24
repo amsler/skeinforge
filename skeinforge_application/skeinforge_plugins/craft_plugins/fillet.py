@@ -47,29 +47,10 @@ When selected, the feed rate entering the corner will be the average of the old 
 ==Examples==
 The following examples fillet the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and fillet.py.
 
-
 > python fillet.py
 This brings up the fillet dialog.
 
-
 > python fillet.py Screw Holder Bottom.stl
-The fillet tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The fillet tool has created the file:
-.. Screw Holder Bottom_fillet.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import fillet
->>> fillet.main()
-This brings up the fillet dialog.
-
-
->>> fillet.writeOutput('Screw Holder Bottom.stl')
 The fillet tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -97,7 +78,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, gcodeText, repository = None ):
@@ -123,14 +104,12 @@ def getCraftedTextFromText( gcodeText, repository = None ):
 	return gcodeText
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return FilletRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Fillet a gcode linear move file. Depending on the settings, either arcPoint, arcRadius, arcSegment, bevel or do nothing."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'fillet')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'fillet', shouldAnalyze)
 
 
 class BevelSkein:

@@ -85,7 +85,7 @@ The plugin buttons which are commonly used are bolded and the ones which are rar
  <dl><dt><a name="-getChainTextFromProcedures"><strong>getChainTextFromProcedures</strong></a>(fileName, procedures, text)</dt><dd><tt>Get&nbsp;a&nbsp;crafted&nbsp;shape&nbsp;file&nbsp;from&nbsp;a&nbsp;list&nbsp;of&nbsp;procedures.</tt></dd></dl>
  <dl><dt><a name="-getCraftModule"><strong>getCraftModule</strong></a>(fileName)</dt><dd><tt>Get&nbsp;craft&nbsp;module.</tt></dd></dl>
  <dl><dt><a name="-getLastModule"><strong>getLastModule</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;last&nbsp;tool.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getPluginFileNames"><strong>getPluginFileNames</strong></a>()</dt><dd><tt>Get&nbsp;craft&nbsp;plugin&nbsp;fileNames.</tt></dd></dl>
  <dl><dt><a name="-getPluginsDirectoryPath"><strong>getPluginsDirectoryPath</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;plugins&nbsp;directory&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getProcedures"><strong>getProcedures</strong></a>(procedure, text)</dt><dd><tt>Get&nbsp;the&nbsp;procedures&nbsp;up&nbsp;to&nbsp;and&nbsp;including&nbsp;the&nbsp;given&nbsp;procedure.</tt></dd></dl>
@@ -93,9 +93,9 @@ The plugin buttons which are commonly used are bolded and the ones which are rar
  <dl><dt><a name="-getSequenceIndexFromProcedure"><strong>getSequenceIndexFromProcedure</strong></a>(procedure)</dt><dd><tt>Get&nbsp;the&nbsp;profile&nbsp;sequence&nbsp;index&nbsp;of&nbsp;the&nbsp;procedure.&nbsp;&nbsp;Return&nbsp;None&nbsp;if&nbsp;the&nbsp;procedure&nbsp;is&nbsp;not&nbsp;in&nbsp;the&nbsp;sequence</tt></dd></dl>
  <dl><dt><a name="-getSequenceIndexPlusOneFromText"><strong>getSequenceIndexPlusOneFromText</strong></a>(fileText)</dt><dd><tt>Get&nbsp;the&nbsp;profile&nbsp;sequence&nbsp;index&nbsp;of&nbsp;the&nbsp;file&nbsp;plus&nbsp;one.&nbsp;&nbsp;Return&nbsp;zero&nbsp;if&nbsp;the&nbsp;procedure&nbsp;is&nbsp;not&nbsp;in&nbsp;the&nbsp;file</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Write&nbsp;craft&nbsp;output.</tt></dd></dl>
- <dl><dt><a name="-writeChainTextWithNounMessage"><strong>writeChainTextWithNounMessage</strong></a>(fileName, procedure)</dt><dd><tt>Get&nbsp;and&nbsp;write&nbsp;a&nbsp;crafted&nbsp;shape&nbsp;file.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName)</dt><dd><tt>Craft&nbsp;a&nbsp;gcode&nbsp;file&nbsp;with&nbsp;the&nbsp;last&nbsp;module.</tt></dd></dl>
- <dl><dt><a name="-writeSVGTextWithNounMessage"><strong>writeSVGTextWithNounMessage</strong></a>(fileName, repository)</dt><dd><tt>Get&nbsp;and&nbsp;write&nbsp;an&nbsp;svg&nbsp;text&nbsp;and&nbsp;print&nbsp;messages.</tt></dd></dl>
+ <dl><dt><a name="-writeChainTextWithNounMessage"><strong>writeChainTextWithNounMessage</strong></a>(fileName, procedure, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Get&nbsp;and&nbsp;write&nbsp;a&nbsp;crafted&nbsp;shape&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Craft&nbsp;a&nbsp;gcode&nbsp;file&nbsp;with&nbsp;the&nbsp;last&nbsp;module.</tt></dd></dl>
+ <dl><dt><a name="-writeSVGTextWithNounMessage"><strong>writeSVGTextWithNounMessage</strong></a>(fileName, repository, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Get&nbsp;and&nbsp;write&nbsp;an&nbsp;svg&nbsp;text&nbsp;and&nbsp;print&nbsp;messages.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -105,7 +105,7 @@ The plugin buttons which are commonly used are bolded and the ones which are rar
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

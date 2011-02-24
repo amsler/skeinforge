@@ -20,18 +20,18 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getArcPath(xmlElement):
 	"Get the arc path.rx ry x-axis-rotation large-arc-flag sweep-flag"
 	begin = xmlElement.getPreviousVertex(Vector3())
 	end = evaluate.getVector3FromXMLElement(xmlElement)
-	largeArcFlag = evaluate.getEvaluatedBooleanDefault(True, 'largeArcFlag', xmlElement)
+	largeArcFlag = evaluate.getEvaluatedBoolean(True, 'largeArcFlag', xmlElement)
 	radius = lineation.getComplexByPrefix('radius', complex(1.0, 1.0), xmlElement )
-	sweepFlag = evaluate.getEvaluatedBooleanDefault(True, 'sweepFlag', xmlElement)
-	xAxisRotation = math.radians(evaluate.getEvaluatedFloatDefault(0.0, 'xAxisRotation', xmlElement ))
+	sweepFlag = evaluate.getEvaluatedBoolean(True, 'sweepFlag', xmlElement)
+	xAxisRotation = math.radians(evaluate.getEvaluatedFloat(0.0, 'xAxisRotation', xmlElement ))
 	arcComplexes = svg_reader.getArcComplexes(begin.dropAxis(), end.dropAxis(), largeArcFlag, radius, sweepFlag, xAxisRotation)
 	path = []
 	if len(arcComplexes) < 1:
@@ -48,4 +48,4 @@ def getArcPath(xmlElement):
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	xmlElement.parent.object.vertexes += getArcPath(xmlElement)
+	xmlElement.parent.xmlObject.vertexes += getArcPath(xmlElement)

@@ -7,130 +7,43 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_matrix import matrix
-from fabmetheus_utilities.vector3 import Vector3
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities import euclidean
 import math
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-globalExecutionOrder = - 100
+globalExecutionOrder = -100
 
 
-def equateCylindrical( point, returnValue ):
-	"Get equation for cylindrical."
-	point = evaluate.getVector3ByFloatList( returnValue, point )
-	azimuthComplex = euclidean.getWiddershinsUnitPolar( math.radians( point.y ) ) * point.x
-	point.x = azimuthComplex.real
-	point.y = azimuthComplex.imag
-
-def equateCylindricalDotAzimuth( point, returnValue ):
-	"Get equation for cylindrical azimuth."
-	azimuthComplex = euclidean.getWiddershinsUnitPolar( math.radians( returnValue ) ) * abs( point.dropAxis() )
-	point.x = azimuthComplex.real
-	point.y = azimuthComplex.imag
-
-def equateCylindricalDotRadius( point, returnValue ):
-	"Get equation for cylindrical radius."
-	originalRadius = abs( point.dropAxis() )
-	if originalRadius > 0.0:
-		radiusMultipler = returnValue / originalRadius
-		point.x *= radiusMultipler
-		point.y *= radiusMultipler
-
-def equateCylindricalDotZ( point, returnValue ):
-	"Get equation for cylindrical z."
-	point.z = returnValue
-
-def equatePoints( points, prefix, revolutions, xmlElement ):
-	"Equate the points."
-	equateVertexesByFunction( equateCylindrical, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateCylindricalDotAzimuth, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateCylindricalDotRadius, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateCylindricalDotZ, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equatePolar, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equatePolarDotAzimuth, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equatePolarDotRadius, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateRectangular, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateRectangularDotX, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateRectangularDotY, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateRectangularDotZ, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateSpherical, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateSphericalDotAzimuth, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateSphericalDotElevation, points, prefix, revolutions, xmlElement )
-	equateVertexesByFunction( equateSphericalDotRadius, points, prefix, revolutions, xmlElement )
-
-def equatePolar( point, returnValue ):
-	"Get equation for polar."
-	equateCylindrical( point, returnValue )
-
-def equatePolarDotAzimuth( point, returnValue ):
-	"Get equation for polar azimuth."
-	equateCylindricalDotAzimuth( point, returnValue )
-
-def equatePolarDotRadius( point, returnValue ):
-	"Get equation for polar radius."
-	equateCylindricalDotRadius( point, returnValue )
-
-def equateRectangular( point, returnValue ):
+def equate(point, returnValue):
 	"Get equation for rectangular."
-	point.setToVector3( evaluate.getVector3ByDictionaryListValue( returnValue, point ) )
+	point.setToVector3(evaluate.getVector3ByDictionaryListValue(returnValue, point))
 
-def equateRectangularDotX( point, returnValue ):
+def equatePoints(points, prefix, revolutions, xmlElement):
+	"Equate the points."
+	equateVertexesByFunction(equate, points, prefix, revolutions, xmlElement)
+	equateVertexesByFunction(equateX, points, prefix, revolutions, xmlElement)
+	equateVertexesByFunction(equateY, points, prefix, revolutions, xmlElement)
+	equateVertexesByFunction(equateZ, points, prefix, revolutions, xmlElement)
+
+def equateX(point, returnValue):
 	"Get equation for rectangular x."
 	point.x = returnValue
 
-def equateRectangularDotY( point, returnValue ):
+def equateY(point, returnValue):
 	"Get equation for rectangular y."
 	point.y = returnValue
 
-def equateRectangularDotZ( point, returnValue ):
+def equateZ(point, returnValue):
 	"Get equation for rectangular z."
 	point.z = returnValue
-
-def equateSpherical( point, returnValue ):
-	"Get equation for spherical."
-	spherical = evaluate.getVector3ByFloatList( returnValue, point )
-	radius = spherical.x
-	elevationComplex = euclidean.getWiddershinsUnitPolar( math.radians( spherical.z ) ) * radius
-	azimuthComplex = euclidean.getWiddershinsUnitPolar( math.radians( spherical.y ) ) * elevationComplex.real
-	point.x = azimuthComplex.real
-	point.y = azimuthComplex.imag
-	point.z = elevationComplex.imag
-
-def equateSphericalDotAzimuth( point, returnValue ):
-	"Get equation for spherical azimuth."
-	azimuthComplex = euclidean.getWiddershinsUnitPolar( math.radians( returnValue ) ) * abs( point.dropAxis() )
-	point.x = azimuthComplex.real
-	point.y = azimuthComplex.imag
-
-def equateSphericalDotElevation( point, returnValue ):
-	"Get equation for spherical elevation."
-	radius = abs(point)
-	if radius <= 0.0:
-		return
-	azimuthComplex = point.dropAxis()
-	azimuthRadius = abs( azimuthComplex )
-	if azimuthRadius <= 0.0:
-		return
-	elevationComplex = euclidean.getWiddershinsUnitPolar( math.radians( returnValue ) )
-	azimuthComplex *= radius / azimuthRadius * elevationComplex.real
-	point.x = azimuthComplex.real
-	point.y = azimuthComplex.imag
-	point.z = elevationComplex.imag * radius
-
-def equateSphericalDotRadius( point, returnValue ):
-	"Get equation for spherical radius."
-	originalRadius = abs(point)
-	if originalRadius > 0.0:
-		point *= returnValue / originalRadius
 
 def equateVertexesByFunction( equationFunction, points, prefix, revolutions, xmlElement ):
 	"Get equated points by equation function."
@@ -145,7 +58,7 @@ def equateVertexesByFunction( equationFunction, points, prefix, revolutions, xml
 			print(point)
 			print(xmlElement)
 		else:
-			equationFunction( point, returnValue )
+			equationFunction(point, returnValue)
 #	equationResult.function.reset() #removeLater
 
 def getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement):
@@ -164,7 +77,7 @@ class EquationResult:
 	def __init__(self, key, revolutions, xmlElement):
 		"Initialize."
 		self.distance = 0.0
-		xmlElement.object = evaluate.getEvaluatorSplitWords(xmlElement.attributeDictionary[key])
+		xmlElement.xmlObject = evaluate.getEvaluatorSplitWords(xmlElement.attributeDictionary[key])
 		self.function = evaluate.Function(xmlElement)
 		self.points = []
 		self.revolutions = revolutions

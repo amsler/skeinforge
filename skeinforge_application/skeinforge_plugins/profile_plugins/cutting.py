@@ -11,17 +11,6 @@ The profile selection is the setting.  If you hit 'Save and Close' the selection
 To change the cutting profile, in a shell in the profile_plugins folder type:
 > python cutting.py
 
-An example of using cutting from the python interpreter follows below.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import cutting
->>> cutting.main()
-This brings up the cutting setting dialog.
-
 """
 
 
@@ -34,15 +23,15 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftSequence():
 	"Get the cutting craft sequence."
-	return 'chop,preface,outset,multiply,whittle,drill,lift,flow,feed,home,lash,fillet,limit,dimension,unpause,export'.split(',')
+	return 'chop preface outset multiply whittle drill lift flow feed home lash fillet limit dimension unpause export'.split()
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return CuttingRepository()
 
 

@@ -18,8 +18,8 @@ from fabmetheus_utilities import svg_reader
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getQuadraticPath(xmlElement):
@@ -42,4 +42,4 @@ def getQuadraticPath(xmlElement):
 
 def processXMLElement(xmlElement):
 	"Process the xml element."
-	xmlElement.parent.object.vertexes += getQuadraticPath(xmlElement)
+	xmlElement.parent.xmlObject.vertexes += getQuadraticPath(xmlElement)

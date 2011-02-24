@@ -47,7 +47,8 @@ many more lines of the xml tree<br>
 <a href="fabmetheus_utilities.euclidean.html">fabmetheus_utilities.euclidean</a><br>
 </td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.geometry_utilities.evaluate.html">fabmetheus_utilities.geometry.geometry_utilities.evaluate</a><br>
 <a href="fabmetheus_utilities.gcodec.html">fabmetheus_utilities.gcodec</a><br>
-</td><td width="25%" valign=top><a href="fabmetheus_utilities.xml_simple_writer.html">fabmetheus_utilities.xml_simple_writer</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.geometry.geometry_utilities.matrix.html">fabmetheus_utilities.geometry.geometry_utilities.matrix</a><br>
+<a href="fabmetheus_utilities.xml_simple_writer.html">fabmetheus_utilities.xml_simple_writer</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -75,21 +76,15 @@ many more lines of the xml tree<br>
 
 <dl><dt><a name="XMLElement-addAttribute"><strong>addAttribute</strong></a>(self, beforeQuote, withinQuote)</dt><dd><tt>Add&nbsp;the&nbsp;attribute&nbsp;to&nbsp;the&nbsp;dictionary.</tt></dd></dl>
 
-<dl><dt><a name="XMLElement-addToIDDictionary"><strong>addToIDDictionary</strong></a>(self, idKey, xmlElement)</dt><dd><tt>Add&nbsp;to&nbsp;the&nbsp;id&nbsp;dictionary&nbsp;of&nbsp;all&nbsp;the&nbsp;XMLProcessor.</tt></dd></dl>
+<dl><dt><a name="XMLElement-addSuffixToID"><strong>addSuffixToID</strong></a>(self, idSuffix)</dt><dd><tt>Add&nbsp;the&nbsp;suffix&nbsp;to&nbsp;the&nbsp;id.</tt></dd></dl>
 
-<dl><dt><a name="XMLElement-addToIDDictionaryIFIDExists"><strong>addToIDDictionaryIFIDExists</strong></a>(self)</dt><dd><tt>Add&nbsp;to&nbsp;the&nbsp;id&nbsp;dictionary&nbsp;if&nbsp;the&nbsp;id&nbsp;key&nbsp;exists&nbsp;in&nbsp;the&nbsp;attribute&nbsp;dictionary.</tt></dd></dl>
+<dl><dt><a name="XMLElement-addToIdentifierDictionaryIFIdentifierExists"><strong>addToIdentifierDictionaryIFIdentifierExists</strong></a>(self)</dt><dd><tt>Add&nbsp;to&nbsp;the&nbsp;id&nbsp;dictionary&nbsp;if&nbsp;the&nbsp;id&nbsp;key&nbsp;exists&nbsp;in&nbsp;the&nbsp;attribute&nbsp;dictionary.</tt></dd></dl>
 
-<dl><dt><a name="XMLElement-addToNameDictionary"><strong>addToNameDictionary</strong></a>(self, name, xmlElement)</dt><dd><tt>Add&nbsp;to&nbsp;the&nbsp;name&nbsp;dictionary&nbsp;of&nbsp;all&nbsp;the&nbsp;XMLProcessor.</tt></dd></dl>
-
-<dl><dt><a name="XMLElement-addXML"><strong>addXML</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;xml&nbsp;for&nbsp;this&nbsp;object.</tt></dd></dl>
+<dl><dt><a name="XMLElement-addXML"><strong>addXML</strong></a>(self, depth, output)</dt><dd><tt>Add&nbsp;xml&nbsp;for&nbsp;this&nbsp;xmlElement.</tt></dd></dl>
 
 <dl><dt><a name="XMLElement-copyXMLChildren"><strong>copyXMLChildren</strong></a>(self, idSuffix, parent)</dt><dd><tt>Copy&nbsp;the&nbsp;xml&nbsp;children.</tt></dd></dl>
 
 <dl><dt><a name="XMLElement-getCascadeFloat"><strong>getCascadeFloat</strong></a>(self, defaultFloat, key)</dt><dd><tt>Get&nbsp;the&nbsp;cascade&nbsp;float.</tt></dd></dl>
-
-<dl><dt><a name="XMLElement-getCascadeImportName"><strong>getCascadeImportName</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;cascade&nbsp;import&nbsp;file&nbsp;name.</tt></dd></dl>
-
-<dl><dt><a name="XMLElement-getCascadeValue"><strong>getCascadeValue</strong></a>(self, defaultValue, key)</dt><dd><tt>Get&nbsp;the&nbsp;cascade&nbsp;value.</tt></dd></dl>
 
 <dl><dt><a name="XMLElement-getChildrenWithClassName"><strong>getChildrenWithClassName</strong></a>(self, className)</dt><dd><tt>Get&nbsp;the&nbsp;children&nbsp;which&nbsp;have&nbsp;the&nbsp;given&nbsp;class&nbsp;name.</tt></dd></dl>
 
@@ -119,6 +114,8 @@ many more lines of the xml tree<br>
 
 <dl><dt><a name="XMLElement-getSubChildWithID"><strong>getSubChildWithID</strong></a>(self, idReference)</dt><dd><tt>Get&nbsp;the&nbsp;child&nbsp;which&nbsp;has&nbsp;the&nbsp;idReference.</tt></dd></dl>
 
+<dl><dt><a name="XMLElement-getTagKeys"><strong>getTagKeys</strong></a>(self)</dt><dd><tt>Get&nbsp;stripped&nbsp;tag&nbsp;keys.</tt></dd></dl>
+
 <dl><dt><a name="XMLElement-getValueByKey"><strong>getValueByKey</strong></a>(self, key)</dt><dd><tt>Get&nbsp;value&nbsp;by&nbsp;the&nbsp;key.</tt></dd></dl>
 
 <dl><dt><a name="XMLElement-getVertexes"><strong>getVertexes</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;vertexes.</tt></dd></dl>
@@ -131,9 +128,11 @@ many more lines of the xml tree<br>
 
 <dl><dt><a name="XMLElement-getXMLElementsByName"><strong>getXMLElementsByName</strong></a>(self, name)</dt><dd><tt>Get&nbsp;the&nbsp;xml&nbsp;elements&nbsp;by&nbsp;name.</tt></dd></dl>
 
+<dl><dt><a name="XMLElement-getXMLElementsByTag"><strong>getXMLElementsByTag</strong></a>(self, tag)</dt><dd><tt>Get&nbsp;the&nbsp;xml&nbsp;elements&nbsp;by&nbsp;tag.</tt></dd></dl>
+
 <dl><dt><a name="XMLElement-getXMLProcessor"><strong>getXMLProcessor</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;xmlProcessor.</tt></dd></dl>
 
-<dl><dt><a name="XMLElement-linkObject"><strong>linkObject</strong></a>(self, object)</dt><dd><tt>Link&nbsp;self&nbsp;to&nbsp;object&nbsp;and&nbsp;add&nbsp;object&nbsp;to&nbsp;archivableObjects.</tt></dd></dl>
+<dl><dt><a name="XMLElement-linkObject"><strong>linkObject</strong></a>(self, xmlObject)</dt><dd><tt>Link&nbsp;self&nbsp;to&nbsp;xmlObject&nbsp;and&nbsp;add&nbsp;xmlObject&nbsp;to&nbsp;archivableObjects.</tt></dd></dl>
 
 <dl><dt><a name="XMLElement-printAllVariables"><strong>printAllVariables</strong></a>(self)</dt><dd><tt>Print&nbsp;all&nbsp;variables.</tt></dd></dl>
 
@@ -185,7 +184,7 @@ many more lines of the xml tree<br>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__credits__</strong> = 'Nophead &lt;http://hydraraptor.blogspot.com/&gt;<font color="#c040c0">\n</font>Art of Illusion &lt;http://www.artofillusion.org/&gt;'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
 <strong>globalGetAccessibleAttributeSet</strong> = set(['getPaths', 'getPreviousVertex', 'getPreviousXMLElement', 'getVertexes', 'parent'])</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

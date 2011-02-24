@@ -27,8 +27,9 @@ Svg_writer uses the layer_template.svg file in the templates folder in the same 
 <a href="fabmetheus_utilities.gcodec.html">fabmetheus_utilities.gcodec</a><br>
 </td><td width="25%" valign=top><a href="math.html">math</a><br>
 <a href="os.html">os</a><br>
-<a href="fabmetheus_utilities.xml_simple_writer.html">fabmetheus_utilities.xml_simple_writer</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<a href="fabmetheus_utilities.xml_simple_reader.html">fabmetheus_utilities.xml_simple_reader</a><br>
+</td><td width="25%" valign=top><a href="fabmetheus_utilities.xml_simple_writer.html">fabmetheus_utilities.xml_simple_writer</a><br>
+</td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -87,7 +88,7 @@ Svg_writer uses the layer_template.svg file in the templates folder in the same 
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCarving"><strong>getCarving</strong></a>(fileName)</dt><dd><tt>Get&nbsp;a&nbsp;carving&nbsp;for&nbsp;the&nbsp;file&nbsp;using&nbsp;an&nbsp;import&nbsp;plugin.</tt></dd></dl>
  <dl><dt><a name="-getCommentElement"><strong>getCommentElement</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;a&nbsp;carving&nbsp;for&nbsp;the&nbsp;file&nbsp;using&nbsp;an&nbsp;import&nbsp;plugin.</tt></dd></dl>
- <dl><dt><a name="-getSVGByLoopLayers"><strong>getSVGByLoopLayers</strong></a>(addLayerTemplateToSVG, rotatedLoopLayers, svgCarving)</dt><dd><tt>Get&nbsp;the&nbsp;svg&nbsp;text.</tt></dd></dl>
+ <dl><dt><a name="-getSVGByLoopLayers"><strong>getSVGByLoopLayers</strong></a>(addLayerTemplateToSVG, carving, rotatedLoopLayers)</dt><dd><tt>Get&nbsp;the&nbsp;svg&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getSliceDictionary"><strong>getSliceDictionary</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;metadata&nbsp;slice&nbsp;attribute&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-getSliceXMLElements"><strong>getSliceXMLElements</strong></a>(xmlElement)</dt><dd><tt>Get&nbsp;the&nbsp;slice&nbsp;elements.</tt></dd></dl>
  <dl><dt><a name="-getTruncatedRotatedBoundaryLayers"><strong>getTruncatedRotatedBoundaryLayers</strong></a>(repository, rotatedLoopLayers)</dt><dd><tt>Get&nbsp;the&nbsp;truncated&nbsp;rotated&nbsp;boundary&nbsp;layers.</tt></dd></dl>
@@ -101,7 +102,7 @@ Svg_writer uses the layer_template.svg file in the templates folder in the same 
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/02/05 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)<br>
 <strong>globalOriginalTextString</strong> = '&lt;!-- Original XML Text:<font color="#c040c0">\n</font>'</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

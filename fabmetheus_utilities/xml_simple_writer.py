@@ -14,10 +14,10 @@ import cStringIO
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def addBeginEndInnerXMLTag( attributeDictionary, className, depth, innerText, output, text = ''):
+def addBeginEndInnerXMLTag( attributeDictionary, className, depth, innerText, output, text=''):
 	'Add the begin and end xml tag and the inner text if any.'
 	if len( innerText ) > 0:
 		addBeginXMLTag( attributeDictionary, className, depth, output, text )
@@ -26,12 +26,12 @@ def addBeginEndInnerXMLTag( attributeDictionary, className, depth, innerText, ou
 	else:
 		addClosedXMLTag( attributeDictionary, className, depth, output, text )
 
-def addBeginXMLTag( attributeDictionary, className, depth, output, text = ''):
+def addBeginXMLTag( attributeDictionary, className, depth, output, text=''):
 	'Add the begin xml tag.'
 	depthStart = '\t' * depth
 	output.write('%s<%s%s>%s\n' % ( depthStart, className, getAttributeDictionaryString(attributeDictionary), text ) )
 
-def addClosedXMLTag( attributeDictionary, className, depth, output, text = ''):
+def addClosedXMLTag( attributeDictionary, className, depth, output, text=''):
 	'Add the closed xml tag.'
 	depthStart = '\t' * depth
 	attributeDictionaryString = getAttributeDictionaryString(attributeDictionary)

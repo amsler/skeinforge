@@ -23,29 +23,10 @@ Defines the maximum amount that the feed rate will be sped up to, compared to th
 ==Examples==
 The following examples unpause the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and unpause.py.
 
-
 > python unpause.py
 This brings up the unpause dialog.
 
-
 > python unpause.py Screw Holder Bottom.stl
-The unpause tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The unpause tool has created the file:
-.. Screw Holder Bottom_unpause.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import unpause
->>> unpause.main()
-This brings up the unpause dialog.
-
-
->>> unpause.writeOutput('Screw Holder Bottom.stl')
 The unpause tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -73,7 +54,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, gcodeText, repository=None):
@@ -91,7 +72,7 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return UnpauseSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return UnpauseRepository()
 
 def getSelectedPlugin(repository):
@@ -101,11 +82,9 @@ def getSelectedPlugin(repository):
 			return plugin
 	return None
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Unpause a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'unpause')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'unpause', shouldAnalyze)
 
 
 class UnpauseRepository:

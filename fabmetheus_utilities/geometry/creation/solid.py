@@ -10,6 +10,7 @@ import __init__
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -18,7 +19,7 @@ import math
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -46,11 +47,11 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 
 def getGeometryOutputByFunction(geometryFunction, xmlElement):
 	'Get geometry output by manipulationFunction.'
-	if xmlElement.object == None:
+	if xmlElement.xmlObject == None:
 		print('Warning, there is no object in getGeometryOutputByFunction in solid for:')
 		print(xmlElement)
 		return None
-	geometryOutput = xmlElement.object.getGeometryOutput()
+	geometryOutput = xmlElement.xmlObject.getGeometryOutput()
 	if geometryOutput == None:
 		print('Warning, there is no geometryOutput in getGeometryOutputByFunction in solid for:')
 		print(xmlElement)
@@ -60,20 +61,38 @@ def getGeometryOutputByFunction(geometryFunction, xmlElement):
 def getGeometryOutputByManipulation(geometryOutput, xmlElement):
 	'Get geometryOutput manipulated by the plugins in the manipulation shapes & solids folders.'
 	xmlProcessor = xmlElement.getXMLProcessor()
-#	matchingPlugins = evaluate.getFromCreationEvaluatorPlugins(xmlProcessor.manipulationMatrixDictionary, xmlElement)
-	matchingPlugins = evaluate.getMatchingPlugins(xmlProcessor.manipulationMatrixDictionary, xmlElement)
-	matchingPlugins += evaluate.getMatchingPlugins(xmlProcessor.manipulationShapeDictionary, xmlElement)
+	matchingPlugins = getSolidMatchingPlugins(xmlElement)
 	matchingPlugins.sort(evaluate.compareExecutionOrderAscending)
 	for matchingPlugin in matchingPlugins:
 		prefix = matchingPlugin.__name__.replace('_', '') + '.'
 		geometryOutput = matchingPlugin.getManipulatedGeometryOutput(geometryOutput, prefix, xmlElement)
 	return geometryOutput
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return SolidDerivation(xmlElement)
+
+def getSolidMatchingPlugins(xmlElement):
+	'Get solid plugins in the manipulation matrix, shapes & solids folders.'
+	xmlProcessor = xmlElement.getXMLProcessor()
+	matchingPlugins = evaluate.getMatchingPlugins(xmlProcessor.manipulationMatrixDictionary, xmlElement)
+	return matchingPlugins + evaluate.getMatchingPlugins(xmlProcessor.manipulationShapeDictionary, xmlElement)
+
+def processArchiveRemoveSolid(geometryOutput, xmlElement):
+	'Process the target by the manipulationFunction.'
+	solidMatchingPlugins = getSolidMatchingPlugins(xmlElement)
+	if len(solidMatchingPlugins) < 1:
+		xmlElement.parent.xmlObject.archivableObjects.append(xmlElement.xmlObject)
+		return
+	processXMLElementByGeometry(getGeometryOutputByManipulation(geometryOutput, xmlElement), xmlElement)
+	xmlElement.removeFromIDNameParent()
+	matrix.getBranchMatrixSetXMLElement(xmlElement)
+
 def processTargetByFunctions(geometryFunction, pathFunction, target):
 	'Process the target by the manipulationFunction.'
-	if target.object == None:
+	if target.xmlObject == None:
 		return
-	if len(target.object.getPaths()) > 0:
+	if len(target.xmlObject.getPaths()) > 0:
 		lineation.processTargetByFunction(pathFunction, target)
 		return
 	geometryOutput = getGeometryOutputByFunction(geometryFunction, target)

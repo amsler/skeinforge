@@ -40,10 +40,8 @@ In general, stretch will widen holes and push corners out.  The algorithm works 
 ==Examples==
 The following examples stretch the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and stretch.py.
 
-
 > python stretch.py
 This brings up the stretch dialog.
-
 
 > python stretch.py Screw Holder Bottom.stl
 The stretch tool is parsing the file:
@@ -51,24 +49,6 @@ Screw Holder Bottom.stl
 ..
 The stretch tool has created the file:
 .. Screw Holder Bottom_stretch.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import stretch
->>> stretch.main()
-This brings up the stretch dialog.
-
-
->>> stretch.writeOutput('Screw Holder Bottom.stl')
-The stretch tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The stretch tool has created the file:
-.. Screw Holder Bottom_stretch.gcode
-
 
 """
 
@@ -91,7 +71,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 #maybe speed up feedRate option
@@ -110,14 +90,12 @@ def getCraftedTextFromText( gcodeText, stretchRepository = None ):
 	return StretchSkein().getCraftedGcode( gcodeText, stretchRepository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return StretchRepository()
 
-def writeOutput(fileName=''):
-	"Stretch a gcode linear move file.  Chain stretch the gcode if it is not already stretched.  If no fileName is specified, stretch the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'stretch')
+def writeOutput(fileName, shouldAnalyze=True):
+	"Stretch a gcode linear move file.  Chain stretch the gcode if it is not already stretched."
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'stretch', shouldAnalyze)
 
 
 class LineIteratorBackward:

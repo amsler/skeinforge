@@ -223,7 +223,7 @@ When selected the layer will start from the nearest point to the end of the last
  <br>
 <a name="Thread Sequence Choice" id="Thread Sequence Choice"></a><h3>Thread Sequence Choice</h3>
 
-The 'Thread Sequence Choice' is the sequence in which the threads will be extruded.  There are three kinds of thread, the perimeter threads on the outside of the object, the loop threads aka inner shell threads, and the interior infill threads.<br>
+The 'Thread Sequence Choice' is the sequence in which the threads will be extruded on the second and higher layers.  There are three kinds of thread, the perimeter threads on the outside of the object, the loop threads aka inner shell threads, and the interior infill threads.  The first layer thread sequence is 'Perimeter &gt; Loops &gt; Infill'.<br>
  <br>
 The default choice is 'Perimeter &gt; Loops &gt; Infill', which the default stretch parameters are based on.  If you change from the default sequence choice setting of perimeter, then loops, then infill, the optimal stretch thread parameters would also be different.  In general, if the infill is extruded first, the infill would have to be stretched more so that even after the filament shrinkage, it would still be long enough to connect to the loop or perimeter.  The six sequence combinations follow below.<br>
  <br>
@@ -245,29 +245,10 @@ The default choice is 'Perimeter &gt; Loops &gt; Infill', which the default stre
 
 The following examples fill the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and fill.py.<br>
  <br>
- <br>
 &gt; python fill.py<br>
 This brings up the fill dialog.<br>
  <br>
- <br>
 &gt; python fill.py Screw Holder Bottom.stl<br>
-The fill tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The fill tool has created the file:<br>
-.. Screw Holder Bottom_fill.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import fill<br>
-&gt;&gt;&gt; fill.<a href="#-main">main</a>()<br>
-This brings up the fill dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; fill.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The fill tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -353,7 +334,7 @@ The fill tool has created the file:<br>
 
 <dl><dt><a name="FillSkein-addRotatedCarve"><strong>addRotatedCarve</strong></a>(self, currentLayer, layerDelta, reverseRotation, surroundingCarves)</dt><dd><tt>Add&nbsp;a&nbsp;rotated&nbsp;carve&nbsp;to&nbsp;the&nbsp;surrounding&nbsp;carves.</tt></dd></dl>
 
-<dl><dt><a name="FillSkein-addThreadsBridgeLayer"><strong>addThreadsBridgeLayer</strong></a>(self, rotatedLayer, surroundingLoops)</dt><dd><tt>Add&nbsp;the&nbsp;threads,&nbsp;add&nbsp;the&nbsp;bridge&nbsp;end&nbsp;&amp;&nbsp;the&nbsp;layer&nbsp;end&nbsp;tag.</tt></dd></dl>
+<dl><dt><a name="FillSkein-addThreadsBridgeLayer"><strong>addThreadsBridgeLayer</strong></a>(self, layerIndex, nestedRings, rotatedLayer)</dt><dd><tt>Add&nbsp;the&nbsp;threads,&nbsp;add&nbsp;the&nbsp;bridge&nbsp;end&nbsp;&amp;&nbsp;the&nbsp;layer&nbsp;end&nbsp;tag.</tt></dd></dl>
 
 <dl><dt><a name="FillSkein-addToThread"><strong>addToThread</strong></a>(self, location)</dt><dd><tt>Add&nbsp;a&nbsp;location&nbsp;to&nbsp;thread.</tt></dd></dl>
 
@@ -430,16 +411,16 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-addYIntersectionPathToList"><strong>addYIntersectionPathToList</strong></a>(pathIndex, pointIndex, y, yIntersection, yIntersectionPaths)</dt><dd><tt>Add&nbsp;the&nbsp;y&nbsp;intersection&nbsp;path&nbsp;to&nbsp;the&nbsp;y&nbsp;intersection&nbsp;paths.</tt></dd></dl>
  <dl><dt><a name="-compareDistanceFromCenter"><strong>compareDistanceFromCenter</strong></a>(self, other)</dt><dd><tt>Get&nbsp;comparison&nbsp;in&nbsp;order&nbsp;to&nbsp;sort&nbsp;y&nbsp;intersections&nbsp;in&nbsp;ascending&nbsp;order&nbsp;of&nbsp;distance&nbsp;from&nbsp;the&nbsp;center.</tt></dd></dl>
  <dl><dt><a name="-comparePointIndexDescending"><strong>comparePointIndexDescending</strong></a>(self, other)</dt><dd><tt>Get&nbsp;comparison&nbsp;in&nbsp;order&nbsp;to&nbsp;sort&nbsp;y&nbsp;intersections&nbsp;in&nbsp;descending&nbsp;order&nbsp;of&nbsp;point&nbsp;index.</tt></dd></dl>
- <dl><dt><a name="-createExtraFillLoops"><strong>createExtraFillLoops</strong></a>(radius, shouldExtraLoopsBeAdded, surroundingLoop)</dt><dd><tt>Create&nbsp;extra&nbsp;fill&nbsp;loops.</tt></dd></dl>
- <dl><dt><a name="-createFillForSurroundings"><strong>createFillForSurroundings</strong></a>(radius, shouldExtraLoopsBeAdded, surroundingLoops)</dt><dd><tt>Create&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;for&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-createExtraFillLoops"><strong>createExtraFillLoops</strong></a>(nestedRing, radius, shouldExtraLoopsBeAdded)</dt><dd><tt>Create&nbsp;extra&nbsp;fill&nbsp;loops.</tt></dd></dl>
+ <dl><dt><a name="-createFillForSurroundings"><strong>createFillForSurroundings</strong></a>(nestedRings, radius, shouldExtraLoopsBeAdded)</dt><dd><tt>Create&nbsp;extra&nbsp;fill&nbsp;loops&nbsp;for&nbsp;surrounding&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getAdditionalLength"><strong>getAdditionalLength</strong></a>(path, point, pointIndex)</dt><dd><tt>Get&nbsp;the&nbsp;additional&nbsp;length&nbsp;added&nbsp;by&nbsp;inserting&nbsp;a&nbsp;point&nbsp;into&nbsp;a&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getClosestOppositeIntersectionPaths"><strong>getClosestOppositeIntersectionPaths</strong></a>(yIntersectionPaths)</dt><dd><tt>Get&nbsp;the&nbsp;close&nbsp;to&nbsp;center&nbsp;paths,&nbsp;starting&nbsp;with&nbsp;the&nbsp;first&nbsp;and&nbsp;an&nbsp;additional&nbsp;opposite&nbsp;if&nbsp;it&nbsp;exists.</tt></dd></dl>
  <dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, gcodeText<font color="#909090">=''</font>, repository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;file&nbsp;or&nbsp;gcode&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Fill&nbsp;the&nbsp;inset&nbsp;gcode&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getExtraFillLoops"><strong>getExtraFillLoops</strong></a>(loops, radius)</dt><dd><tt>Get&nbsp;extra&nbsp;loops&nbsp;between&nbsp;inside&nbsp;and&nbsp;outside&nbsp;loops.</tt></dd></dl>
  <dl><dt><a name="-getKeyIsInPixelTableAddValue"><strong>getKeyIsInPixelTableAddValue</strong></a>(key, pathIndexTable, pixelTable)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;key&nbsp;is&nbsp;in&nbsp;the&nbsp;pixel&nbsp;table,&nbsp;and&nbsp;if&nbsp;it&nbsp;is&nbsp;and&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;None&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;path&nbsp;index&nbsp;table.</tt></dd></dl>
- <dl><dt><a name="-getLowerLeftCorner"><strong>getLowerLeftCorner</strong></a>(surroundingLoops)</dt><dd><tt>Get&nbsp;the&nbsp;lower&nbsp;left&nbsp;corner&nbsp;from&nbsp;the&nbsp;surroundingLoops.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getLowerLeftCorner"><strong>getLowerLeftCorner</strong></a>(nestedRings)</dt><dd><tt>Get&nbsp;the&nbsp;lower&nbsp;left&nbsp;corner&nbsp;from&nbsp;the&nbsp;nestedRings.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getNonIntersectingGridPointLine"><strong>getNonIntersectingGridPointLine</strong></a>(gridPointInsetX, isJunctionWide, paths, pixelTable, yIntersectionPath, width)</dt><dd><tt>Get&nbsp;the&nbsp;points&nbsp;around&nbsp;the&nbsp;grid&nbsp;point&nbsp;that&nbsp;is&nbsp;junction&nbsp;wide&nbsp;that&nbsp;do&nbsp;not&nbsp;intersect.</tt></dd></dl>
  <dl><dt><a name="-getPlusMinusSign"><strong>getPlusMinusSign</strong></a>(number)</dt><dd><tt>Get&nbsp;one&nbsp;if&nbsp;the&nbsp;number&nbsp;is&nbsp;zero&nbsp;or&nbsp;positive&nbsp;else&nbsp;negative&nbsp;one.</tt></dd></dl>
  <dl><dt><a name="-getWithLeastLength"><strong>getWithLeastLength</strong></a>(path, point)</dt><dd><tt>Insert&nbsp;a&nbsp;point&nbsp;into&nbsp;a&nbsp;path,&nbsp;at&nbsp;the&nbsp;index&nbsp;at&nbsp;which&nbsp;the&nbsp;path&nbsp;would&nbsp;be&nbsp;shortest.</tt></dd></dl>
@@ -459,7 +440,7 @@ The fill tool has created the file:<br>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;fill&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-removeEndpoints"><strong>removeEndpoints</strong></a>(pixelTable, layerExtrusionWidth, paths, removedEndpoints, aroundWidth)</dt><dd><tt>Remove&nbsp;endpoints&nbsp;which&nbsp;are&nbsp;added&nbsp;to&nbsp;the&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-setIsOutside"><strong>setIsOutside</strong></a>(yCloseToCenterPath, yIntersectionPaths)</dt><dd><tt>Determine&nbsp;if&nbsp;the&nbsp;yCloseToCenterPath&nbsp;is&nbsp;outside.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Fill&nbsp;an&nbsp;inset&nbsp;gcode&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Fill&nbsp;an&nbsp;inset&nbsp;gcode&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -469,7 +450,7 @@ The fill tool has created the file:<br>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/28/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

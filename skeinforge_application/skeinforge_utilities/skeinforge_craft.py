@@ -24,12 +24,12 @@ import time
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getChainText( fileName, procedure ):
 	"Get a crafted shape file."
-	text = ''
+	text=''
 	if fileName.endswith('.gcode') or fileName.endswith('.svg'):
 		text = archive.getFileText(fileName)
 	procedures = getProcedures( procedure, text )
@@ -41,7 +41,7 @@ def getChainTextFromProcedures(fileName, procedures, text):
 	for procedure in procedures:
 		craftModule = getCraftModule(procedure)
 		if craftModule != None:
-			text = craftModule.getCraftedText( fileName, text )
+			text = craftModule.getCraftedText(fileName, text)
 			if text == '':
 				print('Warning, the text was not recognized in getChainTextFromProcedures in skeinforge_craft for')
 				print(fileName)
@@ -63,7 +63,7 @@ def getLastModule():
 	return getCraftModule( craftSequence[-1] )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return CraftRepository()
 
 def getPluginsDirectoryPath():
@@ -103,7 +103,7 @@ def getSequenceIndexPlusOneFromText(fileText):
 			return craftSequenceIndex + 1
 	return 0
 
-def writeChainTextWithNounMessage(fileName, procedure):
+def writeChainTextWithNounMessage(fileName, procedure, shouldAnalyze=True):
 	'Get and write a crafted shape file.'
 	print('')
 	print('The %s tool is parsing the file:' % procedure)
@@ -117,20 +117,23 @@ def writeChainTextWithNounMessage(fileName, procedure):
 		print(fileName)
 		return
 	archive.writeFileText(fileNameSuffix, craftText)
+	window = None
+	if shouldAnalyze:
+		window = skeinforge_analyze.writeOutput(fileName, fileNameSuffix, craftText)
 	print('')
 	print('The %s tool has created the file:' % procedure)
 	print(fileNameSuffix)
 	print('')
 	print('It took %s to craft the file.' % euclidean.getDurationString(time.time() - startTime))
-	return skeinforge_analyze.writeOutput(fileName, fileNameSuffix, craftText)
+	return window
 
-def writeOutput(fileName):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Craft a gcode file with the last module."
 	pluginModule = getLastModule()
 	if pluginModule != None:
-		return pluginModule.writeOutput(fileName)
+		return pluginModule.writeOutput(fileName, shouldAnalyze)
 
-def writeSVGTextWithNounMessage(fileName, repository):
+def writeSVGTextWithNounMessage(fileName, repository, shouldAnalyze=True):
 	'Get and write an svg text and print messages.'
 	print('')
 	print('The %s tool is parsing the file:' % repository.lowerName)
@@ -147,15 +150,16 @@ def writeSVGTextWithNounMessage(fileName, repository):
 	print(fileNameSuffix)
 	print('')
 	print('It took %s to craft the file.' % euclidean.getDurationString(time.time() - startTime))
-	settings.getReadRepository(repository)
-	settings.openSVGPage(fileNameSuffix, repository.svgViewer.value)
+	if shouldAnalyze:
+		settings.getReadRepository(repository)
+		settings.openSVGPage(fileNameSuffix, repository.svgViewer.value)
 
 
 class CraftRadioButtonsSaveListener:
 	"A class to update the craft radio buttons."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		euclidean.addElementToListTableIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListDictionaryIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
 		self.gridPosition = gridPosition.getCopy()
 		self.gridPosition.row = gridPosition.rowStart
 		self.gridPosition.increment()
@@ -212,7 +216,7 @@ class CraftRepository:
 
 def main():
 	"Write craft output."
-	writeOutput(' '.join(sys.argv[1 :]))
+	writeOutput(' '.join(sys.argv[1 :]), False)
 
 if __name__ == "__main__":
 	main()

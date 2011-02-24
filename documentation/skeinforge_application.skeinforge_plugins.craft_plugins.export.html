@@ -28,9 +28,8 @@ The export manual page is at:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#Delete All Comments">Delete All Comments</a><br />
 &nbsp;&nbsp;<a href="#Export Operations">Export Operations</a><br />
 &nbsp;&nbsp;<a href="#File Extension">File Extension</a><br />
+&nbsp;&nbsp;<a href="#Name of Replace File">Name of Replace File</a><br />
 &nbsp;&nbsp;<a href="#Save Penultimate Gcode">Save Penultimate Gcode</a><br />
-<a href="#Alterations">Alterations</a><br />
-&nbsp;&nbsp;<a href="#replace.csv">replace.csv</a><br />
 <a href="#Examples">Examples</a><br />
 <br />
 <a name="Operation" id="Operation"></a><h2>Operation</h2>
@@ -45,7 +44,7 @@ The default 'Activate Export' checkbox is on.  When it is on, the functions desc
 
 Default is empty.<br>
  <br>
-Defines the output name for sending to a file or pipe.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  With the empty default, nothing will be done.<br>
+Defines the output name for sending to a file or pipe.  A common choice is sys.stdout to print the output in the shell screen.  Another common choice is sys.stderr.  With the empty default, nothing will be done.  If the value is anything else, the output will be written to that file name.<br>
  <br>
 <a name="Comment Choice" id="Comment Choice"></a><h3>Comment Choice</h3>
 
@@ -73,49 +72,29 @@ Default is gcode.<br>
  <br>
 Defines the file extension added to the name of the output file.<br>
  <br>
+<a name="Name of Replace File" id="Name of Replace File"></a><h3>Name of Replace File</h3>
+
+Default is replace.csv.<br>
+ <br>
+When export is exporting the code, if there is a tab separated file  with the name of the "Name of Replace File" setting, it will replace the string in the first column by its replacement in the second column.  If there is nothing in the second column, the first column string will be deleted, if this leads to an empty line, the line will be deleted.  If there are replacement columns after the second, they will be added as extra lines of text.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.<br>
+ <br>
+Export looks for the alteration file in the alterations folder in the .skeinforge folder in the home directory.  Export does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder.<br>
+ <br>
 <a name="Save Penultimate Gcode" id="Save Penultimate Gcode"></a><h3>Save Penultimate Gcode</h3>
 
 Default is off.<br>
  <br>
 When selected, export will save the gcode file with the suffix '_penultimate.gcode' just before it is exported.  This is useful because the code after it is exported could be in a form which the viewers can not display well.<br>
  <br>
-<a name="Alterations" id="Alterations"></a><h2>Alterations</h2>
-<hr>
-
-Export looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Export does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder. If it doesn't find anything there it looks in the skeinforge_plugins folder.<br>
- <br>
-<a name="replace.csv" id="replace.csv"></a><h3>replace.csv</h3>
-
-When export is exporting the code, if there is a tab separated file replace.csv, it will replace the string in the first column by its replacement in the second column.  If there is nothing in the second column, the first column string will be deleted, if this leads to an empty line, the line will be deleted.  If there are replacement columns after the second, they will be added as extra lines of text.  There is an example file replace_example.csv to demonstrate the tab separated format, which can be edited in a text editor or a spreadsheet.<br>
- <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>
 
 The following examples export the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and export.py.<br>
  <br>
- <br>
 &gt; python export.py<br>
 This brings up the export dialog.<br>
  <br>
- <br>
 &gt; python export.py Screw Holder Bottom.stl<br>
-The export tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The export tool has created the file:<br>
-.. Screw Holder Bottom_export.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import export<br>
-&gt;&gt;&gt; export.<a href="#-main">main</a>()<br>
-This brings up the export dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; export.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The export tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -204,11 +183,12 @@ The export tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getDistanceGcode"><strong>getDistanceGcode</strong></a>(exportText)</dt><dd><tt>Get&nbsp;gcode&nbsp;lines&nbsp;with&nbsp;distance&nbsp;variable&nbsp;added.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
- <dl><dt><a name="-getReplaced"><strong>getReplaced</strong></a>(exportText)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;strings&nbsp;replaced&nbsp;according&nbsp;to&nbsp;replace.csv&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
+ <dl><dt><a name="-getReplaceableExportGcode"><strong>getReplaceableExportGcode</strong></a>(nameOfReplaceFile, replaceableExportGcode)</dt><dd><tt>Get&nbsp;text&nbsp;with&nbsp;strings&nbsp;replaced&nbsp;according&nbsp;to&nbsp;replace.csv&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getSelectedPluginModule"><strong>getSelectedPluginModule</strong></a>(plugins)</dt><dd><tt>Get&nbsp;the&nbsp;selected&nbsp;plugin&nbsp;module.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;export&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-sendOutputTo"><strong>sendOutputTo</strong></a>(text, toValue)</dt><dd><tt>Send&nbsp;output&nbsp;to&nbsp;a&nbsp;file&nbsp;or&nbsp;a&nbsp;standard&nbsp;output.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Export&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -218,7 +198,7 @@ The export tool has created the file:<br>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

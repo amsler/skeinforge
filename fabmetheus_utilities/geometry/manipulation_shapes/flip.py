@@ -9,14 +9,14 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import solid
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
-from fabmetheus_utilities.geometry.manipulation_matrix import matrix
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities.vector3 import Vector3
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalExecutionOrder = 200
@@ -74,8 +74,7 @@ def getManipulatedPaths(close, loop, prefix, sideLength, xmlElement):
 
 def getShouldReverse(prefix, xmlElement):
 	'Determine if the loop should be reversed.'
-	return evaluate.getEvaluatedBooleanDefault(True, prefix + 'reverse', xmlElement)
-
+	return evaluate.getEvaluatedBoolean(True, prefix + 'reverse', xmlElement)
 
 def processXMLElement(xmlElement):
 	'Process the xml element.'

@@ -15,7 +15,7 @@ import traceback
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalTemporarySettingsPath = os.path.join(os.path.expanduser('~'), '.skeinforge')
@@ -107,7 +107,7 @@ def getFilePathWithUnderscoredBasename(fileName, suffix):
 	suffixReplacedBaseName = os.path.basename(suffixFileName).replace(' ', '_')
 	return os.path.join(suffixDirectoryName, suffixReplacedBaseName)
 
-def getFileText(fileName, readMode = 'r', printWarning=True):
+def getFileText(fileName, printWarning=True, readMode='r'):
 	'Get the entire text of a file.'
 	try:
 		file = open(fileName, readMode)
@@ -117,12 +117,12 @@ def getFileText(fileName, readMode = 'r', printWarning=True):
 	except IOError:
 		if printWarning:
 			print('The file ' + fileName + ' does not exist.')
-		return ''
+	return ''
 
 def getFileTextInFileDirectory(fileInDirectory, fileName, readMode='r'):
 	'Get the entire text of a file in the directory of the file in directory.'
 	absoluteFilePathInFileDirectory = os.path.join(os.path.dirname(fileInDirectory), fileName)
-	return getFileText(absoluteFilePathInFileDirectory, readMode)
+	return getFileText(absoluteFilePathInFileDirectory, True, readMode)
 
 def getFilesWithFileTypesWithoutWords(fileTypes, words = [], fileInDirectory=''):
 	'Get files which have a given file type, but with do not contain a word in a list.'

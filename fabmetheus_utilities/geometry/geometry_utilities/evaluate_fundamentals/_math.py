@@ -13,20 +13,22 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalNativeFunctions = 'acos asin atan atan2 ceil cos cosh degrees e exp fabs floor fmod frexp hypot'.split()
 globalNativeFunctions += 'ldexp log log10 modf pi pow radians sin sinh sqrt tan tanh trunc'.split()
 globalNativeFunctionSet = set(globalNativeFunctions)
 #Constants from: http://www.physlink.com/reference/MathConstants.cfm
+#Tau is from: http://tauday.com/
 #If anyone wants to add stuff, more constants are at: http://en.wikipedia.org/wiki/Mathematical_constant
 globalMathConstantDictionary = {
 	'euler' : 0.5772156649015328606065120,
 	'golden' : euclidean.globalGoldenRatio,
 	'goldenAngle' : euclidean.globalGoldenAngle,
-	'goldenRatio' : euclidean.globalGoldenRatio}
+	'goldenRatio' : euclidean.globalGoldenRatio,
+	'tau' : math.pi + math.pi}
 
 
 def _getAccessibleAttribute(attributeName):
@@ -43,6 +45,10 @@ def _getAccessibleAttribute(attributeName):
 def getAbs(value):
 	'Get the abs.'
 	return abs(value)
+
+def getBoolean(value):
+	'Get the boolean.'
+	return bool(value)
 
 def getDivmod(x, y):
 	'Get the divmod.'
@@ -64,21 +70,26 @@ def getLong(value):
 	'Get the long.'
 	return long(value)
 
-def getMax(value):
+def getMax(first, second):
 	'Get the max.'
-	return max(value)
+	return max(first, second)
 
-def getMin(value):
+def getMin(first, second):
 	'Get the min.'
-	return min(value)
+	return min(first, second)
 
 def getRound(value):
 	'Get the round.'
 	return round(value)
 
+def getString(value):
+	'Get the string.'
+	return str(value)
+
 
 globalAccessibleAttributeDictionary = {
 	'abs' : getAbs,
+	'boolean' : getBoolean,
 	'divmod' : getDivmod,
 	'float' : getFloat,
 	'hex' : getHex,
@@ -86,4 +97,5 @@ globalAccessibleAttributeDictionary = {
 	'long' : getLong,
 	'max' : getMax,
 	'min' : getMin,
-	'round' : getRound}
+	'round' : getRound,
+	'string' : getString}

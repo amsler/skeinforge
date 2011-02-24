@@ -17,29 +17,10 @@ Defines the amount the loop ends will be jittered over the perimeter width.  A h
 ==Examples==
 The following examples jitter the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and jitter.py.
 
-
 > python jitter.py
 This brings up the jitter dialog.
 
-
 > python jitter.py Screw Holder Bottom.stl
-The jitter tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The jitter tool has created the file:
-.. Screw Holder Bottom_jitter.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import jitter
->>> jitter.main()
-This brings up the jitter dialog.
-
-
->>> jitter.writeOutput('Screw Holder Bottom.stl')
 The jitter tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -67,11 +48,11 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 def getCraftedText( fileName, text, jitterRepository = None ):
 	"Jitter a gcode linear move text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), jitterRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), jitterRepository )
 
 def getCraftedTextFromText( gcodeText, jitterRepository = None ):
 	"Jitter a gcode linear move text."
@@ -110,7 +91,7 @@ def getJitteredLoop( jitterDistance, jitterLoop ):
 	return [ newUltimatePoint ] + originalOffsetLoop
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return JitterRepository()
 
 def isLoopNumberEqual( betweenX, betweenXIndex, loopNumber ):
@@ -119,11 +100,9 @@ def isLoopNumberEqual( betweenX, betweenXIndex, loopNumber ):
 		return False
 	return betweenX[ betweenXIndex ].index == loopNumber
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Jitter a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'jitter')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'jitter', shouldAnalyze)
 
 
 class JitterRepository:
@@ -159,12 +138,12 @@ class JitterSkein:
 		self.oldLocation = None
 		self.oldLoopLocationComplex = None
 		self.operatingFeedRatePerMinute = None
-		self.travelFeedRatePerMinute = None
+		self.travelFeedRateMinute = None
 
 	def addGcodeFromThreadZ( self, thread, z ):
 		"Add a gcode thread to the output."
 		if len(thread) > 0:
-			self.addGcodeMovementZ( self.travelFeedRatePerMinute, thread[0], z )
+			self.addGcodeMovementZ( self.travelFeedRateMinute, thread[0], z )
 		else:
 			print( "zero length vertex positions array which was skipped over, this should never happen" )
 		if len(thread) < 2:
@@ -185,17 +164,17 @@ class JitterSkein:
 
 	def addTailoredLoopPath(self):
 		"Add a clipped and jittered loop path."
-		loop = self.loopPath.path[ : - 1 ]
+		loop = self.loopPath.path[: -1]
 		if self.beforeLoopLocation != None:
 			if self.oldLoopLocationComplex != None:
 				self.beforeLoopLocation = self.oldLoopLocationComplex
 			perimeterHalfWidth = 0.5 * self.perimeterWidth
-			loop = euclidean.getLoopStartingNearest( perimeterHalfWidth, self.beforeLoopLocation, loop )
+			loop = euclidean.getLoopStartingNearest(perimeterHalfWidth, self.beforeLoopLocation, loop)
 		if self.layerJitter != 0.0 and self.oldLoopLocationComplex == None:
-			loop = getJitteredLoop( self.layerJitter, loop )
-			loop = euclidean.getAwayPoints( loop, 0.2 * self.perimeterWidth )
+			loop = getJitteredLoop(self.layerJitter, loop)
+			loop = euclidean.getAwayPoints(loop, 0.2 * self.perimeterWidth)
 		self.loopPath.path = loop + [loop[0]]
-		self.addGcodeFromThreadZ( self.loopPath.path, self.loopPath.z )
+		self.addGcodeFromThreadZ(self.loopPath.path, self.loopPath.z)
 		self.oldLoopLocationComplex = loop[0]
 		self.loopPath = None
 
@@ -277,7 +256,7 @@ class JitterSkein:
 				self.perimeterWidth = float(splitLine[1])
 				self.jitter = jitterRepository.jitterOverPerimeterWidth.value * self.perimeterWidth
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
+				self.travelFeedRateMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
 

@@ -8,17 +8,6 @@ The setting is the selection.  If you hit 'Save and Close' the selection will be
 To change the profile setting, in a shell in the profile folder type:
 > python profile.py
 
-An example of using profile from the python interpreter follows below.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import profile
->>> profile.main()
-This brings up the profile setting dialog.
-
 """
 
 from __future__ import absolute_import
@@ -36,7 +25,7 @@ import shutil
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addListsSetCraftProfile( craftSequence, defaultProfile, repository, fileNameHelp ):
@@ -91,7 +80,7 @@ def getCraftTypePluginModule( craftTypeName = ''):
 	return archive.getModuleWithDirectoryPath( profilePluginsDirectoryPath, craftTypeName )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return ProfileRepository()
 
 def getPluginFileNames():
@@ -181,21 +170,21 @@ class DeleteProfile( AddProfile ):
 
 class DeleteProfileDialog:
 	"A dialog to delete a profile."
-	def __init__( self, profileListboxSetting, root ):
+	def __init__(self, profileListboxSetting, root):
 		"Display a delete dialog."
 		self.profileListboxSetting = profileListboxSetting
 		self.root = root
-		self.row = 0
 		root.title('Delete Warning')
-		self.gridPosition.increment()
-		self.label = settings.Tkinter.Label( self.root, text = 'Do you want to delete the profile?')
-		self.label.grid( row = self.row, column = 0, columnspan = 3, sticky = settings.Tkinter.W )
+		rowIndex = 0
+		self.label = settings.Tkinter.Label(self.root, text = 'Do you want to delete the profile?')
+		self.label.grid(row = rowIndex, column = 0, columnspan = 3, sticky = settings.Tkinter.W)
+		rowIndex += 1
 		columnIndex = 1
-		deleteButton = settings.Tkinter.Button( root, activebackground = 'black', activeforeground = 'red', command = self.delete, fg = 'red', text = 'Delete')
-		deleteButton.grid( row = self.row, column = columnIndex )
+		deleteButton = settings.Tkinter.Button(root, activebackground = 'black', activeforeground = 'red', command = self.delete, fg = 'red', text = 'Delete')
+		deleteButton.grid(row = rowIndex, column = columnIndex)
 		columnIndex += 1
-		noButton = settings.Tkinter.Button( root, activebackground = 'black', activeforeground = 'darkgreen', command = self.no, fg = 'darkgreen', text = 'Do Nothing')
-		noButton.grid( row = self.row, column = columnIndex )
+		noButton = settings.Tkinter.Button(root, activebackground = 'black', activeforeground = 'darkgreen', command = self.no, fg = 'darkgreen', text = 'Do Nothing')
+		noButton.grid(row = rowIndex, column = columnIndex)
 
 	def delete(self):
 		"Delete the selection of a listbox setting."
@@ -205,20 +194,21 @@ class DeleteProfileDialog:
 			return
 		lastSelectionIndex = 0
 		currentSelectionTuple = self.profileListboxSetting.listbox.curselection()
-		if len( currentSelectionTuple ) > 0:
-			lastSelectionIndex = int( currentSelectionTuple[0] )
+		if len(currentSelectionTuple) > 0:
+			lastSelectionIndex = int(currentSelectionTuple[0])
 		else:
 			print('No profile is selected, so no profile will be deleted.')
 			return
-		settings.deleteDirectory( archive.getProfilesPath( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
-		settings.deleteDirectory( getProfilesDirectoryInAboveDirectory( self.profileListboxSetting.listSetting.craftTypeName ), self.profileListboxSetting.value )
+		craftTypeName = self.profileListboxSetting.listSetting.craftTypeName
+		settings.deleteDirectory(archive.getProfilesPath(craftTypeName), self.profileListboxSetting.value)
+		settings.deleteDirectory(settings.getProfilesDirectoryInAboveDirectory(craftTypeName), self.profileListboxSetting.value)
 		self.profileListboxSetting.listSetting.setValueToFolders()
-		if len( self.profileListboxSetting.listSetting.value ) < 1:
-			defaultSettingsDirectory = archive.getProfilesPath( os.path.join( self.profileListboxSetting.listSetting.craftTypeName, self.profileListboxSetting.defaultValue ) )
-			archive.makeDirectory( defaultSettingsDirectory )
+		if len(self.profileListboxSetting.listSetting.value) < 1:
+			defaultSettingsDirectory = archive.getProfilesPath(os.path.join(craftTypeName, self.profileListboxSetting.defaultValue))
+			archive.makeDirectory(defaultSettingsDirectory)
 			self.profileListboxSetting.listSetting.setValueToFolders()
-		lastSelectionIndex = min( lastSelectionIndex, len( self.profileListboxSetting.listSetting.value ) - 1 )
-		self.profileListboxSetting.value = self.profileListboxSetting.listSetting.value[ lastSelectionIndex ]
+		lastSelectionIndex = min(lastSelectionIndex, len(self.profileListboxSetting.listSetting.value) - 1)
+		self.profileListboxSetting.value = self.profileListboxSetting.listSetting.value[lastSelectionIndex]
 		self.profileListboxSetting.setStateToValue()
 		self.no()
 
@@ -322,7 +312,7 @@ class ProfilePluginRadioButtonsSaveListener:
 	"A class to update the profile radio buttons."
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
-		euclidean.addElementToListTableIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListDictionaryIfNotThere( self, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
 
 	def getFromRadioPlugins( self, radioPlugins, repository ):
 		"Initialize."
@@ -337,8 +327,8 @@ class ProfilePluginRadioButtonsSaveListener:
 		craftTypeName = getCraftTypeName()
 		for radioPlugin in self.radioPlugins:
 			if radioPlugin.name == craftTypeName:
-				radioPlugin.setSelect()
-				self.repository.pluginFrame.update()
+				if radioPlugin.setSelect():
+					self.repository.pluginFrame.update()
 				return
 
 
@@ -373,7 +363,7 @@ class ProfileSelectionMenuRadio:
 		if self.value:
 			self.menuButtonDisplay.radioVar.set( self.valueName )
 			self.menuButtonDisplay.menu.invoke( self.menuLength )
-		euclidean.addElementToListTableIfNotThere( self.repository, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
+		euclidean.addElementToListDictionaryIfNotThere( self.repository, self.repository.repositoryDialog, settings.globalProfileSaveListenerListTable )
 		self.activate = True
 
 	def clickRadio(self):

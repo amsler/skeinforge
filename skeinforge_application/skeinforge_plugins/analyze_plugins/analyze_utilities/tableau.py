@@ -19,7 +19,7 @@ import os
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometricDifference( first, second ):
@@ -175,8 +175,8 @@ class TableauWindow:
 		self.gridPosition = settings.GridHorizontal(2, 99)
 		self.gridPosition.master = self.root
 		self.gcodeStringVar = settings.Tkinter.StringVar(self.root)
-		self.gcodeLabel = settings.Tkinter.Label(self.root, textvariable = self.gcodeStringVar)
-		self.gcodeLabel.grid(row = 0, column = 3, sticky = settings.Tkinter.W)
+		self.gcodeLabel = settings.Tkinter.Label(self.root, anchor = settings.Tkinter.W, textvariable = self.gcodeStringVar)
+		self.gcodeLabel.grid(row = 0, column = 5, columnspan = 93, sticky = settings.Tkinter.W)
 		self.xScrollbar = HiddenScrollbar(self.root, orient = settings.Tkinter.HORIZONTAL)
 		self.xScrollbar.grid(row = 98, column = 2, columnspan = 96, sticky = settings.Tkinter.E + settings.Tkinter.W)
 		self.yScrollbar = HiddenScrollbar(self.root)
@@ -246,7 +246,7 @@ class TableauWindow:
 		for name in self.repository.frameList.value:
 			entity = self.getEntityFromName( name )
 			if entity != None:
-				self.gridPosition.incrementGivenNumberOfColumns( 3 )
+				self.gridPosition.incrementGivenNumberOfColumns(3)
 				entity.addToDialog( getGridHorizontalFrame( self.gridPosition ) )
 		for menuRadio in self.repository.mouseMode.menuRadios:
 			menuRadio.mouseTool = menuRadio.getNewMouseToolFunction().getReset(self)
@@ -708,7 +708,7 @@ class TableauWindow:
 		self.repository.line.value = min(self.repository.line.value, len(coloredLines) - 1)
 		gcodeString = ''
 		if self.repository.showGcode.value:
-			gcodeString = coloredLines[self.repository.line.value].displayString.replace(' G', ': G')
+			gcodeString = 'Gcode: ' + coloredLines[self.repository.line.value].displayString
 		self.gcodeStringVar.set(gcodeString)
 		self.canvas.delete('selection_line')
 		self.getDrawnSelectedColoredLine(coloredLines[self.repository.line.value])

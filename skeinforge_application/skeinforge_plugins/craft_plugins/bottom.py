@@ -25,29 +25,10 @@ If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector grap
 ==Examples==
 The following examples bottom the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and bottom.py.
 
-
 > python bottom.py
 This brings up the bottom dialog.
 
-
 > python bottom.py Screw Holder Bottom.stl
-The bottom tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The bottom tool has created the file:
-.. Screw Holder Bottom_bottom.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import bottom
->>> bottom.main()
-This brings up the bottom dialog.
-
-
->>> bottom.writeOutput('Screw Holder Bottom.stl')
 The bottom tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -81,8 +62,8 @@ import time
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/28/04 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText(fileName, svgText='', repository=None):
@@ -100,12 +81,12 @@ def getCraftedTextFromText(fileName, svgText, repository=None):
 	return BottomSkein().getCraftedGcode(fileName, repository, svgText)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return BottomRepository()
 
-def writeOutput(fileName):
+def writeOutput(fileName, shouldAnalyze=True):
 	'Bottom the carving.'
-	skeinforge_craft.writeSVGTextWithNounMessage(fileName, BottomRepository())
+	skeinforge_craft.writeSVGTextWithNounMessage(fileName, BottomRepository(), shouldAnalyze)
 
 
 class BottomRepository:

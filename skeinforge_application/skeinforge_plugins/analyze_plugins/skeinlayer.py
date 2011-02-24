@@ -120,25 +120,10 @@ http://forums.reprap.org/file.php?12,file=565
 ==Examples==
 Below are examples of skeinlayer being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeinlayer.py.
 
-
 > python skeinlayer.py
 This brings up the skeinlayer dialog.
 
-
 > python skeinlayer.py Screw Holder_penultimate.gcode
-This brings up the skeinlayer viewer to view each layer of a gcode file.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import skeinlayer
->>> skeinlayer.main()
-This brings up the skeinlayer dialog.
-
-
->>> skeinlayer.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
 This brings up the skeinlayer viewer to view each layer of a gcode file.
 
 """
@@ -162,11 +147,11 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return SkeinlayerRepository()
 
 def getRankIndex( rulingSeparationWidthMillimeters, screenOrdinate ):
@@ -247,7 +232,7 @@ class SkeinlayerSkein:
 		self.feedRateMinute = 960.1
 		self.isThereALayerStartWord = False
 		self.layerCount = settings.LayerCount()
-		self.oldZ = - 999999999999.0
+		self.oldZ = - 999987654321.0
 		self.skeinPane = None
 		self.skeinPanes = []
 
@@ -315,10 +300,10 @@ class SkeinlayerSkein:
 		self.gcodeText = gcodeText
 		self.repository = repository
 		self.initializeActiveLocation()
-		self.cornerMaximum = Vector3(-999999999.0, -999999999.0, -999999999.0)
-		self.cornerMinimum = Vector3(999999999.0, 999999999.0, 999999999.0)
+		self.cornerMaximum = Vector3(-987654321.0, -987654321.0, -987654321.0)
+		self.cornerMinimum = Vector3(987654321.0, 987654321.0, 987654321.0)
 		self.lines = archive.getTextLines(gcodeText)
-		self.isThereALayerStartWord = gcodec.isThereAFirstWord('(<layer>', self.lines, 1 )
+		self.isThereALayerStartWord = (gcodec.getFirstWordIndexReverse('(<layer>', self.lines, 1) > -1)
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:
 			self.parseCorner(line)
@@ -392,10 +377,10 @@ class SkeinWindow( tableau.TableauWindow ):
 		self.verticalRulerCanvas['yscrollcommand'] = self.yScrollbar.set
 		self.xStringVar = settings.Tkinter.StringVar(self.root)
 		self.xLabel = settings.Tkinter.Label(self.root, textvariable=self.xStringVar)
-		self.xLabel.grid(row=0, column=4, sticky=settings.Tkinter.W)
+		self.xLabel.grid(row=0, column=3, sticky=settings.Tkinter.W)
 		self.yStringVar = settings.Tkinter.StringVar(self.root)
 		self.yLabel = settings.Tkinter.Label(self.root, textvariable=self.yStringVar)
-		self.yLabel.grid(row=0, column=5, sticky=settings.Tkinter.W)
+		self.yLabel.grid(row=0, column=4, sticky=settings.Tkinter.W)
 		self.setWindowNewMouseTool(display_line.getNewMouseTool, repository.displayLine)
 		self.setWindowNewMouseTool(view_move.getNewMouseTool, repository.viewMove)
 		repository.showPosition.setUpdateFunction(self.setWindowToDisplaySaveUpdate)

@@ -16,20 +16,6 @@ Follows nv lines containing the x, y and z coordinates of the vertexes. Follows 
 
 The format described above is the least common denominator to all GTS files. Consistent with an object-oriented approach, the GTS file format is extensible. Each of the lines of the file can be extended with user-specific attributes accessible through the read() and write() virtual methods of each of the objects written (surface, vertexes, edges or faces). When read with different object classes, these extra attributes are just ignored."
 
-This example gets a carving for the gts file Screw Holder Bottom.gts.  This example is run in a terminal in the folder which contains Screw Holder Bottom.gts and gts.py.
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import gts
->>> gts.getCarving()
-[11.6000003815, 10.6837882996, 7.80209827423
-..
-many more lines of the carving
-..
-
 """
 
 
@@ -46,7 +32,7 @@ from fabmetheus_utilities import gcodec
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getFromGNUTriangulatedSurfaceText( gnuTriangulatedSurfaceText, triangleMesh ):

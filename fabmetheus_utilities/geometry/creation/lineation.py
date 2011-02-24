@@ -7,9 +7,9 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from fabmetheus_utilities.geometry.manipulation_matrix import matrix
 from fabmetheus_utilities.geometry.geometry_tools import path
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import euclidean
 import math
@@ -18,7 +18,7 @@ import math
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getComplexByDictionary(dictionary, valueComplex):
@@ -68,13 +68,13 @@ def getComplexByMultiplierPrefixes( multiplier, prefixes, valueComplex, xmlEleme
 
 def getComplexByPrefix( prefix, valueComplex, xmlElement ):
 	'Get complex from prefix and xml element.'
-	value = evaluate.getEvaluatedValue(prefix, xmlElement)
+	value = evaluate.getEvaluatedValue(None, prefix, xmlElement)
 	if value != None:
 		valueComplex = getComplexByDictionaryListValue(value, valueComplex)
-	x = evaluate.getEvaluatedFloat(prefix + '.x', xmlElement)
+	x = evaluate.getEvaluatedFloat(None, prefix + '.x', xmlElement)
 	if x != None:
 		valueComplex = complex( x, getComplexIfNone( valueComplex ).imag )
-	y = evaluate.getEvaluatedFloat(prefix + '.y', xmlElement)
+	y = evaluate.getEvaluatedFloat(None, prefix + '.y', xmlElement)
 	if y != None:
 		valueComplex = complex( getComplexIfNone( valueComplex ).real, y )
 	return valueComplex
@@ -101,16 +101,15 @@ def getComplexIfNone( valueComplex ):
 
 def getFloatByPrefixBeginEnd(prefixBegin, prefixEnd, valueFloat, xmlElement):
 	'Get float from prefixBegin, prefixEnd and xml element.'
-	valueFloat = evaluate.getEvaluatedFloatDefault(valueFloat, prefixBegin, xmlElement)
+	valueFloat = evaluate.getEvaluatedFloat(valueFloat, prefixBegin, xmlElement)
 	if prefixEnd in xmlElement.attributeDictionary:
-		return 0.5 * evaluate.getEvaluatedFloatDefault(valueFloat + valueFloat, prefixEnd, xmlElement)
-	else:
-		return valueFloat
+		return 0.5 * evaluate.getEvaluatedFloat(valueFloat + valueFloat, prefixEnd, xmlElement)
+	return valueFloat
 
 def getFloatByPrefixSide( prefix, side, xmlElement ):
 	'Get float by prefix and side.'
-	floatByDenominatorPrefix = evaluate.getEvaluatedFloatDefault(0.0, prefix, xmlElement)
-	return floatByDenominatorPrefix + evaluate.getEvaluatedFloatDefault(0.0,  prefix + 'OverSide', xmlElement ) * side
+	floatByDenominatorPrefix = evaluate.getEvaluatedFloat(0.0, prefix, xmlElement)
+	return floatByDenominatorPrefix + evaluate.getEvaluatedFloat(0.0,  prefix + 'OverSide', xmlElement ) * side
 
 def getGeometryOutput(derivation, xmlElement):
 	'Get geometry output from paths.'
@@ -140,10 +139,14 @@ def getMinimumRadius( beginComplexSegmentLength, endComplexSegmentLength, radius
 	'Get minimum radius.'
 	return min( abs(radius), 0.5 * min( beginComplexSegmentLength, endComplexSegmentLength ) )
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return LineationDerivation(xmlElement)
+
 def getNumberOfBezierPoints(begin, end, xmlElement):
 	'Get the numberOfBezierPoints.'
 	numberOfBezierPoints = int(math.ceil(0.5 * evaluate.getSidesMinimumThreeBasedOnPrecision(abs(end - begin), xmlElement)))
-	return evaluate.getEvaluatedIntDefault(numberOfBezierPoints, 'sides', xmlElement)
+	return evaluate.getEvaluatedInt(numberOfBezierPoints, 'sides', xmlElement)
 
 def getPackedGeometryOutputByLoop(sideLoop, xmlElement):
 	'Get packed geometry output by side loop.'
@@ -174,12 +177,12 @@ def getStrokeRadiusByPrefix(prefix, xmlElement):
 
 def processTargetByFunction(manipulationFunction, target):
 	'Process the target by the manipulationFunction.'
-	if target.object == None:
+	if target.xmlObject == None:
 		print('Warning, there is no object in processTargetByFunction in lineation for:')
 		print(target)
 		return
 	geometryOutput = []
-	transformedPaths = target.object.getTransformedPaths()
+	transformedPaths = target.xmlObject.getTransformedPaths()
 	for transformedPath in transformedPaths:
 		sideLoop = SideLoop(transformedPath)
 		sideLoop.rotate(target)
@@ -205,14 +208,14 @@ def processXMLElementByFunction(manipulationFunction, xmlElement):
 def removeChildrenFromElementObject(xmlElement):
 	'Process the xml element by manipulationFunction.'
 	xmlElement.removeChildrenFromIDNameParent()
-	if xmlElement.object != None:
-		if xmlElement.parent.object != None:
-			if xmlElement.object in xmlElement.parent.object.archivableObjects:
-				xmlElement.parent.object.archivableObjects.remove(xmlElement.object)
+	if xmlElement.xmlObject != None:
+		if xmlElement.parent.xmlObject != None:
+			if xmlElement.xmlObject in xmlElement.parent.xmlObject.archivableObjects:
+				xmlElement.parent.xmlObject.archivableObjects.remove(xmlElement.xmlObject)
 
 def setClosedAttribute(revolutions, xmlElement):
 	'Set the closed attribute of the xmlElement.'
-	closedBoolean = evaluate.getEvaluatedBooleanDefault(revolutions <= 1, 'closed', xmlElement)
+	closedBoolean = evaluate.getEvaluatedBoolean(revolutions <= 1, 'closed', xmlElement)
 	xmlElement.attributeDictionary['closed'] = str(closedBoolean).lower()
 
 
@@ -245,7 +248,7 @@ class SideLoop:
 				print('Warning, loop has no length in SideLoop in lineation.')
 		self.loop = loop
 		self.sideAngle = abs(sideAngle)
-		self.sideLength = sideLength
+		self.sideLength = abs(sideLength)
 		self.close = 0.001 * sideLength
 
 	def getManipulationPluginLoops(self, xmlElement):
@@ -267,8 +270,8 @@ class SideLoop:
 
 	def rotate(self, xmlElement):
 		'Rotate.'
-		rotation = math.radians( evaluate.getEvaluatedFloatDefault(0.0, 'rotation', xmlElement ) )
-		rotation += evaluate.getEvaluatedFloatDefault(0.0, 'rotationOverSide', xmlElement ) * self.sideAngle
+		rotation = math.radians( evaluate.getEvaluatedFloat(0.0, 'rotation', xmlElement ) )
+		rotation += evaluate.getEvaluatedFloat(0.0, 'rotationOverSide', xmlElement ) * self.sideAngle
 		if rotation != 0.0:
 			planeRotation = euclidean.getWiddershinsUnitPolar( rotation )
 			for vertex in self.loop:

@@ -6,11 +6,11 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_application.html"><font color="#ffffff">skeinforge_application</font></a>.skeinforge</strong></big></big> ($Date: 2008/21/11 $)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_application.html"><font color="#ffffff">skeinforge_application</font></a>.skeinforge</strong></big></big> ($Date: 2008/02/05 $)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge.py</a></font></td></tr></table>
     <p>
-<a href="fabmetheus_utilities.geometry.solids.cube.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.analyze.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="fabmetheus_utilities.geometry.solids.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.analyze.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
 <br />
@@ -23,6 +23,7 @@
 &nbsp;&nbsp;<a href="#File Formats">File Formats</a><br />
 &nbsp;&nbsp;<a href="#Getting Skeinforge">Getting Skeinforge</a><br />
 &nbsp;&nbsp;<a href="#Getting Started">Getting Started</a><br />
+&nbsp;&nbsp;<a href="#License">License</a><br />
 &nbsp;&nbsp;<a href="#Motto">Motto</a><br />
 &nbsp;&nbsp;<a href="#Troubleshooting">Troubleshooting</a><br />
 <a href="#Examples">Examples</a><br />
@@ -196,6 +197,11 @@ When the skeinforge dialog pops up, click 'Skeinforge', choose the file which yo
 Or you can turn files into gcode by adding the file name, for example:<br>
 &gt; python skeinforge.py Screw Holder Bottom.stl<br>
  <br>
+<a name="License" id="License"></a><h3>License</h3>
+
+GNU Affero General Public License<br>
+<a href="http://www.gnu.org/licenses/agpl.html">http://www.gnu.org/licenses/agpl.html</a><br>
+ <br>
 <a name="Motto" id="Motto"></a><h3>Motto</h3>
 
 I may be slow, but I get there in the end.<br>
@@ -242,30 +248,15 @@ The following examples forge the STL file Screw Holder.stl.  The examples are ru
 This brings up the dialog, after clicking 'Skeinforge', the following is printed:<br>
 The exported file is saved as Screw Holder_export.gcode<br>
  <br>
- <br>
 &gt; python skeinforge.py Screw Holder.stl<br>
 The exported file is saved as Screw Holder_export.gcode<br>
  <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import skeinforge<br>
-&gt;&gt;&gt; skeinforge.<a href="#-writeOutput">writeOutput</a>('Screw Holder.stl')<br>
-The exported file is saved as Screw Holder_export.gcode<br>
- <br>
- <br>
-&gt;&gt;&gt; skeinforge.<a href="#-main">main</a>()<br>
-This brings up the skeinforge dialog.<br>
- <br>
- <br>
-To run only fill for example, type in the skeinforge_plugins folder which fill is in:<br>
+To run only fill for example, type in the craft_plugins folder which fill is in:<br>
 &gt; python fill.py</tt>
 <br />
 <br />
 <p>
-<a href="fabmetheus_utilities.geometry.solids.cube.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.analyze.html">Next</a> / <a href="contents.html">Contents</a>
+<a href="fabmetheus_utilities.geometry.solids.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.analyze.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <hr>
 </p>
@@ -321,7 +312,7 @@ To run only fill for example, type in the skeinforge_plugins folder which fill i
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-addToProfileMenu"><strong>addToProfileMenu</strong></a>(profileSelection, profileType, repository)</dt><dd><tt>Add&nbsp;a&nbsp;profile&nbsp;menu.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getPluginFileNames"><strong>getPluginFileNames</strong></a>()</dt><dd><tt>Get&nbsp;analyze&nbsp;plugin&nbsp;fileNames.</tt></dd></dl>
  <dl><dt><a name="-getPluginsDirectoryPath"><strong>getPluginsDirectoryPath</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;plugins&nbsp;directory&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-getRadioPluginsAddPluginGroupFrame"><strong>getRadioPluginsAddPluginGroupFrame</strong></a>(directoryPath, importantFileNames, names, repository)</dt><dd><tt>Get&nbsp;the&nbsp;radio&nbsp;plugins&nbsp;and&nbsp;add&nbsp;the&nbsp;plugin&nbsp;frame.</tt></dd></dl>
@@ -336,8 +327,8 @@ To run only fill for example, type in the skeinforge_plugins folder which fill i
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__credits__</strong> = '<font color="#c040c0">\n</font>Adrian Bowyer &lt;http://forums.reprap.org/profile...:<font color="#c040c0">\n</font>Art of Illusion &lt;http://www.artofillusion.org/&gt;'<br>
-<strong>__date__</strong> = '$Date: 2008/21/11 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__date__</strong> = '$Date: 2008/02/05 $'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

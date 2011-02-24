@@ -73,29 +73,10 @@ Defines the feed rate when the extruder is off.  The 'Travel Feed Rate' could be
 ==Examples==
 The following examples speed the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and speed.py.
 
-
 > python speed.py
 This brings up the speed dialog.
 
-
 > python speed.py Screw Holder Bottom.stl
-The speed tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The speed tool has created the file:
-.. Screw Holder Bottom_speed.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import speed
->>> speed.main()
-This brings up the speed dialog.
-
-
->>> speed.writeOutput('Screw Holder Bottom.stl')
 The speed tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -123,12 +104,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def getCraftedText( fileName, text = '', repository=None):
+def getCraftedText( fileName, text='', repository=None):
 	"Speed the file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), repository )
+	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
 def getCraftedTextFromText(gcodeText, repository=None):
 	"Speed a gcode linear move text."
@@ -141,14 +122,12 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	return SpeedSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return SpeedRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Speed a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'speed')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'speed', shouldAnalyze)
 
 
 class SpeedRepository:
@@ -194,8 +173,7 @@ class SpeedSkein:
 		self.feedRatePerSecond = 16.0
 		self.isBridgeLayer = False
 		self.isExtruderActive = False
-		self.isInBoundaryPerimeter = False
-		self.isPerimeter = False
+		self.isPerimeterPath = False
 		self.lineIndex = 0
 		self.lines = None
 		self.oldFlowRateString = None
@@ -218,7 +196,7 @@ class SpeedSkein:
 		"Parse gcode text and store the speed gcode."
 		self.repository = repository
 		self.feedRatePerSecond = repository.feedRatePerSecond.value
-		self.travelFeedRatePerMinute = 60.0 * self.repository.travelFeedRatePerSecond.value
+		self.travelFeedRateMinute = 60.0 * self.repository.travelFeedRatePerSecond.value
 		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
 		for line in self.lines[self.lineIndex :]:
@@ -233,7 +211,7 @@ class SpeedSkein:
 		flowRate = self.repository.flowRateSetting.value
 		if self.isBridgeLayer:
 			flowRate *= self.repository.bridgeFlowRateMultiplier.value
-		if self.isPerimeter:
+		if self.isPerimeterPath:
 			flowRate *= self.repository.perimeterFlowRateOverOperatingFlowRate.value
 		return euclidean.getFourSignificantFigures( flowRate )
 
@@ -244,11 +222,11 @@ class SpeedSkein:
 		feedRateMinute = 60.0 * self.feedRatePerSecond
 		if self.isBridgeLayer:
 			feedRateMinute *= self.repository.bridgeFeedRateMultiplier.value
-		if self.isPerimeter:
+		if self.isPerimeterPath:
 			feedRateMinute *= self.repository.perimeterFeedRateOverOperatingFeedRate.value
 		self.addFlowRateLineIfNecessary()
 		if not self.isExtruderActive:
-			feedRateMinute = self.travelFeedRatePerMinute
+			feedRateMinute = self.travelFeedRateMinute
 		return self.distanceFeedRate.getLineWithFeedRate(feedRateMinute, line, splitLine)
 
 	def parseInitialization(self):
@@ -289,24 +267,15 @@ class SpeedSkein:
 			self.isExtruderActive = True
 		elif firstWord == 'M103':
 			self.isExtruderActive = False
-		elif firstWord == '(<boundaryPerimeter>)':
-			self.isInBoundaryPerimeter = True
-			self.isPerimeter = True
 		elif firstWord == '(<bridgeRotation>':
 			self.isBridgeLayer = True
 		elif firstWord == '(<layer>':
 			self.isBridgeLayer = False
 			self.addFlowRateLineIfNecessary()
-		elif firstWord == '(<loop>':
-			self.isPerimeter = False
-		elif firstWord == '(<perimeter>':
-			self.isPerimeter = True
-		elif firstWord == '(</boundaryPerimeter>)':
-			self.isInBoundaryPerimeter = False
-			self.isPerimeter = False
-		elif firstWord == '(</loop>)':
-			if self.isInBoundaryPerimeter:
-				self.isPerimeter = True
+		elif firstWord == '(<perimeter>' or firstWord == '(<perimeterPath>)':
+			self.isPerimeterPath = True
+		elif firstWord == '(</perimeter>)' or firstWord == '(</perimeterPath>)':
+			self.isPerimeterPath = False
 		self.distanceFeedRate.addLine(line)
 
 

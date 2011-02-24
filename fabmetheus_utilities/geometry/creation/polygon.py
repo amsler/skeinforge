@@ -17,8 +17,8 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
-__date__ = "$Date: 2008/02/05 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getGeometryOutput(derivation, xmlElement):
@@ -42,6 +42,10 @@ def getGeometryOutputByArguments(arguments, xmlElement):
 	evaluate.setAttributeDictionaryByArguments(['sides', 'radius'], arguments, xmlElement)
 	return getGeometryOutput(None, xmlElement)
 
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return PolygonDerivation(xmlElement)
+
 def processXMLElement(xmlElement):
 	"Process the xml element."
 	path.convertXMLElement(getGeometryOutput(None, xmlElement), xmlElement)
@@ -51,17 +55,17 @@ class PolygonDerivation:
 	"Class to hold polygon variables."
 	def __init__(self, xmlElement):
 		'Set defaults.'
-		self.sides = evaluate.getEvaluatedFloatDefault(4.0, 'sides', xmlElement)
+		self.sides = evaluate.getEvaluatedFloat(4.0, 'sides', xmlElement)
 		self.sideAngle = 2.0 * math.pi / self.sides
 		cosSide = math.cos(0.5 * self.sideAngle)
 		self.radius = lineation.getComplexByMultiplierPrefixes(cosSide, ['apothem', 'inradius'], complex(1.0, 1.0), xmlElement)
 		self.radius = lineation.getComplexByPrefixes(['demisize', 'radius'], self.radius, xmlElement)
 		self.radius = lineation.getComplexByMultiplierPrefixes(2.0, ['diameter', 'size'], self.radius, xmlElement)
 		self.sidesCeiling = int(math.ceil(abs(self.sides)))
-		self.start = evaluate.getEvaluatedIntDefault(0, 'start', xmlElement)
-		end = evaluate.getEvaluatedIntDefault(self.sidesCeiling, 'end', xmlElement)
-		self.revolutions = evaluate.getEvaluatedIntDefault(1, 'revolutions', xmlElement)
-		self.extent = evaluate.getEvaluatedIntDefault(end - self.start, 'extent', xmlElement)
+		self.start = evaluate.getEvaluatedInt(0, 'start', xmlElement)
+		end = evaluate.getEvaluatedInt(self.sidesCeiling, 'end', xmlElement)
+		self.revolutions = evaluate.getEvaluatedInt(1, 'revolutions', xmlElement)
+		self.extent = evaluate.getEvaluatedInt(end - self.start, 'extent', xmlElement)
 		self.extent += self.sidesCeiling * (self.revolutions - 1)
 		self.spiral = evaluate.getVector3ByPrefix(None, 'spiral', xmlElement)
 

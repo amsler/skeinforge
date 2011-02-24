@@ -9,6 +9,7 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.creation import solid
+from fabmetheus_utilities.geometry.geometry_utilities.evaluate_elements import setting
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
@@ -20,7 +21,7 @@ import math
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Art of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/02/05 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addLoop(derivation, endMultiplier, loopLists, path, portionDirectionIndex, portionDirections, vertexes):
@@ -88,11 +89,11 @@ def addNegativesPositives(derivation, negatives, paths, positives):
 		else:
 			negatives.append(geometryOutput)
 
-def addOffsetAddToLists( loop, offset, vector3Index, vertexes ):
+def addOffsetAddToLists(loop, offset, vector3Index, vertexes):
 	'Add an indexed loop to the vertexes.'
 	vector3Index += offset
-	loop.append( vector3Index )
-	vertexes.append( vector3Index )
+	loop.append(vector3Index)
+	vertexes.append(vector3Index)
 
 def addPositives(derivation, paths, positives):
 	'Add pillars output to positives.'
@@ -157,16 +158,41 @@ def getGeometryOutput(derivation, xmlElement):
 		print('Warning, in extrude there are no paths.')
 		print(xmlElement.attributeDictionary)
 		return None
-	negatives = []
-	positives = []
-	addNegativesPositives(derivation, negatives, derivation.target, positives)
-	return getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement)
+	return getGeometryOutputByLoops(derivation, derivation.target)
 
 def getGeometryOutputByArguments(arguments, xmlElement):
 	'Get triangle mesh from attribute dictionary by arguments.'
 	return getGeometryOutput(None, xmlElement)
 
-def getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement):
+def getGeometryOutputByLoops(derivation, loops):
+	'Get geometry output by sorted, nested loops.'
+	loops.sort(key=euclidean.getAreaVector3LoopAbsolute, reverse=True)
+	complexLoops = euclidean.getComplexPaths(loops)
+	nestedRings = []
+	for loopIndex, loop in enumerate(loops):
+		complexLoop = complexLoops[loopIndex]
+		leftPoint = euclidean.getLeftPoint(complexLoop)
+		isInFilledRegion = euclidean.getIsInFilledRegion(complexLoops[: loopIndex] + complexLoops[loopIndex + 1 :], leftPoint)
+		if isInFilledRegion == euclidean.isWiddershins(complexLoop):
+			loop.reverse()
+		nestedRing = euclidean.NestedRing()
+		nestedRing.boundary = complexLoop
+		nestedRing.vector3Loop = loop
+		nestedRings.append(nestedRing)
+	nestedRings = euclidean.getOrderedNestedRings(nestedRings)
+	nestedRings = euclidean.getFlattenedNestedRings(nestedRings)
+	portionDirections = getSpacedPortionDirections(derivation.interpolationDictionary)
+	if len(nestedRings) < 1:
+		return {}
+	if len(nestedRings) == 1:
+		geometryOutput = getGeometryOutputByNestedRing(derivation, nestedRings[0], portionDirections)
+		return solid.getGeometryOutputByManipulation(geometryOutput, derivation.xmlElement)
+	shapes = []
+	for nestedRing in nestedRings:
+		shapes.append(getGeometryOutputByNestedRing(derivation, nestedRing, portionDirections))
+	return solid.getGeometryOutputByManipulation({'union' : {'shapes' : shapes}}, derivation.xmlElement)
+
+def getGeometryOutputByNegativesPositives(negatives, positives, xmlElement):
 	'Get triangle mesh from derivation, negatives, positives and xmlElement.'
 	positiveOutput = triangle_mesh.getUnifiedOutput(positives)
 	if len(negatives) < 1:
@@ -176,6 +202,18 @@ def getGeometryOutputByNegativesPositivesOnly(negatives, positives, xmlElement):
 		return solid.getGeometryOutputByManipulation(negativeOutput, xmlElement)
 	return solid.getGeometryOutputByManipulation({'difference' : {'shapes' : [positiveOutput] + negatives}}, xmlElement)
 
+def getGeometryOutputByNestedRing(derivation, nestedRing, portionDirections):
+	'Get geometry output by sorted, nested loops.'
+	loopLists = getLoopListsByPath(derivation, None, nestedRing.vector3Loop, portionDirections)
+	outsideOutput = triangle_mesh.getPillarsOutput(loopLists)
+	if len(nestedRing.innerNestedRings) < 1:
+		return outsideOutput
+	shapes = [outsideOutput]
+	for nestedRing.innerNestedRing in nestedRing.innerNestedRings:
+		loopLists = getLoopListsByPath(derivation, 1.000001, nestedRing.innerNestedRing.vector3Loop, portionDirections)
+		shapes.append(triangle_mesh.getPillarsOutput(loopLists))
+	return {'difference' : {'shapes' : shapes}}
+
 def getLoopListsByPath(derivation, endMultiplier, path, portionDirections):
 	'Get loop lists from path.'
 	vertexes = []
@@ -184,6 +222,10 @@ def getLoopListsByPath(derivation, endMultiplier, path, portionDirections):
 	for portionDirectionIndex in xrange(len(portionDirections)):
 		addLoop(derivation, endMultiplier, loopLists, path, portionDirectionIndex, portionDirections, vertexes)
 	return loopLists
+
+def getNewDerivation(xmlElement):
+	'Get new derivation.'
+	return ExtrudeDerivation(xmlElement)
 
 def getNormalAverage(normals):
 	'Get normal.'
@@ -224,9 +266,8 @@ def insertTwistPortions(derivation, xmlElement):
 		point.y = math.radians(point.y)
 	remainderPortionDirections = interpolationTwist.portionDirections[1 :]
 	interpolationTwist.portionDirections = [interpolationTwist.portionDirections[0]]
-	twistPrecision = 5.0
 	if xmlElement != None:
-		twistPrecision = math.radians(xmlElement.getCascadeFloat(twistPrecision, 'twistprecision'))
+		twistPrecision = setting.getTwistPrecisionRadians(xmlElement)
 	for remainderPortionDirection in remainderPortionDirections:
 		addTwistPortions(interpolationTwist, remainderPortionDirection, twistPrecision)
 		interpolationTwist.portionDirections.append(remainderPortionDirection)
@@ -254,9 +295,9 @@ class ExtrudeDerivation:
 		'Initialize.'
 		self.interpolationDictionary = {}
 		self.radius = lineation.getRadiusComplex(complex(), xmlElement)
-		self.tiltFollow = evaluate.getEvaluatedBooleanDefault(True, 'tiltFollow', xmlElement)
+		self.tiltFollow = evaluate.getEvaluatedBoolean(True, 'tiltFollow', xmlElement)
 		self.tiltTop = evaluate.getVector3ByPrefix(None, 'tiltTop', xmlElement)
-		self.maximumUnbuckling = evaluate.getEvaluatedFloatDefault(5.0, 'maximumUnbuckling', xmlElement)
+		self.maximumUnbuckling = evaluate.getEvaluatedFloat(5.0, 'maximumUnbuckling', xmlElement)
 		scalePathDefault = [Vector3(1.0, 1.0, 0.0), Vector3(1.0, 1.0, 1.0)]
 		self.interpolationDictionary['scale'] = Interpolation().getByPrefixZ(scalePathDefault, 'scale', xmlElement)
 		self.target = evaluate.getTransformedPathsByKey([], 'target', xmlElement)
@@ -271,8 +312,9 @@ class ExtrudeDerivation:
 		else:
 			offsetAlongDefault = [Vector3(), Vector3(1.0, 0.0, 0.0)]
 			self.interpolationDictionary['offset'] = Interpolation().getByPrefixAlong(offsetAlongDefault, '', xmlElement)
-		self.twist = evaluate.getEvaluatedFloatDefault(0.0, 'twist', xmlElement )
+		self.twist = evaluate.getEvaluatedFloat(0.0, 'twist', xmlElement )
 		self.twistPathDefault = [Vector3(), Vector3(1.0, self.twist) ]
+		self.xmlElement = xmlElement
 		insertTwistPortions(self, xmlElement)
 
 	def __repr__(self):

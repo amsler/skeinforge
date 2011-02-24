@@ -33,6 +33,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
+from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import gcodec
@@ -43,7 +44,7 @@ import cStringIO
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>\nArt of Illusion <http://www.artofillusion.org/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addXMLLine(line, xmlLines):
@@ -141,9 +142,10 @@ class XMLElement:
 		self.idDictionary = {}
 		self.importName = ''
 		self.nameDictionary = {}
-		self.object = None
 		self.parent = None
-		self.text = ''
+		self.tagDictionary = {}
+		self.text=''
+		self.xmlObject = None
 
 	def __repr__(self):
 		'Get the string representation of this XML element.'
@@ -165,24 +167,24 @@ class XMLElement:
 		key = beforeQuote[ : lastEqualIndex ].strip()
 		self.attributeDictionary[key] = withinQuote
 
-	def addToIDDictionary( self, idKey, xmlElement ):
-		'Add to the id dictionary of all the XMLProcessor.'
-		self.getRoot().idDictionary[idKey] = xmlElement
-
-	def addToIDDictionaryIFIDExists(self):
-		'Add to the id dictionary if the id key exists in the attribute dictionary.'
-		self.importName = self.getCascadeImportName()
+	def addSuffixToID(self, idSuffix):
+		'Add the suffix to the id.'
 		if 'id' in self.attributeDictionary:
-			self.addToIDDictionary( self.getImportNameWithDot() + self.attributeDictionary['id'], self )
-		if 'name' in self.attributeDictionary:
-			self.addToNameDictionary( self.getImportNameWithDot() + self.attributeDictionary['name'], self )
+			self.attributeDictionary['id'] += idSuffix
 
-	def addToNameDictionary( self, name, xmlElement ):
-		'Add to the name dictionary of all the XMLProcessor.'
-		euclidean.addElementToListTableIfNotThere(xmlElement, name, self.getRoot().nameDictionary)
+	def addToIdentifierDictionaryIFIdentifierExists(self):
+		'Add to the id dictionary if the id key exists in the attribute dictionary.'
+		if 'id' in self.attributeDictionary:
+			idKey = self.getImportNameWithDot() + self.attributeDictionary['id']
+			self.getRoot().idDictionary[idKey] = self
+		if 'name' in self.attributeDictionary:
+			nameKey = self.getImportNameWithDot() + self.attributeDictionary['name']
+			euclidean.addElementToListDictionaryIfNotThere(self, nameKey, self.getRoot().nameDictionary)
+		for tagKey in self.getTagKeys():
+			euclidean.addElementToListDictionaryIfNotThere(self, tagKey, self.getRoot().tagDictionary)
 
 	def addXML(self, depth, output):
-		'Add xml for this object.'
+		'Add xml for this xmlElement.'
 		if self.className == 'comment':
 			output.write( self.text )
 			return
@@ -198,23 +200,13 @@ class XMLElement:
 
 	def getCascadeFloat(self, defaultFloat, key):
 		'Get the cascade float.'
-		return euclidean.getFloatFromValue(self.getCascadeValue(defaultFloat, key))
-
-	def getCascadeImportName(self):
-		'Get the cascade import file name.'
-		if self.importName != '':
-			return self.importName
-		if self.parent == None:
-			return ''
-		return self.parent.getCascadeImportName()
-
-	def getCascadeValue( self, defaultValue, key ):
-		'Get the cascade value.'
 		if key in self.attributeDictionary:
-			return self.attributeDictionary[key]
+			value = evaluate.getEvaluatedFloat(None, key, self)
+			if value != None:
+				return value
 		if self.parent == None:
-			return defaultValue
-		return self.parent.getCascadeValue( defaultValue, key )
+			return defaultFloat
+		return self.parent.getCascadeFloat(defaultFloat, key)
 
 	def getChildrenWithClassName(self, className):
 		'Get the children which have the given class name.'
@@ -233,14 +225,14 @@ class XMLElement:
 
 	def getCopy(self, idSuffix, parent):
 		'Copy the xml element, set its dictionary and add it to the parent.'
-		copy = self.getCopyShallow(self.attributeDictionary.copy())
+		matrix4X4 = matrix.getBranchMatrixSetXMLElement(self)
+		attributeDictionaryCopy = self.attributeDictionary.copy()
+		attributeDictionaryCopy.update(matrix4X4.getAttributeDictionary('matrix.'))
+		copy = self.getCopyShallow(attributeDictionaryCopy)
 		copy.setParentAddToChildren(parent)
-		if idSuffix != '':
-			if 'id' in copy.attributeDictionary:
-				copy.attributeDictionary['id'] = copy.attributeDictionary['id'] + idSuffix
-		copy.className = self.className
+		copy.addSuffixToID(idSuffix)
 		copy.text = self.text
-		copy.addToIDDictionaryIFIDExists()
+		copy.addToIdentifierDictionaryIFIdentifierExists()
 		self.copyXMLChildren(idSuffix, copy)
 		return copy
 
@@ -251,12 +243,8 @@ class XMLElement:
 		copyShallow = XMLElement()
 		copyShallow.attributeDictionary = attributeDictionary
 		copyShallow.className = self.className
-		copyShallow.idDictionary = self.idDictionary
 		copyShallow.importName = self.importName
-		copyShallow.object = self.object
-		copyShallow.nameDictionary = self.nameDictionary
 		copyShallow.parent = self.parent
-		copyShallow.text = self.text
 		return copyShallow
 
 	def getFirstChildWithClassName(self, className):
@@ -266,14 +254,14 @@ class XMLElement:
 				return child
 		return None
 
-	def getIDSuffix( self, elementIndex = None ):
+	def getIDSuffix(self, elementIndex=None):
 		'Get the id suffix from the dictionary.'
 		suffix = self.className
 		if 'id' in self.attributeDictionary:
 			suffix = self.attributeDictionary['id']
 		if elementIndex == None:
 			return '_%s' % suffix
-		return '_%s_%s' % ( suffix, elementIndex )
+		return '_%s_%s' % (suffix, elementIndex)
 
 	def getImportNameWithDot(self):
 		'Get import name with dot.'
@@ -322,7 +310,7 @@ class XMLElement:
 				beforeQuote += character
 			else:
 				withinQuote += character
-		self.addToIDDictionaryIFIDExists()
+		self.addToIdentifierDictionaryIFIdentifierExists()
 		if lastWord == '/>':
 			return parent
 		tagEnd = '</%s>' % self.className
@@ -339,19 +327,19 @@ class XMLElement:
 
 	def getPaths(self):
 		'Get all paths.'
-		if self.object == None:
+		if self.xmlObject == None:
 			return []
-		return self.object.getPaths()
+		return self.xmlObject.getPaths()
 
 	def getPreviousVertex(self, defaultVector3=None):
 		'Get previous vertex if it exists.'
 		if self.parent == None:
 			return defaultVector3
-		if self.parent.object == None:
+		if self.parent.xmlObject == None:
 			return defaultVector3
-		if len(self.parent.object.vertexes) < 1:
+		if len(self.parent.xmlObject.vertexes) < 1:
 			return defaultVector3
-		return self.parent.object.vertexes[-1]
+		return self.parent.xmlObject.vertexes[-1]
 
 	def getPreviousXMLElement(self):
 		'Get previous XMLElement if it exists.'
@@ -379,6 +367,24 @@ class XMLElement:
 				return subChildWithID
 		return None
 
+	def getTagKeys(self):
+		'Get stripped tag keys.'
+		if 'tags' not in self.attributeDictionary:
+			return []
+		tagKeys = []
+		tagString = self.attributeDictionary['tags']
+		if tagString.startswith('='):
+			tagString = tagString[1 :]
+		if tagString.startswith('['):
+			tagString = tagString[1 :]
+		if tagString.endswith(']'):
+			tagString = tagString[: -1]
+		for tagWord in tagString.split(','):
+			tagKey = tagWord.strip()
+			if tagKey != '':
+				tagKeys.append(tagKey)
+		return tagKeys
+
 	def getValueByKey( self, key ):
 		'Get value by the key.'
 		if key in evaluate.globalElementValueDictionary:
@@ -389,9 +395,9 @@ class XMLElement:
 
 	def getVertexes(self):
 		'Get the vertexes.'
-		if self.object == None:
+		if self.xmlObject == None:
 			return []
-		return self.object.getVertexes()
+		return self.xmlObject.getVertexes()
 
 	def getXMLElementByID(self, idKey):
 		'Get the xml element by id.'
@@ -415,15 +421,22 @@ class XMLElement:
 			return nameDictionary[name]
 		return None
 
+	def getXMLElementsByTag(self, tag):
+		'Get the xml elements by tag.'
+		tagDictionary = self.getRoot().tagDictionary
+		if tag in tagDictionary:
+			return tagDictionary[tag]
+		return None
+
 	def getXMLProcessor(self):
 		'Get the xmlProcessor.'
 		return self.getRoot().xmlProcessor
 
-	def linkObject(self, object):
-		'Link self to object and add object to archivableObjects.'
-		self.object = object
-		self.object.xmlElement = self
-		self.parent.object.archivableObjects.append(self.object)
+	def linkObject(self, xmlObject):
+		'Link self to xmlObject and add xmlObject to archivableObjects.'
+		self.xmlObject = xmlObject
+		self.xmlObject.xmlElement = self
+		self.parent.xmlObject.archivableObjects.append(self.xmlObject)
 
 	def printAllVariables(self):
 		'Print all variables.'
@@ -439,12 +452,14 @@ class XMLElement:
 		print(self.importName)
 		print('nameDictionary')
 		print(self.nameDictionary)
-		print('object')
-		print(self.object)
 		print('parent')
 		print(self.parent)
+		print('tagDictionary')
+		print(self.tagDictionary)
 		print('text')
 		print(self.text)
+		print('xmlObject')
+		print(self.xmlObject)
 		print('')
 
 	def printAllVariablesRoot(self):
@@ -474,6 +489,8 @@ class XMLElement:
 			nameDictionary = self.getRoot().nameDictionary
 			nameKey = self.getImportNameWithDot() + self.attributeDictionary['name']
 			euclidean.removeElementFromListTable(self, nameKey, nameDictionary)
+		for tagKey in self.getTagKeys():
+			euclidean.removeElementFromListTable(self, tagKey, self.getRoot().tagDictionary)
 		if self.parent != None:
 			self.parent.children.remove(self)
 
@@ -507,7 +524,7 @@ class XMLSimpleReader:
 
 	def getOriginalRoot(self):
 		'Get the original reparsed root element.'
-		if evaluate.getEvaluatedBooleanDefault(True, 'getOriginalRoot', self.root):
+		if evaluate.getEvaluatedBoolean(True, 'getOriginalRoot', self.root):
 			return XMLSimpleReader(self.fileName, self.parent, self.xmlText).root
 		return None
 

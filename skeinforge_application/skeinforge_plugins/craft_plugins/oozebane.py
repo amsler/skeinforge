@@ -54,29 +54,10 @@ When oozebane turns the extruder off, it slows the feed rate down in steps so in
 ==Examples==
 The following examples oozebane the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and oozebane.py.
 
-
 > python oozebane.py
 This brings up the oozebane dialog.
 
-
 > python oozebane.py Screw Holder Bottom.stl
-The oozebane tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The oozebane tool has created the file:
-.. Screw Holder Bottom_oozebane.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import oozebane
->>> oozebane.main()
-This brings up the oozebane dialog.
-
-
->>> oozebane.writeOutput('Screw Holder Bottom.stl')
 The oozebane tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -103,12 +84,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, text, oozebaneRepository = None ):
 	"Oozebane a gcode linear move file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), oozebaneRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), oozebaneRepository )
 
 def getCraftedTextFromText( gcodeText, oozebaneRepository = None ):
 	"Oozebane a gcode linear move text."
@@ -121,14 +102,12 @@ def getCraftedTextFromText( gcodeText, oozebaneRepository = None ):
 	return OozebaneSkein().getCraftedGcode( gcodeText, oozebaneRepository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return OozebaneRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Oozebane a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'oozebane')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'oozebane', shouldAnalyze)
 
 
 class OozebaneRepository:

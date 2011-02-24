@@ -32,7 +32,7 @@ import traceback
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addLineAndNewlineIfNecessary(line, output):
@@ -196,6 +196,13 @@ def isProcedureDoneOrFileIsEmpty(gcodeText, procedure):
 		return True
 	return isProcedureDone(gcodeText, procedure)
 
+def getFirstWordIndexReverse(firstWord, lines, startIndex):
+	'Parse gcode in reverse order until the first word if there is one, otherwise return -1.'
+	for lineIndex in xrange(len(lines) - 1, startIndex - 1, -1):
+		if firstWord == getFirstWord(getSplitLineBeforeBracketSemicolon(lines[lineIndex])):
+			return lineIndex
+	return -1
+
 def isThereAFirstWord(firstWord, lines, startIndex):
 	'Parse gcode until the first word if there is one.'
 	for lineIndex in xrange(startIndex, len(lines)):
@@ -210,8 +217,8 @@ class BoundingRectangle:
 	'A class to get the corners of a gcode text.'
 	def getFromGcodeLines(self, lines, radius):
 		'Parse gcode text and get the minimum and maximum corners.'
-		self.cornerMaximum = complex(-999999999.0, -999999999.0)
-		self.cornerMinimum = complex(999999999.0, 999999999.0)
+		self.cornerMaximum = complex(-987654321.0, -987654321.0)
+		self.cornerMinimum = complex(987654321.0, 987654321.0)
 		self.oldLocation = None
 		self.cornerRadius = complex(radius, radius)
 		for line in lines:
@@ -245,10 +252,10 @@ class DistanceFeedRate:
 		self.decimalPlacesCarried = 3
 		self.output = cStringIO.StringIO()
 
-	def addGcodeFromFeedRateThreadZ(self, feedRateMinute, thread, travelFeedRatePerMinute, z):
+	def addGcodeFromFeedRateThreadZ(self, feedRateMinute, thread, travelFeedRateMinute, z):
 		'Add a thread to the output.'
 		if len(thread) > 0:
-			self.addGcodeMovementZWithFeedRate(travelFeedRatePerMinute, thread[0], z)
+			self.addGcodeMovementZWithFeedRate(travelFeedRateMinute, thread[0], z)
 		else:
 			print('zero length vertex positions array which was skipped over, this should never happen.')
 		if len(thread) < 2:
@@ -265,7 +272,7 @@ class DistanceFeedRate:
 		euclidean.addSurroundingLoopBeginning(self, loop, z)
 		self.addPerimeterBlock(loop, z)
 		self.addLine('(</boundaryPerimeter>)')
-		self.addLine('(</surroundingLoop>)')
+		self.addLine('(</nestedRing>)')
 
 	def addGcodeFromThreadZ(self, thread, z):
 		'Add a thread to the output.'
@@ -335,8 +342,12 @@ class DistanceFeedRate:
 		self.addLine('(</perimeter>)') # Indicate that a perimeter is beginning.
 
 	def addTagBracketedLine(self, tagName, value):
-		'Add a begin tag, balue and end tag.'
+		'Add a begin tag, value and end tag.'
 		self.addLine('(<%s> %s </%s>)' % (tagName, value, tagName))
+
+	def addTagRoundedLine(self, tagName, value):
+		'Add a begin tag, rounded value and end tag.'
+		self.addLine('(<%s> %s </%s>)' % (tagName, self.getRounded(value), tagName))
 
 	def getBoundaryLine(self, location):
 		'Get boundary gcode line.'

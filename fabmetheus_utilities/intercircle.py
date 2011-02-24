@@ -19,7 +19,7 @@ import math
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 globalDecreasingRadiusMultipliers = [1.0, 0.55, 0.35, 0.2]
@@ -85,7 +85,7 @@ def addInsetPointFromClockwiseTriple(begin, center, end, loop, radius):
 		loop.append(center + centerMinusBeginClockwise * radius)
 	centerClockwise = 0.5 * (centerMinusBeginClockwise + endMinusCenterClockwise)
 	dotProduct = euclidean.getDotProduct(centerMinusBeginClockwise, centerClockwise)
-	loop.append(center + centerClockwise * radius / max(0.5, abs(dotProduct)))
+	loop.append(center + centerClockwise * radius / max(0.4, abs(dotProduct))) # 0.4 to avoid pointy corners
 
 def addOrbits( distanceFeedRate, loop, orbitalFeedRatePerSecond, temperatureChangeTime, z ):
 	'Add orbits with the extruder off.'
@@ -317,7 +317,7 @@ def getLargestCenterOutsetLoopFromLoop(loop, radius, thresholdRatio=0.9):
 	points = getPointsFromLoop( loop, 1.01 * radius, thresholdRatio )
 	centers = getCentersFromPoints( points, radius )
 	largestCenterOutset = None
-	largestOutsetArea = - 999999999.0
+	largestOutsetArea = - 987654321.0
 	for center in centers:
 		outset = getSimplifiedInsetFromClockwiseLoop( center, radius )
 		if isLargeSameDirection( outset, center, radius ):

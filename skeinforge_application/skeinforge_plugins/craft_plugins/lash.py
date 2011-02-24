@@ -27,10 +27,8 @@ Defines the distance the tool head will be lashed in the Y direction.
 ==Examples==
 The following examples lash the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and lash.py.
 
-
 > python lash.py
 This brings up the lash dialog.
-
 
 > python lash.py Screw Holder Bottom.stl
 The lash tool is parsing the file:
@@ -38,24 +36,6 @@ Screw Holder Bottom.stl
 ..
 The lash tool has created the file:
 .. Screw Holder Bottom_lash.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import lash
->>> lash.main()
-This brings up the lash dialog.
-
-
->>> lash.writeOutput('Screw Holder Bottom.stl')
-The lash tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The lash tool has created the file:
-.. Screw Holder Bottom_lash.gcode
-
 
 """
 
@@ -75,12 +55,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, text, lashRepository = None ):
 	"Get a lashed gcode linear move text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), lashRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), lashRepository )
 
 def getCraftedTextFromText( gcodeText, lashRepository = None ):
 	"Get a lashed gcode linear move text from text."
@@ -93,14 +73,12 @@ def getCraftedTextFromText( gcodeText, lashRepository = None ):
 	return LashSkein().getCraftedGcode( gcodeText, lashRepository )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return LashRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName, shouldAnalyze=True):
 	"Lash a gcode linear move file."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'lash')
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'lash', shouldAnalyze)
 
 
 class LashRepository:

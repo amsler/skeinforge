@@ -6,7 +6,7 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_application.html"><font color="#ffffff">skeinforge_application</font></a>.<a href="skeinforge_application.skeinforge_plugins.html"><font color="#ffffff">skeinforge_plugins</font></a>.<a href="skeinforge_application.skeinforge_plugins.craft_plugins.html"><font color="#ffffff">craft_plugins</font></a>.whittle</strong></big></big> ($Date: 2008/28/04 $)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="skeinforge_application.html"><font color="#ffffff">skeinforge_application</font></a>.<a href="skeinforge_application.skeinforge_plugins.html"><font color="#ffffff">skeinforge_plugins</font></a>.<a href="skeinforge_application.skeinforge_plugins.craft_plugins.html"><font color="#ffffff">craft_plugins</font></a>.whittle</strong></big></big> ($Date: 2008/02/05 $)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/whittle.py">/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/whittle.py</a></font></td></tr></table>
     <p>
@@ -40,29 +40,10 @@ Defines the maximum distance that the helix will step down on each rotation.  Th
 
 The following examples whittle the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and whittle.py.<br>
  <br>
- <br>
 &gt; python whittle.py<br>
 This brings up the whittle dialog.<br>
  <br>
- <br>
 &gt; python whittle.py Screw Holder Bottom.stl<br>
-The whittle tool is parsing the file:<br>
-Screw Holder Bottom.stl<br>
-..<br>
-The whittle tool has created the file:<br>
-.. Screw Holder Bottom_whittle.gcode<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import whittle<br>
-&gt;&gt;&gt; whittle.<a href="#-main">main</a>()<br>
-This brings up the whittle dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; whittle.<a href="#-writeOutput">writeOutput</a>('Screw Holder Bottom.stl')<br>
 The whittle tool is parsing the file:<br>
 Screw Holder Bottom.stl<br>
 ..<br>
@@ -150,9 +131,9 @@ The whittle tool has created the file:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-getCraftedText"><strong>getCraftedText</strong></a>(fileName, text<font color="#909090">=''</font>, whittleRepository<font color="#909090">=None</font>)</dt><dd><tt>Whittle&nbsp;the&nbsp;preface&nbsp;file&nbsp;or&nbsp;text.</tt></dd></dl>
  <dl><dt><a name="-getCraftedTextFromText"><strong>getCraftedTextFromText</strong></a>(gcodeText, whittleRepository<font color="#909090">=None</font>)</dt><dd><tt>Whittle&nbsp;the&nbsp;preface&nbsp;gcode&nbsp;text.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;whittle&nbsp;dialog.</tt></dd></dl>
- <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName<font color="#909090">=''</font>)</dt><dd><tt>Whittle&nbsp;the&nbsp;carving&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.&nbsp;&nbsp;If&nbsp;no&nbsp;fileName&nbsp;is&nbsp;specified,&nbsp;whittle&nbsp;the&nbsp;first&nbsp;unmodified&nbsp;gcode&nbsp;file&nbsp;in&nbsp;this&nbsp;folder.</tt></dd></dl>
+ <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Whittle&nbsp;the&nbsp;carving&nbsp;of&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -161,8 +142,8 @@ The whittle tool has created the file:<br>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
-<strong>__date__</strong> = '$Date: 2008/28/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__date__</strong> = '$Date: 2008/02/05 $'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

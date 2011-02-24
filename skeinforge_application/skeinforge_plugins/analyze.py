@@ -27,7 +27,7 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def addToMenu(master, menu, repository, window):
@@ -36,10 +36,10 @@ def addToMenu(master, menu, repository, window):
 	settings.addPluginsParentToMenu(pluginsDirectoryPath, menu, __file__, skeinforge_analyze.getPluginFileNames())
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return skeinforge_analyze.AnalyzeRepository()
 
-def writeOutput(fileName=''):
+def writeOutput(fileName):
 	"Analyze a gcode file."
 	repository = getNewRepository()
 	repository.fileNameInput.value = fileName

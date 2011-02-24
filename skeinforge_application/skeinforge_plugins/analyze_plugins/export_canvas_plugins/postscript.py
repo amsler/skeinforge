@@ -25,11 +25,11 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return PostscriptRepository()
 
 
@@ -62,8 +62,8 @@ class PostscriptRepository:
 		print('')
 		if fileExtension == '':
 			print('Sending the shell command:')
-			print( shellCommand )
-			commandResult = os.system( shellCommand )
+			print(shellCommand)
+			commandResult = os.system(shellCommand)
 			if commandResult != 0:
 				print('It may be that the system could not find the %s program.' % postscriptProgram )
 				print('If so, try installing the %s program or look for another one, like the Gnu Image Manipulation Program (Gimp) which can be found at:' % postscriptProgram )
@@ -72,8 +72,8 @@ class PostscriptRepository:
 		convertedFileName = archive.getFilePathWithUnderscoredBasename( postscriptFilePath, '.' + fileExtension + '"')
 		shellCommand += ' ' + convertedFileName
 		print('Sending the shell command:')
-		print( shellCommand )
-		commandResult = os.system( shellCommand )
+		print(shellCommand)
+		commandResult = os.system(shellCommand)
 		if commandResult != 0:
 			print('The %s program could not convert the postscript to the %s file format.' % ( postscriptProgram, fileExtension ) )
 			print('Try installing the %s program or look for another one, like Image Magick which can be found at:' % postscriptProgram )

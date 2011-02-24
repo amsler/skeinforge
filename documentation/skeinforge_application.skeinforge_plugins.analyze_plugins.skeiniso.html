@@ -332,25 +332,10 @@ A gode example is at:<br>
 
 Below are examples of skeiniso being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and skeiniso.py.<br>
  <br>
- <br>
 &gt; python skeiniso.py<br>
 This brings up the skeiniso dialog.<br>
  <br>
- <br>
 &gt; python skeiniso.py Screw Holder_penultimate.gcode<br>
-This brings up the skeiniso viewer to view the gcode file.<br>
- <br>
- <br>
-&gt; python<br>
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)<br>
-[GCC 4.2.1 (SUSE Linux)] on linux2<br>
-Type "help", "copyright", "credits" or "license" for more information.<br>
-&gt;&gt;&gt; import skeiniso<br>
-&gt;&gt;&gt; skeiniso.<a href="#-main">main</a>()<br>
-This brings up the skeiniso dialog.<br>
- <br>
- <br>
-&gt;&gt;&gt; skeiniso.<a href="#-getWindowAnalyzeFile">getWindowAnalyzeFile</a>('Screw Holder_penultimate.gcode')<br>
 This brings up the skeiniso viewer to view the gcode file.</tt>
 <br />
 <br />
@@ -681,7 +666,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyz
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-compareLayerSequence"><strong>compareLayerSequence</strong></a>(first, second)</dt><dd><tt>Get&nbsp;comparison&nbsp;in&nbsp;order&nbsp;to&nbsp;sort&nbsp;skein&nbsp;panes&nbsp;in&nbsp;ascending&nbsp;order&nbsp;of&nbsp;layer&nbsp;zone&nbsp;index&nbsp;then&nbsp;sequence&nbsp;index.</tt></dd></dl>
- <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;repository&nbsp;constructor.</tt></dd></dl>
+ <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
  <dl><dt><a name="-getWindowAnalyzeFile"><strong>getWindowAnalyzeFile</strong></a>(fileName)</dt><dd><tt>Skeiniso&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getWindowAnalyzeFileGivenText"><strong>getWindowAnalyzeFileGivenText</strong></a>(fileName, gcodeText, repository<font color="#909090">=None</font>)</dt><dd><tt>Display&nbsp;a&nbsp;skeiniso&nbsp;gcode&nbsp;file&nbsp;for&nbsp;a&nbsp;gcode&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-getWindowGivenTextRepository"><strong>getWindowGivenTextRepository</strong></a>(fileName, gcodeText, repository)</dt><dd><tt>Display&nbsp;the&nbsp;gcode&nbsp;text&nbsp;in&nbsp;a&nbsp;skeiniso&nbsp;viewer.</tt></dd></dl>
@@ -696,7 +681,7 @@ Methods inherited from <a href="skeinforge_application.skeinforge_plugins.analyz
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Enrique Perez (perez_enrique@yahoo.com)'<br>
 <strong>__date__</strong> = '$Date: 2008/21/04 $'<br>
-<strong>__license__</strong> = 'GPL 3.0'<br>
+<strong>__license__</strong> = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'<br>
 <strong>absolute_import</strong> = _Feature((2, 5, 0, 'alpha', 1), (2, 7, 0, 'alpha', 0), 16384)</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">

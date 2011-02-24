@@ -44,28 +44,12 @@ Default is webbrowser.
 If the 'SVG Viewer' is set to the default 'webbrowser', the scalable vector graphics file will be sent to the default browser to be opened.  If the 'SVG Viewer' is set to a program name, the scalable vector graphics file will be sent to that program to be opened.
 
 ==Examples==
-
 Below are examples of vectorwrite being used.  These examples are run in a terminal in the folder which contains Screw Holder_penultimate.gcode and vectorwrite.py.
-
 
 > python vectorwrite.py
 This brings up the vectorwrite dialog.
 
-
 > python vectorwrite.py Screw Holder_penultimate.gcode
-The vectorwrite file is saved as Screw_Holder_penultimate_vectorwrite.svg
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import vectorwrite
->>> vectorwrite.main()
-This brings up the vectorwrite dialog.
-
-
->>> vectorwrite.getWindowAnalyzeFile('Screw Holder_penultimate.gcode')
 The vectorwrite file is saved as Screw_Holder_penultimate_vectorwrite.svg
 
 """
@@ -91,11 +75,11 @@ import time
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __credits__ = 'Nophead <http://hydraraptor.blogspot.com/>'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getNewRepository():
-	'Get the repository constructor.'
+	'Get new repository.'
 	return VectorwriteRepository()
 
 def getWindowAnalyzeFile(fileName):

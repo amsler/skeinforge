@@ -14,10 +14,8 @@ Defines the maximum distance that the helix will step down on each rotation.  Th
 ==Examples==
 The following examples whittle the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and whittle.py.
 
-
 > python whittle.py
 This brings up the whittle dialog.
-
 
 > python whittle.py Screw Holder Bottom.stl
 The whittle tool is parsing the file:
@@ -25,24 +23,6 @@ Screw Holder Bottom.stl
 ..
 The whittle tool has created the file:
 .. Screw Holder Bottom_whittle.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import whittle
->>> whittle.main()
-This brings up the whittle dialog.
-
-
->>> whittle.writeOutput('Screw Holder Bottom.stl')
-The whittle tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The whittle tool has created the file:
-.. Screw Holder Bottom_whittle.gcode
-
 
 """
 
@@ -62,13 +42,13 @@ import sys
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
-__date__ = "$Date: 2008/28/04 $"
-__license__ = 'GPL 3.0'
+__date__ = '$Date: 2008/02/05 $'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-def getCraftedText( fileName, text = '', whittleRepository = None ):
+def getCraftedText( fileName, text='', whittleRepository = None ):
 	"Whittle the preface file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), whittleRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), whittleRepository )
 
 def getCraftedTextFromText( gcodeText, whittleRepository = None ):
 	"Whittle the preface gcode text."
@@ -81,15 +61,12 @@ def getCraftedTextFromText( gcodeText, whittleRepository = None ):
 	return WhittleSkein().getCraftedGcode( whittleRepository, gcodeText )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return WhittleRepository()
 
-def writeOutput(fileName=''):
-	"Whittle the carving of a gcode file.  If no fileName is specified, whittle the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName == '':
-		return
-	skeinforge_craft.writeChainTextWithNounMessage( fileName, 'whittle')
+def writeOutput(fileName, shouldAnalyze=True):
+	"Whittle the carving of a gcode file."
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'whittle', shouldAnalyze)
 
 
 class WhittleRepository:

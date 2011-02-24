@@ -22,29 +22,10 @@ Defines the ratio of the maximum connection distance between loops over the peri
 ==Examples==
 The following examples clip the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and clip.py.
 
-
 > python clip.py
 This brings up the clip dialog.
 
-
 > python clip.py Screw Holder Bottom.stl
-The clip tool is parsing the file:
-Screw Holder Bottom.stl
-..
-The clip tool has created the file:
-.. Screw Holder Bottom_clip.gcode
-
-
-> python
-Python 2.5.1 (r251:54863, Sep 22 2007, 01:43:31)
-[GCC 4.2.1 (SUSE Linux)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import clip
->>> clip.main()
-This brings up the clip dialog.
-
-
->>> clip.writeOutput('Screw Holder Bottom.stl')
 The clip tool is parsing the file:
 Screw Holder Bottom.stl
 ..
@@ -72,12 +53,12 @@ import sys
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
 __date__ = '$Date: 2008/21/04 $'
-__license__ = 'GPL 3.0'
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
 def getCraftedText( fileName, text, clipRepository = None ):
 	"Clip a gcode linear move file or text."
-	return getCraftedTextFromText( archive.getTextIfEmpty( fileName, text ), clipRepository )
+	return getCraftedTextFromText( archive.getTextIfEmpty(fileName, text), clipRepository )
 
 def getCraftedTextFromText( gcodeText, clipRepository = None ):
 	"Clip a gcode linear move text."
@@ -90,14 +71,12 @@ def getCraftedTextFromText( gcodeText, clipRepository = None ):
 	return ClipSkein().getCraftedGcode( clipRepository, gcodeText )
 
 def getNewRepository():
-	"Get the repository constructor."
+	'Get new repository.'
 	return ClipRepository()
 
-def writeOutput(fileName=''):
-	"Clip a gcode linear move file.  Chain clip the gcode if it is not already clipped.  If no fileName is specified, clip the first unmodified gcode file in this folder."
-	fileName = fabmetheus_interpret.getFirstTranslatorFileNameUnmodified(fileName)
-	if fileName != '':
-		skeinforge_craft.writeChainTextWithNounMessage( fileName, 'clip')
+def writeOutput(fileName, shouldAnalyze=True):
+	"Clip a gcode linear move file.  Chain clip the gcode if it is not already clipped."
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'clip', shouldAnalyze)
 
 
 class ClipRepository:
@@ -131,12 +110,12 @@ class ClipSkein:
 		self.lineIndex = 0
 		self.oldLocation = None
 		self.oldWiddershins = None
-		self.travelFeedRatePerMinute = None
+		self.travelFeedRateMinute = None
 
 	def addGcodeFromThreadZ( self, thread, z ):
 		"Add a gcode thread to the output."
 		if len(thread) > 0:
-			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRatePerMinute, thread[0], z )
+			self.distanceFeedRate.addGcodeMovementZWithFeedRate( self.travelFeedRateMinute, thread[0], z )
 		else:
 			print( "zero length vertex positions array which was skipped over, this should never happen" )
 		if len(thread) < 2:
@@ -293,7 +272,7 @@ class ClipSkein:
 				self.layerPixelWidth = 0.1 * absolutePerimeterWidth
 				self.maximumConnectionDistance = clipRepository.maximumConnectionDistanceOverPerimeterWidth.value * absolutePerimeterWidth
 			elif firstWord == '(<travelFeedRatePerSecond>':
-				self.travelFeedRatePerMinute = 60.0 * float(splitLine[1])
+				self.travelFeedRateMinute = 60.0 * float(splitLine[1])
 			self.distanceFeedRate.addLine(line)
 
 	def parseLine(self, line):
