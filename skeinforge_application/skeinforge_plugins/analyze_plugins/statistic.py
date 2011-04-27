@@ -106,8 +106,8 @@ class StatisticRepository:
 		self.activateStatistic = settings.BooleanSetting().getFromValue('Activate Statistic', self, True )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Cost -', self )
-		self.machineTime = settings.FloatSpin().getFromValue( 0.0, 'Machine Time ($/hour):', self, 2.0, 1.0 )
-		self.material = settings.FloatSpin().getFromValue( 0.0, 'Material ($/kg):', self, 20.0, 10.0 )
+		self.machineTime = settings.FloatSpin().getFromValue( 0.0, 'Machine Time ($/hour):', self, 5.0, 1.0 )
+		self.material = settings.FloatSpin().getFromValue( 0.0, 'Material ($/kg):', self, 40.0, 20.0 )
 		settings.LabelSeparator().getFromRepository(self)
 		self.density = settings.FloatSpin().getFromValue( 500.0, 'Density (kg/m3):', self, 2000.0, 930.0 )
 		self.extrusionDiameterOverThickness = settings.FloatSpin().getFromValue( 1.0, 'Extrusion Diameter over Thickness (ratio):', self, 1.5, 1.25 )
@@ -130,6 +130,7 @@ class StatisticSkein:
 		self.oldLocation = None
 		self.operatingFeedRatePerSecond = None
 		self.output = cStringIO.StringIO()
+		self.profileName = None
 		self.version = None
 
 	def addLine(self, line):
@@ -236,6 +237,10 @@ class StatisticSkein:
 		self.addLine( "Procedures" )
 		for procedure in self.procedures:
 			self.addLine(procedure)
+		if self.profileName != None:
+			self.addLine(' ')
+			self.addLine( 'Profile' )
+			self.addLine(self.profileName)
 		self.addLine(' ')
 		self.addLine('Slice')
 		self.addLine( "Layer thickness is %s mm." % euclidean.getThreeSignificantFigures( self.layerThickness ) )
@@ -328,6 +333,8 @@ class StatisticSkein:
 			self.absolutePerimeterWidth = abs(float(splitLine[1]))
 		elif firstWord == '(<procedureName>':
 			self.procedures.append(splitLine[1])
+		elif firstWord == '(<profileName>':
+			self.profileName = splitLine[1]
 		elif firstWord == '(<version>':
 			self.version = splitLine[1]
 

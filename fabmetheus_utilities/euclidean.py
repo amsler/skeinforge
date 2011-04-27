@@ -130,7 +130,7 @@ def addPointToPath( path, pixelDictionary, point, value, width ):
 	path.append(point)
 	if len(path) < 2:
 		return
-	begin = path[ - 2 ]
+	begin = path[-2]
 	addValueSegmentToPixelTable( begin, point, pixelDictionary, value, width )
 
 def addSegmentToPixelTable( beginComplex, endComplex, pixelDictionary, shortenDistanceBegin, shortenDistanceEnd, width ):
@@ -399,12 +399,12 @@ def concatenateRemovePath( connectedPaths, pathIndex, paths, pixelDictionary, se
 		nextBegin = nextEndpoint.path[-1]
 		nextMinusBottomNormalized = getNormalized( nextBegin - bottomEnd )
 		if len( bottomSegmentEndpoint.path ) > 1:
-			bottomPenultimate = bottomSegmentEndpoint.path[ - 2 ]
+			bottomPenultimate = bottomSegmentEndpoint.path[-2]
 			if getDotProduct( getNormalized( bottomPenultimate - bottomEnd ), nextMinusBottomNormalized ) > 0.9:
 				connectedPaths.append(path)
 				return
 		if len( nextEndpoint.path ) > 1:
-			nextPenultimate = nextEndpoint.path[ - 2 ]
+			nextPenultimate = nextEndpoint.path[-2]
 			if getDotProduct( getNormalized( nextPenultimate - nextBegin ), - nextMinusBottomNormalized ) > 0.9:
 				connectedPaths.append(path)
 				return
@@ -646,7 +646,7 @@ def getComplexPolygonByStartEnd(endAngle, radius, sides, startAngle=0.0):
 		startAngle += sideAngle
 	return getLoopWithoutCloseEnds(0.000001 * radius, complexPolygon)
 
-def getConcatenatedList( originalLists ):
+def getConcatenatedList(originalLists):
 	'Get the lists as one concatenated list.'
 	concatenatedList = []
 	for originalList in originalLists:
@@ -756,7 +756,7 @@ def getDurationString( seconds ):
 def getEndpointFromPath( path, pathIndex ):
 	'Get endpoint segment from a path.'
 	begin = path[-1]
-	end = path[ - 2 ]
+	end = path[-2]
 	endpointBegin = Endpoint()
 	endpointEnd = Endpoint().getFromOtherPoint( endpointBegin, end )
 	endpointBegin.getFromOtherPoint( endpointEnd, begin )
@@ -1090,37 +1090,44 @@ def getLoopCentroid(polygonComplex):
 	torqueMultiplier = 0.333333333333333333333333 / polygonDoubleArea
 	return polygonTorque * torqueMultiplier
 
-def getLoopConvex(polygonComplex):
-	'Get convex hull of a complex polygon using gift wrap algorithm.'
-	if len(polygonComplex) < 4:
-		return polygonComplex
-	leftPointIndex = getLeftPointIndex(polygonComplex)
-	around = polygonComplex[leftPointIndex + 1 :] + polygonComplex[: leftPointIndex + 1]
-	lastAddedIndex = - 1
-	lastPoint = around[-1]
-	aroundLengthMinusOne = len(around) - 1
-	polygonConvex = []
-	segment = complex(0.0, -1.0)
-	while lastAddedIndex < aroundLengthMinusOne:
-		lastAddedIndex = getLoopConvexAddedIndex(around, lastAddedIndex, lastPoint, segment)
-		segment = getNormalized(around[lastAddedIndex] - lastPoint)
-		lastPoint = around[lastAddedIndex]
-		polygonConvex.append(lastPoint)
-	return polygonConvex
-
-def getLoopConvexAddedIndex( around, lastAddedIndex, lastPoint, segment ):
-	'Get polygon convex added index.'
-	polygonConvexAddedIndex = len(around) - 1
-	greatestDotProduct = - 9.9
-	for addedIndex in xrange( lastAddedIndex + 1, len(around) ):
-		addedPoint = around[ addedIndex ]
-		addedSegment = getNormalized( addedPoint - lastPoint )
-		if abs( addedSegment ) > 0.0:
-			dotProduct = getDotProduct( addedSegment, segment )
-			if dotProduct >= greatestDotProduct:
-				greatestDotProduct = dotProduct
-				polygonConvexAddedIndex = addedIndex
-	return polygonConvexAddedIndex
+def getLoopConvex(points):
+	'Get convex hull of points using gift wrap algorithm.'
+	loopConvex = []
+	pointSet = set()
+	for point in points:
+		if point not in pointSet:
+			pointSet.add(point)
+			loopConvex.append(point)
+	if len(loopConvex) < 4:
+		return loopConvex
+	leftPoint = getLeftPoint(loopConvex)
+	lastPoint = leftPoint
+	pointSet.remove(leftPoint)
+	loopConvex = [leftPoint]
+	lastSegment = complex(0.0, 1.0)
+	while True:
+		greatestDotProduct = -9.9
+		greatestPoint = None
+		greatestSegment = None
+		if len(loopConvex) > 2:
+			nextSegment = getNormalized(leftPoint - lastPoint)
+			if abs(nextSegment) > 0.0:
+				greatestDotProduct = getDotProduct(nextSegment, lastSegment)
+		for point in pointSet:
+			nextSegment = getNormalized(point - lastPoint)
+			if abs(nextSegment) > 0.0:
+				dotProduct = getDotProduct(nextSegment, lastSegment)
+				if dotProduct >= greatestDotProduct:
+					greatestDotProduct = dotProduct
+					greatestPoint = point
+					greatestSegment = nextSegment
+		if greatestPoint == None:
+			return loopConvex
+		lastPoint = greatestPoint
+		loopConvex.append(greatestPoint)
+		pointSet.remove(greatestPoint)
+		lastSegment = greatestSegment
+	return loopConvex
 
 def getLoopConvexCentroid(polygonComplex):
 	'Get centroid of the convex hull of a complex polygon.'
@@ -1363,65 +1370,58 @@ def getPathLength(path):
 		pathLength += abs( firstPoint - secondPoint )
 	return pathLength
 
-def getPathsFromEndpoints( endpoints, fillInset, pixelDictionary, width ):
+def getPathsFromEndpoints(endpoints, maximumConnectionLength, pixelDictionary, width):
 	'Get paths from endpoints.'
 	if len(endpoints) < 2:
 		return [[]]
-	for beginningEndpoint in endpoints[ : : 2 ]:
+	for beginningEndpoint in endpoints[: : 2]:
 		beginningPoint = beginningEndpoint.point
-		addSegmentToPixelTable( beginningPoint, beginningEndpoint.otherEndpoint.point, pixelDictionary, 0, 0, width )
+		addSegmentToPixelTable(beginningPoint, beginningEndpoint.otherEndpoint.point, pixelDictionary, 0, 0, width)
 	endpointFirst = endpoints[0]
-	endpoints.remove( endpointFirst )
+	endpoints.remove(endpointFirst)
 	otherEndpoint = endpointFirst.otherEndpoint
-	endpoints.remove( otherEndpoint )
+	endpoints.remove(otherEndpoint)
 	nextEndpoint = None
 	path = []
-	paths = [ path ]
-	if len( endpoints ) > 1:
-		nextEndpoint = otherEndpoint.getNearestMiss( endpoints, path, pixelDictionary, width )
+	paths = [path]
+	if len(endpoints) > 1:
+		nextEndpoint = otherEndpoint.getNearestMiss(endpoints, path, pixelDictionary, width)
 		if nextEndpoint != None:
-			if abs( nextEndpoint.point - endpointFirst.point ) < abs( nextEndpoint.point - otherEndpoint.point ):
+			if abs(nextEndpoint.point - endpointFirst.point) < abs(nextEndpoint.point - otherEndpoint.point):
 				endpointFirst = endpointFirst.otherEndpoint
 				otherEndpoint = endpointFirst.otherEndpoint
-	addPointToPath( path, pixelDictionary, endpointFirst.point, None, width )
-	addPointToPath( path, pixelDictionary, otherEndpoint.point, len(paths) - 1, width )
-	oneOverEndpointWidth = 0.2 / fillInset
+	addPointToPath(path, pixelDictionary, endpointFirst.point, None, width)
+	addPointToPath(path, pixelDictionary, otherEndpoint.point, len(paths) - 1, width)
+	oneOverEndpointWidth = 1.0 / maximumConnectionLength
 	endpointTable = {}
 	for endpoint in endpoints:
-		addElementToPixelListFromPoint( endpoint, endpointTable, endpoint.point * oneOverEndpointWidth )
-	while len( endpointTable ) > 0:
-		if len( endpointTable ) == 1:
-			if len( endpointTable.values()[0] ) < 2:
+		addElementToPixelListFromPoint(endpoint, endpointTable, endpoint.point * oneOverEndpointWidth)
+	while len(endpointTable) > 0:
+		if len(endpointTable) == 1:
+			if len(endpointTable.values()[0]) < 2:
 				return
-		endpoints = getSquareValuesFromPoint( endpointTable, otherEndpoint.point * oneOverEndpointWidth )
-		nextEndpoint = otherEndpoint.getNearestMiss( endpoints, path, pixelDictionary, width )
+		endpoints = getSquareValuesFromPoint(endpointTable, otherEndpoint.point * oneOverEndpointWidth)
+		nextEndpoint = otherEndpoint.getNearestMiss(endpoints, path, pixelDictionary, width)
 		if nextEndpoint == None:
 			path = []
 			paths.append(path)
-			endpoints = getListTableElements( endpointTable )
-			nextEndpoint = otherEndpoint.getNearestEndpoint( endpoints )
+			endpoints = getListTableElements(endpointTable)
+			nextEndpoint = otherEndpoint.getNearestEndpoint(endpoints)
 # this commented code should be faster than the getListTableElements code, but it isn't, someday a spiral algorithim could be tried
 #			endpoints = getSquareValuesFromPoint( endpointTable, otherEndpoint.point * oneOverEndpointWidth )
-#			nextEndpoint = otherEndpoint.getNearestEndpoint( endpoints )
+#			nextEndpoint = otherEndpoint.getNearestEndpoint(endpoints)
 #			if nextEndpoint == None:
 #				endpoints = []
 #				for endpointTableValue in endpointTable.values():
 #					endpoints.append( endpointTableValue[0] )
-#				nextEndpoint = otherEndpoint.getNearestEndpoint( endpoints )
+#				nextEndpoint = otherEndpoint.getNearestEndpoint(endpoints)
 #				endpoints = getSquareValuesFromPoint( endpointTable, nextEndpoint.point * oneOverEndpointWidth )
-#				nextEndpoint = otherEndpoint.getNearestEndpoint( endpoints )
-		addPointToPath( path, pixelDictionary, nextEndpoint.point, len(paths) - 1, width )
-		removeElementFromPixelListFromPoint( nextEndpoint, endpointTable, nextEndpoint.point * oneOverEndpointWidth )
+#				nextEndpoint = otherEndpoint.getNearestEndpoint(endpoints)
+		addPointToPath(path, pixelDictionary, nextEndpoint.point, len(paths) - 1, width)
+		removeElementFromPixelListFromPoint(nextEndpoint, endpointTable, nextEndpoint.point * oneOverEndpointWidth)
 		otherEndpoint = nextEndpoint.otherEndpoint
-		hop = nextEndpoint.getHop( fillInset, path )
-		if hop != None:
-			if len(path) < 2:
-				print('path of length one in getPathsFromEndpoints in euclidean, this should never happen')
-				print(path)
-			path = [ hop ]
-			paths.append(path)
-		addPointToPath( path, pixelDictionary, otherEndpoint.point, len(paths) - 1, width )
-		removeElementFromPixelListFromPoint( otherEndpoint, endpointTable, otherEndpoint.point * oneOverEndpointWidth )
+		addPointToPath(path, pixelDictionary, otherEndpoint.point, len(paths) - 1, width)
+		removeElementFromPixelListFromPoint(otherEndpoint, endpointTable, otherEndpoint.point * oneOverEndpointWidth)
 	return paths
 
 def getPlaneDot( vec3First, vec3Second ):
@@ -1504,7 +1504,7 @@ def getSegmentFromPath( path, pathIndex ):
 	if len(path) < 2:
 		return None
 	begin = path[-1]
-	end = path[ - 2 ]
+	end = path[-2]
 	forwardEndpoint = getEndpointFromPath( path, pathIndex )
 	reversePath = path[:]
 	reversePath.reverse()
@@ -1770,7 +1770,7 @@ def isLineIntersectingLoop( loop, pointBegin, pointEnd ):
 	normalizedSegmentLength = abs( normalizedSegment )
 	if normalizedSegmentLength > 0.0:
 		normalizedSegment /= normalizedSegmentLength
-		segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+		segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 		pointBeginRotated = segmentYMirror * pointBegin
 		pointEndRotated = segmentYMirror * pointEnd
 		if isLoopIntersectingInsideXSegment( loop, pointBeginRotated.real, pointEndRotated.real, segmentYMirror, pointBeginRotated.imag ):
@@ -1783,7 +1783,7 @@ def isLineIntersectingLoops( loops, pointBegin, pointEnd ):
 	normalizedSegmentLength = abs( normalizedSegment )
 	if normalizedSegmentLength > 0.0:
 		normalizedSegment /= normalizedSegmentLength
-		segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+		segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 		pointBeginRotated = segmentYMirror * pointBegin
 		pointEndRotated = segmentYMirror * pointEnd
 		if isLoopListIntersectingInsideXSegment( loops, pointBeginRotated.real, pointEndRotated.real, segmentYMirror, pointBeginRotated.imag ):
@@ -2122,30 +2122,6 @@ class Endpoint:
 		self.point = point
 		return self
 
-	def getHop( self, fillInset, path ):
-		'Get a hop away from the endpoint if the other endpoint is doubling back.'
-		if len(path) < 2:
-			return None
-		penultimateMinusPoint = path[ - 2 ] - self.point
-		if abs( penultimateMinusPoint ) == 0.0:
-			return None
-		penultimateMinusPoint /= abs( penultimateMinusPoint )
-		normalizedComplexSegment = self.otherEndpoint.point - self.point
-		normalizedComplexSegmentLength = abs( normalizedComplexSegment )
-		if normalizedComplexSegmentLength == 0.0:
-			return None
-		normalizedComplexSegment /= normalizedComplexSegmentLength
-		if getDotProduct( penultimateMinusPoint, normalizedComplexSegment ) < 0.9:
-			return None
-		alongRatio = 0.8
-		hop = self.point * alongRatio + self.otherEndpoint.point * ( 1.0 - alongRatio )
-		normalizedSegment = self.otherEndpoint.point - self.point
-		normalizedSegmentLength = abs( normalizedSegment )
-		absoluteCross = abs( getCrossProduct( penultimateMinusPoint, normalizedComplexSegment ) )
-		reciprocalCross = 1.0 / max( absoluteCross, 0.01 )
-		alongWay = min( fillInset * reciprocalCross, normalizedSegmentLength )
-		return self.point + normalizedSegment * alongWay / normalizedSegmentLength
-
 	def getNearestEndpoint( self, endpoints ):
 		'Get nearest endpoint.'
 		smallestDistance = 987654321987654321.0
@@ -2157,42 +2133,42 @@ class Endpoint:
 				nearestEndpoint = endpoint
 		return nearestEndpoint
 
-	def getNearestMiss( self, endpoints, path, pixelDictionary, width ):
+	def getNearestMiss(self, endpoints, path, pixelDictionary, width):
 		'Get the nearest endpoint which the segment to that endpoint misses the other extrusions.'
 		pathMaskTable = {}
 		smallestDistance = 987654321.0
-		penultimateMinusPoint = complex( 0.0, 0.0 )
+		penultimateMinusPoint = complex(0.0, 0.0)
 		if len(path) > 1:
-			penultimatePoint = path[ - 2 ]
-			addSegmentToPixelTable( penultimatePoint, self.point, pathMaskTable, 0, 0, width )
+			penultimatePoint = path[-2]
+			addSegmentToPixelTable(penultimatePoint, self.point, pathMaskTable, 0, 0, width)
 			penultimateMinusPoint = penultimatePoint - self.point
-			if abs( penultimateMinusPoint ) > 0.0:
-				penultimateMinusPoint /= abs( penultimateMinusPoint )
+			if abs(penultimateMinusPoint) > 0.0:
+				penultimateMinusPoint /= abs(penultimateMinusPoint)
 		for endpoint in endpoints:
 			endpoint.segment = endpoint.point - self.point
-			endpoint.segmentLength = abs( endpoint.segment )
+			endpoint.segmentLength = abs(endpoint.segment)
 			if endpoint.segmentLength <= 0.0:
 #				print('This should never happen, the endpoints are touching')
 #				print( endpoint )
 #				print(path)
 				return endpoint
-		endpoints.sort( compareSegmentLength )
-		for endpoint in endpoints[ : 15 ]: # increasing the number of searched endpoints increases the search time, with 20 fill took 600 seconds for cilinder.gts, with 10 fill took 533 seconds
+		endpoints.sort(compareSegmentLength)
+		for endpoint in endpoints[: 15]: # increasing the number of searched endpoints increases the search time, with 20 fill took 600 seconds for cilinder.gts, with 10 fill took 533 seconds
 			normalizedSegment = endpoint.segment / endpoint.segmentLength
-			isOverlappingSelf = getDotProduct( penultimateMinusPoint, normalizedSegment ) > 0.9
+			isOverlappingSelf = getDotProduct(penultimateMinusPoint, normalizedSegment) > 0.9
 			if not isOverlappingSelf:
 				if len(path) > 2:
-					segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+					segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 					pointRotated = segmentYMirror * self.point
 					endpointPointRotated = segmentYMirror * endpoint.point
-					if isXSegmentIntersectingPath( path[ max( 0, len(path) - 21 ) : - 1 ], pointRotated.real, endpointPointRotated.real, segmentYMirror, pointRotated.imag ):
+					if isXSegmentIntersectingPath(path[max(0, len(path) - 21) : -1], pointRotated.real, endpointPointRotated.real, segmentYMirror, pointRotated.imag):
 						isOverlappingSelf = True
 			if not isOverlappingSelf:
 				totalMaskTable = pathMaskTable.copy()
-				addSegmentToPixelTable( endpoint.point, endpoint.otherEndpoint.point, totalMaskTable, 0, 0, width )
+				addSegmentToPixelTable(endpoint.point, endpoint.otherEndpoint.point, totalMaskTable, 0, 0, width)
 				segmentTable = {}
-				addSegmentToPixelTable( self.point, endpoint.point, segmentTable, 0, 0, width )
-				if not isPixelTableIntersecting( pixelDictionary, segmentTable, totalMaskTable ):
+				addSegmentToPixelTable(self.point, endpoint.point, segmentTable, 0, 0, width)
+				if not isPixelTableIntersecting(pixelDictionary, segmentTable, totalMaskTable):
 					return endpoint
 		return None
 
@@ -2200,16 +2176,16 @@ class Endpoint:
 		'Get the nearest endpoint which the segment to that endpoint misses the other extrusions, also checking the path of the endpoint.'
 		pathMaskTable = {}
 		smallestDistance = 987654321.0
-		penultimateMinusPoint = complex( 0.0, 0.0 )
+		penultimateMinusPoint = complex(0.0, 0.0)
 		if len(path) > 1:
-			penultimatePoint = path[ - 2 ]
+			penultimatePoint = path[-2]
 			addSegmentToPixelTable( penultimatePoint, self.point, pathMaskTable, 0, 0, width )
 			penultimateMinusPoint = penultimatePoint - self.point
-			if abs( penultimateMinusPoint ) > 0.0:
-				penultimateMinusPoint /= abs( penultimateMinusPoint )
+			if abs(penultimateMinusPoint) > 0.0:
+				penultimateMinusPoint /= abs(penultimateMinusPoint)
 		for endpoint in endpoints:
 			endpoint.segment = endpoint.point - self.point
-			endpoint.segmentLength = abs( endpoint.segment )
+			endpoint.segmentLength = abs(endpoint.segment)
 			if endpoint.segmentLength <= 0.0:
 #				print('This should never happen, the endpoints are touching')
 #				print( endpoint )
@@ -2221,14 +2197,14 @@ class Endpoint:
 			isOverlappingSelf = getDotProduct( penultimateMinusPoint, normalizedSegment ) > 0.9
 			if not isOverlappingSelf:
 				if len(path) > 2:
-					segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+					segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 					pointRotated = segmentYMirror * self.point
 					endpointPointRotated = segmentYMirror * endpoint.point
 					if isXSegmentIntersectingPath( path[ max( 0, len(path) - 21 ) : - 1 ], pointRotated.real, endpointPointRotated.real, segmentYMirror, pointRotated.imag ):
 						isOverlappingSelf = True
 				endpointPath = endpoint.path
 				if len( endpointPath ) > 2:
-					segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+					segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 					pointRotated = segmentYMirror * self.point
 					endpointPointRotated = segmentYMirror * endpoint.point
 					if isXSegmentIntersectingPath( endpointPath, pointRotated.real, endpointPointRotated.real, segmentYMirror, pointRotated.imag ):

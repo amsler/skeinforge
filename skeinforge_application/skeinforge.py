@@ -230,28 +230,37 @@ import os
 import sys
 
 
-# announce
-#
+# infill or inset bug
 # circle is average radius in drill
+# cutting ahmet
+# smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
+# clairvoyance
+# think about changing getOverlapRatio(loop, pointDictionary) < 0.2 to 0.51
 # change topOverBottom in linearbearingexample to pegAngle
-# add links download manual svg_writer
+# add links download manual svg_writer, add left right arrow keys to layer
 # change thickness to height in gear xml
 # base xmlelement off xmlatom
+# document announce covex
 # maybe in svgReader if loop intersection with previous union else add
+# think about http://code.google.com/p/skeinarchiver/ and/or undo
 #
 # unimportant
 # minor outline problem when an end path goes through a path, like in the letter A
 # view profile 1 mm thickness
 #
+# raftPerimeter outset by maximum thickness
+# scrollbar/width problem when starting with narrow view like help/meta/profile
+# maybe make vectorwrite prominent, not skeiniso, probably not because it doesn't work on Mac
+# move more __file__
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # hollow top
+# chamber: heated bed off at a layer http://blog.makerbot.com/2011/03/17/if-you-cant-stand-the-heat/
 # packingDensity or density in grid - probably just density
 # derivations for shapes
 # think about rectangular getVector3RemoveByPre..
 # links in layerTemplate
 # del previous, add begin & end if far  get actual path
 # linearbearingexample 15 x 1 x 2, linearbearingcage
-# clairvoyance
 # add date time 11.01.02|12:08
 # polling
 # connectionfrom, to, connect, xaxis
@@ -260,6 +269,7 @@ import sys
 # xml_creation
 # voronoi average location intersection looped inset intercircles
 # 'fileName, text, repository' commandLineInterface
+# delete: text = text.replace(('\nName                          %sValue\n' % globalSpreadsheetSeparator), ('\n_Name                          %sValue\n' % globalSpreadsheetSeparator))
 #
 #
 # multiply to table + boundary bedBound bedWidth bedHeight bedFile.csv
@@ -327,14 +337,14 @@ import sys
 # pixelSet instead of pixelTable for arounds _speed
 #
 #
+# infuse _extrusion
 # add hook _extrusion
-# smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
-# implement acceleration & collinear removal in penultimate viewers _extrusion
 # integral thin width _extrusion
 # layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
 # maybe double height shells option _extrusion
-# raft triple layer base, middle interface with hot loop or ties
+# maybe raft triple layer base, middle interface with hot loop or ties
 # somehow, add pattern to outside, http://blog.makerbot.com/2010/09/03/lampshades/
+# implement acceleration & collinear removal in penultimate viewers _extrusion
 #
 # rename skeinforge_profile.addListsToCraftTypeRepository to skeinforge_profile.addToCraftTypeRepository after apron
 # basic tool
@@ -510,17 +520,13 @@ def addToProfileMenu(profileSelection, profileType, repository):
 	for profileName in profilePluginSettings.profileList.value:
 		skeinforge_profile.ProfileSelectionMenuRadio().getFromMenuButtonDisplay(profileSelection, profileName, repository, profileName == profilePluginSettings.profileListbox.value)
 
-def getPluginsDirectoryPath():
-	'Get the plugins directory path.'
-	return archive.getAbsoluteFrozenFolderPath(__file__, 'skeinforge_plugins')
-
-def getPluginFileNames():
-	'Get analyze plugin fileNames.'
-	return archive.getPluginFileNamesFromDirectoryPath(getPluginsDirectoryPath())
-
 def getNewRepository():
 	'Get new repository.'
 	return SkeinforgeRepository()
+
+def getPluginFileNames():
+	'Get skeinforge plugin fileNames.'
+	return archive.getPluginFileNamesFromDirectoryPath(archive.getSkeinforgePluginsPath())
 
 def getRadioPluginsAddPluginGroupFrame(directoryPath, importantFileNames, names, repository):
 	'Get the radio plugins and add the plugin frame.'
@@ -561,7 +567,7 @@ class SkeinforgeRepository:
 		self.version = settings.LabelDisplay().getFromName('Version: ' + versionText, self)
 		settings.LabelDisplay().getFromName('', self)
 		importantFileNames = ['craft', 'profile']
-		getRadioPluginsAddPluginGroupFrame(getPluginsDirectoryPath(), importantFileNames, getPluginFileNames(), self)
+		getRadioPluginsAddPluginGroupFrame(archive.getSkeinforgePluginsPath(), importantFileNames, getPluginFileNames(), self)
 		self.executeTitle = 'Skeinforge'
 
 	def execute(self):

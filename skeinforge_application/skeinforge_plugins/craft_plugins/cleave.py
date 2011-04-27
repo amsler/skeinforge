@@ -155,7 +155,6 @@ class CleaveRepository:
 		self.correctMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Correct Mesh', self, True )
 		self.unprovenMesh = settings.Radio().getFromRadio( importLatentStringVar, 'Unproven Mesh', self, False )
 		self.perimeterWidth = settings.FloatSpin().getFromValue( 0.4, 'Perimeter Width (mm):', self, 4.0, 2.0 )
-		settings.LabelSeparator().getFromRepository(self)
 		self.svgViewer = settings.StringSetting().getFromValue('SVG Viewer:', self, 'webbrowser')
 		settings.LabelSeparator().getFromRepository(self)
 		self.executeTitle = 'Cleave'

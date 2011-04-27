@@ -108,7 +108,7 @@ class CraftRadioButtonsSaveListener:
 		for radioPlugin in self.radioPlugins:
 			if radioPlugin.name in craftSequence:
 				activeRadioPlugins.append( radioPlugin )
-				radioPlugin.incrementGridPosition( gridPosition )
+				radioPlugin.incrementGridPosition(gridPosition)
 				maximumValue = max( radioPlugin.value, maximumValue )
 			else:
 				radioPlugin.radiobutton.grid_remove()

@@ -175,7 +175,7 @@ class SVGWriter:
 	def getReplacedSVGTemplate(self, fileName, procedureName, rotatedLoopLayers, xmlElement=None):
 		'Get the lines of text from the layer_template.svg file.'
 		self.extent = self.cornerMaximum - self.cornerMinimum
-		svgTemplateText = archive.getFileTextInFileDirectory( __file__, os.path.join('templates', 'layer_template.svg') )
+		svgTemplateText = archive.getFileText(archive.getTemplatesPath('layer_template.svg'))
 		self.xmlParser = XMLSimpleReader( fileName, None, svgTemplateText )
 		self.svgElement = self.xmlParser.getRoot()
 		svgElementDictionary = self.svgElement.attributeDictionary

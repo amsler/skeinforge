@@ -40,7 +40,7 @@ def addLineLoopsIntersections( loopLoopsIntersections, loops, pointBegin, pointE
 		return
 	lineLoopsIntersections = []
 	normalizedSegment /= normalizedSegmentLength
-	segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+	segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 	pointBeginRotated = segmentYMirror * pointBegin
 	pointEndRotated = segmentYMirror * pointEnd
 	addLoopsXSegmentIntersections( lineLoopsIntersections, loops, pointBeginRotated.real, pointEndRotated.real, segmentYMirror, pointBeginRotated.imag )

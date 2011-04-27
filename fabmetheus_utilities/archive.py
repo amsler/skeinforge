@@ -26,7 +26,6 @@ def addToNamePathDictionary(directoryPath, namePathDictionary):
 	pluginFileNames = getPluginFileNamesFromDirectoryPath(directoryPath)
 	for pluginFileName in pluginFileNames:
 		namePathDictionary[pluginFileName.replace('_', '')] = os.path.join(directoryPath, pluginFileName)
-	return getAbsoluteFrozenFolderPath( __file__, 'skeinforge_plugins')
 
 def getAbsoluteFolderPath(filePath, folderName=''):
 	'Get the absolute folder path.'
@@ -38,7 +37,9 @@ def getAbsoluteFolderPath(filePath, folderName=''):
 def getAbsoluteFrozenFolderPath(filePath, folderName=''):
 	'Get the absolute frozen folder path.'
 	if hasattr(sys, 'frozen'):
-		filePath = os.path.join(os.path.join(filePath, 'library.zip'), 'skeinforge_application')
+		if '.py' in filePath:
+			filePath = ''.join(filePath.rpartition('\\')[: 2])
+		filePath = os.path.join(filePath, 'skeinforge_application')
 	return getAbsoluteFolderPath(filePath, folderName)
 
 def getDocumentationPath(subName=''):
@@ -58,7 +59,12 @@ def getEndsWithList(word, wordEndings):
 
 def getFabmetheusPath(subName=''):
 	'Get the fabmetheus directory path.'
-	return getJoinedPath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), subName)
+	fabmetheusFile = None
+	if hasattr(sys, 'frozen'):
+		fabmetheusFile = unicode(sys.executable, sys.getfilesystemencoding())
+	else:
+		fabmetheusFile = os.path.dirname(os.path.abspath(__file__))
+	return getJoinedPath(os.path.dirname(fabmetheusFile), subName)
 
 def getFabmetheusUtilitiesPath(subName=''):
 	'Get the fabmetheus utilities directory path.'
@@ -263,7 +269,14 @@ def getSettingsPath(subName=''):
 	'Get the settings directory path, which is the home directory joined with .skeinforge.'
 	global globalTemporarySettingsPath
 	return getJoinedPath(globalTemporarySettingsPath, subName)
-#	return getJoinedPath(os.path.join(os.path.expanduser('~'), '.skeinforge'), subName)
+
+def getSkeinforgePath(subName=''):
+	'Get the skeinforge directory path.'
+	return getJoinedPath(getFabmetheusPath('skeinforge_application'), subName)
+
+def getSkeinforgePluginsPath(subName=''):
+	'Get the skeinforge plugins directory path.'
+	return getJoinedPath(getSkeinforgePath('skeinforge_plugins'), subName)
 
 def getSummarizedFileName(fileName):
 	'Get the fileName basename if the file is in the current working directory, otherwise return the original full name.'
@@ -271,9 +284,9 @@ def getSummarizedFileName(fileName):
 		return os.path.basename(fileName)
 	return fileName
 
-def getSkeinforgePath(subName=''):
-	'Get the skeinforge directory path.'
-	return getJoinedPath(getFabmetheusPath('skeinforge_application'), subName)
+def getTemplatesPath(subName=''):
+	'Get the templates directory path.'
+	return getJoinedPath(getFabmetheusUtilitiesPath('templates'), subName)
 
 def getTextIfEmpty(fileName, text):
 	'Get the text from a file if it the text is empty.'
@@ -297,8 +310,8 @@ def getUntilDot(text):
 	return text[: dotIndex]
 
 def getVersionFileName():
-	'Get the file name of the version date.'
-	return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'version.txt')
+	'Get the file name of the version date.getFabmetheusUtilitiesPath(subName='')'
+	return getFabmetheusUtilitiesPath('version.txt')
 
 def isFileWithFileTypeWithoutWords(fileType, fileName, words):
 	'Determine if file has a given file type, but with does not contain a word in a list.'

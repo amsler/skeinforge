@@ -282,9 +282,52 @@ def getExtendedLineSegment(extensionDistance, lineSegment, loopXIntersections):
 		setExtendedPoint(lineSegment[1], pointEnd, loopXIntersection)
 	return lineSegment
 
+def getLoopsBySegmentsDictionary(segmentsDictionary, width):
+	'Get loops from a horizontal segments dictionary.'
+	points = []
+	for endpoint in getVerticalEndpoints(segmentsDictionary, width, 0.1 * width, width):
+		points.append(endpoint.point)
+	for endpoint in euclidean.getEndpointsFromSegmentTable(segmentsDictionary):
+		points.append(endpoint.point)
+	return triangle_mesh.getDescendingAreaOrientedLoops(points, points, width + width)
+
 def getNewRepository():
 	'Get new repository.'
 	return RaftRepository()
+
+def getVerticalEndpoints(horizontalSegmentsTable, horizontalStep, verticalOverhang, verticalStep):
+	'Get vertical endpoints.'
+	interfaceSegmentsTableKeys = horizontalSegmentsTable.keys()
+	interfaceSegmentsTableKeys.sort()
+	verticalTableTable = {}
+	for interfaceSegmentsTableKey in interfaceSegmentsTableKeys:
+		interfaceSegments = horizontalSegmentsTable[interfaceSegmentsTableKey]
+		for interfaceSegment in interfaceSegments:
+			begin = int(round(interfaceSegment[0].point.real / verticalStep))
+			end = int(round(interfaceSegment[1].point.real / verticalStep))
+			for stepIndex in xrange(begin, end + 1):
+				if stepIndex not in verticalTableTable:
+					verticalTableTable[stepIndex] = {}
+				verticalTableTable[stepIndex][interfaceSegmentsTableKey] = None
+	verticalTableTableKeys = verticalTableTable.keys()
+	verticalTableTableKeys.sort()
+	verticalEndpoints = []
+	for verticalTableTableKey in verticalTableTableKeys:
+		verticalTable = verticalTableTable[verticalTableTableKey]
+		verticalTableKeys = verticalTable.keys()
+		verticalTableKeys.sort()
+		xIntersections = []
+		for verticalTableKey in verticalTableKeys:
+			y = verticalTableKey * horizontalStep
+			if verticalTableKey - 1 not in verticalTableKeys:
+				xIntersections.append(y - verticalOverhang)
+			if verticalTableKey + 1 not in verticalTableKeys:
+				xIntersections.append(y + verticalOverhang)
+		for segment in euclidean.getSegmentsFromXIntersections(xIntersections, verticalTableTableKey * verticalStep):
+			for endpoint in segment:
+				endpoint.point = complex(endpoint.point.imag, endpoint.point.real)
+				verticalEndpoints.append(endpoint)
+	return verticalEndpoints
 
 def setExtendedPoint( lineSegmentEnd, pointOriginal, x ):
 	'Set the point in the extended line segment.'
@@ -433,16 +476,23 @@ class RaftSkein:
 		baseLayerThickness = self.layerThickness * self.baseLayerThicknessOverLayerThickness
 		zCenter = self.extrusionTop + 0.5 * baseLayerThickness
 		z = zCenter + baseLayerThickness * self.repository.baseNozzleLiftOverBaseLayerThickness.value
-		if len( self.baseSegments ) < 1:
+		if len(self.baseEndpoints) < 1:
 			print('This should never happen, the base layer has a size of zero.')
 			return
 		feedRateMultiplier = self.repository.baseFeedRateMultiplier.value
-		self.addLayerFromSegments( feedRateMultiplier, self.repository.baseFlowRateMultiplier.value, baseLayerThickness, self.baseLayerThicknessOverLayerThickness, self.baseSegments, z )
+		self.addLayerFromEndpoints(
+			self.baseEndpoints,
+			feedRateMultiplier,
+			self.repository.baseFlowRateMultiplier.value,
+			baseLayerThickness,
+			self.baseLayerThicknessOverLayerThickness,
+			self.baseStep,
+			z)
 
-	def addBaseSegments(self, baseExtrusionWidth, baseStep):
+	def addBaseSegments(self, baseExtrusionWidth):
 		'Add the base segments.'
 		baseOverhang = self.repository.infillOverhangOverExtrusionWidth.value * baseExtrusionWidth
-		self.baseSegments = self.getBaseDirectionSegments(baseOverhang, baseStep)
+		self.baseEndpoints = getVerticalEndpoints(self.interfaceSegmentsTable, self.interfaceStep, baseOverhang, self.baseStep)
 
 	def addEmptyLayerSupport( self, boundaryLayerIndex ):
 		'Add support material to a layer if it is empty.'
@@ -477,53 +527,67 @@ class RaftSkein:
 		zCenter = self.extrusionTop + 0.5 * interfaceLayerThickness
 		z = zCenter + interfaceLayerThickness * self.repository.interfaceNozzleLiftOverInterfaceLayerThickness.value
 		self.interfaceIntersectionsTableKeys.sort()
-		if len( self.interfaceSegments ) < 1:
+		if len(self.interfaceEndpoints) < 1:
 			print('This should never happen, the interface layer has a size of zero.')
 			return
 		feedRateMultiplier = self.repository.interfaceFeedRateMultiplier.value
 		flowRateMultiplier = self.repository.interfaceFlowRateMultiplier.value
-		self.addLayerFromSegments( feedRateMultiplier, flowRateMultiplier, interfaceLayerThickness, self.interfaceLayerThicknessOverLayerThickness, self.interfaceSegments, z )
+		self.addLayerFromEndpoints(
+			self.interfaceEndpoints,
+			feedRateMultiplier,
+			flowRateMultiplier,
+			interfaceLayerThickness,
+			self.interfaceLayerThicknessOverLayerThickness,
+			self.interfaceStep,
+			z)
 
-	def addInterfaceTables( self, baseStep, interfaceExtrusionWidth ):
+	def addInterfaceTables(self, interfaceExtrusionWidth):
 		'Add interface tables.'
-		interfaceOverhang = self.repository.infillOverhangOverExtrusionWidth.value * interfaceExtrusionWidth
-		self.interfaceSegments = []
+		overhang = self.repository.infillOverhangOverExtrusionWidth.value * interfaceExtrusionWidth
+		self.interfaceEndpoints = []
 		self.interfaceIntersectionsTableKeys = self.interfaceIntersectionsTable.keys()
 		self.interfaceSegmentsTable = {}
 		for yKey in self.interfaceIntersectionsTableKeys:
 			self.interfaceIntersectionsTable[yKey].sort()
 			y = yKey * self.interfaceStep
-			lineSegments = euclidean.getSegmentsFromXIntersections( self.interfaceIntersectionsTable[yKey], y )
+			lineSegments = euclidean.getSegmentsFromXIntersections(self.interfaceIntersectionsTable[yKey], y)
 			xIntersectionIndexList = []
-			for lineSegmentIndex in xrange( len( lineSegments ) ):
-				lineSegment = lineSegments[ lineSegmentIndex ]
+			for lineSegmentIndex in xrange(len(lineSegments)):
+				lineSegment = lineSegments[lineSegmentIndex]
 				endpointBegin = lineSegment[0]
 				endpointEnd = lineSegment[1]
-				endpointBegin.point = complex( baseStep * math.floor( endpointBegin.point.real / baseStep ) - interfaceOverhang, y )
-				endpointEnd.point = complex( baseStep * math.ceil( endpointEnd.point.real / baseStep ) + interfaceOverhang, y )
+				endpointBegin.point = complex(self.baseStep * math.floor(endpointBegin.point.real / self.baseStep) - overhang, y)
+				endpointEnd.point = complex(self.baseStep * math.ceil(endpointEnd.point.real / self.baseStep) + overhang, y)
 				if endpointEnd.point.real > endpointBegin.point.real:
-					euclidean.addXIntersectionIndexesFromSegment( lineSegmentIndex, lineSegment, xIntersectionIndexList )
-			xIntersections = euclidean.getJoinOfXIntersectionIndexes( xIntersectionIndexList )
-			joinedSegments = euclidean.getSegmentsFromXIntersections( xIntersections, y )
-			if len( joinedSegments ) > 0:
+					euclidean.addXIntersectionIndexesFromSegment(lineSegmentIndex, lineSegment, xIntersectionIndexList)
+			xIntersections = euclidean.getJoinOfXIntersectionIndexes(xIntersectionIndexList)
+			joinedSegments = euclidean.getSegmentsFromXIntersections(xIntersections, y)
+			if len(joinedSegments) > 0:
 				self.interfaceSegmentsTable[yKey] = joinedSegments
-			self.interfaceSegments += joinedSegments
+			for joinedSegment in joinedSegments:
+				self.interfaceEndpoints += joinedSegment
 
-	def addLayerFromSegments(self, feedRateMultiplier, flowRateMultiplier, layerLayerThickness, layerThicknessRatio, segments, z):
-		'Add a layer from segments and raise the extrusion top.'
+	def addLayerFromEndpoints(
+		self,
+		endpoints,
+		feedRateMultiplier,
+		flowRateMultiplier,
+		layerLayerThickness,
+		layerThicknessRatio,
+		step,
+		z):
+		'Add a layer from endpoints and raise the extrusion top.'
 		layerThicknessRatioSquared = layerThicknessRatio * layerThicknessRatio
 		feedRateMinute = self.feedRateMinute * feedRateMultiplier / layerThicknessRatioSquared
-		endpoints = euclidean.getEndpointsFromSegments(segments)
-		if len( endpoints ) < 1:
+		if len(endpoints) < 1:
 			return
 		aroundPixelTable = {}
-		aroundWidth = 0.25 * layerLayerThickness
-		paths = euclidean.getPathsFromEndpoints(endpoints, layerLayerThickness, aroundPixelTable, aroundWidth)
-		paths = euclidean.getConnectedPaths(paths, aroundPixelTable, aroundWidth) # this is probably unnecesary
+		aroundWidth = 0.25 * step
+		paths = euclidean.getPathsFromEndpoints(endpoints, 1.5 * step, aroundPixelTable, aroundWidth)
 		self.addLayerLine(z)
 		self.addFlowRateValueIfDifferent(flowRateMultiplier * self.oldFlowRateInput)
 		for path in paths:
-			simplifiedPath = euclidean.getSimplifiedPath(path, layerLayerThickness)
+			simplifiedPath = euclidean.getSimplifiedPath(path, step)
 			self.distanceFeedRate.addGcodeFromFeedRateThreadZ(feedRateMinute, simplifiedPath, self.travelFeedRateMinute, z)
 		self.extrusionTop += layerLayerThickness
 		self.addFlowRateValueIfDifferent(self.oldFlowRateInput)
@@ -558,7 +622,7 @@ class RaftSkein:
 			return
 		self.baseLayerThicknessOverLayerThickness = self.repository.baseLayerThicknessOverLayerThickness.value
 		baseExtrusionWidth = self.perimeterWidth * self.baseLayerThicknessOverLayerThickness
-		baseStep = baseExtrusionWidth / self.repository.baseInfillDensity.value
+		self.baseStep = baseExtrusionWidth / self.repository.baseInfillDensity.value
 		self.interfaceLayerThicknessOverLayerThickness = self.repository.interfaceLayerThicknessOverLayerThickness.value
 		interfaceExtrusionWidth = self.perimeterWidth * self.interfaceLayerThicknessOverLayerThickness
 		self.interfaceStep = interfaceExtrusionWidth / self.repository.interfaceInfillDensity.value
@@ -573,7 +637,7 @@ class RaftSkein:
 		if len(self.supportLayers) > 0:
 			supportIntersectionsTable = self.supportLayers[0].xIntersectionsTable
 			euclidean.joinXIntersectionsTables(supportIntersectionsTable, self.interfaceIntersectionsTable)
-		self.addInterfaceTables(baseStep, interfaceExtrusionWidth)
+		self.addInterfaceTables(interfaceExtrusionWidth)
 		self.addRaftPerimeters()
 		self.baseIntersectionsTable = {}
 		complexRadius = complex(self.raftOutsetRadius, self.raftOutsetRadius)
@@ -584,7 +648,7 @@ class RaftSkein:
 			self.beginLoop = None
 		if self.repository.baseLayers.value > 0:
 			self.addTemperatureLineIfDifferent(self.baseTemperature)
-			self.addBaseSegments(baseExtrusionWidth, baseStep)
+			self.addBaseSegments(baseExtrusionWidth)
 		for baseLayerIndex in xrange(self.repository.baseLayers.value):
 			self.addBaseLayer()
 		if self.repository.interfaceLayers.value > 0:
@@ -610,16 +674,19 @@ class RaftSkein:
 
 	def addRaftPerimeters(self):
 		'Add raft perimeters if there is a raft.'
+		for supportLayer in self.supportLayers:
+			supportSegmentTable = supportLayer.supportSegmentTable
+			if len(supportSegmentTable) > 0:
+				outset = 0.5 * self.perimeterWidth
+				self.addRaftPerimetersByLoops(getLoopsBySegmentsDictionary(supportSegmentTable, self.interfaceStep), outset)
 		if self.repository.baseLayers.value < 1 and self.repository.interfaceLayers.value < 1:
 			return
-		points = []
-		for segment in self.getBaseDirectionSegments(0.0, self.interfaceStep):
-			for endpoint in segment:
-				points.append(endpoint.point)
-		for segment in self.interfaceSegments:
-			for endpoint in segment:
-				points.append(endpoint.point)
-		loops = triangle_mesh.getDescendingAreaOrientedLoops(points, points, self.interfaceStep + self.interfaceStep)
+		outset = (1.0 + self.repository.infillOverhangOverExtrusionWidth.value) * self.perimeterWidth
+		self.addRaftPerimetersByLoops(getLoopsBySegmentsDictionary(self.interfaceSegmentsTable, self.interfaceStep), outset)
+
+	def addRaftPerimetersByLoops(self, loops, outset):
+		'Add raft perimeters to the gcode for loops.'
+		loops = intercircle.getInsetSeparateLoopsFromLoops(-outset, loops)
 		for loop in loops:
 			self.distanceFeedRate.addLine('(<raftPerimeter>)')
 			for point in loop:
@@ -664,17 +731,17 @@ class RaftSkein:
 
 	def addSupportLayerTemperature(self, endpoints, z):
 		'Add support layer and temperature before the object layer.'
+		self.distanceFeedRate.addLine('(<supportLayer>)')
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(self.supportStartLines)
 		self.addTemperatureOrbits(endpoints, self.supportedLayersTemperature, z)
 		aroundPixelTable = {}
-		layerFillInset = 0.9 * self.perimeterWidth
-		aroundWidth = 0.12 * layerFillInset
+		aroundWidth = 0.25 * self.interfaceStep
 		boundaryLoops = self.boundaryLayers[self.layerIndex].loops
 		halfSupportOutset = 0.5 * self.supportOutset
 		aroundBoundaryLoops = intercircle.getAroundsFromLoops(boundaryLoops, halfSupportOutset)
 		for aroundBoundaryLoop in aroundBoundaryLoops:
 			euclidean.addLoopToPixelTable(aroundBoundaryLoop, aroundPixelTable, aroundWidth)
-		paths = euclidean.getPathsFromEndpoints(endpoints, layerFillInset, aroundPixelTable, aroundWidth)
+		paths = euclidean.getPathsFromEndpoints(endpoints, 1.5 * self.interfaceStep, aroundPixelTable, aroundWidth)
 		feedRateMinuteMultiplied = self.feedRateMinute
 		supportFlowRateMultiplied = self.supportFlowRate
 		if self.layerIndex == 0:
@@ -686,6 +753,7 @@ class RaftSkein:
 		self.addFlowRateLineIfDifferent(str(self.oldFlowRateInput))
 		self.addTemperatureOrbits(endpoints, self.supportLayersTemperature, z)
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(self.supportEndLines)
+		self.distanceFeedRate.addLine('(</supportLayer>)')
 
 	def addTemperatureLineIfDifferent(self, temperature):
 		'Add a line of temperature if different.'
@@ -702,7 +770,7 @@ class RaftSkein:
 		'Add the temperature and orbits around the support layer.'
 		if self.layerIndex < 0:
 			return
-		boundaryLoops = self.boundaryLayers[ self.layerIndex ].loops
+		boundaryLoops = self.boundaryLayers[self.layerIndex].loops
 		temperatureTimeChange = self.getTemperatureChangeTime( temperature )
 		self.addTemperatureLineIfDifferent( temperature )
 		if len( boundaryLoops ) < 1:
@@ -747,40 +815,6 @@ class RaftSkein:
 				xIntersectionsTable[ xIntersectionsTableKey ] = xIntersections
 			else:
 				del xIntersectionsTable[ xIntersectionsTableKey ]
-
-	def getBaseDirectionSegments(self, baseOverhang, baseStep):
-		'Get base direction segments.'
-		interfaceSegmentsTableKeys = self.interfaceSegmentsTable.keys()
-		interfaceSegmentsTableKeys.sort()
-		baseYTableTable = {}
-		for interfaceSegmentsTableKey in interfaceSegmentsTableKeys:
-			interfaceSegments = self.interfaceSegmentsTable[interfaceSegmentsTableKey]
-			for interfaceSegment in interfaceSegments:
-				begin = int(round(interfaceSegment[0].point.real / baseStep))
-				end = int(round(interfaceSegment[1].point.real / baseStep))
-				for stepIndex in xrange(begin, end + 1):
-					if stepIndex not in baseYTableTable:
-						baseYTableTable[stepIndex] = {}
-					baseYTableTable[stepIndex][interfaceSegmentsTableKey] = None
-		baseYTableTableKeys = baseYTableTable.keys()
-		baseYTableTableKeys.sort()
-		baseDirectionSegments = []
-		for baseYTableTableKey in baseYTableTableKeys:
-			baseYTable = baseYTableTable[baseYTableTableKey]
-			baseYTableKeys = baseYTable.keys()
-			baseYTableKeys.sort()
-			xIntersections = []
-			for baseYTableKey in baseYTableKeys:
-				y = baseYTableKey * self.interfaceStep
-				if baseYTableKey - 1 not in baseYTableKeys:
-					xIntersections.append(y - baseOverhang)
-				if baseYTableKey + 1 not in baseYTableKeys:
-					xIntersections.append(y + baseOverhang)
-			baseDirectionSegments += euclidean.getSegmentsFromXIntersections(xIntersections, baseYTableTableKey * baseStep)
-		for segment in baseDirectionSegments:
-			for endpoint in segment:
-				endpoint.point = complex(endpoint.point.imag, endpoint.point.real)
-		return baseDirectionSegments
 
 	def getCraftedGcode(self, gcodeText, repository):
 		'Parse gcode text and store the raft gcode.'
@@ -866,36 +900,10 @@ class RaftSkein:
 		'Get the support layer segments.'
 		if len(self.supportLayers) <= self.layerIndex:
 			return []
-		supportSegmentTable = self.supportLayers[ self.layerIndex ].supportSegmentTable
-		endpoints = euclidean.getEndpointsFromSegmentTable( supportSegmentTable )
-		if self.layerIndex % 2 == 0 or not self.repository.supportCrossHatch.value:
-			return endpoints
-		crossEndpoints = []
-		crossHatchPointLineTable = {}
-		for endpoint in endpoints:
-			segmentBeginXStep = int( math.ceil( min( endpoint.point.real, endpoint.otherEndpoint.point.real ) / self.interfaceStep ) )
-			segmentEndXStep = int( math.ceil( max( endpoint.point.real, endpoint.otherEndpoint.point.real ) / self.interfaceStep ) )
-			for step in xrange( segmentBeginXStep, segmentEndXStep ):
-				x = self.interfaceStep * step
-				crossHatchPointLine = getCrossHatchPointLine( crossHatchPointLineTable, x )
-				crossHatchPointLine[ int( round( endpoint.point.imag / self.interfaceStep ) ) ] = True
-		crossHatchPointLineTableKeys = crossHatchPointLineTable.keys()
-		crossHatchPointLineTableKeys.sort()
-		for crossHatchPointLineTableKey in crossHatchPointLineTableKeys:
-			crossHatchPointLine = crossHatchPointLineTable[ crossHatchPointLineTableKey ]
-			crossHatchPointLineKeys = crossHatchPointLine.keys()
-			for crossHatchPointLineKey in crossHatchPointLineKeys:
-				if not crossHatchPointLine.has_key( crossHatchPointLineKey - 1 ) and not crossHatchPointLine.has_key( crossHatchPointLineKey + 1 ):
-					del crossHatchPointLine[ crossHatchPointLineKey ]
-			crossHatchPointLineKeys = crossHatchPointLine.keys()
-			crossHatchPointLineKeys.sort()
-			yIntersections = []
-			for crossHatchPointLineKey in crossHatchPointLineKeys:
-				if crossHatchPointLine.has_key( crossHatchPointLineKey - 1 ) != crossHatchPointLine.has_key( crossHatchPointLineKey + 1 ):
-					yIntersection = self.interfaceStep * crossHatchPointLineKey
-					yIntersections.append( yIntersection )
-			crossEndpoints += getEndpointsFromYIntersections( crossHatchPointLineTableKey, yIntersections )
-		return crossEndpoints
+		supportSegmentTable = self.supportLayers[self.layerIndex].supportSegmentTable
+		if self.layerIndex % 2 == 1 and self.repository.supportCrossHatch.value:
+			return getVerticalEndpoints(supportSegmentTable, self.interfaceStep, 0.1 * self.perimeterWidth, self.interfaceStep)
+		return euclidean.getEndpointsFromSegmentTable(supportSegmentTable)
 
 	def getTemperatureChangeTime( self, temperature ):
 		'Get the temperature change time.'
@@ -985,7 +993,7 @@ class RaftSkein:
 			boundaryLayer = None
 			layerZ = self.extrusionTop + float(splitLine[1])
 			if len(self.boundaryLayers) > 0:
-				boundaryLayer = self.boundaryLayers[ self.layerIndex ]
+				boundaryLayer = self.boundaryLayers[self.layerIndex]
 				layerZ = boundaryLayer.z
 			if self.operatingJump != None:
 				line = '(<layer> %s )' % self.distanceFeedRate.getRounded( layerZ )
@@ -1001,12 +1009,12 @@ class RaftSkein:
 			line = ''
 			endpoints = self.getSupportEndpoints()
 			if self.layerIndex == 1:
-				if len( endpoints ) < 1:
+				if len(endpoints) < 1:
 					temperatureChangeTimeBeforeNextLayers = self.getTemperatureChangeTime( self.objectNextLayersTemperature )
 					self.addTemperatureLineIfDifferent( self.objectNextLayersTemperature )
 					if self.repository.addRaftElevateNozzleOrbitSetAltitude.value and len( boundaryLayer.loops ) > 0:
 						self.addOperatingOrbits( boundaryLayer.loops, euclidean.getXYComplexFromVector3( self.oldLocation ), temperatureChangeTimeBeforeNextLayers, layerZ )
-			if len( endpoints ) > 0:
+			if len(endpoints) > 0:
 				self.addSupportLayerTemperature( endpoints, layerZ )
 		elif firstWord == '(<perimeter>' or firstWord == '(<perimeterPath>)':
 			self.isPerimeterPath = True

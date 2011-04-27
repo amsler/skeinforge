@@ -111,7 +111,7 @@ def addSegmentOutline( isThick, outlines, pointBegin, pointEnd, width ):
 		return
 	normalizedSegment = segment / segmentLength
 	outline = []
-	segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+	segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 	pointBeginRotated = segmentYMirror * pointBegin
 	pointEndRotated = segmentYMirror * pointEnd
 	along = 0.05
@@ -180,7 +180,7 @@ def getSegmentsFromLoopListsPoints( loopLists, pointBegin, pointEnd ):
 	if normalizedSegmentLength == 0.0:
 		return []
 	normalizedSegment /= normalizedSegmentLength
-	segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+	segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 	pointBeginRotated = segmentYMirror * pointBegin
 	pointEndRotated = segmentYMirror * pointEnd
 	rotatedLoopLists = []
@@ -304,16 +304,9 @@ class InsetSkein:
 
 	def addGcodeFromRemainingLoop( self, loop, loopLists, radius, z ):
 		"Add the remainder of the loop which does not overlap the alreadyFilledArounds loops."
-#		boundary = intercircle.getLargestInsetLoopFromLoopRegardless( loop, - radius )
-#		loop = euclidean.getSimplifiedLoop( intercircle.getCentersFromLoopDirection( euclidean.isWiddershins(loop), loop, radius )[0], radius )
-#		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
-#		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
 		centerOutset = intercircle.getLargestCenterOutsetLoopFromLoopRegardless( loop, radius )
 		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, centerOutset.outset, z )
 		self.addGcodePerimeterBlockFromRemainingLoop( centerOutset.center, loopLists, radius, z )
-#		boundary = intercircle.getLargestInsetLoopFromLoopNoMatterWhat( loop, - radius )
-#		euclidean.addSurroundingLoopBeginning( self.distanceFeedRate, boundary, z )
-#		self.addGcodePerimeterBlockFromRemainingLoop( loop, loopLists, radius, z )
 		self.distanceFeedRate.addLine('(</boundaryPerimeter>)')
 		self.distanceFeedRate.addLine('(</nestedRing>)')
 

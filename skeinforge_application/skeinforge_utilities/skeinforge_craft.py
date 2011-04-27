@@ -68,7 +68,7 @@ def getNewRepository():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return archive.getAbsoluteFolderPath( os.path.dirname(__file__), os.path.join('skeinforge_plugins', 'craft_plugins') )
+	return archive.getSkeinforgePluginsPath('craft_plugins')
 
 def getPluginFileNames():
 	"Get craft plugin fileNames."
@@ -179,19 +179,23 @@ class CraftRadioButtonsSaveListener:
 
 	def setRadioButtons(self):
 		"Profile has been saved and craft radio plugins should be updated."
+		activeRadioPlugins = []
 		craftSequence = skeinforge_profile.getCraftTypePluginModule().getCraftSequence()
 		gridPosition = self.gridPosition.getCopy()
-		maximumValue = False
-		activeRadioPlugins = []
+		isRadioPluginSelected = False
+		settings.getReadRepository(self.repository)
 		for radioPlugin in self.radioPlugins:
 			if radioPlugin.name in craftSequence:
-				activeRadioPlugins.append( radioPlugin )
-				radioPlugin.incrementGridPosition( gridPosition )
-				maximumValue = max( radioPlugin.value, maximumValue )
+				activeRadioPlugins.append(radioPlugin)
+				radioPlugin.incrementGridPosition(gridPosition)
+				if radioPlugin.value:
+					radioPlugin.setSelect()
+					isRadioPluginSelected = True
 			else:
 				radioPlugin.radiobutton.grid_remove()
-		if not maximumValue:
-			selectedRadioPlugin = settings.getSelectedRadioPlugin( self.repository.importantFileNames + [ activeRadioPlugins[0].name ], activeRadioPlugins ).setSelect()
+		if not isRadioPluginSelected:
+			radioPluginNames = self.repository.importantFileNames + [activeRadioPlugins[0].name]
+			settings.getSelectedRadioPlugin(radioPluginNames , activeRadioPlugins).setSelect()
 		self.repository.pluginFrame.update()
 
 
@@ -202,9 +206,9 @@ class CraftRepository:
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_utilities.skeinforge_craft.html', self)
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Craft', self, '')
 		self.importantFileNames = ['carve', 'chop', 'feed', 'flow', 'lift', 'raft', 'speed']
-		allCraftNames = archive.getPluginFileNamesFromDirectoryPath( getPluginsDirectoryPath() )
-		radioPlugins = settings.getRadioPluginsAddPluginFrame( getPluginsDirectoryPath(), self.importantFileNames, allCraftNames, self )
-		CraftRadioButtonsSaveListener().getFromRadioPlugins( radioPlugins, self )
+		allCraftNames = archive.getPluginFileNamesFromDirectoryPath(getPluginsDirectoryPath())
+		self.radioPlugins = settings.getRadioPluginsAddPluginFrame(getPluginsDirectoryPath(), self.importantFileNames, allCraftNames, self)
+		CraftRadioButtonsSaveListener().getFromRadioPlugins(self.radioPlugins, self)
 		self.executeTitle = 'Craft'
 
 	def execute(self):

@@ -10,6 +10,9 @@ http://objects.reprap.org/wiki/3D-to-5D-Gcode.php
 The dimension manual page is at:
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Dimension
 
+Nophead wrote an excellent article on how to set the filament parameters:
+http://hydraraptor.blogspot.com/2011/03/spot-on-flow-rate.html
+
 ==Operation==
 The default 'Activate Dimension' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
 

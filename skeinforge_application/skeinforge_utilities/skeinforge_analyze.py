@@ -32,7 +32,7 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return archive.getAbsoluteFolderPath( os.path.dirname(__file__), os.path.join('skeinforge_plugins', 'analyze_plugins') )
+	return archive.getSkeinforgePluginsPath('analyze_plugins')
 
 def writeOutput( fileName, fileNameSuffix, gcodeText = ''):
 	"Analyze a gcode file."

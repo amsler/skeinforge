@@ -45,7 +45,7 @@ The default 'Activate Skirt' checkbox is off.  When it is on, the functions desc
 
 <a name="Gap over Perimeter Width" id="Gap over Perimeter Width"></a><h3>Gap over Perimeter Width</h3>
 
-Default is one.<br>
+Default is three.<br>
  <br>
 Defines the ratio of the gap between the object and the skirt over the perimeter width.  If the ratio is too low, the skirt will connect to the object, if the ratio is too high, the skirt willl not provide much insulation for the object.<br>
  <br>
@@ -167,6 +167,8 @@ The skirt tool has created the file:<br>
 <dl><dt><a name="SkirtSkein-parseInitialization"><strong>parseInitialization</strong></a>(self)</dt><dd><tt>Parse&nbsp;gcode&nbsp;initialization&nbsp;and&nbsp;store&nbsp;the&nbsp;parameters.</tt></dd></dl>
 
 <dl><dt><a name="SkirtSkein-parseLine"><strong>parseLine</strong></a>(self, line)</dt><dd><tt>Parse&nbsp;a&nbsp;gcode&nbsp;line&nbsp;and&nbsp;add&nbsp;it&nbsp;to&nbsp;the&nbsp;skirt&nbsp;skein.</tt></dd></dl>
+
+<dl><dt><a name="SkirtSkein-setSkirtFeedFlowTemperature"><strong>setSkirtFeedFlowTemperature</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;skirt&nbsp;feed&nbsp;rate,&nbsp;flow&nbsp;rate&nbsp;and&nbsp;temperature&nbsp;to&nbsp;that&nbsp;of&nbsp;the&nbsp;next&nbsp;extrusion.</tt></dd></dl>
 
 <dl><dt><a name="SkirtSkein-unifyLayer"><strong>unifyLayer</strong></a>(self, loopCrossDictionary)</dt><dd><tt>Union&nbsp;the&nbsp;loopCrossDictionary&nbsp;with&nbsp;the&nbsp;unifiedLoop.</tt></dd></dl>
 

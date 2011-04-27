@@ -64,7 +64,7 @@ def addListsToRepositoryByFunction(fileNameHelp, getProfileDirectory, repository
 	repository.executeTitle = None
 	repository.fileNameHelp = fileNameHelp
 	repository.fileNameInput = None
-	repository.lowerName = fileNameHelp.split('.')[ - 2 ]
+	repository.lowerName = fileNameHelp.split('.')[-2]
 	repository.baseName = repository.lowerName + '.csv'
 	repository.baseNameSynonym = None
 	repository.capitalizedName = getEachWordCapitalized( repository.lowerName )
@@ -286,7 +286,7 @@ def getRepositoryText(repository):
 	"Get the text representation of the repository."
 	repositoryWriter = cStringIO.StringIO()
 	repositoryWriter.write('Format is tab separated %s.\n' % repository.title.lower() )
-	repositoryWriter.write('Name                          %sValue\n' % globalSpreadsheetSeparator )
+	repositoryWriter.write('_Name                          %sValue\n' % globalSpreadsheetSeparator )
 	for setting in repository.preferences:
 		setting.writeToRepositoryWriter( repositoryWriter )
 	return repositoryWriter.getvalue()
@@ -435,8 +435,9 @@ def quitWindows( event=None ):
 	for globalRepositoryDialogValue in globalRepositoryDialogValues:
 		quitWindow(globalRepositoryDialogValue.root)
 
-def readSettingsFromText( repository, text ):
+def readSettingsFromText(repository, text):
 	"Read settings from a text."
+	text = text.replace(('\nName                          %sValue\n' % globalSpreadsheetSeparator), ('\n_Name                          %sValue\n' % globalSpreadsheetSeparator))
 	lines = archive.getTextLines(text)
 	shortDictionary = {}
 	for setting in repository.preferences:
@@ -515,7 +516,7 @@ def setSpinColor( setting ):
 		setting.colorWidth = len( setting.backgroundColor ) / 3
 		setting.grey = int( setting.backgroundColor[ 1 : 1 + setting.colorWidth ], 16 )
 		setting.white = int('f' * setting.colorWidth, 16 )
-	if abs( setting.value - setting.defaultValue ) <= 0.05 * setting.minimumWidth:
+	if abs( setting.value - setting.defaultValue ) <= 0.75 * setting.increment:
 		setting.entry['background'] = setting.backgroundColor
 		return
 	difference = setting.value - setting.defaultValue
@@ -537,8 +538,6 @@ def startMainLoopFromConstructor(repository):
 def startMainLoopFromWindow(window):
 	'Display the tableau window and start the main loop.'
 	if window == None:
-		print('Warning, window in startMainLoopFromWindow in settings is none, so the window will not be displayed.')
-		print('This would happen if neither skeiniso nor skeinlayer were activated.')
 		return
 	if window.root == None:
 		print('Warning, window.root in startMainLoopFromWindow in settings is none, so the window will not be displayed.')
@@ -1601,6 +1600,8 @@ class PluginFrame:
 
 	def update(self):
 		"Update the frame."
+		if len(self.gridTable) < 1:
+			return
 		if self.oldLatentString == self.latentStringVar.getString():
 			return
 		self.oldLatentString = self.latentStringVar.getString()
@@ -1610,11 +1611,11 @@ class PluginFrame:
 		writeSettingsPrintMessage(self.repository)
 		self.repository.preferences.append(self)
 		if self.latentStringVar.getString() in self.gridTable:
-			gridPosition = self.gridTable[ self.latentStringVar.getString() ]
+			gridPosition = self.gridTable[self.latentStringVar.getString()]
 			gridPosition.master.lift()
-			self.focusSetMaster( gridPosition )
+			self.focusSetMaster(gridPosition)
 			return
-		self.createFrame( self.gridPosition )
+		self.createFrame(self.gridPosition)
 
 	def updateSaveListeners(self):
 		"Update save listeners if any."
@@ -1707,12 +1708,16 @@ class Radio( BooleanSetting ):
 		oldLatentStringValue = self.latentStringVar.getString()
 		self.latentStringVar.setString( self.radiobutton['value'] )
 		self.radiobutton.select()
+		if oldLatentStringValue == '':
+			return False
 		return oldLatentStringValue != self.latentStringVar.getString()
 
 	def setStateToValue(self):
 		"Set the checkbutton to the boolean."
 		if self.value:
-			self.setSelect()
+			if self.setSelect():
+				if self.updateFunction != None:
+					self.updateFunction()
 
 
 class RadioCapitalized( Radio ):

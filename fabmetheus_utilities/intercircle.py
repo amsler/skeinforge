@@ -314,35 +314,33 @@ def getInsetSeparateLoopsFromLoops(inset, loops, thresholdRatio=0.9):
 def getLargestCenterOutsetLoopFromLoop(loop, radius, thresholdRatio=0.9):
 	'Get the largest circle outset loop from the loop.'
 	radius = abs(radius)
-	points = getPointsFromLoop( loop, 1.01 * radius, thresholdRatio )
-	centers = getCentersFromPoints( points, radius )
+	points = getPointsFromLoop(loop, 1.01 * radius, thresholdRatio)
+	centers = getCentersFromPoints(points, radius)
 	largestCenterOutset = None
-	largestOutsetArea = - 987654321.0
+	largestOutsetArea = -987654321.0
 	for center in centers:
-		outset = getSimplifiedInsetFromClockwiseLoop( center, radius )
-		if isLargeSameDirection( outset, center, radius ):
-			if euclidean.isPathInsideLoop( loop, outset ) != euclidean.isWiddershins(loop):
-				centerOutset = CenterOutset( center, outset )
-				outsetArea = abs( euclidean.getAreaLoop( outset ) )
+		outset = getSimplifiedInsetFromClockwiseLoop(center, radius)
+		if isLargeSameDirection(outset, center, radius):
+			if euclidean.isPathInsideLoop(loop, outset) != euclidean.isWiddershins(loop):
+				centerOutset = CenterOutset(center, outset)
+				outsetArea = abs(euclidean.getAreaLoop(outset))
 				if outsetArea > largestOutsetArea:
-					outsetArea = largestOutsetArea
+					largestOutsetArea = outsetArea
 					largestCenterOutset = centerOutset
 	if largestCenterOutset == None:
 		return None
-	largestCenterOutset.center = euclidean.getSimplifiedLoop( largestCenterOutset.center, radius )
+	largestCenterOutset.center = euclidean.getSimplifiedLoop(largestCenterOutset.center, radius)
 	return largestCenterOutset
 
-def getLargestCenterOutsetLoopFromLoopRegardless( loop, radius ):
+def getLargestCenterOutsetLoopFromLoopRegardless(loop, radius):
 	'Get the largest circle outset loop from the loop, even if the radius has to be shrunk and even if there is still no outset loop.'
 	global globalDecreasingRadiusMultipliers
 	for decreasingRadiusMultiplier in globalDecreasingRadiusMultipliers:
 		decreasingRadius = radius * decreasingRadiusMultiplier
-		largestCenterOutsetLoop = getLargestCenterOutsetLoopFromLoop( loop, decreasingRadius )
+		largestCenterOutsetLoop = getLargestCenterOutsetLoopFromLoop(loop, decreasingRadius)
 		if largestCenterOutsetLoop != None:
 			return largestCenterOutsetLoop
-	print('Warning, there should always be a largestOutsetLoop in getLargestCenterOutsetLoopFromLoopRegardless in intercircle.')
-	print(loop)
-	return CenterOutset( loop, loop )
+	return CenterOutset(loop, loop)
 
 def getLargestInsetLoopFromLoop(loop, radius):
 	'Get the largest inset loop from the loop.'
@@ -460,7 +458,7 @@ def isLoopIntersectingLoop( anotherLoop, loop ):
 		pointSecond = loop[(pointIndex + 1) % len(loop)]
 		segment = pointFirst - pointSecond
 		normalizedSegment = euclidean.getNormalized( segment )
-		segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+		segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 		segmentFirstPoint = segmentYMirror * pointFirst
 		segmentSecondPoint = segmentYMirror * pointSecond
 		if euclidean.isLoopIntersectingInsideXSegment( anotherLoop, segmentFirstPoint.real, segmentSecondPoint.real, segmentYMirror, segmentFirstPoint.imag ):
@@ -486,7 +484,7 @@ def removeIntersection( loop ):
 		normalizedSegmentLength = abs( normalizedSegment )
 		if normalizedSegmentLength > 0.0:
 			normalizedSegment /= normalizedSegmentLength
-			segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+			segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 			behindRotated = segmentYMirror * behind
 			behindMidpointRotated = segmentYMirror * behindMidpoint
 			aheadRotated = segmentYMirror * ahead
@@ -569,10 +567,14 @@ class BoundingLoop:
 
 class CenterOutset:
 	'A class to hold a center and an outset.'
-	def __init__( self, center, outset ):
+	def __init__(self, center, outset):
 		'Set the center and outset.'
 		self.center = center
 		self.outset = outset
+
+	def __repr__(self):
+		'Get the string representation of this CenterOutset.'
+		return '%s\n%s' % (self.center, self.outset)
 
 
 class CircleIntersection:

@@ -203,19 +203,19 @@ class SplodgeSkein:
 		return None
 
 	def getOperatingSplodgeLine( self, line, location ):
-		"Add the operating splodge line."
+		"Get the operating splodge line."
 		if not self.isJustBeforeExtrusion():
 			return line
 		if self.splodgeRepository.operatingSplodgeQuantityLength.value < self.minimumQuantityLength:
 			return line
 		return self.getSplodgeLineGivenDistance( self.operatingSplodgeFeedRateMinute, line, self.splodgeRepository.operatingLiftOverExtraThickness.value, location, self.operatingStartupDistance )
 
-	def getSplodgeLine( self, line, location, splitLine ):
-		"Add splodged gcode line."
-		self.feedRateMinute = gcodec.getFeedRateMinute( self.feedRateMinute, splitLine )
-		if not self.hasInitialSplodgeBeenAdded:
-			return self.getInitialSplodgeLine( line, location )
-		return self.getOperatingSplodgeLine( line, location )
+	def getSplodgeLine(self, line, location, splitLine):
+		"Get splodged gcode line."
+		self.feedRateMinute = gcodec.getFeedRateMinute(self.feedRateMinute, splitLine)
+		if self.hasInitialSplodgeBeenAdded:
+			return self.getOperatingSplodgeLine(line, location)
+		return self.getInitialSplodgeLine(line, location)
 
 	def getSplodgeLineGivenDistance( self, feedRateMinute, line, liftOverExtraThickness, location, startupDistance ):
 		"Add the splodge line."
@@ -259,7 +259,7 @@ class SplodgeSkein:
 
 	def isJustBeforeExtrusion(self):
 		"Determine if activate command is before linear move command."
-		for lineIndex in xrange( self.lineIndex + 1, len(self.lines) ):
+		for lineIndex in xrange(self.lineIndex + 1, len(self.lines)):
 			line = self.lines[lineIndex]
 			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
 			firstWord = gcodec.getFirstWord(splitLine)
@@ -267,7 +267,6 @@ class SplodgeSkein:
 				return False
 			if firstWord == 'M101':
 				return True
-		print('This should never happen in isJustBeforeExtrusion in splodge, no activate or deactivate command was found for this thread.')
 		return False
 
 	def parseInitialization( self, splodgeRepository ):
@@ -297,7 +296,7 @@ class SplodgeSkein:
 		firstWord = splitLine[0]
 		if firstWord == 'G1':
 			location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
-			line = self.getSplodgeLine( line, location, splitLine )
+			line = self.getSplodgeLine(line, location, splitLine)
 			self.oldLocation = location
 		elif firstWord == 'M101':
 			self.isExtruderActive = True

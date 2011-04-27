@@ -89,7 +89,7 @@ def getPluginFileNames():
 
 def getPluginsDirectoryPath():
 	"Get the plugins directory path."
-	return archive.getAbsoluteFolderPath( os.path.dirname(__file__), os.path.join('skeinforge_plugins', 'profile_plugins') )
+	return archive.getSkeinforgePluginsPath('profile_plugins')
 
 def getProfileDirectory():
 	"Get the profile directory."
@@ -111,7 +111,6 @@ def updateProfileSaveListeners():
 	for globalProfileSaveListener in euclidean.getListTableElements( settings.globalProfileSaveListenerListTable ):
 		globalProfileSaveListener.save()
 	cancelAll()
-
 
 
 class AddProfile:

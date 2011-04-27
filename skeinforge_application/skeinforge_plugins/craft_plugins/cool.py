@@ -2,6 +2,8 @@
 This page is in the table of contents.
 Cool is a script to cool the shape.
 
+Cool works well with a stepper extruder, it does not work well with a DC motor extruder.
+
 The cool manual page is at:
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Cool
 
@@ -18,13 +20,13 @@ Default is one degree Celcius.
 If the layer is a bridge layer, then cool will lower the temperature by 'Bridge Cool' degrees Celcius.
 
 ===Cool Type===
-Default is 'Orbit', because many extruders do not operate properly at very slow flow rates.
+Default is 'Slow Down'.
 
 ====Orbit====
-When selected, cool will add orbits with the extruder off to give the layer time to cool, so that the next layer is not extruded on a molten base.  The orbits will be around the largest island on that layer.
+When selected, cool will add orbits with the extruder off to give the layer time to cool, so that the next layer is not extruded on a molten base.  The orbits will be around the largest island on that layer.  Orbit should only be chosen if you can not upgrade to a stepper extruder.
 
 ====Slow Down====
-When selected, cool will slow down the extruder so that it will take the minimum layer time to extrude the layer.
+When selected, cool will slow down the extruder so that it will take the minimum layer time to extrude the layer.  DC motors do not operate properly at very slow flow rates, so if you have a DC motor extruder, you should upgrade to a stepper extruder, but if you can't do that, you can try using the 'Orbit' option.
 
 ===Maximum Cool===
 Default is 2 degrees Celcius.
@@ -137,8 +139,8 @@ class CoolRepository:
 		self.activateCool = settings.BooleanSetting().getFromValue('Activate Cool', self, True)
 		self.bridgeCool = settings.FloatSpin().getFromValue(0.0, 'Bridge Cool (Celcius):', self, 10.0, 1.0)
 		self.coolType = settings.MenuButtonDisplay().getFromName('Cool Type:', self)
-		self.orbit = settings.MenuRadio().getFromMenuButtonDisplay(self.coolType, 'Orbit', self, True)
-		self.slowDown = settings.MenuRadio().getFromMenuButtonDisplay(self.coolType, 'Slow Down', self, False)
+		self.orbit = settings.MenuRadio().getFromMenuButtonDisplay(self.coolType, 'Orbit', self, False)
+		self.slowDown = settings.MenuRadio().getFromMenuButtonDisplay(self.coolType, 'Slow Down', self, True)
 		self.maximumCool = settings.FloatSpin().getFromValue(0.0, 'Maximum Cool (Celcius):', self, 10.0, 2.0)
 		self.minimumLayerTime = settings.FloatSpin().getFromValue(0.0, 'Minimum Layer Time (seconds):', self, 120.0, 60.0)
 		self.minimumOrbitalRadius = settings.FloatSpin().getFromValue(

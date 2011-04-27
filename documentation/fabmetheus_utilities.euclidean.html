@@ -91,8 +91,6 @@ Below are examples of euclidean use.<br>
 
 <dl><dt><a name="Endpoint-getFromOtherPoint"><strong>getFromOtherPoint</strong></a>(self, otherEndpoint, point)</dt><dd><tt>Initialize&nbsp;from&nbsp;other&nbsp;endpoint.</tt></dd></dl>
 
-<dl><dt><a name="Endpoint-getHop"><strong>getHop</strong></a>(self, fillInset, path)</dt><dd><tt>Get&nbsp;a&nbsp;hop&nbsp;away&nbsp;from&nbsp;the&nbsp;endpoint&nbsp;if&nbsp;the&nbsp;other&nbsp;endpoint&nbsp;is&nbsp;doubling&nbsp;back.</tt></dd></dl>
-
 <dl><dt><a name="Endpoint-getNearestEndpoint"><strong>getNearestEndpoint</strong></a>(self, endpoints)</dt><dd><tt>Get&nbsp;nearest&nbsp;endpoint.</tt></dd></dl>
 
 <dl><dt><a name="Endpoint-getNearestMiss"><strong>getNearestMiss</strong></a>(self, endpoints, path, pixelDictionary, width)</dt><dd><tt>Get&nbsp;the&nbsp;nearest&nbsp;endpoint&nbsp;which&nbsp;the&nbsp;segment&nbsp;to&nbsp;that&nbsp;endpoint&nbsp;misses&nbsp;the&nbsp;other&nbsp;extrusions.</tt></dd></dl>
@@ -378,8 +376,7 @@ Methods inherited from <a href="fabmetheus_utilities.euclidean.html#NestedRing">
  <dl><dt><a name="-getLeftPointIndex"><strong>getLeftPointIndex</strong></a>(points)</dt><dd><tt>Get&nbsp;the&nbsp;index&nbsp;of&nbsp;the&nbsp;leftmost&nbsp;complex&nbsp;point&nbsp;in&nbsp;the&nbsp;points.</tt></dd></dl>
  <dl><dt><a name="-getListTableElements"><strong>getListTableElements</strong></a>(listDictionary)</dt><dd><tt>Get&nbsp;all&nbsp;the&nbsp;element&nbsp;in&nbsp;a&nbsp;list&nbsp;table.</tt></dd></dl>
  <dl><dt><a name="-getLoopCentroid"><strong>getLoopCentroid</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;the&nbsp;area&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon&nbsp;using&nbsp;<a href="http://en.wikipedia.org/wiki/Centroid">http://en.wikipedia.org/wiki/Centroid</a>.</tt></dd></dl>
- <dl><dt><a name="-getLoopConvex"><strong>getLoopConvex</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;convex&nbsp;hull&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon&nbsp;using&nbsp;gift&nbsp;wrap&nbsp;algorithm.</tt></dd></dl>
- <dl><dt><a name="-getLoopConvexAddedIndex"><strong>getLoopConvexAddedIndex</strong></a>(around, lastAddedIndex, lastPoint, segment)</dt><dd><tt>Get&nbsp;polygon&nbsp;convex&nbsp;added&nbsp;index.</tt></dd></dl>
+ <dl><dt><a name="-getLoopConvex"><strong>getLoopConvex</strong></a>(points)</dt><dd><tt>Get&nbsp;convex&nbsp;hull&nbsp;of&nbsp;points&nbsp;using&nbsp;gift&nbsp;wrap&nbsp;algorithm.</tt></dd></dl>
  <dl><dt><a name="-getLoopConvexCentroid"><strong>getLoopConvexCentroid</strong></a>(polygonComplex)</dt><dd><tt>Get&nbsp;centroid&nbsp;of&nbsp;the&nbsp;convex&nbsp;hull&nbsp;of&nbsp;a&nbsp;complex&nbsp;polygon.</tt></dd></dl>
  <dl><dt><a name="-getLoopInsideContainingLoop"><strong>getLoopInsideContainingLoop</strong></a>(containingLoop, loops)</dt><dd><tt>Get&nbsp;a&nbsp;loop&nbsp;that&nbsp;is&nbsp;inside&nbsp;the&nbsp;containing&nbsp;loop.</tt></dd></dl>
  <dl><dt><a name="-getLoopLength"><strong>getLoopLength</strong></a>(polygon)</dt><dd><tt>Get&nbsp;the&nbsp;length&nbsp;of&nbsp;a&nbsp;polygon&nbsp;perimeter.</tt></dd></dl>
@@ -409,7 +406,7 @@ Methods inherited from <a href="fabmetheus_utilities.euclidean.html#NestedRing">
  <dl><dt><a name="-getOrderedNestedRings"><strong>getOrderedNestedRings</strong></a>(nestedRings)</dt><dd><tt>Get&nbsp;ordered&nbsp;nestedRings&nbsp;from&nbsp;nestedRings.</tt></dd></dl>
  <dl><dt><a name="-getPathCopy"><strong>getPathCopy</strong></a>(path)</dt><dd><tt>Get&nbsp;path&nbsp;copy.</tt></dd></dl>
  <dl><dt><a name="-getPathLength"><strong>getPathLength</strong></a>(path)</dt><dd><tt>Get&nbsp;the&nbsp;length&nbsp;of&nbsp;a&nbsp;path&nbsp;(&nbsp;an&nbsp;open&nbsp;polyline&nbsp;).</tt></dd></dl>
- <dl><dt><a name="-getPathsFromEndpoints"><strong>getPathsFromEndpoints</strong></a>(endpoints, fillInset, pixelDictionary, width)</dt><dd><tt>Get&nbsp;paths&nbsp;from&nbsp;endpoints.</tt></dd></dl>
+ <dl><dt><a name="-getPathsFromEndpoints"><strong>getPathsFromEndpoints</strong></a>(endpoints, maximumConnectionLength, pixelDictionary, width)</dt><dd><tt>Get&nbsp;paths&nbsp;from&nbsp;endpoints.</tt></dd></dl>
  <dl><dt><a name="-getPlaneDot"><strong>getPlaneDot</strong></a>(vec3First, vec3Second)</dt><dd><tt>Get&nbsp;the&nbsp;dot&nbsp;product&nbsp;of&nbsp;the&nbsp;x&nbsp;and&nbsp;y&nbsp;components&nbsp;of&nbsp;a&nbsp;pair&nbsp;of&nbsp;Vector3s.</tt></dd></dl>
  <dl><dt><a name="-getPluralString"><strong>getPluralString</strong></a>(number, suffix)</dt><dd><tt>Get&nbsp;the&nbsp;plural&nbsp;string.</tt></dd></dl>
  <dl><dt><a name="-getPointPlusSegmentWithLength"><strong>getPointPlusSegmentWithLength</strong></a>(length, point, segment)</dt><dd><tt>Get&nbsp;point&nbsp;plus&nbsp;a&nbsp;segment&nbsp;scaled&nbsp;to&nbsp;a&nbsp;given&nbsp;length.</tt></dd></dl>

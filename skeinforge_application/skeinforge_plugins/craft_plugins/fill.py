@@ -605,7 +605,7 @@ def isAddedPointOnPathIntersectingPath( begin, path, point, pointIndex ):
 	if segmentLength <= 0.0:
 		return False
 	normalizedSegment = segment / segmentLength
-	segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+	segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 	pointRotated = segmentYMirror * point
 	beginRotated = segmentYMirror * begin
 	if euclidean.isXSegmentIntersectingPath( path[ max( 0, pointIndex - 20 ) : pointIndex ], pointRotated.real, beginRotated.real, segmentYMirror, pointRotated.imag ):
@@ -619,7 +619,7 @@ def isIntersectingLoopsPaths( loops, paths, pointBegin, pointEnd ):
 	if normalizedSegmentLength == 0.0:
 		return False
 	normalizedSegment /= normalizedSegmentLength
-	segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+	segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 	pointBeginRotated = euclidean.getRoundZAxisByPlaneAngle( segmentYMirror, pointBegin )
 	pointEndRotated = euclidean.getRoundZAxisByPlaneAngle( segmentYMirror, pointEnd )
 	if euclidean.isLoopListIntersectingInsideXSegment( loops, pointBeginRotated.real, pointEndRotated.real, segmentYMirror, pointBeginRotated.imag ):
@@ -954,7 +954,7 @@ class FillSkein:
 		else:
 			for fillLine in xrange(len(self.horizontalSegmentLists)):
 				addSparseEndpoints(doubleExtrusionWidth, endpoints, fillLine, self.horizontalSegmentLists, layerInfillSolidity, removedEndpoints, self.solidSurfaceThickness, None)
-		paths = euclidean.getPathsFromEndpoints(endpoints, self.layerExtrusionWidth, pixelTable, aroundWidth)
+		paths = euclidean.getPathsFromEndpoints(endpoints, 5.0 * self.layerExtrusionWidth, pixelTable, aroundWidth)
 		if gridCircular:
 			startAngle = euclidean.globalGoldenAngle * float(layerIndex)
 			for gridPoint in self.getGridPoints(fillLoops, reverseRotation):

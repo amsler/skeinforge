@@ -28,7 +28,7 @@ __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agp
 
 def getCraftSequence():
 	"Get the cutting craft sequence."
-	return 'chop preface outset multiply whittle drill lift flow feed home lash fillet limit dimension unpause export'.split()
+	return 'chop preface outset multiply whittle drill lift flow feed home lash fillet limit unpause export'.split()
 
 def getNewRepository():
 	'Get new repository.'

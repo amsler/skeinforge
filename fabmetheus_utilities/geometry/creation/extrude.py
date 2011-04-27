@@ -36,7 +36,7 @@ def addLoop(derivation, endMultiplier, loopLists, path, portionDirectionIndex, p
 		if portionDirectionIndex == 0:
 			setOffsetByMultiplier( interpolationOffset.path[1], interpolationOffset.path[0], endMultiplier, offset )
 		elif portionDirectionIndex == len( portionDirections ) - 1:
-			setOffsetByMultiplier( interpolationOffset.path[ - 2 ], interpolationOffset.path[-1], endMultiplier, offset )
+			setOffsetByMultiplier( interpolationOffset.path[-2], interpolationOffset.path[-1], endMultiplier, offset )
 	scale = derivation.interpolationDictionary['scale'].getComplexByPortion( portionDirection )
 	twist = derivation.interpolationDictionary['twist'].getYByPortion( portionDirection )
 	projectiveSpace = euclidean.ProjectiveSpace()

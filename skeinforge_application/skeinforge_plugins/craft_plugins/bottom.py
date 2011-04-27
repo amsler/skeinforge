@@ -10,12 +10,12 @@ The default 'Activate Bottom' checkbox is on.  When it is on, the functions desc
 ===Additional Height over Layer Thickness===
 Default is half.
 
-The layers will start at the altitude plus the Additional Height over Layer Thickness times the layer thickness.  The default value of half means that the bottom layer is at the height of the bottom slice, because each slice is made through the middle of each layer.  Raft expects the layers to start at an additional half layer thickness.  You should only change Additional Height over Layer Thickness if you are manipulating the skeinforge output with your own program which does not use the raft tool.
+The layers will start at the altitude plus the 'Additional Height over Layer Thickness' times the layer thickness.  The default value of half means that the bottom layer is at the height of the bottom slice, because each slice is made through the middle of each layer.  Raft expects the layers to start at an additional half layer thickness.  You should only change 'Additional Height over Layer Thickness' if you are manipulating the skeinforge output with your own program which does not use the raft tool.
 
 ===Altitude===
 Default is zero.
 
-Defines the altitude of the bottom of the model.  The bottom slice have a z of the altitude plus half the layer thickness.
+Defines the altitude of the bottom of the model.  The bottom slice has a z of the altitude plus the 'Additional Height over Layer Thickness' times the layer thickness.
 
 ===SVG Viewer===
 Default is webbrowser.

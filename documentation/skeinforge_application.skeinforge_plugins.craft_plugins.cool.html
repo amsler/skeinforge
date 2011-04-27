@@ -15,6 +15,8 @@
 <p><tt><br>
 Cool is a script to cool the shape.<br>
  <br>
+Cool works well with a stepper extruder, it does not work well with a DC motor extruder.<br>
+ <br>
 The cool manual page is at:<br>
 <a href="http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Cool">http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Cool</a><br>
  <br>
@@ -54,15 +56,15 @@ If the layer is a bridge layer, then cool will lower the temperature by 'Bridge 
  <br>
 <a name="Cool Type" id="Cool Type"></a><h3>Cool Type</h3>
 
-Default is 'Orbit', because many extruders do not operate properly at very slow flow rates.<br>
+Default is 'Slow Down'.<br>
  <br>
 <a name="Orbit" id="Orbit"></a><h4>Orbit</h4>
 
-When selected, cool will add orbits with the extruder off to give the layer time to cool, so that the next layer is not extruded on a molten base.  The orbits will be around the largest island on that layer.<br>
+When selected, cool will add orbits with the extruder off to give the layer time to cool, so that the next layer is not extruded on a molten base.  The orbits will be around the largest island on that layer.  Orbit should only be chosen if you can not upgrade to a stepper extruder.<br>
  <br>
 <a name="Slow Down" id="Slow Down"></a><h4>Slow Down</h4>
 
-When selected, cool will slow down the extruder so that it will take the minimum layer time to extrude the layer.<br>
+When selected, cool will slow down the extruder so that it will take the minimum layer time to extrude the layer.  DC motors do not operate properly at very slow flow rates, so if you have a DC motor extruder, you should upgrade to a stepper extruder, but if you can't do that, you can try using the 'Orbit' option.<br>
  <br>
 <a name="Maximum Cool" id="Maximum Cool"></a><h3>Maximum Cool</h3>
 

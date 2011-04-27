@@ -366,7 +366,7 @@ Screw Holder Bottom_raft.gcode</tt>
 
 <dl><dt><a name="RaftSkein-addBaseLayer"><strong>addBaseLayer</strong></a>(self)</dt><dd><tt>Add&nbsp;a&nbsp;base&nbsp;layer.</tt></dd></dl>
 
-<dl><dt><a name="RaftSkein-addBaseSegments"><strong>addBaseSegments</strong></a>(self, baseExtrusionWidth, baseStep)</dt><dd><tt>Add&nbsp;the&nbsp;base&nbsp;segments.</tt></dd></dl>
+<dl><dt><a name="RaftSkein-addBaseSegments"><strong>addBaseSegments</strong></a>(self, baseExtrusionWidth)</dt><dd><tt>Add&nbsp;the&nbsp;base&nbsp;segments.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addEmptyLayerSupport"><strong>addEmptyLayerSupport</strong></a>(self, boundaryLayerIndex)</dt><dd><tt>Add&nbsp;support&nbsp;material&nbsp;to&nbsp;a&nbsp;layer&nbsp;if&nbsp;it&nbsp;is&nbsp;empty.</tt></dd></dl>
 
@@ -376,9 +376,9 @@ Screw Holder Bottom_raft.gcode</tt>
 
 <dl><dt><a name="RaftSkein-addInterfaceLayer"><strong>addInterfaceLayer</strong></a>(self)</dt><dd><tt>Add&nbsp;an&nbsp;interface&nbsp;layer.</tt></dd></dl>
 
-<dl><dt><a name="RaftSkein-addInterfaceTables"><strong>addInterfaceTables</strong></a>(self, baseStep, interfaceExtrusionWidth)</dt><dd><tt>Add&nbsp;interface&nbsp;tables.</tt></dd></dl>
+<dl><dt><a name="RaftSkein-addInterfaceTables"><strong>addInterfaceTables</strong></a>(self, interfaceExtrusionWidth)</dt><dd><tt>Add&nbsp;interface&nbsp;tables.</tt></dd></dl>
 
-<dl><dt><a name="RaftSkein-addLayerFromSegments"><strong>addLayerFromSegments</strong></a>(self, feedRateMultiplier, flowRateMultiplier, layerLayerThickness, layerThicknessRatio, segments, z)</dt><dd><tt>Add&nbsp;a&nbsp;layer&nbsp;from&nbsp;segments&nbsp;and&nbsp;raise&nbsp;the&nbsp;extrusion&nbsp;top.</tt></dd></dl>
+<dl><dt><a name="RaftSkein-addLayerFromEndpoints"><strong>addLayerFromEndpoints</strong></a>(self, endpoints, feedRateMultiplier, flowRateMultiplier, layerLayerThickness, layerThicknessRatio, step, z)</dt><dd><tt>Add&nbsp;a&nbsp;layer&nbsp;from&nbsp;endpoints&nbsp;and&nbsp;raise&nbsp;the&nbsp;extrusion&nbsp;top.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addLayerLine"><strong>addLayerLine</strong></a>(self, z)</dt><dd><tt>Add&nbsp;the&nbsp;layer&nbsp;gcode&nbsp;line&nbsp;and&nbsp;close&nbsp;the&nbsp;last&nbsp;layer&nbsp;gcode&nbsp;block.</tt></dd></dl>
 
@@ -387,6 +387,8 @@ Screw Holder Bottom_raft.gcode</tt>
 <dl><dt><a name="RaftSkein-addRaft"><strong>addRaft</strong></a>(self)</dt><dd><tt>Add&nbsp;the&nbsp;raft.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addRaftPerimeters"><strong>addRaftPerimeters</strong></a>(self)</dt><dd><tt>Add&nbsp;raft&nbsp;perimeters&nbsp;if&nbsp;there&nbsp;is&nbsp;a&nbsp;raft.</tt></dd></dl>
+
+<dl><dt><a name="RaftSkein-addRaftPerimetersByLoops"><strong>addRaftPerimetersByLoops</strong></a>(self, loops, outset)</dt><dd><tt>Add&nbsp;raft&nbsp;perimeters&nbsp;to&nbsp;the&nbsp;gcode&nbsp;for&nbsp;loops.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-addSegmentTablesToSupportLayers"><strong>addSegmentTablesToSupportLayers</strong></a>(self)</dt><dd><tt>Add&nbsp;segment&nbsp;tables&nbsp;to&nbsp;the&nbsp;support&nbsp;layers.</tt></dd></dl>
 
@@ -401,8 +403,6 @@ Screw Holder Bottom_raft.gcode</tt>
 <dl><dt><a name="RaftSkein-addToFillXIntersectionIndexTables"><strong>addToFillXIntersectionIndexTables</strong></a>(self, supportLayer)</dt><dd><tt>Add&nbsp;fill&nbsp;segments&nbsp;from&nbsp;the&nbsp;boundary&nbsp;layers.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-extendXIntersections"><strong>extendXIntersections</strong></a>(self, loops, radius, xIntersectionsTable)</dt><dd><tt>Extend&nbsp;the&nbsp;support&nbsp;segments.</tt></dd></dl>
-
-<dl><dt><a name="RaftSkein-getBaseDirectionSegments"><strong>getBaseDirectionSegments</strong></a>(self, baseOverhang, baseStep)</dt><dd><tt>Get&nbsp;base&nbsp;direction&nbsp;segments.</tt></dd></dl>
 
 <dl><dt><a name="RaftSkein-getCraftedGcode"><strong>getCraftedGcode</strong></a>(self, gcodeText, repository)</dt><dd><tt>Parse&nbsp;gcode&nbsp;text&nbsp;and&nbsp;store&nbsp;the&nbsp;raft&nbsp;gcode.</tt></dd></dl>
 
@@ -460,7 +460,9 @@ Screw Holder Bottom_raft.gcode</tt>
  <dl><dt><a name="-getCrossHatchPointLine"><strong>getCrossHatchPointLine</strong></a>(crossHatchPointLineTable, y)</dt><dd><tt>Get&nbsp;the&nbsp;cross&nbsp;hatch&nbsp;point&nbsp;line.</tt></dd></dl>
  <dl><dt><a name="-getEndpointsFromYIntersections"><strong>getEndpointsFromYIntersections</strong></a>(x, yIntersections)</dt><dd><tt>Get&nbsp;endpoints&nbsp;from&nbsp;the&nbsp;y&nbsp;intersections.</tt></dd></dl>
  <dl><dt><a name="-getExtendedLineSegment"><strong>getExtendedLineSegment</strong></a>(extensionDistance, lineSegment, loopXIntersections)</dt><dd><tt>Get&nbsp;extended&nbsp;line&nbsp;segment.</tt></dd></dl>
+ <dl><dt><a name="-getLoopsBySegmentsDictionary"><strong>getLoopsBySegmentsDictionary</strong></a>(segmentsDictionary, width)</dt><dd><tt>Get&nbsp;loops&nbsp;from&nbsp;a&nbsp;horizontal&nbsp;segments&nbsp;dictionary.</tt></dd></dl>
  <dl><dt><a name="-getNewRepository"><strong>getNewRepository</strong></a>()</dt><dd><tt>Get&nbsp;new&nbsp;repository.</tt></dd></dl>
+ <dl><dt><a name="-getVerticalEndpoints"><strong>getVerticalEndpoints</strong></a>(horizontalSegmentsTable, horizontalStep, verticalOverhang, verticalStep)</dt><dd><tt>Get&nbsp;vertical&nbsp;endpoints.</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Display&nbsp;the&nbsp;raft&nbsp;dialog.</tt></dd></dl>
  <dl><dt><a name="-setExtendedPoint"><strong>setExtendedPoint</strong></a>(lineSegmentEnd, pointOriginal, x)</dt><dd><tt>Set&nbsp;the&nbsp;point&nbsp;in&nbsp;the&nbsp;extended&nbsp;line&nbsp;segment.</tt></dd></dl>
  <dl><dt><a name="-writeOutput"><strong>writeOutput</strong></a>(fileName, shouldAnalyze<font color="#909090">=True</font>)</dt><dd><tt>Raft&nbsp;a&nbsp;gcode&nbsp;linear&nbsp;move&nbsp;file.</tt></dd></dl>

@@ -423,7 +423,7 @@ class SkeinisoSkein:
 		"Get statistics for a linear move."
 		if self.skeinPane == None:
 			return
-		self.addToPath( line, location )
+		self.addToPath(line, location)
 
 	def moveColoredThreadToSkeinPane(self):
 		'Move a colored thread to the skein pane.'
@@ -551,7 +551,7 @@ class SkeinisoSkein:
 			self.skeinPanes.append( self.skeinPane )
 		if firstWord == 'G1':
 			location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
-			self.linearMove( line, location )
+			self.linearMove(line, location)
 			self.oldLocation = location
 		elif firstWord == 'M101':
 			self.moveColoredThreadToSkeinPane()
@@ -578,7 +578,7 @@ class SkeinisoSkein:
 			relativeLocation = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
 			relativeLocation.z = 0.0
 			location = self.oldLocation + relativeLocation
-			self.linearMove( line, location )
+			self.linearMove(line, location)
 			self.oldLocation = location
 
 	def setColoredLineColor( self, coloredLine, colorTuple ):

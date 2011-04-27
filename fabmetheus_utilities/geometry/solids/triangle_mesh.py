@@ -304,7 +304,7 @@ def getDescendingAreaLoops(allPoints, corners, importRadius):
 	sortLoopsInOrderOfArea(True, loops)
 	pointDictionary = {}
 	for loop in loops:
-		if len(loop) > 2 and getOverlapRatio(loop, pointDictionary) < 0.1:
+		if len(loop) > 2 and getOverlapRatio(loop, pointDictionary) < 0.2:
 			intercircle.directLoop(not euclidean.getIsInFilledRegion(descendingAreaLoops, loop[0]), loop)
 			descendingAreaLoops.append(loop)
 			addLoopToPointTable(loop, pointDictionary)
@@ -496,7 +496,7 @@ def getOverhangDirection( belowOutsetLoops, segmentBegin, segmentEnd ):
 	'Add to span direction from the endpoint segments which overhang the layer below.'
 	segment = segmentEnd - segmentBegin
 	normalizedSegment = euclidean.getNormalized( complex( segment.real, segment.imag ) )
-	segmentYMirror = complex( normalizedSegment.real, - normalizedSegment.imag )
+	segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
 	segmentBegin = segmentYMirror * segmentBegin
 	segmentEnd = segmentYMirror * segmentEnd
 	solidXIntersectionList = []

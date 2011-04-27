@@ -26,7 +26,7 @@ def getGeometricDifference( first, second ):
 	'Get the geometric difference of the two numbers.'
 	return max( first, second ) / min( first, second )
 
-def getGridHorizontalFrame( gridPosition ):
+def getGridHorizontalFrame(gridPosition):
 	'Get the grid horizontal object with a frame from the grid position.'
 	gridHorizontal = settings.GridHorizontal( 0, 0 )
 	gridHorizontal.master = settings.Tkinter.Frame( gridPosition.master, borderwidth = 1, padx = 3, relief = 'raised')

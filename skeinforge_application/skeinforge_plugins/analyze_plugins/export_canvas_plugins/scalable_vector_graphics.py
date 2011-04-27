@@ -72,7 +72,7 @@ class ScalableVectorGraphicsRepository:
 		boxWidth = boundingBox[2] - self.boxW
 		boxHeight = boundingBox[3] - self.boxN
 		print('Exported svg file saved as ' + svgFileName )
-		svgTemplateText = archive.getFileTextInFileDirectory( settings.__file__, os.path.join('templates', 'canvas_template.svg') )
+		svgTemplateText = archive.getFileText(archive.getTemplatesPath('canvas_template.svg'))
 		output = cStringIO.StringIO()
 		lines = archive.getTextLines( svgTemplateText )
 		firstWordTable = {}
